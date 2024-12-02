@@ -10,21 +10,32 @@ export default {
 
 <template>
     <header class="general-header">
-        <div class="container container-header">
-            <section class="left-header">
-                <div class="logo">
-                    <div class="square-general square1"></div>
-                    <div class="square-general square2"></div>
-                    <div class="square-general square3"></div>
-                    <div class="square-general square4"></div>
+        <div class="container container-header d-flex">
+            <section class="left-header d-flex">
+                <div class="left-header-title-logo d-flex">
+                    <div class="logo">
+                        <div class="square-general square1"></div>
+                        <div class="square-general square2"></div>
+                        <div class="square-general square3"></div>
+                        <div class="square-general square4"></div>
+                    </div>
+                    <div class="title">
+                        <h1>bdoctors</h1>
+                    </div>
                 </div>
-                <div class="title">
-                    <h1>bdoctors</h1>
+                <div class="search-bar">
+                    <div class="input-group search-form">
+                        <input type="text" class="form-control" placeholder="Ricerca il tuo medico!"
+                            aria-label="Ricerca il tuo medico!" aria-describedby="button-addon2">
+                        <button class="btn btn-outline-secondary" type="button" id="button-addon2"><i
+                                class="fa-solid fa-magnifying-glass"></i></button>
+                    </div>
                 </div>
             </section>
-            <navbar class="right-header">
+            <navbar class="right-header d-flex">
                 <div class="login-logup">
-                    <button class="button-login-logup"><i class="fa-regular fa-user"></i>Get Started or log-in</button>
+                    <button class="button-login-logup"><i class="fa-solid fa-user"></i> Registrati o fai il
+                        login</button>
                 </div>
             </navbar>
         </div>
@@ -42,7 +53,6 @@ export default {
 
 .container-header {
     height: 100%;
-    display: flex;
     justify-content: space-between;
     align-items: center;
 }
@@ -58,10 +68,29 @@ h1 {
 
 /* Left Header */
 .left-header {
-    display: flex;
+    align-items: center;
+    gap: 30px;
+    height: 100%;
+}
+
+.left-header-title-logo {
     align-items: center;
     gap: 20px;
     height: 100%;
+}
+
+.search-form .form-control {
+    border: 0;
+    border-top-left-radius: 25px;
+    border-bottom-left-radius: 25px;
+}
+
+.search-form .btn {
+    background-color: white;
+    border-top-right-radius: 25px;
+    border-bottom-right-radius: 25px;
+    border: 0;
+    padding-right: 15px;
 }
 
 /* Logo */
@@ -97,7 +126,6 @@ h1 {
 /* Right header */
 .right-header {
     height: 100%;
-    display: flex;
     align-items: center;
 }
 
@@ -109,5 +137,14 @@ h1 {
     font-style: italic;
     color: white;
     font-weight: bold;
+}
+
+.fa-user {
+    border-radius: 50%;
+    border: 1px solid white;
+    padding: 6px;
+    background-color: white;
+    color: #65B0FF;
+    margin-right: 7px;
 }
 </style>
