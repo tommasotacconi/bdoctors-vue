@@ -11,7 +11,7 @@ export default {
 <template>
     <header class="general-header">
         <div class="container container-header">
-            <div class="left-header">
+            <section class="left-header">
                 <div class="logo">
                     <div class="square-general square1"></div>
                     <div class="square-general square2"></div>
@@ -21,12 +21,12 @@ export default {
                 <div class="title">
                     <h1>bdoctors</h1>
                 </div>
-            </div>
-            <div class="right-header">
-                <div class="log-in">
-
+            </section>
+            <navbar class="right-header">
+                <div class="login-logup">
+                    <button class="">Get Started or log-in</button>
                 </div>
-            </div>
+            </navbar>
         </div>
     </header>
 </template>
@@ -36,18 +36,23 @@ export default {
 .general-header {
     background-color: #0E395D;
     height: 70px;
+    border-bottom-left-radius: 25px;
+    border-bottom-right-radius: 25px;
 }
 
 .container-header {
     height: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 h1 {
     color: white;
     text-transform: uppercase;
     margin: 0;
-    padding-right: 20px;
-    border-right: 4px solid #28231D;
+    padding-right: 25px;
+    border-right: 4px solid white;
 }
 
 
@@ -55,6 +60,7 @@ h1 {
 .left-header {
     display: flex;
     align-items: center;
+    gap: 20px;
     height: 100%;
 }
 
@@ -91,5 +97,7 @@ h1 {
 /* Right header */
 .right-header {
     height: 100%;
+    display: flex;
+    align-items: center;
 }
 </style>
