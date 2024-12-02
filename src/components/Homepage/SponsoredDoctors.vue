@@ -26,12 +26,17 @@ export default {
 </template>
 
 <style scoped>
+h2 {
+    text-align: center;
+}
+
 .card {
     border-radius: 40px;
     background-color: #D8F9FF;
     flex-direction: column;
     align-items: center;
-    border: 0
+    border: 0;
+    text-align: center;
 }
 
 .card img {

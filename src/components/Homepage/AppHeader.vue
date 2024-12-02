@@ -46,7 +46,7 @@ export default {
 /* General */
 .general-header {
     background-color: #0E395D;
-    height: 70px;
+    height: 80px;
     border-bottom-left-radius: 25px;
     border-bottom-right-radius: 25px;
 }
