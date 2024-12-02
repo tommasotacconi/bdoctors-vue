@@ -24,7 +24,7 @@ export default {
             </section>
             <navbar class="right-header">
                 <div class="login-logup">
-                    <button class="">Get Started or log-in</button>
+                    <button class="button-login-logup"><i class="fa-regular fa-user"></i>Get Started or log-in</button>
                 </div>
             </navbar>
         </div>
@@ -99,5 +99,15 @@ h1 {
     height: 100%;
     display: flex;
     align-items: center;
+}
+
+.button-login-logup {
+    background-color: #FFB465;
+    border-radius: 25px;
+    padding: 8px 16px;
+    border: 0;
+    font-style: italic;
+    color: white;
+    font-weight: bold;
 }
 </style>
