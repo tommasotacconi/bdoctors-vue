@@ -10,11 +10,18 @@ export default {
     methods: {
         showMessages() {
             store.informationPage = false;
+            store.reviewPage = false;
             store.messagePage = true;
         },
         showProfile() {
             store.messagePage = false;
+            store.reviewPage = false;
             store.informationPage = true;
+        },
+        showReviews() {
+            store.messagePage = false;
+            store.informationPage = false;
+            store.reviewPage = true;
         }
     }
 }
@@ -37,7 +44,8 @@ export default {
         </RouterLink>
         <section class="link-pages">
             <h5 @click="showProfile">Profilo</h5>
-            <h5 @click="showMessages">Messaggi ricevuti</h5>
+            <h5 @click="showMessages">Messaggi</h5>
+            <h5 @click="showReviews">Recensioni</h5>
         </section>
     </nav>
 </template>

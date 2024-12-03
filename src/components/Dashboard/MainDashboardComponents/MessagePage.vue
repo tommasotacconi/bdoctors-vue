@@ -11,8 +11,22 @@ export default {
 </script>
 
 <template>
-    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Nihil facilis ut repudiandae quod, in eum quia fugiat,
-    fuga nulla quo est et ducimus iste dolore! Vitae voluptate aperiam nulla neque?
+    <main class="container">
+        <div class="general-cards-container">
+            <div class="messages">
+                <div class="card" style="width: 18rem;">
+                    <div class="card-header">
+                        Featured
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">An item</li>
+                        <li class="list-group-item">A second item</li>
+                        <li class="list-group-item">A third item</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </main>
 </template>
 
 <style scoped></style>
