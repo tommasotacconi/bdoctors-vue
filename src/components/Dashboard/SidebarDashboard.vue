@@ -9,8 +9,12 @@ export default {
     },
     methods: {
         showMessages() {
-            console.log(store.messagePage)
-            return store.messagePage = true;
+            store.informationPage = false;
+            store.messagePage = true;
+        },
+        showProfile() {
+            store.messagePage = false;
+            store.informationPage = true;
         }
     }
 }
