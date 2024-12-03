@@ -33,6 +33,8 @@ export default {
                     this.errors = response.result.errors;
                     console.log(response.result.errors);
                 });
+            // redirect
+            // this.$router.push({ name: 'routename' })
         },
     },
     mounted() {
