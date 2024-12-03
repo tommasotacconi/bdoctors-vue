@@ -13,14 +13,11 @@ export default {
 <template>
     <main class="container">
         <div class="general-cards-container">
-            <div class="last-message">
-
-            </div>
             <div class="messages">
                 <div class="card-inbox">
                     <div class="card-header-title">
                         <h5 class="title">Messaggi arrivati</h5>
-                        <div class="messages-number">Totale: 3</div>
+                        <div class="messages-number"><strong>Totale:</strong> <span class="total-number">3</span></div>
                     </div>
                     <div class="card-body-list" v-for="(message, index) in 3">
                         <ul class="list-group list-group-flush list-email">
@@ -35,6 +32,21 @@ export default {
                     </div>
                 </div>
             </div>
+            <div class="selected-message">
+                <div class="card-inbox">
+                    <div class="message-name">
+                        Mario Rossi
+                    </div>
+                    <div class="message-email">
+                        mariorossi@gmail.com
+                    </div>
+                    <div class="message-content">
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Veniam velit officia quaerat similique
+                        ducimus excepturi dolore aliquam sed blanditiis maxime voluptas error perspiciatis sequi
+                        officiis ullam delectus rerum, vero dolorem?
+                    </div>
+                </div>
+            </div>
         </div>
     </main>
 </template>
@@ -44,7 +56,7 @@ export default {
 .card-inbox {
     border: 3px solid var(--color-complementary);
     border-radius: 20px;
-    padding: 10px;
+    padding: 20px;
 }
 
 .card-header-title {
@@ -59,29 +71,53 @@ export default {
     border-radius: 20px;
     border: 3px solid var(--color-secondary);
     padding: 8px 15px;
+    background-color: var(--color-secondary);
+    color: white;
+}
+
+.total-number {
+    font-weight: bold;
 }
 
 .card-body-list {
     display: flex;
 }
 
-.list-group {
-    border-right: 3px solid var(--color-secondary);
-    border-bottom: 3px solid var(--color-secondary);
-
-}
-
 .list-email {
     flex-basis: 20%;
+    border-right: 3px dashed var(--color-secondary);
+    border-bottom: 3px solid var(--color-secondary);
 }
 
 .list-name {
     flex-basis: 20%;
-
+    border-right: 3px dashed var(--color-secondary);
+    border-bottom: 3px solid var(--color-secondary);
 }
 
 .list-preview {
     flex-basis: 60%;
+    border-bottom: 3px solid var(--color-secondary);
+}
 
+
+/* Selected Message */
+.selected-message {
+    margin-top: 20px;
+}
+
+.message-email,
+.message-name,
+.message-content {
+    margin-top: 10px;
+}
+
+.message-email,
+.message-name {
+    border-bottom: 2px dashed var(--color-secondary);
+}
+
+.message-content {
+    font-size: 0.9rem;
 }
 </style>

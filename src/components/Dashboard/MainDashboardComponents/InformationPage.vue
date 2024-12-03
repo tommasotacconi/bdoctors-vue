@@ -60,7 +60,7 @@ h2 {
 .card img {
     border-radius: 50%;
     width: 60%;
-    border: 1px solid #65B0FF;
+    border: 3px solid #65B0FF;
     margin: 15px 0;
 }
 
