@@ -1,27 +1,46 @@
 <script>
+import { axios } from "axios";
+
 export default {
     data() {
         return {
-            formData: [
+            formData: {
                 firstname: "",
                 lastname: "",
                 email: "",
                 password: "",
                 phone: "",
                 officeAddress: "",
-                specialization: [],
+                specialization: ["",],
                 services: "",
                 photo: "",
                 curriculum: ""
-            ]
+            },
+            apiUrl: "",
+            errors: [],
 
         }
     },
     methods: {
-        checkForm: function (event) {
+        updateForm() function(event) {
             event.preventDefault();
 
-        }
+            axios.post('/user', this.formData)
+                .then(function (response) => {
+                    console.log(response);
+                    console.log("Updated form");
+                })
+                .catch(function (error) => {
+                    this.errors = response.result.errors;
+                    console.log(response.result.errors);
+                });
+
+        },
+
+
+    },
+    mounted() {
+        axios.get
     }
 }
 </script>
@@ -30,7 +49,13 @@ export default {
     <div class="container py-3">
         <h1 class="text-center">Modifica le tue informazioni</h1>
 
-        <form action="GET" @submit="checkForm">
+        <form action="PUT" @submit="updateForm">
+
+            <div v-if="errors.length" class="bg-subtle-danger">
+                <ul v-for="error in errors">
+                    <li>{{ error }}</li>
+                </ul>
+            </div>
 
             <div class="mb-3 col-3">
                 <label for="firstname" class="form-label">Nome</label>
@@ -58,11 +83,12 @@ export default {
             </div>
             <div class="mb-3">
                 <label for="specialization" class="form-label">Specializzazioni</label>
-                <select class="form-select" aria-label="Default select example" id="specialization">
+                <select class="form-select" aria-label="Default select example" id="specialization"
+                    v-model="formData.specialization">
                     <option selected>Seleziona la/e tua/e specializzazione/i</option>
-                    <option value="1">Chirurgia</option>
-                    <option value="2">Cardiologia</option>
-                    <option value="3">Oculistica</option>
+                    <option value="surgery">Chirurgia</option>
+                    <option value="cardiology">Cardiologia</option>
+                    <option value="ophthalmology">Oculistica</option>
                 </select>
             </div>
             <div class="mb-3">
