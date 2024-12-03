@@ -34,13 +34,23 @@ export default {
                     this.errors = response.result.errors;
                     console.log(response.result.errors);
                 });
-
         },
-
-
     },
     mounted() {
-        axios.get
+        getForm() function () {
+            axios.get(this.apiUrl)
+                .then(function (response) {
+                    // handle success
+                    console.log(response);
+                })
+                .catch(function (error) {
+                    // handle error
+                    console.log(error);
+                })
+                .finally(function () {
+                    // always executed
+                });
+        }
     }
 }
 </script>
