@@ -9,7 +9,12 @@ export default {
 </script>
 
 <template>
-    Header
+    <header>Header</header>
 </template>
 
-<style scoped></style>
+<style scoped>
+header {
+    height: 100%;
+    background-color: var(--color-primary);
+}
+</style>

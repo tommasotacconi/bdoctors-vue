@@ -18,11 +18,11 @@ export default {
 </script>
 
 <template>
-    <div class="d-flex">
+    <div class="general-structure d-flex">
         <section class="sidebar">
             <SidebarDashboard />
         </section>
-        <section class="header-main">
+        <section class="header-main d-flex">
             <div class="header">
                 <HeaderDashboard />
             </div>
@@ -33,4 +33,21 @@ export default {
     </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.sidebar {
+    flex-basis: 20%;
+}
+
+.header-main {
+    flex-basis: 80%;
+    flex-direction: column;
+}
+
+.header {
+    flex-basis: 10%;
+}
+
+.main {
+    flex-basis: 90%;
+}
+</style>

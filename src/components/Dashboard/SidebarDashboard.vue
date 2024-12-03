@@ -9,7 +9,13 @@ export default {
 </script>
 
 <template>
-    Sidebar
+    <nav>Side</nav>
 </template>
 
-<style scoped></style>
+<style scoped>
+nav {
+    height: 100vh;
+    background-color: var(--color-primary);
+    border-right: 2px solid lightgray;
+}
+</style>
