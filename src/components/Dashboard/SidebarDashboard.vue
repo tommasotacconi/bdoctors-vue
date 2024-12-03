@@ -23,8 +23,10 @@ export default {
                 </div>
             </div>
         </RouterLink>
-        <h5>Profilo</h5>
-        <h5>Messaggi ricevuti</h5>
+        <section class="link-pages">
+            <h5 @click="showProfile">Profilo</h5>
+            <h5 @click="showMessages">Messaggi ricevuti</h5>
+        </section>
     </nav>
 </template>
 
@@ -39,6 +41,23 @@ nav {
 
 a {
     text-decoration: none;
+}
+
+.link-pages {
+    margin-top: 20px;
+}
+
+h5 {
+    margin: 10px 0;
+    padding: 10px;
+}
+
+h5:hover {
+    cursor: pointer;
+    margin: 10px 0;
+    border-bottom: 2px solid lightgray;
+    border-top: 2px solid lightgray;
+    background-color: #0E125D;
 }
 
 /* Logo */
