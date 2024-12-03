@@ -9,7 +9,7 @@ export default {
 </script>
 
 <template>
-    Sidebar
+    Header
 </template>
 
 <style scoped></style>
