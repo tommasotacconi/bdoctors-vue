@@ -17,7 +17,7 @@ export default {
 
             </div>
             <div class="messages">
-                <div class="card">
+                <div class="card-inbox">
                     <div class="card-header-title">
                         <h5 class="title">Messaggi arrivati</h5>
                         <div class="messages-number">Totale: 3</div>
@@ -41,14 +41,24 @@ export default {
 
 <style scoped>
 /* Inbox Card */
-.card {
+.card-inbox {
+    border: 3px solid var(--color-complementary);
     border-radius: 20px;
     padding: 10px;
 }
 
 .card-header-title {
+    padding: 0 10px;
+    margin-bottom: 10px;
     display: flex;
-    gap: 10px;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.messages-number {
+    border-radius: 20px;
+    border: 3px solid var(--color-secondary);
+    padding: 8px 15px;
 }
 
 .card-body-list {
@@ -56,8 +66,8 @@ export default {
 }
 
 .list-group {
-    border-right: 3px solid lightgray;
-    border-bottom: 3px solid lightgray;
+    border-right: 3px solid var(--color-secondary);
+    border-bottom: 3px solid var(--color-secondary);
 
 }
 
