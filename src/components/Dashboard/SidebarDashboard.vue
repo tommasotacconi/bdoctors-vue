@@ -1,8 +1,16 @@
 <script>
+import { store } from '../../../js/store.js'
+
 export default {
     data() {
         return {
-
+            store
+        }
+    },
+    methods: {
+        showMessages() {
+            console.log(store.messagePage)
+            return store.messagePage = true;
         }
     }
 }

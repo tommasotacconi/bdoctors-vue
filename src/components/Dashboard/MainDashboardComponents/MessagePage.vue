@@ -1,15 +1,17 @@
 <script>
+import { store } from '../../../../js/store.js'
+
 export default {
     data() {
         return {
-
+            store
         }
     }
 }
 </script>
 
 <template>
-    test
+    <div>{{ store.messagePage }}</div>
 </template>
 
 <style scoped></style>
