@@ -28,7 +28,7 @@ export default {
 </script>
 
 <template>
-    <nav>
+    <nav class="container">
         <RouterLink :to="{ name: 'homepage' }">
             <div class="title-logo d-flex">
                 <div class="logo">
@@ -53,7 +53,7 @@ export default {
 <style scoped>
 /* General */
 nav {
-    height: 100vh;
+    height: 100%;
     background-color: var(--color-primary);
     border-right: 2px solid lightgray;
     color: white;
@@ -68,7 +68,7 @@ a {
 }
 
 h5 {
-    margin: 10px 0;
+    margin: 10px 0 0 10px;
     padding: 10px;
 }
 
@@ -122,5 +122,13 @@ h1 {
 
 .square4 {
     background-color: #155489;
+}
+
+
+/* Responsive */
+@media only screen and (max-width: 1024px) {
+    .title {
+        display: none;
+    }
 }
 </style>

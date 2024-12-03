@@ -38,6 +38,8 @@ export default {
 <style scoped>
 .general-structure {
     display: flex;
+    min-height: 100vh;
+    overflow: auto;
 }
 
 .sidebar {

@@ -13,13 +13,13 @@ export default {
         <div class="general-main">
             <h2>Profilo</h2>
             <section class="card-general">
-                <div class="card mb-3" style="width: 1000px;">
-                    <div class="row g-0">
-                        <div class="col-md-4">
+                <div class="card mb-3">
+                    <div class="card-flex">
+                        <div class="img-doctor">
                             <img src="https://media.istockphoto.com/id/1340883379/photo/young-doctor-hospital-medical-medicine-health-care-clinic-office-portrait-glasses-man.jpg?s=612x612&w=0&k=20&c=_H4VUPBkS0gEj5ZdZzQo-Hw3lMuyofJpB-P9yS92Wyw="
                                 class="img-flui" alt="...">
                         </div>
-                        <div class="col-md-8">
+                        <div class="card-body-general">
                             <div class="card-body">
                                 <h5 class="card-title">Nome medico</h5>
                                 <p class="card-text">
@@ -52,12 +52,32 @@ h2 {
 }
 
 /* Card */
+
+.card-general {
+    width: 70vw;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
 .card {
     border-radius: 40px;
     background-color: #D8F9FF;
     border: 0;
     text-align: center;
     width: 70%;
+}
+
+.card-flex {
+    display: flex;
+}
+
+.img-doctor {
+    flex-basis: 40%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .card img {
@@ -87,5 +107,13 @@ ul {
     color: var(--color-primary);
     font-weight: bold;
     border: 1px solid var(--color-primary);
+}
+
+/* Responsive */
+@media only screen and (max-width: 1300px) {
+    .card-flex {
+        display: flex;
+        flex-direction: column;
+    }
 }
 </style>
