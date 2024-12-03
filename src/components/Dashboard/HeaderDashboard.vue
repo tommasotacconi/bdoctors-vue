@@ -16,5 +16,6 @@ export default {
 header {
     height: 100%;
     background-color: var(--color-primary);
+    color: white;
 }
 </style>

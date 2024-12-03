@@ -49,5 +49,6 @@ export default {
 
 .main {
     flex-basis: 90%;
+    margin: 20px 0 0 20px;
 }
 </style>
