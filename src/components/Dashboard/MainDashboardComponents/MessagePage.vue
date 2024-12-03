@@ -13,13 +13,13 @@ export default {
 <template>
     <main class="container">
         <div class="general-cards-container">
-            <div class="messages">
+            <div class="all-messages">
                 <div class="card-inbox">
                     <div class="card-header-title">
                         <h5 class="title">Messaggi arrivati</h5>
-                        <div class="messages-number"><strong>Totale:</strong> <span class="total-number">3</span></div>
+                        <div class="messages-number"><strong>Totale:</strong> <span class="total-number">5</span></div>
                     </div>
-                    <div class="card-body-list" v-for="(message, index) in 3">
+                    <div class="card-body-list" v-for="(message, index) in 10">
                         <ul class="list-group list-group-flush list-email">
                             <li class="list-group-item">E-mail</li>
                         </ul>
@@ -33,7 +33,7 @@ export default {
                 </div>
             </div>
             <div class="selected-message">
-                <div class="card-inbox">
+                <div class="card-selected-message">
                     <div class="message-name">
                         Mario Rossi
                     </div>
@@ -53,18 +53,24 @@ export default {
 
 <style scoped>
 /* Inbox Card */
+
 .card-inbox {
     border: 3px solid var(--color-complementary);
     border-radius: 20px;
-    padding: 20px;
+    overflow: scroll;
+    height: 250px;
 }
 
 .card-header-title {
-    padding: 0 10px;
+    padding: 10px 15px;
     margin-bottom: 10px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background-color: white;
 }
 
 .messages-number {
@@ -81,6 +87,7 @@ export default {
 
 .card-body-list {
     display: flex;
+    padding: 0 15px;
 }
 
 .list-email {
@@ -102,6 +109,12 @@ export default {
 
 
 /* Selected Message */
+.card-selected-message {
+    border: 3px solid var(--color-complementary);
+    border-radius: 20px;
+    padding: 15px;
+}
+
 .selected-message {
     margin-top: 20px;
 }
