@@ -1,22 +1,23 @@
 <script>
+import AppHeader from '../components/Homepage/AppHeader.vue'
+import AppProfileEdit from '../components/Profile/AppProfileEdit.vue'
+
 export default {
     data() {
         return {
 
         }
+    },
+    components: {
+        AppHeader,
+        AppProfileEdit
     }
 }
 </script>
 
 <template>
-    <div class="container">
-        <h1 class="text-center">Modifica le tue informazioni</h1>
-
-        <form action="GET" @submit.prevent>
-
-
-        </form>
-    </div>
+    <AppHeader />
+    <AppProfileEdit />
 
 </template>
 
