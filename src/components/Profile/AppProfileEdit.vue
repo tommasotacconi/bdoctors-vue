@@ -31,7 +31,7 @@ export default {
                 })
                 .catch((error) => {
                     this.errors = response.result.errors;
-                    console.error(response.result.errors);
+                    console.log(response.result.errors);
                 });
         },
     },
@@ -58,12 +58,12 @@ export default {
 
         <form action="" method="PUT" @submit="updateForm" novalidate="true">
 
-            <div v-if="errors.length" class="bg-subtle-danger">
+            <div v-if="errors.length" class="bg-subtle-danger" id="errors">
                 <ul>
                     <li v-for="error in errors">{{ error }}</li>
                 </ul>
             </div>
-            <div class="row py-3">
+            <div class="row py-4 my-4" id="edit-form">
                 <div class="mb-3 col-4">
                     <label for="firstname" class="form-label">Nome</label>
                     <input type="text" class="form-control" id="firstname" v-model="formData.firstname" required>
@@ -93,7 +93,7 @@ export default {
                     <label for="specialization" class="form-label">Specializzazioni</label>
                     <select class="form-select" aria-label="Default select example" id="specialization"
                         v-model="formData.specialization" required>
-                        <option disabled>Seleziona la/e tua/e specializzazione/i</option>
+                        <option disabled selected>Seleziona la/e tua/e specializzazione/i</option>
                         <option value="surgery">Chirurgia</option>
                         <option value="cardiology">Cardiologia</option>
                         <option value="ophthalmology">Oculistica</option>
@@ -113,12 +113,32 @@ export default {
                     <input type="url" class="form-control" id="curriculum" placeholder="Inserisci un URL valido"
                         v-model="formData.curriculum" required>
                 </div>
+                <div class="mb-3">
+                    <button type="submit" class="btn me-2 btn-submit">Modifica</button>
+                    <button type="reset" class="btn btn-reset">Reset</button>
+                </div>
             </div>
-
-            <button type="submit" class="btn btn-primary me-2">Modifica</button>
-            <button type="reset" class="btn btn-dark">Reset</button>
         </form>
     </div>
 </template>
 
-<style scoped></style>
+<style scoped lang="scss">
+#edit-form,
+#errors {
+    border: 1px solid;
+    border-radius: 20px;
+}
+
+.btn-submit {
+    background-color: var(--color-secondary);
+}
+
+.btn-reset {
+    background-color: var(--color-tertiary);
+    color: white;
+
+    &:hover {
+        color: black;
+    }
+}
+</style>
