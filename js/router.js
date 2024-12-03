@@ -4,7 +4,7 @@ import ProfileEdit from '../src/pages/ProfileEdit.vue'
 
 const routes = [
     { path: '/', component: Homepage, name: 'homepage' },
-    // { path: '/user/:id/profile-edit', component: ProfileEdit, name: 'profile-edit' },
+    { path: '/user/:id/profile-edit', component: ProfileEdit, name: 'profile-edit' },
 ]
 
 const router = createRouter({

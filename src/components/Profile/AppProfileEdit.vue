@@ -1,5 +1,5 @@
 <script>
-import { axios } from "axios";
+import axios from "axios";
 
 export default {
     data() {
@@ -22,35 +22,32 @@ export default {
         }
     },
     methods: {
-        updateForm() function(event) {
-            event.preventDefault();
+        updateForm() {
 
             axios.post('/user', this.formData)
-                .then(function (response) => {
+                .then((response) => {
                     console.log(response);
                     console.log("Updated form");
                 })
-                .catch(function (error) => {
+                .catch((error) => {
                     this.errors = response.result.errors;
                     console.log(response.result.errors);
                 });
         },
     },
     mounted() {
-        getForm() function () {
-            axios.get(this.apiUrl)
-                .then(function (response) {
-                    // handle success
-                    console.log(response);
-                })
-                .catch(function (error) {
-                    // handle error
-                    console.log(error);
-                })
-                .finally(function () {
-                    // always executed
-                });
-        }
+        axios.get(this.apiUrl)
+            .then(function (response) {
+                // handle success
+                console.log(response);
+            })
+            .catch(function (error) {
+                // handle error
+                console.log(error);
+            })
+            .finally(function () {
+                // always executed
+            });
     }
 }
 </script>
