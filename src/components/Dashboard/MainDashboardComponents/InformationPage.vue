@@ -10,7 +10,7 @@ export default {
 
 <template>
     <main class="container">
-        <h2>Information page</h2>
+        <h2>Profilo</h2>
         <section class="card-general">
             <div class="card mb-3" style="width: 1000px;">
                 <div class="row g-0">
