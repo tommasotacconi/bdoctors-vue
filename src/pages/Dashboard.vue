@@ -3,10 +3,12 @@ import HeaderDashboard from '../components/Dashboard/HeaderDashboard.vue';
 import MainDashboard from '../components/Dashboard/MainDashboard.vue';
 import SidebarDashboard from '../components/Dashboard/SidebarDashboard.vue';
 
+import { store } from '../../js/store.js'
+
 export default {
     data() {
         return {
-
+            store
         }
     },
     components: {
@@ -19,7 +21,7 @@ export default {
 
 <template>
     <div class="general-structure d-flex">
-        <section class="sidebar">
+        <section class="sidebar" v-if="store.sidebar">
             <SidebarDashboard />
         </section>
         <section class="header-main d-flex">

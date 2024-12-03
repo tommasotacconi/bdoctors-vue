@@ -6,6 +6,11 @@ export default {
         return {
             store
         }
+    },
+    methods: {
+        selectMessage() {
+
+        }
     }
 }
 </script>
@@ -20,13 +25,13 @@ export default {
                         <div class="messages-number"><strong>Totale:</strong> <span class="total-number">5</span></div>
                     </div>
                     <div class="card-body-list" v-for="(message, index) in 10">
-                        <ul class="list-group list-group-flush list-email">
+                        <ul class="list-group list-group-flush list-email" @click="selectMessage(index)">
                             <li class="list-group-item">E-mail</li>
                         </ul>
-                        <ul class="list-group list-group-flush list-name">
+                        <ul class="list-group list-group-flush list-name" @click="selectMessage(index)">
                             <li class="list-group-item">Nome e Cognome</li>
                         </ul>
-                        <ul class="list-group list-group-flush list-preview">
+                        <ul class="list-group list-group-flush list-preview" @click="selectMessage(index)">
                             <li class="list-group-item">Preview</li>
                         </ul>
                     </div>
@@ -34,16 +39,21 @@ export default {
             </div>
             <div class="selected-message">
                 <div class="card-selected-message">
+                    <h5 class="title">Messaggio selezionato</h5>
+
                     <div class="message-name">
-                        Mario Rossi
+                        <strong>Da:</strong> Mario Rossi
                     </div>
                     <div class="message-email">
-                        mariorossi@gmail.com
+                        <strong>E-mail:</strong> mariorossi@gmail.com
                     </div>
                     <div class="message-content">
-                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Veniam velit officia quaerat similique
-                        ducimus excepturi dolore aliquam sed blanditiis maxime voluptas error perspiciatis sequi
-                        officiis ullam delectus rerum, vero dolorem?
+                        <div><strong>Contenuto:</strong></div> <span>Lorem ipsum dolor sit amet consectetur adipisicing
+                            elit. Veniam
+                            velit officia quaerat
+                            similique
+                            ducimus excepturi dolore aliquam sed blanditiis maxime voluptas error perspiciatis sequi
+                            officiis ullam delectus rerum, vero dolorem?</span>
                     </div>
                 </div>
             </div>
@@ -57,7 +67,7 @@ export default {
 .card-inbox {
     border: 3px solid var(--color-complementary);
     border-radius: 20px;
-    overflow: scroll;
+    overflow: auto;
     height: 250px;
 }
 
@@ -130,7 +140,9 @@ export default {
     border-bottom: 2px dashed var(--color-secondary);
 }
 
-.message-content {
-    font-size: 0.9rem;
-}
+/* Is better with a space? */
+/* .message-content {
+    display: flex;
+    gap: 10px;
+} */
 </style>
