@@ -20,11 +20,11 @@ export default {
 </script>
 
 <template>
-    <div class="general-structure d-flex">
+    <div :class="!store.sidebar ? 'general-structure-full' : 'general-structure'">
         <section class="sidebar" v-if="store.sidebar">
             <SidebarDashboard />
         </section>
-        <section class="header-main d-flex">
+        <section :class="!store.sidebar ? 'header-main-full' : 'header-main'">
             <div class="header">
                 <HeaderDashboard />
             </div>
@@ -36,12 +36,23 @@ export default {
 </template>
 
 <style scoped>
+.general-structure {
+    display: flex;
+}
+
 .sidebar {
     flex-basis: 20%;
 }
 
 .header-main {
+    display: flex;
     flex-basis: 80%;
+    flex-direction: column;
+}
+
+.header-full {
+    display: flex;
+    flex-basis: 100%;
     flex-direction: column;
 }
 
