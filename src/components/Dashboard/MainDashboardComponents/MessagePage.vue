@@ -64,6 +64,13 @@ export default {
 <style scoped>
 /* Inbox Card */
 
+.card-inbox::-webkit-scrollbar {
+    width: 10px;
+    position: relative;
+    top: 0;
+    right: 10px;
+}
+
 .card-inbox {
     border: 3px solid var(--color-complementary);
     border-radius: 20px;
