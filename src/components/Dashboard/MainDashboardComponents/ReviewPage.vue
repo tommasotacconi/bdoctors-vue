@@ -17,7 +17,29 @@ export default {
             </div>
         </div>
         <div class="card-general card-review">
+            <div class="card-selected-review">
+                <div class="title-star">
+                    <h5 class="title">Recensione selezionata</h5>
+                    <div class="star">
+                        <strong>Voto: </strong> <i class="fa-solid fa-stethoscope" v-for="star in 4"></i>
+                    </div>
+                </div>
 
+                <div class="review-name">
+                    <strong>Da:</strong> Mario Rossi
+                </div>
+                <div class="review-email">
+                    <strong>E-mail:</strong> mariorossi@gmail.com
+                </div>
+                <div class="review-content">
+                    <div><strong>Contenuto:</strong></div> <span>Lorem ipsum dolor sit amet consectetur adipisicing
+                        elit. Veniam
+                        velit officia quaerat
+                        similique
+                        ducimus excepturi dolore aliquam sed blanditiis maxime voluptas error perspiciatis sequi
+                        officiis ullam delectus rerum, vero dolorem?</span>
+                </div>
+            </div>
         </div>
     </main>
 </template>
@@ -58,5 +80,29 @@ export default {
 /* Card review */
 .card-review {
     margin-top: 40px;
+}
+
+.title-star {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 15px;
+}
+
+.fa-stethoscope {
+    color: red;
+    font-size: 1.2rem;
+}
+
+.review-email,
+.review-name,
+.review-content {
+    margin-top: 20px;
+    padding-bottom: 5px;
+}
+
+.review-email,
+.review-name {
+    border-bottom: 2px dashed var(--color-secondary);
 }
 </style>
