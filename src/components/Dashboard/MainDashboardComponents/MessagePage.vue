@@ -67,8 +67,8 @@ export default {
 .card-inbox {
     border: 3px solid var(--color-complementary);
     border-radius: 20px;
-    overflow: auto;
     height: 250px;
+    overflow: auto;
 }
 
 .card-header-title {
@@ -126,13 +126,14 @@ export default {
 }
 
 .selected-message {
-    margin-top: 20px;
+    margin-top: 40px;
 }
 
 .message-email,
 .message-name,
 .message-content {
-    margin-top: 10px;
+    margin-top: 20px;
+    padding-bottom: 5px;
 }
 
 .message-email,

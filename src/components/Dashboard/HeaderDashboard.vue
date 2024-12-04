@@ -14,9 +14,10 @@ export default {
         showLogout() {
             this.logout = !this.logout;
 
+            // Se l'utente non interagisce farlo scomparire
             if (this.logout === true) {
                 setTimeout(() => {
-                    this.logout = !this.logout
+                    this.logout = false
                 }, 5000)
             }
         }
