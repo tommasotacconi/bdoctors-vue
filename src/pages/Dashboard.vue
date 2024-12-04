@@ -52,7 +52,7 @@ export default {
     flex-direction: column;
 }
 
-.header-full {
+.header-main-full {
     display: flex;
     flex-basis: 100%;
     flex-direction: column;

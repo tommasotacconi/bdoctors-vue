@@ -17,24 +17,24 @@ export default {
                     <div class="card-flex">
                         <div class="img-doctor">
                             <img src="https://media.istockphoto.com/id/1340883379/photo/young-doctor-hospital-medical-medicine-health-care-clinic-office-portrait-glasses-man.jpg?s=612x612&w=0&k=20&c=_H4VUPBkS0gEj5ZdZzQo-Hw3lMuyofJpB-P9yS92Wyw="
-                                class="img-flui" alt="...">
+                                class="img-flui" alt="doctor photo">
                         </div>
                         <div class="card-body-general">
                             <div class="card-body">
                                 <h5 class="card-title">Nome medico</h5>
-                                <p class="card-text">
-                                <ul>
-                                    <li>
-                                        <strong>Specializzazione:</strong> Cardiologia / Neurologia
-                                    </li>
-                                    <li>
-                                        <strong>Indirizzo:</strong> Via Boolean 15, Caltanisetta
-                                    </li>
-                                    <li>
-                                        <strong>Telefono:</strong> 338451523
-                                    </li>
-                                </ul>
-                                </p>
+                                <div class="card-text">
+                                    <ul>
+                                        <li>
+                                            <strong>Specializzazione:</strong> Cardiologia / Neurologia
+                                        </li>
+                                        <li>
+                                            <strong>Indirizzo:</strong> Via Boolean 15, Caltanisetta
+                                        </li>
+                                        <li>
+                                            <strong>Telefono:</strong> 338451523
+                                        </li>
+                                    </ul>
+                                </div>
                                 <a href="#" class="edit-profile">Modifica il tuo profilo</a>
                             </div>
                         </div>
