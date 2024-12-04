@@ -12,8 +12,8 @@ export default {
             store.informationPage = false;
             store.reviewPage = false;
             store.sponsorshipPage = false;
-            store.statisticPage = false,
-                store.messagePage = true;
+            store.statisticPage = false;
+            store.messagePage = true;
         },
         showProfile() {
             store.messagePage = false;
@@ -63,11 +63,11 @@ export default {
             </div>
         </RouterLink>
         <section class="link-pages">
-            <h5 @click="showProfile">Profilo</h5>
-            <h5 @click="showMessages">Messaggi</h5>
-            <h5 @click="showReviews">Recensioni</h5>
-            <h5 @click="showSponsorship">Sponsorizzazione</h5>
-            <h5 @click="showStatistic">Statistiche</h5>
+            <h5 :class="store.informationPage ? 'selected-text' : ''" @click="showProfile">Profilo</h5>
+            <h5 :class="store.messagePage ? 'selected-text' : ''" @click="showMessages">Messaggi</h5>
+            <h5 :class="store.reviewPage ? 'selected-text' : ''" @click="showReviews">Recensioni</h5>
+            <h5 :class="store.sponsorshipPage ? 'selected-text' : ''" @click="showSponsorship">Sponsorizzazione</h5>
+            <h5 :class="store.statisticPage ? 'selected-text' : ''" @click="showStatistic">Statistiche</h5>
         </section>
     </nav>
 </template>
@@ -90,8 +90,12 @@ a {
 }
 
 h5 {
-    margin: 10px 0 0 10px;
+    margin: 10px 0 0 0;
     padding: 10px 10px 10px 20px;
+}
+
+.selected-text {
+    background-color: var(--color-secondary);
 }
 
 h5:hover {
