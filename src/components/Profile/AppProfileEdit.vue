@@ -49,7 +49,7 @@ export default {
     },
     computed: {
         openProfile() {
-            // Remove the backdrop after closing the modal
+            // Once the user's been redirected to his profile, the modal's backdrop disappears
             const backdrop = document.querySelector('.modal-backdrop');
             if (backdrop) {
                 backdrop.remove();

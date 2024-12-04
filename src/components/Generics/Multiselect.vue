@@ -14,7 +14,18 @@ export default {
     methods: {
         // Get Specializations through API call
         getSpecializations() {
-
+            axios.get('http://127.0.0.1:8000/api/specializations')
+                .then(response => {
+                    this.options = response.data.specializations;
+                    console.log(response);
+                })
+                .catch(function (error) {
+                    // handle error
+                    console.log(error);
+                })
+                .finally(function () {
+                    // always executed
+                });
         },
 
         //send specializations to AppProfileEdit specializations's Array 
@@ -27,6 +38,9 @@ export default {
         },
 
     },
+    mounted() {
+        this.getSpecializations();
+    }
 }
 
 </script>
