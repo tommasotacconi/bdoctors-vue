@@ -1,5 +1,7 @@
 <script>
 import axios from "axios";
+import Multiselect from "../Generics/Multiselect.vue";
+
 
 export default {
     data() {
@@ -21,21 +23,28 @@ export default {
 
         }
     },
+    components: {
+        Multiselect
+    },
     methods: {
-        updateForm() {
+        // updateForm() {
 
-            axios.post('/user', this.formData)
-                .then((response) => {
-                    console.log(response);
-                    console.log("Updated form");
-                })
-                .catch((error) => {
-                    this.errors = response.result.errors;
-                    console.log(response.result.errors);
-                });
+        //     axios.post('/user', this.formData)
+        //         .then((response) => {
+        //             console.log(response);
+        //             console.log("Updated form");
+        //         })
+        //         .catch((error) => {
+        //             this.errors = response.result.errors;
+        //             console.log(response.result.errors);
+        //         });
 
-            // redirect
-            // this.$router.push({ name: 'routename' })
+        // redirect
+        // this.$router.push({ name: 'routename' })
+        // },
+        updateSpecs(specializations) {
+            this.formData.specialization = specializations;
+            console.log(this.formData.specialization);
         },
     },
     computed: {
@@ -49,22 +58,23 @@ export default {
             this.$router.push('/user/:id');
         }
     },
-
-    mounted() {
-        axios.get(this.apiUrl)
-            .then(function (response) {
-                // handle success
-                console.log(response);
-            })
-            .catch(function (error) {
-                // handle error
-                console.error(error);
-            })
-            .finally(function () {
-                // always executed
-            });
-    }
 }
+
+// mounted() {
+//     axios.get(this.apiUrl)
+//         .then(function (response) {
+//             // handle success
+//             console.log(response);
+//         })
+//         .catch(function (error) {
+//             // handle error
+//             console.error(error);
+//         })
+//         .finally(function () {
+//             // always executed
+//         });
+// }
+// }
 
 </script>
 
@@ -114,6 +124,10 @@ export default {
                         <option value="cardiology">Cardiologia</option>
                         <option value="ophthalmology">Oculistica</option>
                     </select>
+                </div>
+                <div class="mb-3 col-6">
+                    <label for="specialization" class="form-label">Specializzazioni Multiselect</label>
+                    <Multiselect @send-values="updateSpecs" />
                 </div>
                 <div class="mb-3">
                     <label for="services" class="form-label">Prestazioni</label>
