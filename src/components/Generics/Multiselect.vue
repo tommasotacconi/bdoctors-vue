@@ -17,6 +17,7 @@ export default {
 
         },
 
+        //send specializations to AppProfileEdit specializations's Array 
         sendValues() {
             if (this.value.length > 0) {
                 console.log("sendValues works");
@@ -31,6 +32,7 @@ export default {
 </script>
 
 <template>
+    <!--- @update:modelValue: on every change inside specializations array, this will update the parent's array through custom events -->
     <div>
         <VueMultiselect v-model="value" :options="options" :multiple="true" :close-on-select="false"
             :clear-on-select="false" placeholder="Seleziona una o più specializzazioni" :show-labels="true"

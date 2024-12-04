@@ -13,7 +13,7 @@ export default {
                 password: "",
                 phone: "",
                 officeAddress: "",
-                specialization: ["",],
+                specialization: [],
                 services: "",
                 photo: "",
                 curriculum: ""
@@ -115,7 +115,7 @@ export default {
                     <input type="text" class="form-control" id="officeAddress" v-model='formData.officeAddress'
                         required>
                 </div>
-                <div class="mb-3 col-6">
+                <!-- <div class="mb-3 col-6">
                     <label for="specialization" class="form-label">Specializzazioni</label>
                     <select class="form-select" aria-label="Default select example" id="specialization"
                         v-model="formData.specialization" required>
@@ -124,9 +124,9 @@ export default {
                         <option value="cardiology">Cardiologia</option>
                         <option value="ophthalmology">Oculistica</option>
                     </select>
-                </div>
+                </div> -->
                 <div class="mb-3 col-6">
-                    <label for="specialization" class="form-label">Specializzazioni Multiselect</label>
+                    <label for="specialization" class="form-label">Specializzazioni</label>
                     <Multiselect @send-values="updateSpecs" />
                 </div>
                 <div class="mb-3">
