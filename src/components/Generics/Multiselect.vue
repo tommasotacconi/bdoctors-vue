@@ -8,13 +8,14 @@ export default {
         return {
             value: [],
             options: [],
+            apiUrl: "'http://127.0.0.1:8000/api/specializations'"
         }
     },
     components: { VueMultiselect },
     methods: {
         // Get Specializations through API call
         getSpecializations() {
-            axios.get('http://127.0.0.1:8000/api/specializations')
+            axios.get(this.apiUrl)
                 .then(response => {
                     this.options = response.data.specializations;
                     console.log(response);
