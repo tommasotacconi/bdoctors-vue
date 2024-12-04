@@ -10,10 +10,23 @@ export default {
 
 <template>
     <main class="container">
-        <div class="card-general card-reviews">
-            <div class="card-header-title">
-                <h5 class="title">Recensioni ricevute</h5>
-                <div class="reviews-number"><strong>Totale:</strong> <span class="total-number">5</span></div>
+        <div class="card-reviews-container">
+            <div class="card-general card-reviews">
+                <div class="card-header-title">
+                    <h5 class="title">Recensioni ricevute</h5>
+                    <div class="reviews-number"><strong>Totale:</strong> <span class="total-number">10</span></div>
+                </div>
+                <div class="card-body-list" v-for="(message, index) in 10">
+                    <ul class="list-group list-group-flush list-email" @click="selectMessage(index)">
+                        <li class="list-group-item">E-mail</li>
+                    </ul>
+                    <ul class="list-group list-group-flush list-name" @click="selectMessage(index)">
+                        <li class="list-group-item">Nome e Cognome</li>
+                    </ul>
+                    <ul class="list-group list-group-flush list-preview" @click="selectMessage(index)">
+                        <li class="list-group-item">Preview</li>
+                    </ul>
+                </div>
             </div>
         </div>
         <div class="card-general card-review">
@@ -46,10 +59,11 @@ export default {
 
 <style scoped>
 /* Card reviews */
-.card-general {
+.card-reviews-container {
     border: 3px solid var(--color-complementary);
     border-radius: 20px;
-    padding: 15px;
+    height: 300px;
+    overflow: auto;
 }
 
 .card-header-title {
@@ -76,10 +90,35 @@ export default {
     font-weight: bold;
 }
 
+.card-body-list {
+    display: flex;
+    padding: 0 15px;
+}
+
+.list-email {
+    flex-basis: 20%;
+    border-right: 3px dashed var(--color-secondary);
+    border-bottom: 3px solid var(--color-secondary);
+}
+
+.list-name {
+    flex-basis: 20%;
+    border-right: 3px dashed var(--color-secondary);
+    border-bottom: 3px solid var(--color-secondary);
+}
+
+.list-preview {
+    flex-basis: 60%;
+    border-bottom: 3px solid var(--color-secondary);
+}
+
 
 /* Card review */
 .card-review {
     margin-top: 40px;
+    border: 3px solid var(--color-complementary);
+    border-radius: 20px;
+    padding: 15px;
 }
 
 .title-star {

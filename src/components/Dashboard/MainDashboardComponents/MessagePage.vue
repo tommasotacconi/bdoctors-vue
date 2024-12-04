@@ -22,7 +22,7 @@ export default {
                 <div class="card-inbox">
                     <div class="card-header-title">
                         <h5 class="title">Messaggi arrivati</h5>
-                        <div class="messages-number"><strong>Totale:</strong> <span class="total-number">5</span></div>
+                        <div class="messages-number"><strong>Totale:</strong> <span class="total-number">10</span></div>
                     </div>
                     <div class="card-body-list" v-for="(message, index) in 10">
                         <ul class="list-group list-group-flush list-email" @click="selectMessage(index)">
@@ -67,7 +67,7 @@ export default {
 .card-inbox {
     border: 3px solid var(--color-complementary);
     border-radius: 20px;
-    height: 250px;
+    height: 300px;
     overflow: auto;
 }
 
