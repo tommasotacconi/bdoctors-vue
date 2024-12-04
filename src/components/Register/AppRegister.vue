@@ -14,30 +14,48 @@ export default {
 		}
 	},
 	methods: {
-			sendRegisterData() {
-				axios.post('http://127.0.0.1:8000/api/register', {
-					firstName: this.firstName,
-					lastName: this.lastName,
-					homeAddress: this.homeAddress,
-					specializations: this.specializations,
-					email: this.inputEmail,
-					password: this.inputPassword
-				})
-				.then(response => {
-					console.log(response);
-					this.responseStatus = true;
-				})
-				.catch(function (error) {
-					console.log(error);
-				});
-			},
+		checkForm() {
+			if(this.firstName && this.lastName && this.homeAddress && this.specializations && this.email && this.password) return true;
+      this.errors = [];
+      if(!this.firstName) this.errors.push("Il nome è vuoto.");
+      if(this.firstName < 2 || this.firstName > 50) this.errors.push("Il nome può essere composto da 2 a 50 caratteri.");
+      if(!this.lastName) this.errors.push("Il cognome è vuoto.");
+      if(this.lastName < 2 || this.lastName > 50) this.errors.push("Il cognome può essere composto da 2 a 50 caratteri.");
+      if(!this.homeAddress) this.errors.push("L'indirizzo di residenza è vuoto");
+      if(this.homeAddress < 3 || this.home_address > 100) this.errors.push("L'indirizzo di residenza può essere composto da 3 a 100 caratteri.");
+      if(!this.specializations) this.errors.push("Selezionare almeno una specializzazione");
+      if(!this.email) this.errors.push("La email è vuota");
+      if(this.email < 2 || this.email > 50) this.errors.push("La email può essere composta da 6 a 50 caratteri.");
+      if(!this.password) this.errors.push("La password è vuota");
+      if(this.password < 2) this.errors.push("La password può essere composta da minimo 8 caratteri.");
+			return false
+		},
+		sendRegistrationData() {
+			// Run the validation to control if it can move forward
+			if (!this.checkForm()) return
+			axios.post('http://127.0.0.1:8000/api/register', {
+				firstName: this.firstName,
+				lastName: this.lastName,
+				homeAddress: this.homeAddress,
+				specializations: this.specializations,
+				email: this.inputEmail,
+				password: this.inputPassword
+			})
+			.then(response => {
+				console.log(response);
+				this.responseStatus = true;
+			})
+			.catch(function (error) {
+				console.log(error);
+			});
+		},
 	}
 }
 </script>
 
 <template>
 	<!-- Register form -->
-	<form class="" action="post" @submit.prevent="sendLoginData">
+	<form class="" action="post" @submit.prevent="sendRegistrationData">
 			<div class="row card register-card" id="login-card">
 				<!-- first_name input -->
 				<div class="col-md-6">
@@ -57,7 +75,9 @@ export default {
 				<!-- specializations input-->
 				 <div class="col-md-12">
 					 <label for="specializations-input" class="badge rounded-pill">Specializzazioni</label>
-					 <select id="specializations-input" class="form-control mb-3" v-model="specializations"></select>
+					 <select id="specializations-input" class="form-select mb-3" v-model="specializations">
+						<option v-for="(specialization, index) in specializations" :key="index">specialization</option>
+					 </select>
 				 </div>
 				<!-- email input -->
 				<div class="col-md-6">
@@ -76,7 +96,6 @@ export default {
 					<!-- reset button -->
 					<button type="reset" class="btn btn-warning mt-5 ms-3" id="reset-button">Pulisci</button>
 					<div class="mt-3" v-if="responseStatus">Dati registrati</div>
-					<div class="mt-3" v-if="responseStatus">Verificare i campi indicati:</div>
 				</div>
 			 </div>
 	</form>
@@ -102,21 +121,22 @@ label {
 	top: 12px;
 }
 
-input {
-	height: 3rem;
+input,
+select {
+	height: 3.5rem;
 	border: 2px solid #65B0FF;
 }
 
 /* Utilities */
 .card {
+	padding-bottom: 20px;
 	background-color: #FFB465;
 	flex-direction: row;
-	padding-bottom: 20px;
 }
 
 .register-card {
 	margin: 0 auto;
-	width: 80vw;
+	width: 600px;
 }
 
 #register-button {
