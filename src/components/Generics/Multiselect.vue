@@ -7,7 +7,7 @@ export default {
     data() {
         return {
             value: [],
-            options: ['Chirurgia', 'Cardiologia', 'Medicina Generale', 'Ginecologia', 'Urologia'],
+            options: [],
         }
     },
     components: { VueMultiselect },
@@ -22,9 +22,6 @@ export default {
                 .catch(function (error) {
                     // handle error
                     console.log(error);
-                })
-                .finally(function () {
-                    // always executed
                 });
         },
 
@@ -35,6 +32,10 @@ export default {
                 console.log(this.value);
                 this.$emit('send-values', this.value)
             }
+        },
+        // method to show only the specialization name as options (multiselect)
+        nameOnly({ name }) {
+            return `${name}`
         },
 
     },
@@ -50,7 +51,7 @@ export default {
     <div>
         <VueMultiselect v-model="value" :options="options" :multiple="true" :close-on-select="false"
             :clear-on-select="false" placeholder="Seleziona una o più specializzazioni" :show-labels="true"
-            @update:modelValue="sendValues">
+            @update:modelValue="sendValues" :custom-label="nameOnly">
         </VueMultiselect>
     </div>
 </template>
