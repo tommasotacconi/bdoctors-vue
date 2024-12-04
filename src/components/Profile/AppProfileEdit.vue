@@ -1,5 +1,7 @@
 <script>
 import axios from "axios";
+import Multiselect from "../Generics/Multiselect.vue";
+
 
 export default {
     data() {
@@ -11,7 +13,7 @@ export default {
                 password: "",
                 phone: "",
                 officeAddress: "",
-                specialization: ["",],
+                specialization: [],
                 services: "",
                 photo: "",
                 curriculum: ""
@@ -21,44 +23,66 @@ export default {
 
         }
     },
+    components: {
+        Multiselect
+    },
     methods: {
-        updateForm() {
+        // updateForm() {
 
-            axios.post('/user', this.formData)
-                .then((response) => {
-                    console.log(response);
-                    console.log("Updated form");
-                })
-                .catch((error) => {
-                    this.errors = response.result.errors;
-                    console.log(response.result.errors);
-                });
-            // redirect
-            // this.$router.push({ name: 'routename' })
+        //     axios.post('/user', this.formData)
+        //         .then((response) => {
+        //             console.log(response);
+        //             console.log("Updated form");
+        //         })
+        //         .catch((error) => {
+        //             this.errors = response.result.errors;
+        //             console.log(response.result.errors);
+        //         });
+
+        // redirect
+        // this.$router.push({ name: 'routename' })
+        // },
+        updateSpecs(specializations) {
+            this.formData.specialization = specializations;
+            console.log(this.formData.specialization);
         },
     },
-    mounted() {
-        axios.get(this.apiUrl)
-            .then(function (response) {
-                // handle success
-                console.log(response);
-            })
-            .catch(function (error) {
-                // handle error
-                console.error(error);
-            })
-            .finally(function () {
-                // always executed
-            });
-    }
+    computed: {
+        openProfile() {
+            // Once the user's been redirected to his profile, the modal's backdrop disappears
+            const backdrop = document.querySelector('.modal-backdrop');
+            if (backdrop) {
+                backdrop.remove();
+            }
+            // redirect to user profile
+            this.$router.push('/user/:id');
+        }
+    },
 }
+
+// mounted() {
+//     axios.get(this.apiUrl)
+//         .then(function (response) {
+//             // handle success
+//             console.log(response);
+//         })
+//         .catch(function (error) {
+//             // handle error
+//             console.error(error);
+//         })
+//         .finally(function () {
+//             // always executed
+//         });
+// }
+// }
+
 </script>
 
 <template>
     <div class="container py-3">
         <h1 class="text-center">Modifica le tue informazioni</h1>
 
-        <form action="" method="PUT" @submit="updateForm" novalidate="true">
+        <form action="" method="PUT" @submit.prevent="updateForm" novalidate="true">
 
             <div v-if="errors.length" class="bg-subtle-danger" id="errors">
                 <ul>
@@ -91,7 +115,7 @@ export default {
                     <input type="text" class="form-control" id="officeAddress" v-model='formData.officeAddress'
                         required>
                 </div>
-                <div class="mb-3 col-6">
+                <!-- <div class="mb-3 col-6">
                     <label for="specialization" class="form-label">Specializzazioni</label>
                     <select class="form-select" aria-label="Default select example" id="specialization"
                         v-model="formData.specialization" required>
@@ -100,6 +124,10 @@ export default {
                         <option value="cardiology">Cardiologia</option>
                         <option value="ophthalmology">Oculistica</option>
                     </select>
+                </div> -->
+                <div class="mb-3 col-6">
+                    <label for="specialization" class="form-label">Specializzazioni</label>
+                    <Multiselect @send-values="updateSpecs" />
                 </div>
                 <div class="mb-3">
                     <label for="services" class="form-label">Prestazioni</label>
@@ -116,12 +144,34 @@ export default {
                         v-model="formData.curriculum" required>
                 </div>
                 <div class="mb-3">
-                    <button type="submit" class="btn me-2 btn-submit">Modifica</button>
+                    <button type="submit" class="btn me-2 btn-submit" data-bs-toggle="modal"
+                        data-bs-target="#modal">Modifica</button>
                     <button type="reset" class="btn btn-reset">Reset</button>
+                </div>
+
+                <!-- Modal -->
+                <div class="modal fade" id="modal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                I tuoi dati sono stati aggiornati.
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-primary" @click="openProfile">
+                                    Torna al profilo
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </form>
     </div>
+
 </template>
 
 <style scoped lang="scss">
