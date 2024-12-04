@@ -22,19 +22,19 @@ export default {
                         <div class="card-body-general">
                             <div class="card-body">
                                 <h5 class="card-title">Nome medico</h5>
-                                <p class="card-text">
-                                <ul>
-                                    <li>
-                                        <strong>Specializzazione:</strong> Cardiologia / Neurologia
-                                    </li>
-                                    <li>
-                                        <strong>Indirizzo:</strong> Via Boolean 15, Caltanisetta
-                                    </li>
-                                    <li>
-                                        <strong>Telefono:</strong> 338451523
-                                    </li>
-                                </ul>
-                                </p>
+                                <div class="card-text">
+                                    <ul>
+                                        <li>
+                                            <strong>Specializzazione:</strong> Cardiologia / Neurologia
+                                        </li>
+                                        <li>
+                                            <strong>Indirizzo:</strong> Via Boolean 15, Caltanisetta
+                                        </li>
+                                        <li>
+                                            <strong>Telefono:</strong> 338451523
+                                        </li>
+                                    </ul>
+                                </div>
                                 <a href="#" class="edit-profile">Modifica il tuo profilo</a>
                             </div>
                         </div>
