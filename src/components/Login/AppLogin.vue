@@ -30,15 +30,17 @@ export default {
 <template>
 	<form class="" action="post" @submit.prevent="sendLoginData">
 			<div class="card login-card" id="login-card">
-				 <!-- Name input -->
-				 <label for="name-input" class="badge rounded-pill">Email</label>
-				 <input type="text" id="input-email" class="form-control mb-3" v-model="inputEmail">
-				 <!-- Surname input -->
-				 <label for="name-input" class="badge rounded-pill">Password</label>
-				 <input type="text" id="input-password" class="form-control mb-3" v-model="inputPassword">
-				 <!-- Button wrappers -->
-				 <button type="submit" class="btn btn-primary mt-5" id="login-button">Login</button>
-				 <div class="mt-3" v-if="responseStatus">Accesso effettuato</div>
+				<!-- Email input -->
+				<label for="email-input" class="badge rounded-pill">Email</label>
+				<input type="text" id="email-input" class="form-control mb-3" v-model="inputEmail">
+				<!-- Password input -->
+				<label for="password-input" class="badge rounded-pill">Password</label>
+				<input type="text" id="password-input" class="form-control mb-3" v-model="inputPassword">
+				<!-- Button wrappers -->
+				<div class="buttons-wrapper">
+					<button type="submit" class="btn btn-primary mt-5" id="login-button">Login</button>
+					<div class="mt-3" v-if="responseStatus">Accesso effettuato</div>
+				</div>
 			 </div>
 	</form>
 </template>
