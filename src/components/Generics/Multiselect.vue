@@ -8,7 +8,7 @@ export default {
         return {
             value: [],
             options: [],
-            apiUrl: "'http://127.0.0.1:8000/api/specializations'"
+            apiUrl: "http://127.0.0.1:8000/api/specializations"
         }
     },
     components: { VueMultiselect },
