@@ -4,7 +4,7 @@ import axios from 'axios';
 export default {
 	data() {
 		return {
-			errors: [];
+			errors: [],
 			firstName: '',
 			lastName: '',
 			homeAddress: '',
