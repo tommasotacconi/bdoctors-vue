@@ -1,5 +1,6 @@
 <script>
 import axios from 'axios';
+import Multiselect from "../Generics/Multiselect.vue";
 
 export default {
 	data() {
@@ -15,6 +16,10 @@ export default {
 		}
 	},
 	methods: {
+		updateSpecs(specializations) {
+			this.specializations = specializations;
+			console.log(this.specializations);
+		},
 		checkForm() {
 			if(this.firstName && this.lastName && this.homeAddress && this.specializations && this.email && this.password) return true;
       this.errors = [];
@@ -35,21 +40,35 @@ export default {
 			// Run the validation to control if it can move forward
 			if (!this.checkForm()) return
 			axios.post('http://127.0.0.1:8000/api/register', {
-				firstName: this.firstName,
-				lastName: this.lastName,
-				homeAddress: this.homeAddress,
-				specializations: this.specializations,
+				first_name: this.firstName,
+				last_name: this.lastName,
+				home_address: this.homeAddress,
+				specialization: this.specializations,
 				email: this.inputEmail,
 				password: this.inputPassword
 			})
 			.then(response => {
 				console.log(response);
 				this.responseStatus = true;
+
 			})
 			.catch(function (error) {
 				console.log(error);
 			});
 		},
+	},
+	components: {
+		Multiselect
+	},
+	created: () => {
+		axios.get('http://127.0.0.1:8000/api/register')
+		.then(response => {
+			console.log(response);
+			this.specializations = true;
+		})
+		.catch(function (error) {
+			console.log(error);
+		});
 	}
 }
 </script>
@@ -75,11 +94,9 @@ export default {
 				</div>
 				<!-- specializations input-->
 				 <div class="col-md-12">
-					 <label for="specializations-input" class="badge rounded-pill">Specializzazioni</label>
-					 <select id="specializations-input" class="form-select mb-3" v-model="specializations">
-						<option v-for="(specialization, index) in specializations" :key="index">specialization</option>
-					 </select>
-				 </div>
+					<label for="specializations-input" class="badge rounded-pill">Specializzazioni</label>
+					<Multiselect id="specializations-input" @send-values="updateSpecs" />
+				</div>
 				<!-- email input -->
 				<div class="col-md-6">
 					<label for="email-input" class="badge rounded-pill">Email</label>
@@ -123,7 +140,8 @@ label {
 }
 
 input,
-select {
+select,
+#specializations-input {
 	height: 3.5rem;
 	border: 2px solid #65B0FF;
 }
