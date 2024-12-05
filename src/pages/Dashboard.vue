@@ -15,7 +15,10 @@ export default {
         SidebarDashboard,
         HeaderDashboard,
         MainDashboard,
-    }
+    },
+		created: function () {
+			this.store.informationPageId = this.$route.params.id
+		}
 }
 </script>
 

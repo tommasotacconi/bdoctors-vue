@@ -1,10 +1,29 @@
 <script>
-export default {
-    data() {
-        return {
+import axios from 'axios';
+import { store } from '../../../../js/store.js';
 
-        }
-    }
+export default {
+	data() {
+			return {
+				profileData: {},
+				store,
+			}
+	},
+	methods: {
+		getProfileData() {
+			axios.get(this.store.apiUri + 'profiles/' + this.store.informationPageId)
+			.then(response => {
+				console.log(response);
+				this.profileData = response.data.data;
+			})
+			.catch(function (error) {
+				console.log(error);
+			});
+		},
+	},
+	created: function () {
+		this.getProfileData();
+	}
 }
 </script>
 
@@ -13,7 +32,7 @@ export default {
         <div class="general-main">
             <h2>Profilo</h2>
             <section class="card-general">
-                <div class="card mb-3">
+                <div class="card mb-3" v-if="Object.keys(profileData).length">
                     <div class="card-flex">
                         <div class="img-doctor">
                             <img src="https://media.istockphoto.com/id/1340883379/photo/young-doctor-hospital-medical-medicine-health-care-clinic-office-portrait-glasses-man.jpg?s=612x612&w=0&k=20&c=_H4VUPBkS0gEj5ZdZzQo-Hw3lMuyofJpB-P9yS92Wyw="
@@ -21,17 +40,17 @@ export default {
                         </div>
                         <div class="card-body-general">
                             <div class="card-body">
-                                <h5 class="card-title">Nome medico</h5>
+                                <h5 class="card-title">{{ profileData.doctor.first_name }} {{ profileData.doctor.last_name }}</h5>
                                 <div class="card-text">
                                     <ul>
                                         <li>
-                                            <strong>Specializzazione:</strong> Cardiologia / Neurologia
+                                            <strong>Specializzazione:</strong> {{ profileData.doctor.specializations[0].name }}
                                         </li>
                                         <li>
-                                            <strong>Indirizzo:</strong> Via Boolean 15, Caltanisetta
+                                            <strong>Indirizzo:</strong> {{ profileData.office_address }}
                                         </li>
                                         <li>
-                                            <strong>Telefono:</strong> 338451523
+                                            <strong>Telefono:</strong> {{ profileData.phone }}
                                         </li>
                                     </ul>
                                 </div>
