@@ -82,11 +82,9 @@ export default {
                 </div>
                 <div class="card mb-3" v-else>
                     <div class="card-create">
-                        <div class="section-card-create">
-                            <div class="plus"><i class="fa-solid fa-plus"></i></div>
-                            <div class="create-profile-text">
-                                Il tuo profilo sembra essere vuoto... che ne dici di mettere qualche informazione?
-                            </div>
+                        <div class="plus"><i class="fa-solid fa-plus"></i></div>
+                        <div class="create-profile-text">
+                            Il tuo profilo sembra essere un po' vuoto... che ne dici di aggiungerci qualcosa?
                         </div>
                     </div>
                 </div>
@@ -192,19 +190,26 @@ ul {
 /* Card create */
 .card-create {
     padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
 }
 
 .plus {
-    border: 1px solid var(--color-secondary);
+    border: 1px solid white;
     border-radius: 20px;
     display: inline;
     padding: 10px 15px;
+    color: lightgray;
+    background-color: white;
+    width: 60px;
 }
 
-.plus,
 .create-profile-text {
-    margin: 20px 0;
+    opacity: 0.5;
 }
+
 
 /* Responsive */
 @media only screen and (max-width: 1300px) {
