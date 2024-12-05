@@ -7,12 +7,8 @@ import ProfileEdit from '../src/pages/ProfileEdit.vue'
 
 const routes = [
     { path: '/', component: Homepage, name: 'homepage' },
-<<<<<<< HEAD
     { path: '/user/login', component: LoginPage, name: 'login' },
-=======
-    { path: '/Login', component: LoginPage, name: 'Login' },
     { path: '/user/register', component: RegisterPage, name: 'register' },
->>>>>>> dev
     { path: '/user/:id', component: Dashboard, name: 'dashboard' },
     { path: '/user/:id/profile-edit', component: ProfileEdit, name: 'profile-edit' },
 ]
