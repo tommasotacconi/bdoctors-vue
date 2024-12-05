@@ -57,4 +57,8 @@ export default {
     </div>
 </template>
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
-<style scoped></style>
+<style scoped lang="scss">
+.invalid-input {
+    border-color: red;
+}
+</style>
