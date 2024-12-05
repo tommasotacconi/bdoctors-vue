@@ -12,6 +12,7 @@ export default {
 			specializations: [],
 		  email: '',
 			password: '',
+			passwordConfirmation: '',
 			responseStatus: false,
 		}
 	},
@@ -43,9 +44,10 @@ export default {
 				first_name: this.firstName,
 				last_name: this.lastName,
 				home_address: this.homeAddress,
-				specialization: this.specializations,
-				email: this.inputEmail,
-				password: this.inputPassword
+				specialization_id: this.specializations[0].id,
+				email: this.email,
+				password: this.password,
+				password_confirmation: this.passwordConfirmation
 			})
 			.then(response => {
 				console.log(response);
@@ -83,24 +85,29 @@ export default {
 					<input type="text" id="home-address-input" class="form-control mb-3" v-model="homeAddress">
 				</div>
 				<!-- specializations input-->
-				 <div class="col-md-12">
+				 <div id="select-container" class="col-md-12">
 					<label for="specializations-input" class="badge rounded-pill">Specializzazioni</label>
 					<Multiselect id="specializations-input" @send-values="updateSpecs" />
 				</div>
 				<!-- email input -->
-				<div class="col-md-6">
+				<div class="col-md-12">
 					<label for="email-input" class="badge rounded-pill">Email</label>
 					<input type="text" id="email-input" class="form-control mb-3" v-model="email">
 				</div>
 				<!-- password input -->
-				<div class="col-md-6">
+				<div class="col-md-12">
 					<label for="password-input" class="badge rounded-pill">Password</label>
 					<input type="text" id="password-input" class="form-control mb-3" v-model="password">
+				</div>
+				<!-- confirm password input -->
+				<div class="col-md-12">
+					<label for="password-confirmation-input" class="badge rounded-pill">Conferma password</label>
+					<input type="text" id="password-confirmation-input" class="form-control mb-3" v-model="passwordConfirmation">
 				</div>
 				<!-- Button wrappers -->
 				<div class="buttons-wrapper">
 					<!-- register button -->
-					<button type="submit" class="btn btn-primary mt-5" id="register-button">Register</button>
+					<button type="submit" class="btn btn-primary mt-5" id="register-button">Registrati</button>
 					<!-- reset button -->
 					<button type="reset" class="btn btn-warning mt-5 ms-3" id="reset-button">Pulisci</button>
 					<div class="mt-3" v-if="responseStatus">Dati registrati</div>
@@ -112,6 +119,7 @@ export default {
 <style scoped>
 /* Generics */
 form {
+	min-height: 900px;
 	height: calc(100vh - 80px);
 	display: flex;
 	align-items: center;
@@ -130,11 +138,12 @@ label {
 }
 
 input,
-select,
-#specializations-input {
+select {
 	height: 3.5rem;
 	border: 2px solid #65B0FF;
 }
+
+
 
 /* Utilities */
 .card {
@@ -146,6 +155,22 @@ select,
 .register-card {
 	margin: 0 auto;
 	width: 600px;
+}
+
+div#select-container {
+	height: 10rem;
+	overflow: clip;
+	overflow-clip-margin: 190px;
+
+	label {
+	position: relative;
+	z-index: 1;
+	}
+	
+	#specializations-input {
+		border: 2px solid #65B0FF;
+		border-radius: 7px;
+	}
 }
 
 #register-button {
