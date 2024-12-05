@@ -61,10 +61,10 @@ export default {
             let filename = files[0].name
             const fileReader = new FileReader()
             fileReader.addEventListener('load', () => {
-                this.imageUrl = fileReader.result
+                this.photoUrl = fileReader.result
             })
             fileReader.readAsDataURL(files[0])
-            this.photo = files[0]
+            this.photo = files[0];
         },
 
 
@@ -122,7 +122,7 @@ export default {
             <div class="mb-3">
                 <label for="photo" class="form-label">Foto profilo</label>
                 <input type="file" class="form-control" :class="errors.photo && 'invalid-input'" id="photo"
-                    placeholder="Inserisci un file valido" @change="formData.photo" required>
+                    placeholder="Inserisci un file valido" @change="onFilePicked" required>
                 <div class="invalid" v-if="errors.photo">
                     <p> {{ errors.photo }} </p>
                 </div>
@@ -131,7 +131,7 @@ export default {
                 <label for="curriculum" class="form-label">Curriculum
                     Vitae</label>
                 <input type="file" class="form-control" :class="errors.curriculum && 'invalid-input'" id="curriculum"
-                    placeholder="Inserisci un file valido" @change="formData.curriculum" required>
+                    placeholder="Inserisci un file valido" @change="onFilePicked" required>
                 <div class="invalid" v-if="errors.curriculum">
                     <p> {{ errors.curriculum }} </p>
                 </div>

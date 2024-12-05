@@ -59,12 +59,12 @@ export default {
             if (!this.formData.firstname) {
                 this.errors.firstname = 'Il nome è obbligatorio.';
             } else if (this.formData.firstname.length <= 2) {
-                this.errors.firstname = 'Il nome deve contenere almeno 2 caratteri.';
+                this.errors.firstname = 'Il nome deve contenere almeno 3 caratteri.';
             };
             if (!this.formData.lastname) {
                 this.errors.lastname = "Il cognome è obbligatorio."
             } else if (this.formData.lastname.length <= 2) {
-                this.errors.lastname = "Il cognome deve contenere almeno 2 caratteri."
+                this.errors.lastname = "Il cognome deve contenere almeno 3 caratteri."
             };
             if (!this.formData.email) {
                 this.errors.email = "L'email è obbligatoria.";
@@ -155,7 +155,7 @@ export default {
 
             <div class="mb-3 col-4">
                 <label for="firstname" class="form-label">Nome</label>
-                <input type="text" class="form-control" :class="errors.firstname && 'invalid-input'" id="firstname"
+                <input type="text" class="form-control" :class="{ 'invalid-input': errors.firstname }" id="firstname"
                     v-model="formData.firstname" required>
                 <div class="invalid" v-if="errors.firstname">
                     <p> {{ errors.firstname }} </p>
@@ -163,7 +163,7 @@ export default {
             </div>
             <div class="mb-3 col-4">
                 <label for="lastname" class="form-label">Cognome</label>
-                <input type="text" class="form-control" :class="errors.lastname && 'invalid-input'" id="lastname"
+                <input type="text" class="form-control" :class="{ 'invalid-input': errors.lastname }" id="lastname"
                     v-model="formData.lastname" required>
                 <div class="invalid" v-if="errors.lastname">
                     <p> {{ errors.lastname }} </p>
@@ -171,7 +171,7 @@ export default {
             </div>
             <div class="mb-3 col-4">
                 <label for="email" class="form-label">Email</label>
-                <input type="email" class="form-control" :class="errors.email && 'invalid-input'" id="email"
+                <input type="email" class="form-control" :class="{ 'invalid-input': errors.email }" id="email"
                     v-model="formData.email" required>
                 <div class="invalid" v-if="errors.email">
                     <p> {{ errors.email }} </p>
@@ -179,7 +179,7 @@ export default {
             </div>
             <div class="mb-3 col-6">
                 <label for="password" class="form-label">Password</label>
-                <input type="password" class="form-control" :class="errors.password && 'invalid-input'" id="password"
+                <input type="password" class="form-control" :class="{ 'invalid-input': errors.password }" id="password"
                     v-model="formData.password" required>
                 <div class="invalid" v-if="errors.password">
                     <p> {{ errors.password }} </p>
@@ -187,7 +187,7 @@ export default {
             </div>
             <div class="mb-3 col-6">
                 <label for="phone" class="form-label">Telefono</label>
-                <input type="tel" class="form-control" :class="errors.phone && 'invalid-input'" id="phone"
+                <input type="tel" class="form-control" :class="{ 'invalid-input': errors.phone }" id="phone"
                     v-model="formData.phone" required>
                 <div class="invalid" v-if="errors.phone">
                     <p> {{ errors.phone }} </p>
@@ -195,7 +195,7 @@ export default {
             </div>
             <div class="mb-3 col-6">
                 <label for="officeAddress" class="form-label">Indirizzo</label>
-                <input type="text" class="form-control" :class="errors.officeAddress && 'invalid-input'"
+                <input type="text" class="form-control" :class="{ 'invalid-input': errors.officeAddress }"
                     id="officeAddress" v-model='formData.officeAddress' required>
                 <div class="invalid" v-if="errors.officeAddress">
                     <p> {{ errors.officeAddress }} </p>
@@ -217,7 +217,7 @@ export default {
             </div>
             <div class="mb-3">
                 <label for="services" class="form-label">Prestazioni</label>
-                <textarea class="form-control" :class="errors.services && 'invalid-input'" id="services"
+                <textarea class="form-control" :class="{ 'invalid-input': errors.services }" id="services"
                     v-model="formData.services" required></textarea>
                 <div class="invalid" v-if="errors.services">
                     <p> {{ errors.services }} </p>
@@ -225,7 +225,7 @@ export default {
             </div>
             <div class="mb-3">
                 <label for="photo" class="form-label">Foto profilo</label>
-                <input type="file" class="form-control" :class="errors.photo && 'invalid-input'" id="photo"
+                <input type="file" class="form-control" :class="{ 'invalid-input': errors.photo }" id="photo"
                     placeholder="Inserisci un file valido" @change="formData.photo" required>
                 <div class="invalid" v-if="errors.photo">
                     <p> {{ errors.photo }} </p>
@@ -234,7 +234,7 @@ export default {
             <div class="mb-3">
                 <label for="curriculum" class="form-label">Curriculum
                     Vitae</label>
-                <input type="file" class="form-control" :class="errors.curriculum && 'invalid-input'" id="curriculum"
+                <input type="file" class="form-control" :class="{ 'invalid-input': errors.curriculum }" id="curriculum"
                     placeholder="Inserisci un file valido" @change="formData.curriculum" required>
                 <div class="invalid" v-if="errors.curriculum">
                     <p> {{ errors.curriculum }} </p>
