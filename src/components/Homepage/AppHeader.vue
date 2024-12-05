@@ -46,12 +46,12 @@ export default {
                     </div>
                 </div>
             </section>
-            <navbar class="right-header d-flex" v-if="!$route.params.id">
+            <div class="right-header d-flex" v-if="!$route.params.id">
                 <routerLink :to="{ name: 'register' }"><button class="button-logup"> Registrati</button></routerLink>
                 <routerLink :to="{ name: 'login' }"><button class="button-login"><i
                             class="fa-solid fa-user-doctor"></i>Login</button></routerLink>
-            </navbar>
-            <navbar class="right-header d-flex" v-if="$route.params.id">
+            </div>
+            <div class="right-header d-flex" v-if="$route.params.id">
                 <div class="user">
                     <div class="logout" v-if="logout">
                         <router-link style="text-decoration: none; color: inherit;" to="/"><span
@@ -59,7 +59,7 @@ export default {
                     </div>
                     <i class="fa-solid fa-user" @click="showLogout"></i>
                 </div>
-            </navbar>
+            </div>
         </div>
     </header>
 </template>
