@@ -82,7 +82,9 @@ export default {
                 </div>
                 <div class="card mb-3" v-else>
                     <div class="card-create">
-                        <div class="plus"><i class="fa-solid fa-plus"></i></div>
+                        <routerLink :to="{ name: 'create' }">
+                            <div class="plus"><i class="fa-solid fa-plus"></i></div>
+                        </routerLink>
                         <div class="create-profile-text">
                             Il tuo profilo sembra essere un po' vuoto... che ne dici di aggiungerci qualcosa?
                         </div>
@@ -189,7 +191,7 @@ ul {
 
 /* Card create */
 .card-create {
-    padding: 20px;
+    padding: 30px 20px;
     display: flex;
     flex-direction: column;
     gap: 20px;
