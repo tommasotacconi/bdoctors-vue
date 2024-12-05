@@ -228,9 +228,9 @@ ul {
     opacity: 0.5;
 }
 
-
+/* Old loader, classic */
 /* Loader */
-.loader {
+/* .loader {
     width: 50px;
     aspect-ratio: 1;
     border-radius: 50%;
@@ -247,7 +247,42 @@ ul {
         transform: rotate(.5turn)
     }
 }
+*/
 
+/* Loader progressive */
+.loader {
+    --r1: 154%;
+    --r2: 68.5%;
+    width: 60px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background:
+        radial-gradient(var(--r1) var(--r2) at top, #0000 79.5%, var(--color-secondary) 80%),
+        radial-gradient(var(--r1) var(--r2) at bottom, var(--color-secondary) 79.5%, #0000 80%),
+        radial-gradient(var(--r1) var(--r2) at top, #0000 79.5%, var(--color-secondary) 80%),
+        #ccc;
+    background-size: 50.5% 220%;
+    background-position: -100% 0%, 0% 0%, 100% 0%;
+    background-repeat: no-repeat;
+    animation: l9 2s infinite linear;
+    position: absolute;
+    top: 50%;
+    left: 59%;
+}
+
+@keyframes l9 {
+    33% {
+        background-position: 0% 33%, 100% 33%, 200% 33%
+    }
+
+    66% {
+        background-position: -100% 66%, 0% 66%, 100% 66%
+    }
+
+    100% {
+        background-position: 0% 100%, 100% 100%, 200% 100%
+    }
+}
 
 /* Responsive */
 @media only screen and (max-width: 1300px) {
