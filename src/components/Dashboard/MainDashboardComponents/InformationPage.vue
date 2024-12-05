@@ -75,7 +75,8 @@ export default {
                                         </li>
                                     </ul>
                                 </div>
-                                <a href="#" class="edit-profile">Modifica il tuo profilo</a>
+                                <routerLink :to="{ name: 'edit' }"><button href="#" class="edit-profile">Modifica il tuo
+                                        profilo</button></routerLink>
                             </div>
                         </div>
                     </div>
