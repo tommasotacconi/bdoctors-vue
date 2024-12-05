@@ -29,23 +29,27 @@ export default {
 
 <template>
 	<form class="" action="post" @submit.prevent="sendLoginData">
-			<div class="card login-card" id="login-card">
+		<div class="card login-card row" id="login-card">
+			<div class="col-12">
 				<!-- Email input -->
 				<label for="email-input" class="badge rounded-pill">Email</label>
 				<input type="text" id="email-input" class="form-control mb-3" v-model="inputEmail">
+			</div>
+			<div class="col-12">
 				<!-- Password input -->
 				<label for="password-input" class="badge rounded-pill">Password</label>
 				<input type="text" id="password-input" class="form-control mb-3" v-model="inputPassword">
-				<!-- Button wrappers -->
-				<div class="buttons-wrapper">
-					<button type="submit" class="btn btn-primary mt-5" id="login-button">Login</button>
-					<div class="mt-3" v-if="responseStatus">Accesso effettuato</div>
-				</div>
-			 </div>
+			</div>
+			<!-- Button wrappers -->
+			<div class="buttons-wrapper col-12">
+				<button type="submit" class="btn btn-primary mt-4 mb-3" id="login-button">Login</button>
+				<div class="mt-3" v-if="responseStatus">Accesso effettuato</div>
+			</div>
+		</div>
 	</form>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 form {
 	height: calc(100vh - 80px);
 	display: flex;
@@ -53,8 +57,6 @@ form {
 }
 
 .card {
-	padding: 20px 25px;
-
 	background-color: #FFB465;
 }
 
@@ -81,6 +83,11 @@ input {
 }
 
 #login-button {
+	width: 100%;
 	background-color: #65B0FF;
+
+	&:hover {
+		background-color: #0E395D;
+	}
 }
 </style>
