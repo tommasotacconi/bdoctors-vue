@@ -51,8 +51,8 @@ export default {
     <!--- @update:modelValue: on every change inside specializations array, this will update the parent's array through custom events -->
     <div>
         <VueMultiselect v-model="value" :options="options" :multiple="true" :close-on-select="false"
-            :clear-on-select="false" placeholder="Seleziona una o più specializzazioni" :show-labels="true"
-            @update:modelValue="sendValues" :custom-label="nameOnly">
+            :clear-on-select="false" track-by="name" placeholder="Seleziona una o più specializzazioni"
+            :show-labels="true" @update:modelValue="sendValues" :custom-label="nameOnly">
         </VueMultiselect>
     </div>
 </template>
