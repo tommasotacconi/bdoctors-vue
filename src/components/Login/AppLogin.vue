@@ -4,25 +4,26 @@ import axios from 'axios';
 export default {
 	data() {
 		return {
-		  inputEmail: '',
+			inputEmail: '',
 			inputPassword: '',
 			responseStatus: false,
 		}
 	},
 	methods: {
-			sendLoginData() {
-				axios.post('http://127.0.0.1:8000/api/login', {
-					email: this.inputEmail,
-					password: this.inputPassword
-				})
+		sendLoginData() {
+			axios.post('http://127.0.0.1:8000/api/login', {
+				email: this.inputEmail,
+				password: this.inputPassword
+			})
 				.then(response => {
 					console.log(response);
 					this.responseStatus = true;
+					this.$router.push({ name: 'dashboard', params: { id: response.data.user.id } })
 				})
 				.catch(function (error) {
 					console.log(error);
 				});
-			},
+		},
 	}
 }
 </script>
@@ -73,7 +74,7 @@ label {
 	color: white;
 
 	position: relative;
-	left: 15px; 
+	left: 15px;
 	top: 12px;
 }
 
