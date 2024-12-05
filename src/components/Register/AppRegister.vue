@@ -30,32 +30,34 @@ export default {
 			this.specializations = specializations;
 			console.log('current specializations', this.specializations);
 		},
-		checkForm() {
-			// Subscribe errors array with an empty one, to be ready for a next validation
+		checkFormValidity() {
+			// Subscribe errors object with an empty one, to be ready for a next validation
 			const allKeys = Object.keys(this.errors);  
-			for (let i = 0; i <= allKeys.length; i++) {
+			for (let i = 0; i < allKeys.length; i++) {
 				this.errors[allKeys[i]] = [];
-			}  
-			this.errors = [];
-      if(!this.firstName) this.errors.firstName.push("Il nome è vuoto.");
-      if(this.firstName.length < 2 || this.firstName > 50) this.errors.firstName.push("Il nome può essere composto da 2 a 50 caratteri.");
-      if(!this.lastName) this.errors.lastName.push("Il cognome è vuoto.");
+			}
+			// const errorsInName = this.errors.firstName;
+      if (!this.firstName) this.errors.firstName.push("Il nome è vuoto.");
+      if (this.firstName.length < 2 || this.firstName > 50) this.errors.firstName.push("Il nome può essere composto da 2 a 50 caratteri.");
+      if (!this.lastName) this.errors.lastName.push("Il cognome è vuoto.");
       if(this.lastName.length < 2 || this.lastName > 50) this.errors.lastName.push("Il cognome può essere composto da 2 a 50 caratteri.");
-      if(!this.homeAddress) this.errors.homeAddress.push("L'indirizzo di residenza è vuoto");
+      if (!this.homeAddress) this.errors.homeAddress.push("L'indirizzo di residenza è vuoto");
       if(this.homeAddress.length < 3 || this.homeAddress > 100) this.errors.homeAddress.push("L'indirizzo di residenza può essere composto da 3 a 100 caratteri.");
-      if(!this.specializations.length) this.errors.specializations.push("Selezionare almeno una specializzazione");
-      if(!this.email) this.errors.email.push("La email è vuota");
-      if(this.email.length < 2 || this.email.length > 50) this.errors.email.push("La email può essere composta da 6 a 50 caratteri.");
-      if(!this.password) this.errors.password.push("La password è vuota");
-      if(this.password.length < 8) this.errors.password.push("La password può essere composta da minimo 8 caratteri.");
-			if(this.password !== this.passwordConfirmation) this.errors.passwordConfirmation.push("Le password non coincidono");
-			// Check if the errors array is still empty
-			if(!this.errors.length) return true;
-			return false
+      if (!this.specializations.length) this.errors.specializations.push("Selezionare almeno una specializzazione");
+      if (!this.email) this.errors.email.push("La email è vuota");
+      if(this.email.length < 6 || this.email.length > 50) this.errors.email.push("La email può essere composta da 6 a 50 caratteri.");
+      if (!this.password) this.errors.password.push("La password è vuota");
+      if (this.password.length < 8) this.errors.password.push("La password può essere composta da minimo 8 caratteri.");
+			if (this.password !== this.passwordConfirmation) this.errors.passwordConfirmation.push("Le password non coincidono");
+			// Check if the errors object is still empty
+			for (let i = 0; i < allKeys.length; i++) {
+				if (this.errors[allKeys[i]].length) return false;
+			}
+			return true
 		},
 		sendRegistrationData() {
 			// Run the validation to control if it can move forward
-			if (!this.checkForm()) return
+			if (!this.checkFormValidity()) return
 			axios.post('http://127.0.0.1:8000/api/register', {
 				first_name: this.firstName,
 				last_name: this.lastName,
@@ -85,45 +87,65 @@ export default {
 <template>
 	<!-- Register form -->
 	<form class="" action="post" @submit.prevent="sendRegistrationData">
-		<div class="row card register-card" id="login-card">
+		<div class="row card register-card was-validated" id="login-card">
 
 			<!-- first_name input -->
 			<div class="col-md-6">
 				<label for="first-name-input" class="badge rounded-pill">Nome</label>
 				<input type="text" id="first-name-input" class="form-control mb-3" v-model="firstName">
-				<div class="invalid-feedback" v-if="errors.firstName">
-					<span v-for="(error, index) in errors.firstName">{{ error }}</span>
+				<div class="invalid-feedback" v-if="errors.firstName.length">
+					<div v-for="(error, index) in errors.firstName" :key="index">{{ error }}</div>
 				</div>
 			</div>
 			<!-- last_name input -->
 			<div class="col-md-6">
 				<label for="last-name-input" class="badge rounded-pill">Cognome</label>
 				<input type="text" id="last-name-input" class="form-control mb-3" v-model="lastName">
+				<div class="invalid-feedback" v-if="errors.lastName.length">
+					<div v-for="(error, index) in errors.lastName" :key="index">{{ error }}</div>
+				</div>
 			</div>
 			<!-- home_address input -->
 			<div class="col-md-12">
 				<label for="home-address-input" class="badge rounded-pill">Indirizzo di residenza</label>
 				<input type="text" id="home-address-input" class="form-control mb-3" v-model="homeAddress">
+				<div class="invalid-feedback" v-if="errors.homeAddress.length">
+					<div v-for="(error, index) in errors.homeAddress" :key="index">{{ error }} </div>
+				</div>
+
 			</div>
 			<!-- specializations with Multiselect component-->
 				<div id="select-container" class="col-md-12">
 				<label for="specializations-input" class="badge rounded-pill">Specializzazioni</label>
 				<Multiselect id="specializations-input" @send-values="updateSpecs" />
+				<div class="invalid-feedback" v-if="errors.specializations.length">
+					<div v-for="(error, index) in errors.specializations" :key="index">{{ error }}</div>
+				</div>
+
 			</div>
 			<!-- email input -->
 			<div class="col-md-12">
 				<label for="email-input" class="badge rounded-pill">Email</label>
 				<input type="text" id="email-input" class="form-control mb-3" v-model="email">
+				<div class="invalid-feedback" v-if="errors.email.length">
+					<div v-for="(error, index) in errors.email" :key="index">{{ error }} </div>
+				</div>
 			</div>
 			<!-- password input -->
 			<div class="col-md-12">
 				<label for="password-input" class="badge rounded-pill">Password</label>
 				<input type="text" id="password-input" class="form-control mb-3" v-model="password">
+				<div class="invalid-feedback" v-if="errors.password.length">
+					<div v-for="(error, index) in errors.password" :key="index">{{ error }}</div>
+				</div>
 			</div>
 			<!-- confirm password input -->
 			<div class="col-md-12">
 				<label for="password-confirmation-input" class="badge rounded-pill">Conferma password</label>
 				<input type="text" id="password-confirmation-input" class="form-control mb-3" v-model="passwordConfirmation">
+				<div class="invalid-feedback" v-if="errors.passwordConfirmation.length">
+					<div v-for="(error, index) in errors.passwordConfirmation" :key="index">{{ error }}</div>
+				</div>
 			</div>
 
 			<!-- Button wrappers -->
