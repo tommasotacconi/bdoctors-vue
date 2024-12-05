@@ -56,6 +56,7 @@ export default {
 				.then(response => {
 					console.log(response);
 					this.responseStatus = true;
+					this.$router.push('/user/login')
 
 				})
 				.catch(function (error) {
