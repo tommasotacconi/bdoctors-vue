@@ -6,7 +6,15 @@ import AppAlert from '../Generics/AppAlert.vue'
 export default {
 	data() {
 		return {
-			errors: [],
+			errors: {
+				firstName: [],
+				lastName: [],
+				homeAddress: [],
+				specializations: [],
+				email: [],
+				password: [],
+				passwordConfirmation: [],
+			},
 			firstName: '',
 			lastName: '',
 			homeAddress: '',
@@ -24,19 +32,23 @@ export default {
 		},
 		checkForm() {
 			// Subscribe errors array with an empty one, to be ready for a next validation
+			const allKeys = Object.keys(this.errors);  
+			for (let i = 0; i <= allKeys.length; i++) {
+				this.errors[allKeys[i]] = [];
+			}  
 			this.errors = [];
-      if(!this.firstName) this.errors.push("Il nome è vuoto.");
-      if(this.firstName.length < 2 || this.firstName > 50) this.errors.push("Il nome può essere composto da 2 a 50 caratteri.");
-      if(!this.lastName) this.errors.push("Il cognome è vuoto.");
-      if(this.lastName.length < 2 || this.lastName > 50) this.errors.push("Il cognome può essere composto da 2 a 50 caratteri.");
-      if(!this.homeAddress) this.errors.push("L'indirizzo di residenza è vuoto");
-      if(this.homeAddress.length < 3 || this.home_address > 100) this.errors.push("L'indirizzo di residenza può essere composto da 3 a 100 caratteri.");
-      if(!this.specializations.length) this.errors.push("Selezionare almeno una specializzazione");
-      if(!this.email) this.errors.push("La email è vuota");
-      if(this.email.length < 2 || this.email > 50) this.errors.push("La email può essere composta da 6 a 50 caratteri.");
-      if(!this.password) this.errors.push("La password è vuota");
-      if(this.password.length < 8) this.errors.push("La password può essere composta da minimo 8 caratteri.");
-			if(this.password !== this.passwordConfirmation) this.errors.push("Le password non coincidono");
+      if(!this.firstName) this.errors.firstName.push("Il nome è vuoto.");
+      if(this.firstName.length < 2 || this.firstName > 50) this.errors.firstName.push("Il nome può essere composto da 2 a 50 caratteri.");
+      if(!this.lastName) this.errors.lastName.push("Il cognome è vuoto.");
+      if(this.lastName.length < 2 || this.lastName > 50) this.errors.lastName.push("Il cognome può essere composto da 2 a 50 caratteri.");
+      if(!this.homeAddress) this.errors.homeAddress.push("L'indirizzo di residenza è vuoto");
+      if(this.homeAddress.length < 3 || this.homeAddress > 100) this.errors.homeAddress.push("L'indirizzo di residenza può essere composto da 3 a 100 caratteri.");
+      if(!this.specializations.length) this.errors.specializations.push("Selezionare almeno una specializzazione");
+      if(!this.email) this.errors.email.push("La email è vuota");
+      if(this.email.length < 2 || this.email.length > 50) this.errors.email.push("La email può essere composta da 6 a 50 caratteri.");
+      if(!this.password) this.errors.password.push("La password è vuota");
+      if(this.password.length < 8) this.errors.password.push("La password può essere composta da minimo 8 caratteri.");
+			if(this.password !== this.passwordConfirmation) this.errors.passwordConfirmation.push("Le password non coincidono");
 			// Check if the errors array is still empty
 			if(!this.errors.length) return true;
 			return false
@@ -79,6 +91,9 @@ export default {
 			<div class="col-md-6">
 				<label for="first-name-input" class="badge rounded-pill">Nome</label>
 				<input type="text" id="first-name-input" class="form-control mb-3" v-model="firstName">
+				<div class="invalid-feedback" v-if="errors.firstName">
+					<span v-for="(error, index) in errors.firstName">{{ error }}</span>
+				</div>
 			</div>
 			<!-- last_name input -->
 			<div class="col-md-6">
