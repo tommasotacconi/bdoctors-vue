@@ -151,14 +151,8 @@ export default {
     <div class="container py-3">
         <h1 class="text-center">Modifica le tue informazioni</h1>
 
-        <form action="" method="PUT" class="needs-validation row py-4 my-4" id="edit-form"
-            @submit.prevent="validateForm" novalidate>
+        <form action="" method="PUT" class="row py-4 my-4" id="edit-form" @submit.prevent="validateForm" novalidate>
 
-            <div v-if="errors.length" class="bg-subtle-danger col-12 mb-4" id="errors">
-                <ul>
-                    <li v-for="error in errors">{{ error }}</li>
-                </ul>
-            </div>
             <div class="mb-3 col-4">
                 <label for="firstname" class="form-label">Nome</label>
                 <input type="text" class="form-control" :class="errors.firstname && 'invalid-input'" id="firstname"
@@ -231,8 +225,8 @@ export default {
             </div>
             <div class="mb-3">
                 <label for="photo" class="form-label">Foto profilo</label>
-                <input type="url" class="form-control" :class="errors.photo && 'invalid-input'" id="photo"
-                    placeholder="Inserisci un URL valido" v-model="formData.photo" required>
+                <input type="file" class="form-control" :class="errors.photo && 'invalid-input'" id="photo"
+                    placeholder="Inserisci un file valido" @change="formData.photo" required>
                 <div class="invalid" v-if="errors.photo">
                     <p> {{ errors.photo }} </p>
                 </div>
@@ -240,8 +234,8 @@ export default {
             <div class="mb-3">
                 <label for="curriculum" class="form-label">Curriculum
                     Vitae</label>
-                <input type="url" class="form-control" :class="errors.curriculum && 'invalid-input'" id="curriculum"
-                    placeholder="Inserisci un URL valido" v-model="formData.curriculum" required>
+                <input type="file" class="form-control" :class="errors.curriculum && 'invalid-input'" id="curriculum"
+                    placeholder="Inserisci un file valido" @change="formData.curriculum" required>
                 <div class="invalid" v-if="errors.curriculum">
                     <p> {{ errors.curriculum }} </p>
                 </div>
