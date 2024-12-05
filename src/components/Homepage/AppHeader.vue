@@ -33,8 +33,9 @@ export default {
                 </div>
             </section>
             <navbar class="right-header d-flex">
-                <button class="button-logup"> Registrati</button>
-                <button class="button-login"><i class="fa-solid fa-user-doctor"></i> Login</button>
+                <routerLink :to="{ name: 'register' }"><button class="button-logup"> Registrati</button></routerLink>
+                <routerLink :to="{ name: 'login' }"><button class="button-login"><i
+                            class="fa-solid fa-user-doctor"></i>Login</button></routerLink>
             </navbar>
         </div>
     </header>
