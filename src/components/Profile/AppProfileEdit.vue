@@ -19,7 +19,18 @@ export default {
                 curriculum: ""
             },
             apiUrl: "",
-            errors: [],
+            errors: {
+                firstname: '',
+                lastname: "",
+                email: "",
+                password: "",
+                phone: "",
+                officeAddress: "",
+                specialization: '',
+                services: "",
+                photo: "",
+                curriculum: ""
+            },
             validated: false,
         }
     },
@@ -46,34 +57,34 @@ export default {
         validateForm() {
             this.errors = [];
             if (!this.formData.firstname) {
-                this.errors.push("Il nome è obbligatorio.")
+                this.errors.firstname = 'Il nome è obbligatorio.';
             } else if (this.formData.firstname.length <= 2) {
-                this.errors.push("Il nome deve contenere almeno 2 caratteri.")
+                this.errors.firstname = 'Il nome deve contenere almeno 2 caratteri.';
             };
             if (!this.formData.lastname) {
-                this.errors.push("Il cognome è obbligatorio.")
+                this.errors.lastname = "Il cognome è obbligatorio."
             } else if (this.formData.lastname.length <= 2) {
-                this.errors.push("Il cognome deve contenere almeno 2 caratteri.")
+                this.errors.lastname = "Il cognome deve contenere almeno 2 caratteri."
             };
             if (!this.formData.email) {
-                this.errors.push("L'email è obbligatoria.");
+                this.errors.email = "L'email è obbligatoria.";
             } else if (!this.validEmail(this.formData.email)) {
-                this.errors.push("L'email inserita non è valida.");
+                this.errors.email = "L'email inserita non è valida.";
             }
-            if (!this.formData.password) { this.errors.push("La password è obbligatoria.") }
-            else if (!this.validPassword(this.formData.password)) { this.errors.push("La password deve contenere almeno una maiuscola, una minuscola ed un numero") };
-            if (!this.formData.phone) { this.errors.push("Il numero di telefono è obbligatorio.") }
-            else if (isNaN(this.formData.phone)) { this.errors.push("Il numero di telefono può contenere solo numeri") };
-            if (!this.formData.officeAddress) this.errors.push("L'indirizzo è obbligatorio.");
-            if (!this.formData.specialization) this.errors.push("Inserire almeno una specializzazione.");
-            if (!this.formData.services) this.errors.push("Inserire almeno una prestazione.");
-            if (!this.formData.photo) this.errors.push("La foto è obbligatoria");
-            if (!this.formData.curriculum) this.errors.push("Il curriculum è obbligatorio.");
+            if (!this.formData.password) { this.errors.password = "La password è obbligatoria." }
+            else if (!this.validPassword(this.formData.password)) { this.errors.password = "La password deve contenere almeno una maiuscola, una minuscola ed un numero" };
+            if (!this.formData.phone) { this.errors.phone = "Il numero di telefono è obbligatorio." }
+            else if (isNaN(this.formData.phone)) { this.errors.phone = "Il numero di telefono può contenere solo numeri" };
+            if (!this.formData.officeAddress) this.errors.officeAddress = "L'indirizzo è obbligatorio.";
+            if (!this.formData.specialization) this.errors.specialization = "Inserire almeno una specializzazione.";
+            if (!this.formData.services) this.errors.services = "Inserire almeno una prestazione.";
+            if (!this.formData.photo) this.errors.photo = "La foto è obbligatoria";
+            if (!this.formData.curriculum) this.errors.curriculum = "Il curriculum è obbligatorio.";
 
             if (!this.errors.length) {
                 this.validated = true;
                 return true;
-            };
+            }
             console.log(this.formData);
             console.log(this.errors);
         },
@@ -105,18 +116,18 @@ export default {
             console.log(this.formData.specialization);
         },
     },
+    computed: {
+        openProfile() {
+            // Once the user's been redirected to his profile, the modal's backdrop disappears
+            // const backdrop = document.querySelector('.modal-backdrop');
+            // if (backdrop) {
+            //     backdrop.remove();
+            // }
+            // redirect to user profile
+            this.$router.push('/user/:id');
+        }
+    },
 }
-// computed: {
-//     openProfile() {
-//         // Once the user's been redirected to his profile, the modal's backdrop disappears
-//         const backdrop = document.querySelector('.modal-backdrop');
-//         if (backdrop) {
-//             backdrop.remove();
-//         }
-//         // redirect to user profile
-//         this.$router.push('/user/:id');
-//     }
-// },
 
 // mounted() {
 //     axios.get(this.apiUrl)
@@ -140,39 +151,63 @@ export default {
     <div class="container py-3">
         <h1 class="text-center">Modifica le tue informazioni</h1>
 
-        <form action="" method="PUT" @submit.prevent="validateForm">
+        <form action="" method="PUT" class="needs-validation row py-4 my-4" id="edit-form"
+            @submit.prevent="validateForm" novalidate>
 
-            <div v-if="errors.length" class="bg-subtle-danger" id="errors">
+            <div v-if="errors.length" class="bg-subtle-danger col-12 mb-4" id="errors">
                 <ul>
                     <li v-for="error in errors">{{ error }}</li>
                 </ul>
             </div>
-            <div class="row py-4 my-4" id="edit-form">
-                <div class="mb-3 col-4">
-                    <label for="firstname" class="form-label">Nome</label>
-                    <input type="text" class="form-control" id="firstname" v-model="formData.firstname">
+            <div class="mb-3 col-4">
+                <label for="firstname" class="form-label">Nome</label>
+                <input type="text" class="form-control" :class="errors.firstname && 'invalid-input'" id="firstname"
+                    v-model="formData.firstname" required>
+                <div class="invalid" v-if="errors.firstname">
+                    <p> {{ errors.firstname }} </p>
                 </div>
-                <div class="mb-3 col-4">
-                    <label for="lastname" class="form-label">Cognome</label>
-                    <input type="text" class="form-control" id="lastname" v-model="formData.lastname">
+            </div>
+            <div class="mb-3 col-4">
+                <label for="lastname" class="form-label">Cognome</label>
+                <input type="text" class="form-control" :class="errors.lastname && 'invalid-input'" id="lastname"
+                    v-model="formData.lastname" required>
+                <div class="invalid" v-if="errors.lastname">
+                    <p> {{ errors.lastname }} </p>
                 </div>
-                <div class="mb-3 col-4">
-                    <label for="email" class="form-label">Email</label>
-                    <input type="email" class="form-control" id="email" v-model="formData.email">
+            </div>
+            <div class="mb-3 col-4">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" :class="errors.email && 'invalid-input'" id="email"
+                    v-model="formData.email" required>
+                <div class="invalid" v-if="errors.email">
+                    <p> {{ errors.email }} </p>
                 </div>
-                <div class="mb-3 col-6">
-                    <label for="password" class="form-label">Password</label>
-                    <input type="password" class="form-control" id="password" v-model="formData.password">
+            </div>
+            <div class="mb-3 col-6">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" class="form-control" :class="errors.password && 'invalid-input'" id="password"
+                    v-model="formData.password" required>
+                <div class="invalid" v-if="errors.password">
+                    <p> {{ errors.password }} </p>
                 </div>
-                <div class="mb-3 col-6">
-                    <label for="phone" class="form-label">Telefono</label>
-                    <input type="tel" class="form-control" id="phone" v-model="formData.phone">
+            </div>
+            <div class="mb-3 col-6">
+                <label for="phone" class="form-label">Telefono</label>
+                <input type="tel" class="form-control" :class="errors.phone && 'invalid-input'" id="phone"
+                    v-model="formData.phone" required>
+                <div class="invalid" v-if="errors.phone">
+                    <p> {{ errors.phone }} </p>
                 </div>
-                <div class="mb-3 col-6">
-                    <label for="officeAddress" class="form-label">Indirizzo</label>
-                    <input type="text" class="form-control" id="officeAddress" v-model='formData.officeAddress'>
+            </div>
+            <div class="mb-3 col-6">
+                <label for="officeAddress" class="form-label">Indirizzo</label>
+                <input type="text" class="form-control" :class="errors.officeAddress && 'invalid-input'"
+                    id="officeAddress" v-model='formData.officeAddress' required>
+                <div class="invalid" v-if="errors.officeAddress">
+                    <p> {{ errors.officeAddress }} </p>
                 </div>
-                <!-- <div class="mb-3 col-6">
+            </div>
+            <!-- <div class="mb-3 col-6">
                     <label for="specialization" class="form-label">Specializzazioni</label>
                     <select class="form-select" aria-label="Default select example" id="specialization"
                         v-model="formData.specialization" >
@@ -182,52 +217,63 @@ export default {
                         <option value="ophthalmology">Oculistica</option>
                     </select>
                 </div> -->
-                <div class="mb-3 col-6">
-                    <label for="specialization" class="form-label">Specializzazioni</label>
-                    <Multiselect @send-values="updateSpecs" />
+            <div class="mb-3 col-6">
+                <label for="specialization" class="form-label">Specializzazioni</label>
+                <Multiselect @send-values="updateSpecs" />
+            </div>
+            <div class="mb-3">
+                <label for="services" class="form-label">Prestazioni</label>
+                <textarea class="form-control" :class="errors.services && 'invalid-input'" id="services"
+                    v-model="formData.services" required></textarea>
+                <div class="invalid" v-if="errors.services">
+                    <p> {{ errors.services }} </p>
                 </div>
-                <div class="mb-3">
-                    <label for="services" class="form-label">Prestazioni</label>
-                    <textarea class="form-control" id="services" v-model="formData.services"></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="photo" class="form-label">Foto profilo</label>
+                <input type="url" class="form-control" :class="errors.photo && 'invalid-input'" id="photo"
+                    placeholder="Inserisci un URL valido" v-model="formData.photo" required>
+                <div class="invalid" v-if="errors.photo">
+                    <p> {{ errors.photo }} </p>
                 </div>
-                <div class="mb-3">
-                    <label for="photo" class="form-label">Foto profilo</label>
-                    <input type="url" class="form-control" id="photo" placeholder="Inserisci un URL valido"
-                        v-model="formData.photo">
+            </div>
+            <div class="mb-3">
+                <label for="curriculum" class="form-label">Curriculum
+                    Vitae</label>
+                <input type="url" class="form-control" :class="errors.curriculum && 'invalid-input'" id="curriculum"
+                    placeholder="Inserisci un URL valido" v-model="formData.curriculum" required>
+                <div class="invalid" v-if="errors.curriculum">
+                    <p> {{ errors.curriculum }} </p>
                 </div>
-                <div class="mb-3">
-                    <label for="curriculum" class="form-label">Curriculum Vitae</label>
-                    <input type="url" class="form-control" id="curriculum" placeholder="Inserisci un URL valido"
-                        v-model="formData.curriculum">
-                </div>
-                <div class="mb-3">
-                    <button type="submit" class="btn me-2 btn-submit">Modifica</button>
-                    <button type="reset" class="btn btn-reset">Reset</button>
-                    <!-- <button type="submit" class="btn me-2 btn-submit"
-                     data-bs-toggle="modal" data-bs-target="#modal">Modifica</button>
+            </div>
+            <div class="mb-3">
+                <!-- <button type="submit" class="btn me-2 btn-submit">Modifica</button>
                     <button type="reset" class="btn btn-reset">Reset</button> -->
-                </div>
+                <button type="submit" class="btn me-2 btn-submit" data-bs-toggle="myModal"
+                    data-bs-target="myModal">Modifica</button>
+                <button type="reset" class="btn btn-reset">Reset</button>
+            </div>
 
-                <!-- Modal -->
-                <!-- <div class="modal fade" id="modal" tabindex="-1" aria-hidden="true" v-if="validated">
-                    <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                I tuoi dati sono stati aggiornati.
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-primary" @click="openProfile">
-                                    Torna al profilo
-                                </button>
-                            </div>
+            <!-- Modal -->
+            <div class="modal fade" id="myModal" tabindex="-1" aria-hidden="true" v-if="validated">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="btn-close" data-bs-dismiss="myModal"
+                                aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            I tuoi dati sono stati aggiornati.
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-primary" @click="openProfile">
+                                Torna al profilo
+                            </button>
                         </div>
                     </div>
-                </div> -->
+                </div>
             </div>
+
         </form>
     </div>
 
@@ -251,5 +297,13 @@ export default {
     &:hover {
         color: black;
     }
+}
+
+.invalid {
+    color: red;
+}
+
+.invalid-input {
+    border-color: red;
 }
 </style>
