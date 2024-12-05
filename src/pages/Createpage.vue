@@ -1,5 +1,6 @@
 <script>
 import AppCreate from '../components/Create/AppCreate.vue';
+import AppHeader from '../components/Homepage/AppHeader.vue';
 
 export default {
     data() {
@@ -8,12 +9,14 @@ export default {
         }
     },
     components: {
-        AppCreate
+        AppCreate,
+        AppHeader
     }
 }
 </script>
 
 <template>
+    <AppHeader />
     <AppCreate />
 </template>
 
