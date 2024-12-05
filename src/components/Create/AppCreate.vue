@@ -6,6 +6,11 @@ export default {
     data() {
         return {
             formData: {
+                phone: "",
+                officeAddress: "",
+                services: "",
+                photo: null,
+                curriculum: null,
             },
             apiUrl: "http://127.0.0.1:8000/api/profiles",
             errors: {
@@ -34,6 +39,7 @@ export default {
             if (!this.errors.length) {
                 this.validated = true;
                 if (this.validated = true) {
+
                     axios.post(this.apiUrl, this.formData)
                         .then(response => {
                             this.formData = response.data;
@@ -52,31 +58,37 @@ export default {
             console.log(this.errors);
         },
 
-
-        onPickFile() {
-            this.$refs.fileInput.click()
-        },
-        onFilePicked(event) {
+        onPhotoPicked(event) {
             const files = event.target.files
-            let filename = files[0].name
-            const fileReader = new FileReader()
-            fileReader.addEventListener('load', () => {
-                this.photoUrl = fileReader.result
-            })
-            fileReader.readAsDataURL(files[0])
             this.photo = files[0];
         },
+
+        onCvPicked(event) {
+            const files = event.target.files
+            this.curriculum = files[0];
+        },
+        // onFilePicked(event) {
+        //     const files = event.target.files
+        //     let filename = files[0].name
+        //     const fileReader = new FileReader()
+        //     fileReader.onload = () => {
+        //         this.imageUrl = fileReader.result;
+        //     };
+        //     fileReader.readAsDataURL(filename)
+        //     this.image = filename;
+        //     console.log(this.image);
+        // },
 
 
         mounted() {
             axios.get(this.apiUrl)
                 .then(response => {
                     this.formData;
-                    console.log(response);
+                    console.log('Success', response.data);
                 })
                 .catch(function (error) {
                     // handle error
-                    console.error(error);
+                    console.error('Failed', error);
                 })
                 .finally(function () {
                     // always executed
@@ -90,14 +102,11 @@ export default {
     <div class="container py-3">
         <h1 class="text-center">Crea il tuo profilo</h1>
 
-        <button class="btn btn-info" @click="onPickFile">Upload profile picture</button>
-        <input type="file" style="display: none" ref="fileInput" accept="image/*" @change="onFilePicked" />
-
         <form action="" method="PUT" class="row py-4 my-4" id="edit-form" @submit.prevent="validateForm" novalidate>
 
             <div class="mb-3 col-6">
                 <label for="phone" class="form-label">Telefono</label>
-                <input type="tel" class="form-control" :class="errors.phone && 'invalid-input'" id="phone"
+                <input type="tel" class="form-control" :class="{ 'invalid-input': errors.phone }" id="phone"
                     v-model="formData.phone" required>
                 <div class="invalid" v-if="errors.phone">
                     <p> {{ errors.phone }} </p>
@@ -105,15 +114,15 @@ export default {
             </div>
             <div class="mb-3 col-6">
                 <label for="officeAddress" class="form-label">Indirizzo</label>
-                <input type="text" class="form-control" :class="errors.officeAddress && 'invalid-input'"
+                <input type="text" class="form-control" :class="{ 'invalid-input': errors.officeAddress }"
                     id="officeAddress" v-model='formData.officeAddress' required>
                 <div class="invalid" v-if="errors.officeAddress">
                     <p> {{ errors.officeAddress }} </p>
                 </div>
             </div>
-            <div class="mb-3 col-6">
+            <div class="mb-3">
                 <label for="services" class="form-label">Prestazioni</label>
-                <textarea class="form-control" :class="errors.services && 'invalid-input'" id="services"
+                <textarea class="form-control" :class="{ 'invalid-input': errors.services }" id="services"
                     v-model="formData.services" required></textarea>
                 <div class="invalid" v-if="errors.services">
                     <p> {{ errors.services }} </p>
@@ -121,27 +130,26 @@ export default {
             </div>
             <div class="mb-3">
                 <label for="photo" class="form-label">Foto profilo</label>
-                <input type="file" class="form-control" :class="errors.photo && 'invalid-input'" id="photo"
-                    placeholder="Inserisci un file valido" @change="onFilePicked" required>
+
+                <input type="file" accept="image/*" @change="onPhotoPicked" />
                 <div class="invalid" v-if="errors.photo">
                     <p> {{ errors.photo }} </p>
                 </div>
             </div>
-            <div class="mb-3">
+            <div class="mb-3 col-6">
                 <label for="curriculum" class="form-label">Curriculum
                     Vitae</label>
-                <input type="file" class="form-control" :class="errors.curriculum && 'invalid-input'" id="curriculum"
-                    placeholder="Inserisci un file valido" @change="onFilePicked" required>
+                <input type="file" accept="file_extension|image/*|.pdf" @change="onCvPicked" />
                 <div class="invalid" v-if="errors.curriculum">
                     <p> {{ errors.curriculum }} </p>
                 </div>
-            </div>
-            <div class="mb-3">
-                <!-- <button type="submit" class="btn me-2 btn-submit">Modifica</button>
+                <div class="mb-3">
+                    <!-- <button type="submit" class="btn me-2 btn-submit">Modifica</button>
                     <button type="reset" class="btn btn-reset">Reset</button> -->
-                <button type="submit" class="btn me-2 btn-submit" data-bs-toggle="myModal" data-bs-target="myModal">Crea
-                    Profilo</button>
-                <button type="reset" class="btn btn-reset">Reset</button>
+                    <button type="submit" class="btn me-2 btn-submit" data-bs-toggle="myModal"
+                        data-bs-target="myModal">Crea profilo</button>
+                    <button type="reset" class="btn btn-reset">Reset</button>
+                </div>
             </div>
 
             <!-- Modal -->

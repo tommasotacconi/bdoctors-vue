@@ -201,16 +201,6 @@ export default {
                     <p> {{ errors.officeAddress }} </p>
                 </div>
             </div>
-            <!-- <div class="mb-3 col-6">
-                    <label for="specialization" class="form-label">Specializzazioni</label>
-                    <select class="form-select" aria-label="Default select example" id="specialization"
-                        v-model="formData.specialization" >
-                        <option disabled selected>Seleziona la/e tua/e specializzazione/i</option>
-                        <option value="surgery">Chirurgia</option>
-                        <option value="cardiology">Cardiologia</option>
-                        <option value="ophthalmology">Oculistica</option>
-                    </select>
-                </div> -->
             <div class="mb-3 col-6">
                 <label for="specialization" class="form-label">Specializzazioni</label>
                 <Multiselect @send-values="updateSpecs" />
