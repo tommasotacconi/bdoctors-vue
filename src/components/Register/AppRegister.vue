@@ -1,6 +1,7 @@
 <script>
 import axios from 'axios';
-import Multiselect from "../Generics/Multiselect.vue";
+import Multiselect from '../Generics/Multiselect.vue';
+import AppAlert from '../Generics/AppAlert.vue'
 
 export default {
 	data() {
@@ -63,7 +64,8 @@ export default {
 		},
 	},
 	components: {
-		Multiselect
+		Multiselect,
+		AppAlert
 	}
 }
 </script>
@@ -72,17 +74,6 @@ export default {
 	<!-- Register form -->
 	<form class="" action="post" @submit.prevent="sendRegistrationData">
 		<div class="row card register-card" id="login-card">
-
-			<!-- Modal container -->
-			<div class="col-md-12">
-				<!-- Modal card for validation errors -->
-				<div id="errors-modal" class="card mt-2" v-show="errors.length">
-					Sono stati riscontrati i seguenti errori:
-					<ul>
-						<li v-for="error in errors">{{ error }}</li>
-					</ul>
-				</div>
-			</div>
 
 			<!-- first_name input -->
 			<div class="col-md-6">
@@ -128,12 +119,12 @@ export default {
 				<button type="reset" class="btn btn-warning ms-3" id="reset-button">Pulisci</button>
 			</div>
 			
-			<!-- Modal container -->
+			<!-- Alert container -->
 			<div class="col-md-12 mb-2">
 				<!-- Modal card for confirmed registration -->
-				<div id="confirmation-modal" class="card mt-2" v-show="responseStatus">
+				<AppAlert class="confirmation-alert alert-success mt-2" v-show="responseStatus">
 					I dati sono stati registrati
-				</div>
+				</AppAlert>
 			</div>
 
 		</div>
@@ -189,11 +180,6 @@ select {
 
 #errors-modal {
 	border-color: red;
-}
-
-#confirmation-modal {
-	color:#4fe001;
-	border-color: #4fe001;
 }
 
 div#select-container {
