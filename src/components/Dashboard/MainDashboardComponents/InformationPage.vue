@@ -1,10 +1,29 @@
 <script>
-export default {
-    data() {
-        return {
+import axios from 'axios';
+import { store } from '../../../../js/store.js';
 
-        }
-    }
+export default {
+	data() {
+			return {
+				profileData: {},
+				store,
+			}
+	},
+	methods: {
+		getProfileData() {
+			axios.get(this.store.apiUri + 'profiles/' + this.store.informationPageId)
+			.then(response => {
+				console.log(response);
+				this.profileData = response.data.data;
+			})
+			.catch(function (error) {
+				console.log(error);
+			});
+		},
+	},
+	created: function () {
+		this.getProfileData();
+	}
 }
 </script>
 
@@ -21,17 +40,17 @@ export default {
                         </div>
                         <div class="card-body-general">
                             <div class="card-body">
-                                <h5 class="card-title">Nome medico</h5>
+                                <h5 class="card-title">{{ profileData.doctor.first_name }} {{ profileData.doctor.last_name }}</h5>
                                 <div class="card-text">
                                     <ul>
                                         <li>
-                                            <strong>Specializzazione:</strong> Cardiologia / Neurologia
+                                            <strong>Specializzazione:</strong> {{ profileData.doctor.specializations[0].name }}
                                         </li>
                                         <li>
-                                            <strong>Indirizzo:</strong> Via Boolean 15, Caltanisetta
+                                            <strong>Indirizzo:</strong> {{ profileData.office_address }}
                                         </li>
                                         <li>
-                                            <strong>Telefono:</strong> 338451523
+                                            <strong>Telefono:</strong> {{ profileData.phone }}
                                         </li>
                                     </ul>
                                 </div>

@@ -8,7 +8,12 @@ export const store = reactive({
     reviewPage: false,
     sponsorshipPage: false,
     statisticPage: false,
-
+		
     // Variable for toggle sidebar inside dashboard
     sidebar: true,
-})
+		
+		// Api uri
+		apiUri: 'http://localhost:8000/api/',
+		// Api call for profile information
+		informationPageId: ''
+	})
