@@ -33,10 +33,8 @@ export default {
                 </div>
             </section>
             <navbar class="right-header d-flex">
-                <div class="login-logup">
-                    <button class="button-login-logup"><i class="fa-solid fa-user"></i> Registrati o fai il
-                        login</button>
-                </div>
+                <button class="button-logup"> Registrati</button>
+                <button class="button-login"><i class="fa-solid fa-user-doctor"></i> Login</button>
             </navbar>
         </div>
     </header>
@@ -127,9 +125,20 @@ h1 {
 .right-header {
     height: 100%;
     align-items: center;
+    gap: 20px;
 }
 
-.button-login-logup {
+.right-header .button-logup {
+    background-color: var(--color-secondary);
+    border-radius: 25px;
+    padding: 11px 16px;
+    border: 0;
+    font-style: italic;
+    color: white;
+    font-weight: bold;
+}
+
+.button-login {
     background-color: #FFB465;
     border-radius: 25px;
     padding: 8px 16px;
@@ -139,7 +148,7 @@ h1 {
     font-weight: bold;
 }
 
-.fa-user {
+.fa-user-doctor {
     border-radius: 50%;
     border: 1px solid white;
     padding: 6px;
