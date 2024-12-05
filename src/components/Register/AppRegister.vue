@@ -19,22 +19,25 @@ export default {
 	methods: {
 		updateSpecs(specializations) {
 			this.specializations = specializations;
-			console.log(this.specializations);
+			console.log('current specializations', this.specializations);
 		},
 		checkForm() {
-			if(this.firstName && this.lastName && this.homeAddress && this.specializations && this.email && this.password) return true;
-      this.errors = [];
+			// Subscribe errors array with an empty one, to be ready for a next validation
+			this.errors = [];
       if(!this.firstName) this.errors.push("Il nome è vuoto.");
-      if(this.firstName < 2 || this.firstName > 50) this.errors.push("Il nome può essere composto da 2 a 50 caratteri.");
+      if(this.firstName.length < 2 || this.firstName > 50) this.errors.push("Il nome può essere composto da 2 a 50 caratteri.");
       if(!this.lastName) this.errors.push("Il cognome è vuoto.");
-      if(this.lastName < 2 || this.lastName > 50) this.errors.push("Il cognome può essere composto da 2 a 50 caratteri.");
+      if(this.lastName.length < 2 || this.lastName > 50) this.errors.push("Il cognome può essere composto da 2 a 50 caratteri.");
       if(!this.homeAddress) this.errors.push("L'indirizzo di residenza è vuoto");
-      if(this.homeAddress < 3 || this.home_address > 100) this.errors.push("L'indirizzo di residenza può essere composto da 3 a 100 caratteri.");
-      if(!this.specializations) this.errors.push("Selezionare almeno una specializzazione");
+      if(this.homeAddress.length < 3 || this.home_address > 100) this.errors.push("L'indirizzo di residenza può essere composto da 3 a 100 caratteri.");
+      if(!this.specializations.length) this.errors.push("Selezionare almeno una specializzazione");
       if(!this.email) this.errors.push("La email è vuota");
-      if(this.email < 2 || this.email > 50) this.errors.push("La email può essere composta da 6 a 50 caratteri.");
+      if(this.email.length < 2 || this.email > 50) this.errors.push("La email può essere composta da 6 a 50 caratteri.");
       if(!this.password) this.errors.push("La password è vuota");
-      if(this.password < 2) this.errors.push("La password può essere composta da minimo 8 caratteri.");
+      if(this.password.length < 8) this.errors.push("La password può essere composta da minimo 8 caratteri.");
+			if(this.password !== this.passwordConfirmation) this.errors.push("Le password non coincidono");
+			// Check if the errors array is still empty
+			if(!this.errors.length) return true;
 			return false
 		},
 		sendRegistrationData() {
@@ -68,51 +71,72 @@ export default {
 <template>
 	<!-- Register form -->
 	<form class="" action="post" @submit.prevent="sendRegistrationData">
-			<div class="row card register-card" id="login-card">
-				<!-- first_name input -->
-				<div class="col-md-6">
-					<label for="first-name-input" class="badge rounded-pill">Nome</label>
-					<input type="text" id="first-name-input" class="form-control mb-3" v-model="firstName">
+		<div class="row card register-card" id="login-card">
+
+			<!-- Modal container -->
+			<div class="col-md-12">
+				<!-- Modal card for validation errors -->
+				<div id="errors-modal" class="card mt-2" v-show="errors.length">
+					Sono stati riscontrati i seguenti errori:
+					<ul>
+						<li v-for="error in errors">{{ error }}</li>
+					</ul>
 				</div>
-				<!-- last_name input -->
-				<div class="col-md-6">
-					<label for="last-name-input" class="badge rounded-pill">Cognome</label>
-					<input type="text" id="last-name-input" class="form-control mb-3" v-model="lastName">
+			</div>
+
+			<!-- first_name input -->
+			<div class="col-md-6">
+				<label for="first-name-input" class="badge rounded-pill">Nome</label>
+				<input type="text" id="first-name-input" class="form-control mb-3" v-model="firstName">
+			</div>
+			<!-- last_name input -->
+			<div class="col-md-6">
+				<label for="last-name-input" class="badge rounded-pill">Cognome</label>
+				<input type="text" id="last-name-input" class="form-control mb-3" v-model="lastName">
+			</div>
+			<!-- home_address input -->
+			<div class="col-md-12">
+				<label for="home-address-input" class="badge rounded-pill">Indirizzo di residenza</label>
+				<input type="text" id="home-address-input" class="form-control mb-3" v-model="homeAddress">
+			</div>
+			<!-- specializations with Multiselect component-->
+				<div id="select-container" class="col-md-12">
+				<label for="specializations-input" class="badge rounded-pill">Specializzazioni</label>
+				<Multiselect id="specializations-input" @send-values="updateSpecs" />
+			</div>
+			<!-- email input -->
+			<div class="col-md-12">
+				<label for="email-input" class="badge rounded-pill">Email</label>
+				<input type="text" id="email-input" class="form-control mb-3" v-model="email">
+			</div>
+			<!-- password input -->
+			<div class="col-md-12">
+				<label for="password-input" class="badge rounded-pill">Password</label>
+				<input type="text" id="password-input" class="form-control mb-3" v-model="password">
+			</div>
+			<!-- confirm password input -->
+			<div class="col-md-12">
+				<label for="password-confirmation-input" class="badge rounded-pill">Conferma password</label>
+				<input type="text" id="password-confirmation-input" class="form-control mb-3" v-model="passwordConfirmation">
+			</div>
+
+			<!-- Button wrappers -->
+			<div class="buttons-wrapper">
+				<!-- register button -->
+				<button type="submit" class="btn btn-primary" id="register-button">Registrati</button>
+				<!-- reset button -->
+				<button type="reset" class="btn btn-warning ms-3" id="reset-button">Pulisci</button>
+			</div>
+			
+			<!-- Modal container -->
+			<div class="col-md-12 mb-2">
+				<!-- Modal card for confirmed registration -->
+				<div id="confirmation-modal" class="card mt-2" v-show="responseStatus">
+					I dati sono stati registrati
 				</div>
-				<!-- home_address input -->
-				<div class="col-md-12">
-					<label for="home-address-input" class="badge rounded-pill">Indirizzo di residenza</label>
-					<input type="text" id="home-address-input" class="form-control mb-3" v-model="homeAddress">
-				</div>
-				<!-- specializations input-->
-				 <div id="select-container" class="col-md-12">
-					<label for="specializations-input" class="badge rounded-pill">Specializzazioni</label>
-					<Multiselect id="specializations-input" @send-values="updateSpecs" />
-				</div>
-				<!-- email input -->
-				<div class="col-md-12">
-					<label for="email-input" class="badge rounded-pill">Email</label>
-					<input type="text" id="email-input" class="form-control mb-3" v-model="email">
-				</div>
-				<!-- password input -->
-				<div class="col-md-12">
-					<label for="password-input" class="badge rounded-pill">Password</label>
-					<input type="text" id="password-input" class="form-control mb-3" v-model="password">
-				</div>
-				<!-- confirm password input -->
-				<div class="col-md-12">
-					<label for="password-confirmation-input" class="badge rounded-pill">Conferma password</label>
-					<input type="text" id="password-confirmation-input" class="form-control mb-3" v-model="passwordConfirmation">
-				</div>
-				<!-- Button wrappers -->
-				<div class="buttons-wrapper">
-					<!-- register button -->
-					<button type="submit" class="btn btn-primary mt-5" id="register-button">Registrati</button>
-					<!-- reset button -->
-					<button type="reset" class="btn btn-warning mt-5 ms-3" id="reset-button">Pulisci</button>
-					<div class="mt-3" v-if="responseStatus">Dati registrati</div>
-				</div>
-			 </div>
+			</div>
+
+		</div>
 	</form>
 </template>
 
@@ -143,8 +167,6 @@ select {
 	border: 2px solid #65B0FF;
 }
 
-
-
 /* Utilities */
 .card {
 	padding-bottom: 20px;
@@ -155,6 +177,23 @@ select {
 .register-card {
 	margin: 0 auto;
 	width: 600px;
+}
+
+#errors-modal,
+#confirmation-modal{
+	padding-left: 10px;
+	padding-right: 10px;
+	display: block;
+	border-width: 2px;
+}
+
+#errors-modal {
+	border-color: red;
+}
+
+#confirmation-modal {
+	color:#4fe001;
+	border-color: #4fe001;
 }
 
 div#select-container {
