@@ -40,18 +40,20 @@ export default {
                         </div>
                         <div class="card-body-general">
                             <div class="card-body">
-                                <h4 class="card-title">{{ profileData.doctor.first_name }} {{
-                                    profileData.doctor.last_name }}
-                                </h4>
-                                <div class="main-information-section">
-                                    <section class="email-section d-flex gap-1 align-items-center">
-                                        <h5>Email:</h5>
-                                        <p>{{ profileData.doctor.email }}</p>
-                                    </section>
-                                    <section class="password-section d-flex gap-1 align-items-center">
-                                        <h5>Password:</h5>
-                                        <p>*********</p>
-                                    </section>
+                                <div class="card-title-section">
+                                    <h4 class="card-title">{{ profileData.doctor.first_name }} {{
+                                        profileData.doctor.last_name }}
+                                    </h4>
+                                    <div class="main-information-section">
+                                        <section class="email-section d-flex gap-1 align-items-center">
+                                            <h5>Email:</h5>
+                                            <p>{{ profileData.doctor.email }}</p>
+                                        </section>
+                                        <section class="password-section d-flex gap-1 align-items-center">
+                                            <h5>Password:</h5>
+                                            <p>*********</p>
+                                        </section>
+                                    </div>
                                 </div>
                                 <div class="card-text">
                                     <ul>
@@ -69,7 +71,7 @@ export default {
                                             <strong>Telefono:</strong> {{ profileData.phone }}
                                         </li>
                                         <li>
-                                            <strong>Prestazioni:</strong> {{ profileData.phone }}
+                                            <strong>Prestazioni:</strong> {{ profileData.services }}
                                         </li>
                                     </ul>
                                 </div>
@@ -115,7 +117,7 @@ p {
     background-color: #D8F9FF;
     border: 0;
     text-align: center;
-    width: 70%;
+    width: 80%;
 }
 
 .card-flex {
@@ -135,9 +137,9 @@ p {
 
 .card img {
     border-radius: 50%;
-    width: 60%;
+    width: 90%;
     border: 3px solid #65B0FF;
-    margin: 15px 0;
+    margin: 15px;
 }
 
 .card-body {
@@ -146,6 +148,11 @@ p {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+}
+
+.card-text {
+    border-top: 2px solid var(--color-complementary);
+    padding-top: 16px;
 }
 
 .main-information-section {
@@ -176,6 +183,12 @@ ul {
     .card-flex {
         display: flex;
         flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .img-doctor {
+        width: 70%;
     }
 }
 </style>
