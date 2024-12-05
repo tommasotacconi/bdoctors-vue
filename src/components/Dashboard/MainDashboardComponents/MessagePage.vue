@@ -8,9 +8,6 @@ export default {
         }
     },
     methods: {
-        selectMessage() {
-
-        }
     }
 }
 </script>
@@ -22,7 +19,7 @@ export default {
                 <div class="card-inbox">
                     <div class="card-header-title">
                         <h5 class="title">Messaggi arrivati</h5>
-                        <div class="messages-number"><strong>Totale:</strong> <span class="total-number">5</span></div>
+                        <div class="messages-number"><strong>Totale:</strong> <span class="total-number">10</span></div>
                     </div>
                     <div class="card-body-list" v-for="(message, index) in 10">
                         <ul class="list-group list-group-flush list-email" @click="selectMessage(index)">
@@ -64,11 +61,18 @@ export default {
 <style scoped>
 /* Inbox Card */
 
+.card-inbox::-webkit-scrollbar {
+    width: 10px;
+    position: relative;
+    top: 0;
+    right: 10px;
+}
+
 .card-inbox {
     border: 3px solid var(--color-complementary);
     border-radius: 20px;
+    height: 300px;
     overflow: auto;
-    height: 250px;
 }
 
 .card-header-title {
@@ -126,13 +130,14 @@ export default {
 }
 
 .selected-message {
-    margin-top: 20px;
+    margin-top: 40px;
 }
 
 .message-email,
 .message-name,
 .message-content {
-    margin-top: 10px;
+    margin-top: 20px;
+    padding-bottom: 5px;
 }
 
 .message-email,
