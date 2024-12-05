@@ -3,27 +3,27 @@ import axios from 'axios';
 import { store } from '../../../../js/store.js';
 
 export default {
-	data() {
-			return {
-				profileData: {},
-				store,
-			}
-	},
-	methods: {
-		getProfileData() {
-			axios.get(this.store.apiUri + 'profiles/' + this.store.informationPageId)
-			.then(response => {
-				console.log(response);
-				this.profileData = response.data.data;
-			})
-			.catch(function (error) {
-				console.log(error);
-			});
-		},
-	},
-	created: function () {
-		this.getProfileData();
-	}
+    data() {
+        return {
+            profileData: {},
+            store,
+        }
+    },
+    methods: {
+        getProfileData() {
+            axios.get(this.store.apiUri + 'profiles/' + this.store.informationPageId)
+                .then(response => {
+                    console.log(response);
+                    this.profileData = response.data.data;
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        },
+    },
+    created: function () {
+        this.getProfileData();
+    }
 }
 </script>
 
@@ -40,17 +40,36 @@ export default {
                         </div>
                         <div class="card-body-general">
                             <div class="card-body">
-                                <h5 class="card-title">{{ profileData.doctor.first_name }} {{ profileData.doctor.last_name }}</h5>
+                                <h4 class="card-title">{{ profileData.doctor.first_name }} {{
+                                    profileData.doctor.last_name }}
+                                </h4>
+                                <div class="main-information-section">
+                                    <section class="email-section d-flex gap-1 align-items-center">
+                                        <h5>Email:</h5>
+                                        <p>{{ profileData.doctor.email }}</p>
+                                    </section>
+                                    <section class="password-section d-flex gap-1 align-items-center">
+                                        <h5>Password:</h5>
+                                        <p>*********</p>
+                                    </section>
+                                </div>
                                 <div class="card-text">
                                     <ul>
                                         <li>
-                                            <strong>Specializzazione:</strong> {{ profileData.doctor.specializations[0].name }}
+                                            <strong>Curriculum:</strong> Nome del file
+                                        </li>
+                                        <li>
+                                            <strong>Specializzazione:</strong> {{
+                                                profileData.doctor.specializations[0].name }}
                                         </li>
                                         <li>
                                             <strong>Indirizzo:</strong> {{ profileData.office_address }}
                                         </li>
                                         <li>
                                             <strong>Telefono:</strong> {{ profileData.phone }}
+                                        </li>
+                                        <li>
+                                            <strong>Prestazioni:</strong> {{ profileData.phone }}
                                         </li>
                                     </ul>
                                 </div>
@@ -70,10 +89,21 @@ h2 {
     text-align: center;
 }
 
+h4 {
+    margin: 0;
+}
+
+h5 {
+    margin: 0;
+}
+
+p {
+    margin: 0;
+}
+
 /* Card */
 
 .card-general {
-    width: 70vw;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -99,6 +129,10 @@ h2 {
     justify-content: center;
 }
 
+.card-body-general {
+    flex-basis: 60%;
+}
+
 .card img {
     border-radius: 50%;
     width: 60%;
@@ -112,6 +146,15 @@ h2 {
     flex-direction: column;
     justify-content: center;
     align-items: center;
+}
+
+.main-information-section {
+    padding: 15px 0;
+}
+
+.email-section,
+.password-section {
+    padding: 5px 0;
 }
 
 ul {
