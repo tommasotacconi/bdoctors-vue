@@ -95,7 +95,7 @@ export default {
 
 <style scoped>
 h2 {
-    margin-bottom: 20px;
+    margin-bottom: 40px;
     text-align: center;
 }
 
@@ -198,12 +198,14 @@ ul {
 
 .plus {
     border: 1px solid white;
-    border-radius: 20px;
+    border-radius: 30px;
     display: inline;
-    padding: 10px 15px;
+    padding: 16px 26px;
     color: lightgray;
     background-color: white;
-    width: 60px;
+    width: 80px;
+    font-size: 1.5rem;
+    font-weight: bold;
 }
 
 .create-profile-text {
