@@ -6,6 +6,7 @@ export default {
     data() {
         return {
             profileData: {},
+            loaded: false,
             store,
         }
     },
@@ -21,8 +22,19 @@ export default {
                 });
         },
     },
+    computed: {
+        showLoader() {
+            setTimeout(() => {
+                this.loaded = true
+            }, 2000)
+
+        }
+    },
     created: function () {
         this.getProfileData();
+    },
+    mounted() {
+        this.showLoader
     }
 }
 </script>
@@ -31,7 +43,8 @@ export default {
     <main class="container d-flex justify-content-center">
         <div class="general-main">
             <h2>Profilo</h2>
-            <section class="card-general">
+            <div class="loader" v-if="!loaded"></div>
+            <section class="card-general" v-if="loaded">
                 <div class="card mb-3" v-if="Object.keys(profileData).length">
                     <div class="card-flex">
                         <div class="img-doctor">
@@ -210,6 +223,26 @@ ul {
 
 .create-profile-text {
     opacity: 0.5;
+}
+
+
+/* Loader */
+.loader {
+    width: 50px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    border: 8px solid;
+    border-color: #000 #0000;
+    animation: l1 1s infinite;
+    position: absolute;
+    top: 50%;
+    left: 59%;
+}
+
+@keyframes l1 {
+    to {
+        transform: rotate(.5turn)
+    }
 }
 
 
