@@ -1,26 +1,19 @@
 <script>
-
+import axios from "axios";
 import Multiselect from "../Generics/Multiselect.vue";
 
 export default {
     data() {
         return {
             formData: {
-                firstname: "",
-                lastname: "",
-                email: "",
-                password: "",
-                address: "",
-                specialization: [],
             },
-            apiUrl: "",
+            apiUrl: "http://127.0.0.1:8000/api/profiles",
             errors: {
-                firstname: '',
-                lastname: "",
-                email: "",
-                password: "",
-                address: "",
-                specialization: '',
+                phone: "",
+                officeAddress: "",
+                services: "",
+                photo: "",
+                curriculum: ""
             },
             validated: false,
         }
@@ -32,62 +25,63 @@ export default {
     methods: {
         validateForm() {
             this.errors = [];
-            if (!this.formData.firstname) {
-                this.errors.firstname = 'Il nome è obbligatorio.';
-            } else if (this.formData.firstname.length <= 2) {
-                this.errors.firstname = 'Il nome deve contenere almeno 2 caratteri.';
-            };
-            if (!this.formData.lastname) {
-                this.errors.lastname = "Il cognome è obbligatorio."
-            } else if (this.formData.lastname.length <= 2) {
-                this.errors.lastname = "Il cognome deve contenere almeno 2 caratteri."
-            };
-            if (!this.formData.email) {
-                this.errors.email = "L'email è obbligatoria.";
-            } else if (!this.validEmail(this.formData.email)) {
-                this.errors.email = "L'email inserita non è valida.";
-            }
-            if (!this.formData.password) { this.errors.password = "La password è obbligatoria." }
-            else if (!this.validPassword(this.formData.password)) { this.errors.password = "La password deve contenere almeno una maiuscola, una minuscola ed un numero" };
-
-            if (!this.formData.address) this.errors.address = "L'indirizzo è obbligatorio.";
-            if (!this.formData.specialization) this.errors.specialization = "Inserire almeno una specializzazione.";
-
-
+            if (!this.formData.phone) { this.errors.phone = "Il numero di telefono è obbligatorio." }
+            else if (isNaN(this.formData.phone)) { this.errors.phone = "Il numero di telefono può contenere solo numeri" };
+            if (!this.formData.officeAddress) this.errors.officeAddress = "L'indirizzo è obbligatorio.";
+            if (!this.formData.services) this.errors.services = "Inserire almeno una prestazione.";
+            if (!this.formData.photo) this.errors.photo = "La foto è obbligatoria";
+            if (!this.formData.curriculum) this.errors.curriculum = "Il curriculum è obbligatorio.";
             if (!this.errors.length) {
                 this.validated = true;
-                return true;
+                if (this.validated = true) {
+                    axios.post(this.apiUrl, this.formData)
+                        .then(response => {
+                            this.formData = response.data;
+                            console.log(response);
+                        })
+                        .catch(function (error) {
+                            // handle error
+                            console.error(error);
+                        })
+                        .finally(function () {
+                            // always executed
+                        });
+                }
             }
             console.log(this.formData);
             console.log(this.errors);
         },
-        validEmail(email) {
-            const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-            return re.test(email);
+
+
+        onPickFile() {
+            this.$refs.fileInput.click()
         },
-        validPassword(password) {
-            const lowercase = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
-            const uppercase = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
-            const numbers = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
-
-            let isLowercase = false;
-            let isUppercase = false;
-            let isNumber = false;
-
-            for (let i = 0; i < password.length; i++) {
-                const char = password[i];
-                if (lowercase.includes(char)) isLowercase = true;
-                if (uppercase.includes(char)) isUppercase = true;
-                if (numbers.includes(char)) isNumber = true;
-            }
-
-            return isLowercase && isUppercase && isNumber;
+        onFilePicked(event) {
+            const files = event.target.files
+            let filename = files[0].name
+            const fileReader = new FileReader()
+            fileReader.addEventListener('load', () => {
+                this.imageUrl = fileReader.result
+            })
+            fileReader.readAsDataURL(files[0])
+            this.photo = files[0]
         },
 
-        updateSpecs(specializations) {
-            this.formData.specialization = specializations;
-            console.log(this.formData.specialization);
-        },
+
+        mounted() {
+            axios.get(this.apiUrl)
+                .then(response => {
+                    this.formData;
+                    console.log(response);
+                })
+                .catch(function (error) {
+                    // handle error
+                    console.error(error);
+                })
+                .finally(function () {
+                    // always executed
+                });
+        }
     },
 }
 </script>
@@ -96,63 +90,52 @@ export default {
     <div class="container py-3">
         <h1 class="text-center">Crea il tuo profilo</h1>
 
+        <button class="btn btn-info" @click="onPickFile">Upload profile picture</button>
+        <input type="file" style="display: none" ref="fileInput" accept="image/*" @change="onFilePicked" />
+
         <form action="" method="PUT" class="row py-4 my-4" id="edit-form" @submit.prevent="validateForm" novalidate>
 
-            <div class="mb-3 col-4">
-                <label for="firstname" class="form-label">Nome</label>
-                <input type="text" class="form-control" :class="errors.firstname && 'invalid-input'" id="firstname"
-                    v-model="formData.firstname" required>
-                <div class="invalid" v-if="errors.firstname">
-                    <p> {{ errors.firstname }} </p>
-                </div>
-            </div>
-            <div class="mb-3 col-4">
-                <label for="lastname" class="form-label">Cognome</label>
-                <input type="text" class="form-control" :class="errors.lastname && 'invalid-input'" id="lastname"
-                    v-model="formData.lastname" required>
-                <div class="invalid" v-if="errors.lastname">
-                    <p> {{ errors.lastname }} </p>
-                </div>
-            </div>
-            <div class="mb-3 col-4">
-                <label for="email" class="form-label">Email</label>
-                <input type="email" class="form-control" :class="errors.email && 'invalid-input'" id="email"
-                    v-model="formData.email" required>
-                <div class="invalid" v-if="errors.email">
-                    <p> {{ errors.email }} </p>
+            <div class="mb-3 col-6">
+                <label for="phone" class="form-label">Telefono</label>
+                <input type="tel" class="form-control" :class="errors.phone && 'invalid-input'" id="phone"
+                    v-model="formData.phone" required>
+                <div class="invalid" v-if="errors.phone">
+                    <p> {{ errors.phone }} </p>
                 </div>
             </div>
             <div class="mb-3 col-6">
-                <label for="password" class="form-label">Password</label>
-                <input type="password" class="form-control" :class="errors.password && 'invalid-input'" id="password"
-                    v-model="formData.password" required>
-                <div class="invalid" v-if="errors.password">
-                    <p> {{ errors.password }} </p>
+                <label for="officeAddress" class="form-label">Indirizzo</label>
+                <input type="text" class="form-control" :class="errors.officeAddress && 'invalid-input'"
+                    id="officeAddress" v-model='formData.officeAddress' required>
+                <div class="invalid" v-if="errors.officeAddress">
+                    <p> {{ errors.officeAddress }} </p>
                 </div>
             </div>
             <div class="mb-3 col-6">
-                <label for="address" class="form-label">Indirizzo</label>
-                <input type="text" class="form-control" :class="errors.address && 'invalid-input'" id="address"
-                    v-model='formData.address' required>
-                <div class="invalid" v-if="errors.address">
-                    <p> {{ errors.address }} </p>
+                <label for="services" class="form-label">Prestazioni</label>
+                <textarea class="form-control" :class="errors.services && 'invalid-input'" id="services"
+                    v-model="formData.services" required></textarea>
+                <div class="invalid" v-if="errors.services">
+                    <p> {{ errors.services }} </p>
                 </div>
             </div>
-            <!-- <div class="mb-3 col-6">
-                    <label for="specialization" class="form-label">Specializzazioni</label>
-                    <select class="form-select" aria-label="Default select example" id="specialization"
-                        v-model="formData.specialization" >
-                        <option disabled selected>Seleziona la/e tua/e specializzazione/i</option>
-                        <option value="surgery">Chirurgia</option>
-                        <option value="cardiology">Cardiologia</option>
-                        <option value="ophthalmology">Oculistica</option>
-                    </select>
-                </div> -->
-            <div class="mb-3 col-6">
-                <label for="specialization" class="form-label">Specializzazioni</label>
-                <Multiselect @send-values="updateSpecs" />
+            <div class="mb-3">
+                <label for="photo" class="form-label">Foto profilo</label>
+                <input type="file" class="form-control" :class="errors.photo && 'invalid-input'" id="photo"
+                    placeholder="Inserisci un file valido" @change="formData.photo" required>
+                <div class="invalid" v-if="errors.photo">
+                    <p> {{ errors.photo }} </p>
+                </div>
             </div>
-
+            <div class="mb-3">
+                <label for="curriculum" class="form-label">Curriculum
+                    Vitae</label>
+                <input type="file" class="form-control" :class="errors.curriculum && 'invalid-input'" id="curriculum"
+                    placeholder="Inserisci un file valido" @change="formData.curriculum" required>
+                <div class="invalid" v-if="errors.curriculum">
+                    <p> {{ errors.curriculum }} </p>
+                </div>
+            </div>
             <div class="mb-3">
                 <!-- <button type="submit" class="btn me-2 btn-submit">Modifica</button>
                     <button type="reset" class="btn btn-reset">Reset</button> -->
