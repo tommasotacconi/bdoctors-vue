@@ -1,33 +1,31 @@
 <script>
 import axios from 'axios';
+import { store } from '../../../js/store';
 
 export default {
     data() {
         return {
+            store,
             searchedDoctor: [],
             apiUrl: 'http://localhost:8000/api/profiles',
-            // specializationId: $route.params.id,
+            specializationId: store.searchedSpecialization
         }
     },
     methods: {
-        searchDoctor() {
-            // for ()
-            //     if ($route.params.id)
-            //         this.searchedDoctor.filter()
-        },
         getApiProfile() {
             axios.get(this.apiUrl)
                 .then(response => {
                     console.log(response.data);
-                    // let profiles = response.data.profiles
-                    // profiles.filter(profile => {
-                    //     profile.user.specializations.id === this.specializationId
-                    // console.log(profiles)
-                    // })
-                    // this.specializations = response.data.specializations;
+                    let profiles = response.data.profiles
+                    console.log(this.specializationId)
+                    console.log(profiles[0].id)
+
+                    // Qua non funziona, da capire come mai
+                    const filteredProfiles = profiles.filter(profile => profile.id === this.specializationId)
+                    console.log(filteredProfiles)
+                    this.specializations = response.data.specializations;
                 })
                 .catch(function (error) {
-                    // handle error
                     console.log(error);
                 })
         },

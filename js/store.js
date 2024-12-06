@@ -8,6 +8,7 @@ export const store = reactive({
   reviewPage: false,
   sponsorshipPage: false,
   statisticPage: false,
+  searchedSpecialization: null,
 
   // test route guard
   responseStatus: false,

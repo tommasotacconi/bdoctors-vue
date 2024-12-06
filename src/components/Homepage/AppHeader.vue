@@ -10,6 +10,7 @@ export default {
             apiUrl: 'http://127.0.0.1:8000/api/specializations',
             specializations: [],
             selectedSpecialization: null,
+            store
         }
     },
     methods: {
@@ -37,11 +38,16 @@ export default {
         },
         chooseSpecialization() {
             console.log("Specializzazione selezionata:", this.selectedSpecialization);
+            let searchedSpecialization = this.selectedSpecialization
+            store.searchedSpecialization = searchedSpecialization
             this.$router.push({ name: 'search', params: { id: this.selectedSpecialization } })
         }
     },
     mounted() {
         this.getApi()
+    },
+    props: {
+
     }
 }
 </script>
