@@ -31,23 +31,42 @@ export default {
 </script>
 
 <template>
-    <main class="container doctors-list">
-        <div class="doctor-card" v-for="doctor in 6">
-            <img src="https://media.istockphoto.com/id/1340883379/photo/young-doctor-hospital-medical-medicine-health-care-clinic-office-portrait-glasses-man.jpg?s=612x612&w=0&k=20&c=_H4VUPBkS0gEj5ZdZzQo-Hw3lMuyofJpB-P9yS92Wyw="
-                class="doctor-photo" alt="doctor photo">
-            <section class="doctor-information">
-                <div class="doctor-name">
-                    Nome Cognome
-                </div>
-                <div class="doctor-services">
-                    Prestazioni
-                </div>
-            </section>
+    <main class="container ">
+        <div class="title">
+            <h2>Ricerca per: <span class="specialization-title">...</span></h2>
+        </div>
+        <div class="doctors-list">
+            <div class="doctor-card" v-for="doctor in 6">
+                <img src="https://media.istockphoto.com/id/1340883379/photo/young-doctor-hospital-medical-medicine-health-care-clinic-office-portrait-glasses-man.jpg?s=612x612&w=0&k=20&c=_H4VUPBkS0gEj5ZdZzQo-Hw3lMuyofJpB-P9yS92Wyw="
+                    class="doctor-photo" alt="doctor photo">
+                <section class="doctor-information">
+                    <div class="doctor-name">
+                        <strong>Nome Cognome</strong>
+                    </div>
+                    <div class="doctor-services">
+                        Prestazioni: Lorem ipsum dolor sit, amet consectetur adipisicing elit. Repellat mollitia
+                        voluptatem
+                        quod deleniti, quibusdam eius nisi necessitatibus! Nesciunt ducimus, explicabo, enim aliquid
+                        magni
+                        natus blanditiis iure eum cum praesentium corporis.
+                    </div>
+                </section>
+            </div>
         </div>
     </main>
 </template>
 
 <style scoped>
+.title {
+    text-align: center;
+    margin: 30px 0 20px 0;
+}
+
+.specialization-title {
+    opacity: 0.5;
+    font-size: 1.5rem;
+}
+
 .doctors-list {
     display: flex;
     gap: 40px;
@@ -57,20 +76,22 @@ export default {
 
 .doctor-card {
     background-color: #D8F9FF;
+    padding: 25px 30px;
     display: flex;
     flex-direction: column;
+    gap: 15px;
     justify-content: center;
     align-items: center;
     width: calc((100% / 3) - 80px);
+    border-radius: 30px;
+    /* height: 400px; */
 }
 
 img {
     border-radius: 50%;
     border: 3px solid #65B0FF;
-    height: 40%;
+    height: 200px;
 }
 
-.doctor-information {
-    flex-basis: 50%;
-}
+.doctor-information {}
 </style>
