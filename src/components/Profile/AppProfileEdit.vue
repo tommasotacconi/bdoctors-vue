@@ -16,12 +16,13 @@ export default {
                 password: "",
                 phone: "",
                 office_address: "",
+                oldSpecializations: [],
                 specializations: [],
                 services: "",
                 photo: "https://upload.wikimedia.org/wikipedia/en/thumb/a/a6/Bender_Rodriguez.png/220px-Bender_Rodriguez.png",
                 curriculum: "asasasaasddfsdgvfdsdsffffgfsdgsdggsdgsdgsdasdfasfasfasffffffffffffffffffasasasaasddfsdgvfdsdsffasasasaasddfsdgvfdsdsffffgfsdgdsgdsgasasasaasddfsdgvfdsdsffffgfsdgdsgdsgsdgsdgsdgsdgsdgsdgsdgsdgdsgsdgsdgsdgssdgsdgsdgsdgsdgsdgsdgsdgdsgsdgsdgsdgsffgfsdgdsgdsgsdgsdgsdgsdgsdgsdgsdgsdgdsgsdgsdgsdgsgsdgsdgsdgsggsasa",
             },
-            apiUrl: "http://127.0.0.1:8000/api/profiles/edit/250",
+            apiUrl: "http://127.0.0.1:8000/api/profiles/edit/248",
             errors: {
                 first_name: '',
                 last_name: "",
@@ -93,6 +94,7 @@ export default {
                     axios.put(this.apiUrl, this.formData)
                         .then(response => {
                             console.log('Profile updated', response.data)
+
                         })
                         .catch(function (error) {
                             // handle error
@@ -145,10 +147,16 @@ export default {
             this.$router.push('/user/:id');
         }
     },
-    mounted() {
+    created() {
         axios.get(this.apiUrl, this.formData)
             .then(response => {
-                this.formData = response.data;
+                this.formData = response.data.data;
+                this.formData.first_name = response.data.data.doctor.first_name;
+                this.formData.last_name = response.data.data.doctor.last_name;
+                this.formData.email = response.data.data.doctor.email;
+                this.formData.password = response.data.data.doctor.password;
+                this.formData.oldSpecializations = response.data.data.doctor.specializations;
+
                 console.log(response)
                 console.log('formData after call', this.formData);
             })
@@ -159,7 +167,7 @@ export default {
             .finally(function () {
                 // always executed
             });
-    }
+    },
 }
 
 </script>
@@ -230,7 +238,7 @@ export default {
                 </div> -->
             <div class="mb-3 col-6">
                 <label for="specializations" class="form-label">Specializzazioni</label>
-                <Multiselect @send-values="updateSpecs" />
+                <Multiselect @send-values="updateSpecs" :specializations="formData.oldSpecializations" />
             </div>
             <div class="mb-3">
                 <label for="services" class="form-label">Prestazioni</label>
