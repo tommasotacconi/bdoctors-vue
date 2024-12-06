@@ -5,7 +5,8 @@ export default {
     data() {
         return {
             searchedDoctor: [],
-            apiUrl: 'http://127.0.0.1:8000/api/profile/',
+            apiUrl: 'http://127.0.0.1:8000/api/profiles/',
+            profilesList: [],
         }
     },
     methods: {
@@ -15,17 +16,20 @@ export default {
             //         this.searchedDoctor.filter()
         },
         getApiProfile() {
-            axios.get(`${this.apiUrl}`)
+            axios.get(this.apiUrl)
                 .then(response => {
                     // handle success
-                    console.log(response.data.specializations);
-                    this.specializations = response.data.specializations;
+                    console.log(response.data.profiles);
+                    this.profilesList = response.data.profiles;
                 })
                 .catch(function (error) {
                     // handle error
                     console.log(error);
                 })
         },
+    },
+    mounted() {
+        this.getApiProfile();
     }
 }
 </script>
