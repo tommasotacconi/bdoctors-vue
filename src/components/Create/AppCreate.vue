@@ -6,7 +6,7 @@ export default {
     data() {
         return {
             formData: {
-                user_id: 251,
+                user_id: 253,
                 photo: 'https://it.images.search.yahoo.com/search/images;_ylt=AwrLAD51f1Bn3wABKk7c5olQ;_ylu=Y29sbwNpcjIEcG9zAzEEdnRpZAMEc2VjA3BpdnM-?p=bender+foto&fr2=piv-web&type=E210IT1590G0&fr=mcafee&guccounter=1#id=0&iurl=https%3A%2F%2Fexternal-preview.redd.it%2F5GA8Zk4JnsMRR88HcZPb402OPXShU3cb05CYZbY7p4g.jpg%3Fauto%3Dwebp%26s%3D40ae96faadffd9bc008c03dc7de21ba4d7c8ae0d&action=click',
                 curriculum: "asasasaasddfsdgvfdsdsffffgfsdgsdggsdgsdgsdasdfasfasfasffffffffffffffffffasasasaasddfsdgvfdsdsffasasasaasddfsdgvfdsdsffffgfsdgdsgdsgasasasaasddfsdgvfdsdsffffgfsdgdsgdsgsdgsdgsdgsdgsdgsdgsdgsdgdsgsdgsdgsdgssdgsdgsdgsdgsdgsdgsdgsdgdsgsdgsdgsdgsffgfsdgdsgdsgsdgsdgsdgsdgsdgsdgsdgsdgdsgsdgsdgsdgsgsdgsdgsdgsggsasa",
             },
