@@ -147,7 +147,7 @@ export default {
 			</div>
 
 			<!-- Button wrappers -->
-			<div class="buttons-wrapper">
+			<div class="buttons-wrapper mt-3">
 				<!-- register button -->
 				<button type="submit" class="btn btn-primary" id="register-button">Registrati</button>
 				<!-- reset button -->
@@ -155,7 +155,7 @@ export default {
 			</div>
 			
 			<!-- Alert container -->
-			<div class="col-md-12 mb-2">
+			<div class="col-md-12">
 				<!-- Modal card for confirmed registration -->
 				<AppAlert id="confirmation-alert" class="alert-success mt-2" v-show="responseStatus">
 					I dati sono stati registrati
@@ -240,5 +240,9 @@ div#select-container {
 
 #register-button {
 	background-color: #65B0FF;
+
+	&:hover {
+		background-color: #0E395D;
+	}
 }
 </style>
