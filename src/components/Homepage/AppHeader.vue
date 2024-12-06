@@ -1,12 +1,15 @@
 <script>
 import axios from 'axios';
+import { store } from '../../../js/store';
+import { RouterLink } from 'vue-router';
 
 export default {
     data() {
         return {
             logout: false,
             apiUrl: 'http://127.0.0.1:8000/api/specializations',
-            specializations: []
+            specializations: [],
+            selectedSpecialization: null,
         }
     },
     methods: {
@@ -31,6 +34,10 @@ export default {
                     // handle error
                     console.log(error);
                 })
+        },
+        chooseSpecialization() {
+            console.log("Specializzazione selezionata:", this.selectedSpecialization);
+            this.$router.push({ name: 'search', params: { id: this.selectedSpecialization } })
         }
     },
     mounted() {
@@ -66,9 +73,12 @@ export default {
                     </div> -->
 
                     <!-- Updated search bar for specializations -->
-                    <select v-if="!$route.params.id" class="form-select" aria-label="Specialization Search">
-                        <option selected>Ricerca il medico per specializzazione!</option>
-                        <option v-for="(specialization, index) in specializations" value="index">{{ specialization.name
+                    <select @change="chooseSpecialization()" v-model="selectedSpecialization" v-if="!$route.params.id"
+                        class="form-select" aria-label="Specialization Search">
+                        <option value="" disabled selected>Ricerca il medico per specializzazione!</option>
+                        <option v-for="(specialization, index) in specializations" :key="index"
+                            :value=specialization.id>{{
+                                specialization.name
                             }}
                         </option>
                     </select>
