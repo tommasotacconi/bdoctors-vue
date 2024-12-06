@@ -7,25 +7,26 @@ export default {
     data() {
         return {
             formData: {
+                user_id: 251,
                 firstname: "",
                 lastname: "",
                 email: "",
                 password: "",
                 phone: "",
-                officeAddress: "",
+                office_address: "",
                 specialization: [],
                 services: "",
-                photo: "",
-                curriculum: ""
+                photo: "https://upload.wikimedia.org/wikipedia/en/thumb/a/a6/Bender_Rodriguez.png/220px-Bender_Rodriguez.png",
+                curriculum: "asasasaasddfsdgvfdsdsffffgfsdgsdggsdgsdgsdasdfasfasfasffffffffffffffffffasasasaasddfsdgvfdsdsffasasasaasddfsdgvfdsdsffffgfsdgdsgdsgasasasaasddfsdgvfdsdsffffgfsdgdsgdsgsdgsdgsdgsdgsdgsdgsdgsdgdsgsdgsdgsdgssdgsdgsdgsdgsdgsdgsdgsdgdsgsdgsdgsdgsffgfsdgdsgdsgsdgsdgsdgsdgsdgsdgsdgsdgdsgsdgsdgsdgsgsdgsdgsdgsggsasa",
             },
-            apiUrl: "",
+            apiUrl: "http://127.0.0.1:8000/api/profiles/edit/251",
             errors: {
                 firstname: '',
                 lastname: "",
                 email: "",
                 password: "",
                 phone: "",
-                officeAddress: "",
+                office_address: "",
                 specialization: '',
                 services: "",
                 photo: "",
@@ -43,15 +44,15 @@ export default {
         //     axios.post('/user', this.formData)
         //         .then((response) => {
         //             console.log(response);
-        //             console.log("Updated form");
+        //             console.log("success", response);
         //         })
         //         .catch((error) => {
         //             this.errors = response.result.errors;
         //             console.log(response.result.errors);
         //         });
 
-        // redirect
-        // this.$router.push({ name: 'routename' })
+        //     redirect
+        //     this.$router.push({ name: 'routename' })
         // },
 
         validateForm() {
@@ -75,15 +76,28 @@ export default {
             else if (!this.validPassword(this.formData.password)) { this.errors.password = "La password deve contenere almeno una maiuscola, una minuscola ed un numero" };
             if (!this.formData.phone) { this.errors.phone = "Il numero di telefono è obbligatorio." }
             else if (isNaN(this.formData.phone)) { this.errors.phone = "Il numero di telefono può contenere solo numeri" };
-            if (!this.formData.officeAddress) this.errors.officeAddress = "L'indirizzo è obbligatorio.";
+            if (!this.formData.office_address) this.errors.office_address = "L'indirizzo è obbligatorio.";
             if (!this.formData.specialization) this.errors.specialization = "Inserire almeno una specializzazione.";
             if (!this.formData.services) this.errors.services = "Inserire almeno una prestazione.";
-            if (!this.formData.photo) this.errors.photo = "La foto è obbligatoria";
-            if (!this.formData.curriculum) this.errors.curriculum = "Il curriculum è obbligatorio.";
+            // if (!this.formData.photo) this.errors.photo = "La foto è obbligatoria";
+            // if (!this.formData.curriculum) this.errors.curriculum = "Il curriculum è obbligatorio.";
 
             if (!this.errors.length) {
                 this.validated = true;
-                return true;
+
+                if (this.validated = true) {
+                    axios.put(this.apiUrl, this.formData)
+                        .then(response => {
+                            console.log('Profile updated', response.data)
+                        })
+                        .catch(function (error) {
+                            // handle error
+                            console.error(error);
+                        })
+                        .finally(function () {
+                            // always executed
+                        });
+                }
             }
             console.log(this.formData);
             console.log(this.errors);
@@ -127,23 +141,22 @@ export default {
             this.$router.push('/user/:id');
         }
     },
+    // mounted() {
+    //     axios.get(this.apiUrl, this.formData)
+    //         .then(response => {
+    //             this.formData = response.data;
+    //             console.log(response)
+    //             console.log('formData after call', this.formData);
+    //         })
+    //         .catch(function (error) {
+    //             // handle error
+    //             console.error("failed", error);
+    //         })
+    //         .finally(function () {
+    //             // always executed
+    //         });
+    // }
 }
-
-// mounted() {
-//     axios.get(this.apiUrl)
-//         .then(function (response) {
-//             // handle success
-//             console.log(response);
-//         })
-//         .catch(function (error) {
-//             // handle error
-//             console.error(error);
-//         })
-//         .finally(function () {
-//             // always executed
-//         });
-// }
-// }
 
 </script>
 
@@ -194,11 +207,11 @@ export default {
                 </div>
             </div>
             <div class="mb-3 col-6">
-                <label for="officeAddress" class="form-label">Indirizzo</label>
-                <input type="text" class="form-control" :class="{ 'invalid-input': errors.officeAddress }"
-                    id="officeAddress" v-model='formData.officeAddress' required>
-                <div class="invalid" v-if="errors.officeAddress">
-                    <p> {{ errors.officeAddress }} </p>
+                <label for="office_address" class="form-label">Indirizzo</label>
+                <input type="text" class="form-control" :class="{ 'invalid-input': errors.office_address }"
+                    id="office_address" v-model='formData.office_address' required>
+                <div class="invalid" v-if="errors.office_address">
+                    <p> {{ errors.office_address }} </p>
                 </div>
             </div>
             <!-- <div class="mb-3 col-6">
@@ -225,7 +238,7 @@ export default {
             </div>
             <div class="mb-3">
                 <label for="photo" class="form-label">Foto profilo</label>
-                <input type="file" class="form-control" :class="{ 'invalid-input': errors.photo }" id="photo"
+                <input type="text" class="form-control" :class="{ 'invalid-input': errors.photo }" id="photo"
                     placeholder="Inserisci un file valido" @change="formData.photo" required>
                 <div class="invalid" v-if="errors.photo">
                     <p> {{ errors.photo }} </p>
@@ -234,7 +247,7 @@ export default {
             <div class="mb-3">
                 <label for="curriculum" class="form-label">Curriculum
                     Vitae</label>
-                <input type="file" class="form-control" :class="{ 'invalid-input': errors.curriculum }" id="curriculum"
+                <input type="text" class="form-control" :class="{ 'invalid-input': errors.curriculum }" id="curriculum"
                     placeholder="Inserisci un file valido" @change="formData.curriculum" required>
                 <div class="invalid" v-if="errors.curriculum">
                     <p> {{ errors.curriculum }} </p>

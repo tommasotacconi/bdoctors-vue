@@ -6,11 +6,14 @@ export default {
     data() {
         return {
             formData: {
+                user_id: 251,
+                photo: 'https://it.images.search.yahoo.com/search/images;_ylt=AwrLAD51f1Bn3wABKk7c5olQ;_ylu=Y29sbwNpcjIEcG9zAzEEdnRpZAMEc2VjA3BpdnM-?p=bender+foto&fr2=piv-web&type=E210IT1590G0&fr=mcafee&guccounter=1#id=0&iurl=https%3A%2F%2Fexternal-preview.redd.it%2F5GA8Zk4JnsMRR88HcZPb402OPXShU3cb05CYZbY7p4g.jpg%3Fauto%3Dwebp%26s%3D40ae96faadffd9bc008c03dc7de21ba4d7c8ae0d&action=click',
+                curriculum: "asasasaasddfsdgvfdsdsffffgfsdgsdggsdgsdgsdasdfasfasfasffffffffffffffffffasasasaasddfsdgvfdsdsffasasasaasddfsdgvfdsdsffffgfsdgdsgdsgasasasaasddfsdgvfdsdsffffgfsdgdsgdsgsdgsdgsdgsdgsdgsdgsdgsdgdsgsdgsdgsdgssdgsdgsdgsdgsdgsdgsdgsdgdsgsdgsdgsdgsffgfsdgdsgdsgsdgsdgsdgsdgsdgsdgsdgsdgdsgsdgsdgsdgsgsdgsdgsdgsggsasa",
             },
-            apiUrl: "http://127.0.0.1:8000/api/profiles",
+            apiUrl: 'http://127.0.0.1:8000/api/profiles',
             errors: {
                 phone: "",
-                officeAddress: "",
+                office_address: "",
                 services: "",
                 photo: "",
                 curriculum: ""
@@ -27,19 +30,18 @@ export default {
             this.errors = [];
             if (!this.formData.phone) { this.errors.phone = "Il numero di telefono è obbligatorio." }
             else if (isNaN(this.formData.phone)) { this.errors.phone = "Il numero di telefono può contenere solo numeri" };
-            if (!this.formData.officeAddress) this.errors.officeAddress = "L'indirizzo è obbligatorio.";
+            if (!this.formData.office_address) this.errors.office_address = "L'indirizzo è obbligatorio.";
             if (!this.formData.services) this.errors.services = "Inserire almeno una prestazione.";
-            if (!this.formData.photo) this.errors.photo = "La foto è obbligatoria";
-            if (!this.formData.curriculum) this.errors.curriculum = "Il curriculum è obbligatorio.";
+            // if (!this.formData.photo) this.errors.photo = "La foto è obbligatoria";
+            // if (!this.formData.curriculum) this.errors.curriculum = "Il curriculum è obbligatorio.";
             if (!this.errors.length) {
                 this.validated = true;
                 if (this.validated = true) {
                     axios.post(this.apiUrl, this.formData)
                         .then(response => {
-                            this.formData = response.data;
-                            console.log(response);
+                            console.log('Success', response.data);
                         })
-                        .catch(function (error) {
+                        .catch(error => {
                             // handle error
                             console.error(error);
                         })
@@ -53,19 +55,19 @@ export default {
         },
 
 
-        onPickFile() {
-            this.$refs.fileInput.click()
-        },
-        onFilePicked(event) {
-            const files = event.target.files
-            let filename = files[0].name
-            const fileReader = new FileReader()
-            fileReader.addEventListener('load', () => {
-                this.imageUrl = fileReader.result
-            })
-            fileReader.readAsDataURL(files[0])
-            this.photo = files[0]
-        },
+        // onPickFile() {
+        //     this.$refs.fileInput.click()
+        // },
+        // onFilePicked(event) {
+        //     const files = event.target.files
+        //     let filename = files[0].name
+        //     const fileReader = new FileReader()
+        //     fileReader.addEventListener('load', () => {
+        //         this.imageUrl = fileReader.result
+        //     })
+        //     fileReader.readAsDataURL(files[0])
+        //     this.photo = files[0]
+        // },
 
 
         mounted() {
@@ -90,10 +92,8 @@ export default {
     <div class="container py-3">
         <h1 class="text-center">Crea il tuo profilo</h1>
 
-        <button class="btn btn-info" @click="onPickFile">Upload profile picture</button>
-        <input type="file" style="display: none" ref="fileInput" accept="image/*" @change="onFilePicked" />
 
-        <form action="" method="PUT" class="row py-4 my-4" id="edit-form" @submit.prevent="validateForm" novalidate>
+        <form action="" method="POST" class="row py-4 my-4" id="edit-form" @submit.prevent="validateForm" novalidate>
 
             <div class="mb-3 col-6">
                 <label for="phone" class="form-label">Telefono</label>
@@ -104,11 +104,11 @@ export default {
                 </div>
             </div>
             <div class="mb-3 col-6">
-                <label for="officeAddress" class="form-label">Indirizzo</label>
-                <input type="text" class="form-control" :class="errors.officeAddress && 'invalid-input'"
-                    id="officeAddress" v-model='formData.officeAddress' required>
-                <div class="invalid" v-if="errors.officeAddress">
-                    <p> {{ errors.officeAddress }} </p>
+                <label for="office_address" class="form-label">Indirizzo</label>
+                <input type="text" class="form-control" :class="errors.office_address && 'invalid-input'"
+                    id="office_address" v-model='formData.office_address' required>
+                <div class="invalid" v-if="errors.office_address">
+                    <p> {{ errors.office_address }} </p>
                 </div>
             </div>
             <div class="mb-3 col-6">
@@ -121,7 +121,7 @@ export default {
             </div>
             <div class="mb-3">
                 <label for="photo" class="form-label">Foto profilo</label>
-                <input type="file" class="form-control" :class="errors.photo && 'invalid-input'" id="photo"
+                <input type="text" class="form-control" :class="errors.photo && 'invalid-input'" id="photo"
                     placeholder="Inserisci un file valido" @change="formData.photo" required>
                 <div class="invalid" v-if="errors.photo">
                     <p> {{ errors.photo }} </p>
@@ -130,7 +130,7 @@ export default {
             <div class="mb-3">
                 <label for="curriculum" class="form-label">Curriculum
                     Vitae</label>
-                <input type="file" class="form-control" :class="errors.curriculum && 'invalid-input'" id="curriculum"
+                <input type="text" class="form-control" :class="errors.curriculum && 'invalid-input'" id="curriculum"
                     placeholder="Inserisci un file valido" @change="formData.curriculum" required>
                 <div class="invalid" v-if="errors.curriculum">
                     <p> {{ errors.curriculum }} </p>
