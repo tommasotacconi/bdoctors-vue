@@ -5,7 +5,8 @@ export default {
     data() {
         return {
             searchedDoctor: [],
-            apiUrl: 'http://127.0.0.1:8000/api/profile/',
+            apiUrl: 'http://localhost:8000/api/profiles',
+            // specializationId: $route.params.id,
         }
     },
     methods: {
@@ -15,17 +16,24 @@ export default {
             //         this.searchedDoctor.filter()
         },
         getApiProfile() {
-            axios.get(`${this.apiUrl}`)
+            axios.get(this.apiUrl)
                 .then(response => {
-                    // handle success
-                    console.log(response.data.specializations);
-                    this.specializations = response.data.specializations;
+                    console.log(response.data);
+                    // let profiles = response.data.profiles
+                    // profiles.filter(profile => {
+                    //     profile.user.specializations.id === this.specializationId
+                    // console.log(profiles)
+                    // })
+                    // this.specializations = response.data.specializations;
                 })
                 .catch(function (error) {
                     // handle error
                     console.log(error);
                 })
         },
+    },
+    created() {
+        this.getApiProfile()
     }
 }
 </script>

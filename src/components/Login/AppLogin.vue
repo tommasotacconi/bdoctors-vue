@@ -36,12 +36,12 @@ export default {
 			<div class="col-12">
 				<!-- Email input -->
 				<label for="email-input" class="badge rounded-pill">Email</label>
-				<input type="text" id="email-input" class="form-control mb-3" v-model="store.inputEmail">
+				<input type="text" id="email-input" class="form-control mb-3" v-model="inputEmail">
 			</div>
 			<div class="col-12">
 				<!-- Password input -->
 				<label for="password-input" class="badge rounded-pill">Password</label>
-				<input type="text" id="password-input" class="form-control mb-3" v-model="store.inputPassword">
+				<input type="text" id="password-input" class="form-control mb-3" v-model="inputPassword">
 			</div>
 			<!-- Button wrappers -->
 			<div class="buttons-wrapper col-12">
