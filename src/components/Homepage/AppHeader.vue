@@ -57,12 +57,24 @@ export default {
                     </div>
                 </routerLink>
                 <div class="search-bar">
-                    <div class="input-group search-form">
+                    <!-- Old search-bar -->
+                    <!-- <div class="input-group search-form">
                         <input type="text" class="form-control" placeholder="Ricerca il tuo medico!"
                             aria-label="Ricerca il tuo medico!" aria-describedby="button-addon2">
                         <button class="btn btn-outline-secondary" type="button" id="button-addon2"><i
                                 class="fa-solid fa-magnifying-glass"></i></button>
-                    </div>
+                    </div> -->
+
+                    <!-- Updated search bar for specializations -->
+                    <select class="form-select" aria-label="Default select example">
+                        <option selected>Ricerca il medico per specializzazione!</option>
+                        <option v-for="(specialization, index) in specializations" value="index">{{ specialization.name
+                            }}
+                        </option>
+                        <option value="1">One</option>
+                        <option value="2">Two</option>
+                        <option value="3">Three</option>
+                    </select>
                 </div>
             </section>
             <div class="right-header d-flex" v-if="!$route.params.id">
