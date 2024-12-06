@@ -66,14 +66,11 @@ export default {
                     </div> -->
 
                     <!-- Updated search bar for specializations -->
-                    <select class="form-select" aria-label="Default select example">
+                    <select v-if="!$route.params.id" class="form-select" aria-label="Specialization Search">
                         <option selected>Ricerca il medico per specializzazione!</option>
                         <option v-for="(specialization, index) in specializations" value="index">{{ specialization.name
                             }}
                         </option>
-                        <option value="1">One</option>
-                        <option value="2">Two</option>
-                        <option value="3">Three</option>
                     </select>
                 </div>
             </section>

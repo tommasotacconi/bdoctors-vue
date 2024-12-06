@@ -5,6 +5,7 @@ import RegisterPage from '../src/pages/RegisterPage.vue'
 import Dashboard from '../src/pages/Dashboard.vue'
 import ProfileEdit from '../src/pages/ProfileEdit.vue'
 import Createpage from '../src/pages/Createpage.vue'
+import AdvancedSearch from '../src/pages/AdvancedSearch.vue'
 
 const routes = [
     { path: '/', component: Homepage, name: 'homepage' },
@@ -13,6 +14,7 @@ const routes = [
     { path: '/user/:id', component: Dashboard, name: 'dashboard' },
     { path: '/user/:id/edit', component: ProfileEdit, name: 'edit' },
     { path: '/user/:id/create', component: Createpage, name: 'create' },
+    { path: '/search', component: AdvancedSearch, name: 'search' },
 ]
 
 const router = createRouter({
