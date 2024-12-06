@@ -10,8 +10,21 @@ import AdvancedSearch from '../src/pages/AdvancedSearch.vue'
 const routes = [
     { path: '/', component: Homepage, name: 'homepage' },
     { path: '/user/login', component: LoginPage, name: 'login' },
-    { path: '/user/register', component: RegisterPage, name: 'register' },
-    { path: '/user/:id', component: Dashboard, name: 'dashboard' },
+    {
+        path: '/user/register', component: RegisterPage, name: 'register',
+    },
+    {
+        path: '/user/:id',
+        component: Dashboard,
+        name: 'dashboard',
+        beforeEnter(to, from, next) {
+            if (from.name === 'dashboard') {
+                next();
+            } else {
+                next({ name: 'homepage' });
+            }
+        }
+    },
     { path: '/user/:id/edit', component: ProfileEdit, name: 'edit' },
     { path: '/user/:id/create', component: Createpage, name: 'create' },
     { path: '/search/:id', component: AdvancedSearch, name: 'search' },
