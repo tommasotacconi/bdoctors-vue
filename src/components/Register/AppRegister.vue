@@ -6,7 +6,16 @@ import AppAlert from '../Generics/AppAlert.vue'
 export default {
 	data() {
 		return {
-			errors: [],
+			errors: {
+				firstName: [],
+				lastName: [],
+				homeAddress: [],
+				specializations: [],
+				email: [],
+				password: [],
+				passwordConfirmation: [],
+			},
+			isValidated: false,
 			firstName: '',
 			lastName: '',
 			homeAddress: '',
@@ -22,33 +31,36 @@ export default {
 			this.specializations = specializations;
 			console.log('current specializations', this.specializations);
 		},
-		checkForm() {
-			// Subscribe errors array with an empty one, to be ready for a next validation
-			this.errors = [];
-			if (!this.firstName) this.errors.push("Il nome è vuoto.");
-			if (this.firstName.length < 2 || this.firstName > 50) this.errors.push("Il nome può essere composto da 2 a 50 caratteri.");
-			if (!this.lastName) this.errors.push("Il cognome è vuoto.");
-			if (this.lastName.length < 2 || this.lastName > 50) this.errors.push("Il cognome può essere composto da 2 a 50 caratteri.");
-			if (!this.homeAddress) this.errors.push("L'indirizzo di residenza è vuoto");
-			if (this.homeAddress.length < 3 || this.home_address > 100) this.errors.push("L'indirizzo di residenza può essere composto da 3 a 100 caratteri.");
-			if (!this.specializations.length) this.errors.push("Selezionare almeno una specializzazione");
-			if (!this.email) this.errors.push("La email è vuota");
-			if (this.email.length < 2 || this.email > 50) this.errors.push("La email può essere composta da 6 a 50 caratteri.");
-			if (!this.password) this.errors.push("La password è vuota");
-			if (this.password.length < 8) this.errors.push("La password può essere composta da minimo 8 caratteri.");
-			if (this.password !== this.passwordConfirmation) this.errors.push("Le password non coincidono");
-			// Check if the errors array is still empty
-			if (!this.errors.length) return true;
-			return false
+		checkFormValidity() {
+			// Subscribe errors object with an empty one, to be ready for a next validation
+			const allKeys = Object.keys(this.errors);  
+			for (let i = 0; i < allKeys.length; i++) {
+				this.errors[allKeys[i]] = [];
+			}
+			// Start validation
+      if (this.firstName.length < 2 || this.firstName > 50) this.errors.firstName.push("Il nome può essere composto da 2 a 50 caratteri.");
+      if(this.lastName.length < 2 || this.lastName > 50) this.errors.lastName.push("Il cognome può essere composto da 2 a 50 caratteri.");
+      if(this.homeAddress.length < 3 || this.homeAddress > 100) this.errors.homeAddress.push("L'indirizzo di residenza può essere composto da 3 a 100 caratteri.");
+      if (!this.specializations.length) this.errors.specializations.push("Selezionare almeno una specializzazione");
+      if(this.email.length < 6 || this.email.length > 50) this.errors.email.push("La email può essere composta da 6 a 50 caratteri.");
+      if (this.password.length < 8) this.errors.password.push("La password può essere composta da minimo 8 caratteri.");
+			if (this.password !== this.passwordConfirmation) this.errors.passwordConfirmation.push("Le password non coincidono");
+			// Declare form validated by means of reactive variable 'isValidated'
+			this.isValidated = true;
+			// Check if the errors object is still empty
+			for (let i = 0; i < allKeys.length; i++) {
+				if (this.errors[allKeys[i]].length) return false;
+			}
+			return true
 		},
 		sendRegistrationData() {
 			// Run the validation to control if it can move forward
-			if (!this.checkForm()) return
+			if (!this.checkFormValidity()) return
 			axios.post('http://127.0.0.1:8000/api/register', {
 				first_name: this.firstName,
 				last_name: this.lastName,
 				home_address: this.homeAddress,
-				specialization_id: this.specializations[0].id,
+				specialization_id: this.specializations,
 				email: this.email,
 				password: this.password,
 				password_confirmation: this.passwordConfirmation
@@ -73,48 +85,70 @@ export default {
 
 <template>
 	<!-- Register form -->
-	<form class="" action="post" @submit.prevent="sendRegistrationData">
+	<form class="" action="post" @submit.prevent="sendRegistrationData" novalidate>
 		<div class="row card register-card" id="login-card">
 
 			<!-- first_name input -->
-			<div class="col-md-6">
+			<div class="col-md-6 mb-2">
 				<label for="first-name-input" class="badge rounded-pill">Nome</label>
-				<input type="text" id="first-name-input" class="form-control mb-3" v-model="firstName">
+				<input type="text" id="first-name-input" class="form-control" :class="{ 'invalid-element': errors.firstName.length }" v-model="firstName">
+				<div class="invalid-element" v-if="errors.firstName.length">
+					<div v-for="(error, index) in errors.firstName" :key="index">{{ error }}</div>
+				</div>
 			</div>
 			<!-- last_name input -->
-			<div class="col-md-6">
+			<div class="col-md-6 mb-2">
 				<label for="last-name-input" class="badge rounded-pill">Cognome</label>
-				<input type="text" id="last-name-input" class="form-control mb-3" v-model="lastName">
+				<input type="text" id="last-name-input" class="form-control " :class="{ 'invalid-element': errors.lastName.length }" v-model="lastName">
+				<div class="invalid-element" v-if="errors.lastName.length">
+					<div v-for="(error, index) in errors.lastName" :key="index">{{ error }}</div>
+				</div>
 			</div>
 			<!-- home_address input -->
-			<div class="col-md-12">
+			<div class="col-md-12 mb-2">
 				<label for="home-address-input" class="badge rounded-pill">Indirizzo di residenza</label>
-				<input type="text" id="home-address-input" class="form-control mb-3" v-model="homeAddress">
+				<input type="text" id="home-address-input" class="form-control " :class="{ 'invalid-element': errors.homeAddress.length }" v-model="homeAddress">
+				<div class="invalid-element" v-if="errors.homeAddress.length">
+					<div v-for="(error, index) in errors.homeAddress" :key="index">{{ error }} </div>
+				</div>
+
 			</div>
 			<!-- specializations with Multiselect component-->
-			<div id="select-container" class="col-md-12">
+				<div id="select-container" class="col-md-12 mb-2">
 				<label for="specializations-input" class="badge rounded-pill">Specializzazioni</label>
-				<Multiselect id="specializations-input" @send-values="updateSpecs" />
+				<Multiselect id="specializations-input" :class="{ 'invalid-element': errors.specializations.length }" @send-values="updateSpecs" />
+				<div class="invalid-element" v-if="errors.specializations.length">
+					<div v-for="(error, index) in errors.specializations" :key="index">{{ error }}</div>
+				</div>
+
 			</div>
 			<!-- email input -->
-			<div class="col-md-12">
+			<div class="col-md-12 mb-3">
 				<label for="email-input" class="badge rounded-pill">Email</label>
-				<input type="text" id="email-input" class="form-control mb-3" v-model="email">
+				<input type="text" id="email-input" class="form-control " :class="{ 'invalid-element': errors.email.length }" v-model="email">
+				<div class="invalid-element" v-if="errors.email.length">
+					<div v-for="(error, index) in errors.email" :key="index">{{ error }} </div>
+				</div>
 			</div>
 			<!-- password input -->
-			<div class="col-md-12">
+			<div class="col-md-12 mb-2">
 				<label for="password-input" class="badge rounded-pill">Password</label>
-				<input type="text" id="password-input" class="form-control mb-3" v-model="password">
+				<input type="text" id="password-input" class="form-control " :class="{ 'invalid-element': errors.password.length }" v-model="password">
+				<div class="invalid-element" v-if="errors.password.length">
+					<div v-for="(error, index) in errors.password" :key="index">{{ error }}</div>
+				</div>
 			</div>
 			<!-- confirm password input -->
-			<div class="col-md-12">
+			<div class="col-md-12 mb-2">
 				<label for="password-confirmation-input" class="badge rounded-pill">Conferma password</label>
-				<input type="text" id="password-confirmation-input" class="form-control mb-3"
-					v-model="passwordConfirmation">
+				<input type="text" id="password-confirmation-input" class="form-control" :class="{ 'invalid-element': errors.passwordConfirmation.length }" v-model="passwordConfirmation">
+				<div class="invalid-element" v-if="errors.passwordConfirmation.length">
+					<div v-for="(error, index) in errors.passwordConfirmation" :key="index">{{ error }}</div>
+				</div>
 			</div>
 
 			<!-- Button wrappers -->
-			<div class="buttons-wrapper">
+			<div class="buttons-wrapper mt-3">
 				<!-- register button -->
 				<button type="submit" class="btn btn-primary" id="register-button">Registrati</button>
 				<!-- reset button -->
@@ -122,9 +156,9 @@ export default {
 			</div>
 
 			<!-- Alert container -->
-			<div class="col-md-12 mb-2">
+			<div class="col-md-12">
 				<!-- Modal card for confirmed registration -->
-				<AppAlert class="confirmation-alert alert-success mt-2" v-show="responseStatus">
+				<AppAlert id="confirmation-alert" class="alert-success mt-2" v-show="responseStatus">
 					I dati sono stati registrati
 				</AppAlert>
 			</div>
@@ -172,16 +206,16 @@ select {
 	width: 600px;
 }
 
-#errors-modal,
-#confirmation-modal {
+#confirmation-alert{
 	padding-left: 10px;
 	padding-right: 10px;
 	display: block;
 	border-width: 2px;
 }
 
-#errors-modal {
-	border-color: red;
+.invalid-element {
+	color: #ff0048;
+	border-color: currentColor;
 }
 
 div#select-container {
@@ -200,7 +234,16 @@ div#select-container {
 	}
 }
 
+.btn-warning {
+	color: #fff;
+	background-color: #ca9400;
+}
+
 #register-button {
 	background-color: #65B0FF;
+
+	&:hover {
+		background-color: #0E395D;
+	}
 }
 </style>
