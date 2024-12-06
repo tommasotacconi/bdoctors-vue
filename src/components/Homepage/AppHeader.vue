@@ -1,8 +1,12 @@
 <script>
+import axios from 'axios';
+
 export default {
     data() {
         return {
-            logout: false
+            logout: false,
+            apiUrl: 'http://127.0.0.1:8000/api/specializations',
+            specializations: []
         }
     },
     methods: {
@@ -15,7 +19,22 @@ export default {
                     this.logout = false
                 }, 5000)
             }
+        },
+        getApi() {
+            axios.get(this.apiUrl)
+                .then(response => {
+                    // handle success
+                    console.log(response.data.specializations);
+                    this.specializations = response.data.specializations;
+                })
+                .catch(function (error) {
+                    // handle error
+                    console.log(error);
+                })
         }
+    },
+    mounted() {
+        this.getApi()
     }
 }
 </script>

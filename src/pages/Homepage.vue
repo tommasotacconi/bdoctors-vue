@@ -5,7 +5,6 @@ import AppMainHome from '../components/Homepage/AppMainHome.vue';
 export default {
     data() {
         return {
-
         }
     },
     components: {
