@@ -7,7 +7,7 @@ export default {
 		return {
 			inputEmail: '',
 			inputPassword: '',
-
+			responseStatus: false,
 			store,
 		}
 	},
@@ -19,7 +19,7 @@ export default {
 			})
 				.then(response => {
 					console.log(response);
-					store.responseStatus = true;
+					this.responseStatus = true;
 					this.$router.push({ name: 'dashboard', params: { id: response.data.data.id } })
 				})
 				.catch(function (error) {
