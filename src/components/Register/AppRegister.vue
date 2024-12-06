@@ -20,7 +20,7 @@ export default {
 			lastName: '',
 			homeAddress: '',
 			specializations: [],
-		  email: '',
+			email: '',
 			password: '',
 			passwordConfirmation: '',
 			responseStatus: false,
@@ -65,14 +65,15 @@ export default {
 				password: this.password,
 				password_confirmation: this.passwordConfirmation
 			})
-			.then(response => {
-				console.log(response);
-				this.responseStatus = true;
+				.then(response => {
+					console.log(response);
+					this.responseStatus = true;
+					this.$router.push('/user/login')
 
-			})
-			.catch(function (error) {
-				console.log(error);
-			});
+				})
+				.catch(function (error) {
+					console.log(error);
+				});
 		},
 	},
 	components: {
@@ -153,7 +154,7 @@ export default {
 				<!-- reset button -->
 				<button type="reset" class="btn btn-warning ms-3" id="reset-button">Pulisci</button>
 			</div>
-			
+
 			<!-- Alert container -->
 			<div class="col-md-12">
 				<!-- Modal card for confirmed registration -->
@@ -183,7 +184,7 @@ label {
 	color: white;
 
 	position: relative;
-	left: 15px; 
+	left: 15px;
 	top: 12px;
 }
 
@@ -223,10 +224,10 @@ div#select-container {
 	overflow-clip-margin: 190px;
 
 	label {
-	position: relative;
-	z-index: 1;
+		position: relative;
+		z-index: 1;
 	}
-	
+
 	#specializations-input {
 		border: 2px solid #65B0FF;
 		border-radius: 7px;
