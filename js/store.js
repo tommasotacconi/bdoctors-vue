@@ -9,6 +9,9 @@ export const store = reactive({
   sponsorshipPage: false,
   statisticPage: false,
 
+  // test route guard
+  responseStatus: false,
+
   // Variable for toggle sidebar inside dashboard
   sidebar: true,
 

@@ -7,6 +7,9 @@ import ProfileEdit from '../src/pages/ProfileEdit.vue'
 import Createpage from '../src/pages/Createpage.vue'
 import AdvancedSearch from '../src/pages/AdvancedSearch.vue'
 
+import axios from 'axios'
+import { store } from './store'
+
 const routes = [
     { path: '/', component: Homepage, name: 'homepage' },
     { path: '/user/login', component: LoginPage, name: 'login' },
@@ -17,13 +20,17 @@ const routes = [
         path: '/user/:id',
         component: Dashboard,
         name: 'dashboard',
-        beforeEnter(to, from, next) {
-            if (from.name === 'dashboard') {
-                next();
-            } else {
-                next({ name: 'homepage' });
-            }
-        }
+
+        // Da capire se funziona
+        // beforeEnter(to, from, next) {
+        //     let status = store.responseStatus
+
+        //     if (from.status === true) {
+        //         next();
+        //     } else {
+        //         next({ name: 'login' });
+        //     }
+        // }
     },
     { path: '/user/:id/edit', component: ProfileEdit, name: 'edit' },
     { path: '/user/:id/create', component: Createpage, name: 'create' },

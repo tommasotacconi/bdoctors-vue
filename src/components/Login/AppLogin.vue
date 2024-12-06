@@ -1,12 +1,14 @@
 <script>
 import axios from 'axios';
+import { store } from '../../../js/store';
 
 export default {
 	data() {
 		return {
 			inputEmail: '',
 			inputPassword: '',
-			responseStatus: false,
+
+			store,
 		}
 	},
 	methods: {
@@ -17,7 +19,7 @@ export default {
 			})
 				.then(response => {
 					console.log(response);
-					this.responseStatus = true;
+					store.responseStatus = true;
 					this.$router.push({ name: 'dashboard', params: { id: response.data.data.id } })
 				})
 				.catch(function (error) {
@@ -34,12 +36,12 @@ export default {
 			<div class="col-12">
 				<!-- Email input -->
 				<label for="email-input" class="badge rounded-pill">Email</label>
-				<input type="text" id="email-input" class="form-control mb-3" v-model="inputEmail">
+				<input type="text" id="email-input" class="form-control mb-3" v-model="store.inputEmail">
 			</div>
 			<div class="col-12">
 				<!-- Password input -->
 				<label for="password-input" class="badge rounded-pill">Password</label>
-				<input type="text" id="password-input" class="form-control mb-3" v-model="inputPassword">
+				<input type="text" id="password-input" class="form-control mb-3" v-model="store.inputPassword">
 			</div>
 			<!-- Button wrappers -->
 			<div class="buttons-wrapper col-12">
