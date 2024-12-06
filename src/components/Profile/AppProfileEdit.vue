@@ -21,7 +21,7 @@ export default {
                 photo: "https://upload.wikimedia.org/wikipedia/en/thumb/a/a6/Bender_Rodriguez.png/220px-Bender_Rodriguez.png",
                 curriculum: "asasasaasddfsdgvfdsdsffffgfsdgsdggsdgsdgsdasdfasfasfasffffffffffffffffffasasasaasddfsdgvfdsdsffasasasaasddfsdgvfdsdsffffgfsdgdsgdsgasasasaasddfsdgvfdsdsffffgfsdgdsgdsgsdgsdgsdgsdgsdgsdgsdgsdgdsgsdgsdgsdgssdgsdgsdgsdgsdgsdgsdgsdgdsgsdgsdgsdgsffgfsdgdsgdsgsdgsdgsdgsdgsdgsdgsdgsdgdsgsdgsdgsdgsgsdgsdgsdgsggsasa",
             },
-            apiUrl: "http://127.0.0.1:8000/api/profiles/250",
+            apiUrl: "http://127.0.0.1:8000/api/profiles/edit/250",
             errors: {
                 first_name: '',
                 last_name: "",
@@ -145,21 +145,21 @@ export default {
             this.$router.push('/user/:id');
         }
     },
-    // mounted() {
-    //     axios.get(this.apiUrl, this.formData)
-    //         .then(response => {
-    //             this.formData = response.data;
-    //             console.log(response)
-    //             console.log('formData after call', this.formData);
-    //         })
-    //         .catch(function (error) {
-    //             // handle error
-    //             console.error("failed", error);
-    //         })
-    //         .finally(function () {
-    //             // always executed
-    //         });
-    // }
+    mounted() {
+        axios.get(this.apiUrl, this.formData)
+            .then(response => {
+                this.formData = response.data;
+                console.log(response)
+                console.log('formData after call', this.formData);
+            })
+            .catch(function (error) {
+                // handle error
+                console.error("failed", error);
+            })
+            .finally(function () {
+                // always executed
+            });
+    }
 }
 
 </script>
