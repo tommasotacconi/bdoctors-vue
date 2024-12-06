@@ -19,7 +19,7 @@ const routes = [
     {
         path: '/user/:id',
         component: Dashboard,
-        name: 'dashboard',
+        name: 'dashboard'
 
         // Da capire se funziona
         // beforeEnter(to, from, next) {
