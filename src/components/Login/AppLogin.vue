@@ -10,19 +10,18 @@ export default {
 		}
 	},
 	methods: {
-		sendLoginData() {
-			axios.post('http://127.0.0.1:8000/api/login', {
-				email: this.inputEmail,
-				password: this.inputPassword
-			})
-				.then(response => {
-					console.log(response);
-					this.responseStatus = true;
-					this.$router.push({ name: 'dashboard', params: { id: response.data.data.id } })
-				})
-				.catch(function (error) {
-					console.log(error);
+		async sendLoginData() {
+			try {
+				const response = await axios.post('http://127.0.0.1:8000/api/login', {
+					email: this.inputEmail,
+					password: this.inputPassword
 				});
+				console.log(response);
+				this.responseStatus = true;
+				this.$router.push({ name: 'dashboard', params: { id: response.data.data.id } });
+			} catch (error) {
+				console.log(error);
+			}
 		},
 	}
 }
