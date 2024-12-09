@@ -15,7 +15,7 @@ export default {
         getProfileData() {
             axios.get(this.store.apiUri + 'profiles/' + this.store.informationPageId)
                 .then(response => {
-                    console.log(response);
+                    // console.log(response);
                     this.profileData = response.data.data;
                 })
                 .catch(function (error) {
@@ -53,7 +53,7 @@ export default {
                         </div>
                         <div class="card-body-title-section">
                             <h2 class="card-title">
-                                Nome Cognome
+                                {{ store.doctorProfile.user.first_name }} {{ store.doctorProfile.user.last_name }}
                                 <!-- {{ profileData.doctor.first_name }} {{ profileData.doctor.last_name }} -->
                             </h2>
                         </div>
@@ -62,34 +62,37 @@ export default {
                                 <li>
                                     <h3>Curriculum</h3>
                                     <div class="data-element curriculum-element">
-                                        Nome del file
+                                        Curriculum.pdf
                                     </div>
                                 </li>
                                 <li class="">
                                     <h3>Specializzazione</h3>
                                     <div class="data-element specializations-element">
-                                        Anatomia patologica, Cardiologia
+                                        <ul>
+                                            <li v-for="specialization in store.doctorProfile.user.specializations">{{
+                                                specialization.name }}</li>
+                                        </ul>
                                     </div>
                                     <!-- {{ profileData.doctor.specializations[0].name }} -->
                                 </li>
                                 <li>
                                     <h3>Indirizzo</h3>
                                     <div class="data-element address-element">
-                                        Via nome di via
+                                        {{ store.doctorProfile.office_address }}
                                     </div>
                                     <!-- {{ profileData.office_address }} -->
                                 </li>
                                 <li>
                                     <h3>Telefono</h3>
                                     <div class="data-element telephone-element">
-                                        00000000
+                                        {{ store.doctorProfile.phone }}
                                     </div>
                                     <!-- {{ profileData.phone }} -->
                                 </li>
                                 <li>
                                     <h3>Prestazioni</h3>
                                     <div class="data-element services-element">
-                                        Elenco di prestazioni
+                                        {{ store.doctorProfile.services }}
                                     </div>
                                     <!-- {{ profileData.services }} -->
                                 </li>
