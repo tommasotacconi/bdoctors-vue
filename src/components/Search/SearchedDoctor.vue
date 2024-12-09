@@ -28,8 +28,6 @@ export default {
                         }
                         let specializationsProfile = profile.user.specializations
                         if (specializationsProfile.length === 2) {
-                            let count = 0
-                            console.log(count++)
                             if (profile.user.specializations[1].id == store.searchedSpecialization) {
                                 filteredProfiles.push(profile)
                             }
@@ -51,10 +49,12 @@ export default {
 </script>
 
 <template>
-    <main class="container container-doctor-list">
+    <main class="container">
         <div class="title">
-            <!-- <h2>Ricerca per: {{ doctors[0].user.specializations[0].name }}
-            </h2> -->
+            <h2>Ricerca per:
+            </h2>
+            <!-- It's not working -->
+            <!-- {{ doctors[0].user.specializations[0].name }} -->
         </div>
         <div class="doctors-list">
             <div class="doctor-card" v-for="doctor in doctors">
@@ -71,6 +71,11 @@ export default {
                         <strong>Prestazioni:</strong> {{ doctor.services }}
                     </div>
                 </section>
+
+                <!-- We can put the router link all over the card -->
+                <!-- <section class="profile-show">
+                    <button class="button-profile-show">Profilo</button>
+                </section> -->
             </div>
         </div>
     </main>
@@ -88,11 +93,6 @@ h5 {
 
 .specialization-title {
     text-transform: lowercase;
-}
-
-.container-doctor-list {
-    display: flex;
-    justify-content: center;
 }
 
 .doctors-list {
@@ -120,5 +120,15 @@ img {
     border-radius: 50%;
     border: 3px solid #65B0FF;
     height: 200px;
+}
+
+.button-profile-show {
+    background-color: var(--color-secondary);
+    border-radius: 20px;
+    padding: 8px 15px;
+    text-decoration: none;
+    color: var(--color-primary);
+    font-weight: bold;
+    border: 1px solid var(--color-primary);
 }
 </style>
