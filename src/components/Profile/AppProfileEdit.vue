@@ -48,7 +48,7 @@ export default {
     methods: {
 
         updateForm() {
-            axios.put(this.store.apiUri + 'profiles/edit/' + this.store.informationPageId, this.formData)
+            axios.post(this.store.apiUri + 'profiles/edit/' + this.store.informationPageId, this.formData)
                 .then(response => {
                     console.log('store api', this.store.apiUri + 'profiles/edit/' + this.store.informationPageId)
                     console.log('Profile updated', response.data)
@@ -175,7 +175,7 @@ export default {
     <div class="container py-3">
         <h1 class="text-center">Modifica le tue informazioni</h1>
 
-        <form action="" method="PUT" class="row py-4 my-4" id="edit-form" @submit.prevent="validateForm" novalidate>
+        <form action="" method="POST" class="row py-4 my-4" id="edit-form" @submit.prevent="validateForm" novalidate>
 
             <div class="mb-3 col-4">
                 <label for="first_name" class="form-label">Nome</label>
