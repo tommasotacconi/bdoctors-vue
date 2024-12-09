@@ -7,7 +7,7 @@ export default {
         return {
             store,
             searchedDoctor: [],
-            apiUrl: 'http://127.0.0.1:8000/api/profile/',
+            apiUrl: 'http://127.0.0.1:8000/api/profile',
             specializationId: store.searchedSpecialization
         }
     },
