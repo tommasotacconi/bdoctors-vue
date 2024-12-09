@@ -59,13 +59,13 @@ export default {
                         </div>
                         <div class="card-body-text-section">
                             <ul class="d-flex flex-wrap row-gap-3 ul-child-elements">
-                                <li>
+                                <li id="curriculum-border">
                                     <h3>Curriculum</h3>
                                     <div class="data-element curriculum-element">
                                         Curriculum.pdf
                                     </div>
                                 </li>
-                                <li class="">
+                                <li id="specialization-border">
                                     <h3>Specializzazione</h3>
                                     <div class="data-element specializations-element">
                                         <ul>
@@ -75,21 +75,21 @@ export default {
                                     </div>
                                     <!-- {{ profileData.doctor.specializations[0].name }} -->
                                 </li>
-                                <li>
+                                <li id="address-border">
                                     <h3>Indirizzo</h3>
                                     <div class="data-element address-element">
                                         {{ store.doctorProfile.office_address }}
                                     </div>
                                     <!-- {{ profileData.office_address }} -->
                                 </li>
-                                <li>
+                                <li id="phone-border">
                                     <h3>Telefono</h3>
                                     <div class="data-element telephone-element">
                                         {{ store.doctorProfile.phone }}
                                     </div>
                                     <!-- {{ profileData.phone }} -->
                                 </li>
-                                <li>
+                                <li id="services-border">
                                     <h3>Prestazioni</h3>
                                     <div class="data-element services-element">
                                         {{ store.doctorProfile.services }}
@@ -190,6 +190,7 @@ ul {
     padding-left: 0;
     list-style-type: none;
 }
+
 
 .edit-profile {
     background-color: var(--color-secondary);
