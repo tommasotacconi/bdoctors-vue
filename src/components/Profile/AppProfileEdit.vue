@@ -11,7 +11,7 @@ export default {
         return {
             store,
             formData: {
-                user_id: '',
+                user_id: "",
                 first_name: "",
                 last_name: "",
                 email: "",
@@ -126,6 +126,32 @@ export default {
             this.formData.specializations = specializations;
             console.log(this.formData.specializations);
         },
+
+        getProfileData() {
+            axios.get(this.store.apiUri + 'profiles/edit/' + this.store.informationPageId, this.formData)
+                .then(response => {
+                    console.log('store api', store.apiUri)
+
+                    this.formData = response.data.data;
+                    this.formData.user_id = response.data.data.doctor.id;
+                    this.formData.first_name = response.data.data.doctor.first_name;
+                    this.formData.last_name = response.data.data.doctor.last_name;
+                    this.formData.email = response.data.data.doctor.email;
+                    this.formData.password = response.data.data.doctor.password;
+                    this.formData.oldSpecializations = response.data.data.doctor.specializations;
+
+                    console.log(response)
+                    console.log('formData after call', this.formData);
+                })
+                .catch(function (error) {
+                    // handle error
+                    console.log('store api', `${store.apiUri}profiles/edit/${store.informationPageId}`);
+                    console.error("failed", error)
+                })
+                .finally(function () {
+                    // always executed
+                });
+        }
     },
     computed: {
         openProfile() {
@@ -138,29 +164,8 @@ export default {
             this.$router.push('/user/:id');
         }
     },
-    created() {
-        axios.get(this.store.apiUri + 'profiles/edit/' + this.store.informationPageId, this.formData)
-            .then(response => {
-                console.log('store api', store.apiUri)
-
-                this.formData = response.data.data;
-                this.formData.first_name = response.data.data.doctor.first_name;
-                this.formData.last_name = response.data.data.doctor.last_name;
-                this.formData.email = response.data.data.doctor.email;
-                this.formData.password = response.data.data.doctor.password;
-                this.formData.oldSpecializations = response.data.data.doctor.specializations;
-
-                console.log(response)
-                console.log('formData after call', this.formData);
-            })
-            .catch(function (error) {
-                // handle error
-                console.log('store api', `${store.apiUri}profiles/edit/${store.informationPageId}`);
-                console.error("failed", error)
-            })
-            .finally(function () {
-                // always executed
-            });
+    created: function () {
+        this.getProfileData();
     },
 }
 
