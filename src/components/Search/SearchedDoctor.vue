@@ -97,6 +97,16 @@ export default {
                 <!-- It's not working -->
                 <!-- {{ doctors[0].user.specializations[0].name }} -->
             </div>
+
+            <div class="advanced-filter">
+                <div class="average-votes">
+
+                </div>
+                <div class="number-reviews">
+
+                </div>
+            </div>
+
             <div class="doctors-list">
                 <div class="doctor-card" v-for="(doctor, index) in doctors" @click="getProfileId(index)">
                     <img src="https://media.istockphoto.com/id/1340883379/photo/young-doctor-hospital-medical-medicine-health-care-clinic-office-portrait-glasses-man.jpg?s=612x612&w=0&k=20&c=_H4VUPBkS0gEj5ZdZzQo-Hw3lMuyofJpB-P9yS92Wyw="
