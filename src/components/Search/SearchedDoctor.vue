@@ -7,7 +7,7 @@ export default {
         return {
             store,
             searchedDoctor: [],
-            apiUrl: 'http://127.0.0.1:8000/api/profile',
+            apiUrl: 'http://localhost:8000/api/profiles',
             specializationId: store.searchedSpecialization
         }
     },
@@ -19,10 +19,22 @@ export default {
                     let profiles = response.data.profiles
                     console.log(this.specializationId)
                     console.log(profiles[0].id)
+                    console.log(store.searchedSpecialization)
 
                     // Qua non funziona, da capire come mai
-                    const filteredProfiles = profiles.filter(profile => profile.id === this.specializationId)
+                    profiles.filter(profile => profile.id === store.searchedSpecialization)
+                    console.log(profiles)
+
+                    // Idem qui con un for normale
+                    let filteredProfiles = []
+                    for (let i = 0; i < profiles.length; i++) {
+                        let profile = profiles[i]
+                        if (profile.id == store.searchedSpecialization) {
+                            filteredProfiles.push(profile)
+                        }
+                    }
                     console.log(filteredProfiles)
+
                     this.specializations = response.data.specializations;
                 })
                 .catch(function (error) {
