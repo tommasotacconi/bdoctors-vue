@@ -9,8 +9,8 @@ import { store } from '../../../js/store.js';
 export default {
     data() {
         return {
+            store,
             formData: {
-                store,
                 user_id: '',
                 first_name: "",
                 last_name: "",
@@ -48,9 +48,9 @@ export default {
     methods: {
 
         updateForm() {
-            axios.put(this.formData.store.apiUri + 'profiles/edit/' + this.formData.store.informationPageId, this.formData)
+            axios.put(this.store.apiUri + 'profiles/edit/' + this.store.informationPageId, this.formData)
                 .then(response => {
-                    console.log('store api', this.formData.store.apiUri + 'profiles/edit/' + this.formData.store.informationPageId)
+                    console.log('store api', this.store.apiUri + 'profiles/edit/' + this.store.informationPageId)
                     console.log('Profile updated', response.data)
                 })
                 .catch(function (error) {
@@ -139,9 +139,9 @@ export default {
         }
     },
     created() {
-        axios.get(this.formData.store.apiUri + 'profiles/edit/' + this.formData.store.informationPageId, this.formData)
+        axios.get(this.store.apiUri + 'profiles/edit/' + this.store.informationPageId, this.formData)
             .then(response => {
-                console.log('store api', this.formData.store.apiUri)
+                console.log('store api', store.apiUri)
 
                 this.formData = response.data.data;
                 this.formData.first_name = response.data.data.doctor.first_name;
@@ -155,7 +155,8 @@ export default {
             })
             .catch(function (error) {
                 // handle error
-                console.error("failed", error);
+                console.log('store api', `${store.apiUri}profiles/edit/${store.informationPageId}`);
+                console.error("failed", error)
             })
             .finally(function () {
                 // always executed
