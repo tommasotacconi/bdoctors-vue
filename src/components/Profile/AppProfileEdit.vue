@@ -3,13 +3,15 @@ import axios from "axios";
 import Multiselect from "../Generics/Multiselect.vue";
 import PhotoUpload from "../Generics/PhotoUpload.vue";
 import CvUpload from "../Generics/CvUpload.vue";
+import { store } from '../../../js/store.js';
 
 
 export default {
     data() {
         return {
             formData: {
-                user_id: 250,
+                store,
+                user_id: '',
                 first_name: "",
                 last_name: "",
                 email: "",
@@ -19,10 +21,10 @@ export default {
                 oldSpecializations: [],
                 specializations: [],
                 services: "",
-                photo: "https://upload.wikimedia.org/wikipedia/en/thumb/a/a6/Bender_Rodriguez.png/220px-Bender_Rodriguez.png",
-                curriculum: "asasasaasddfsdgvfdsdsffffgfsdgsdggsdgsdgsdasdfasfasfasffffffffffffffffffasasasaasddfsdgvfdsdsffasasasaasddfsdgvfdsdsffffgfsdgdsgdsgasasasaasddfsdgvfdsdsffffgfsdgdsgdsgsdgsdgsdgsdgsdgsdgsdgsdgdsgsdgsdgsdgssdgsdgsdgsdgsdgsdgsdgsdgdsgsdgsdgsdgsffgfsdgdsgdsgsdgsdgsdgsdgsdgsdgsdgsdgdsgsdgsdgsdgsgsdgsdgsdgsggsasa",
+                photo: null,
+                curriculum: null,
             },
-            apiUrl: "http://127.0.0.1:8000/api/profiles/edit/248",
+            apiUrl: 'http://127.0.0.1:8000/api/profiles/edit/',
             errors: {
                 first_name: '',
                 last_name: "",
@@ -44,21 +46,21 @@ export default {
         CvUpload
     },
     methods: {
-        // updateForm() {
 
-        //     axios.post('/user', this.formData)
-        //         .then((response) => {
-        //             console.log(response);
-        //             console.log("success", response);
-        //         })
-        //         .catch((error) => {
-        //             this.errors = response.result.errors;
-        //             console.log(response.result.errors);
-        //         });
-
-        //     redirect
-        //     this.$router.push({ name: 'routename' })
-        // },
+        updateForm() {
+            axios.put(this.formData.store.apiUri + 'profiles/edit/' + this.formData.store.informationPageId, this.formData)
+                .then(response => {
+                    console.log('store api', this.formData.store.apiUri + 'profiles/edit/' + this.formData.store.informationPageId)
+                    console.log('Profile updated', response.data)
+                })
+                .catch(function (error) {
+                    // handle error
+                    console.error(error);
+                })
+                .finally(function () {
+                    // always executed
+                });
+        },
 
         validateForm() {
             this.errors = [];
@@ -82,7 +84,7 @@ export default {
             if (!this.formData.phone) { this.errors.phone = "Il numero di telefono è obbligatorio." }
             else if (isNaN(this.formData.phone)) { this.errors.phone = "Il numero di telefono può contenere solo numeri" };
             if (!this.formData.office_address) this.errors.office_address = "L'indirizzo è obbligatorio.";
-            if (!this.formData.specializations) this.errors.specializations = "Inserire almeno una specializzazione.";
+            if (!this.formData.oldSpecializations && !this.formData.specializations) this.errors.specializations = "Inserire almeno una specializzazione.";
             if (!this.formData.services) this.errors.services = "Inserire almeno una prestazione.";
             // if (!this.formData.photo) this.errors.photo = "La foto è obbligatoria";
             // if (!this.formData.curriculum) this.errors.curriculum = "Il curriculum è obbligatorio.";
@@ -91,18 +93,7 @@ export default {
                 this.validated = true;
 
                 if (this.validated = true) {
-                    axios.put(this.apiUrl, this.formData)
-                        .then(response => {
-                            console.log('Profile updated', response.data)
-
-                        })
-                        .catch(function (error) {
-                            // handle error
-                            console.error(error);
-                        })
-                        .finally(function () {
-                            // always executed
-                        });
+                    this.updateForm();
                 }
             }
             console.log(this.formData);
@@ -148,8 +139,10 @@ export default {
         }
     },
     created() {
-        axios.get(this.apiUrl, this.formData)
+        axios.get(this.formData.store.apiUri + 'profiles/edit/' + this.formData.store.informationPageId, this.formData)
             .then(response => {
+                console.log('store api', this.formData.store.apiUri)
+
                 this.formData = response.data.data;
                 this.formData.first_name = response.data.data.doctor.first_name;
                 this.formData.last_name = response.data.data.doctor.last_name;
