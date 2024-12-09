@@ -9,6 +9,12 @@ export const store = reactive({
   sponsorshipPage: false,
   statisticPage: false,
 
+  // Variable needed for the advanced search
+  searchedSpecialization: null,
+
+  // Variable for the show profile card in advanced search 
+  doctorProfile: null,
+
   // Variable for toggle sidebar inside dashboard
   sidebar: true,
 
