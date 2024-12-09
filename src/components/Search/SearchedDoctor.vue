@@ -1,5 +1,6 @@
 <script>
 import axios from 'axios';
+import { store } from '../../../js/store';
 
 export default {
     data() {
@@ -9,23 +10,26 @@ export default {
         }
     },
     methods: {
-        searchDoctor() {
-            // for ()
-            //     if ($route.params.id)
-            //         this.searchedDoctor.filter()
-        },
         getApiProfile() {
-            axios.get(`${this.apiUrl}`)
+            axios.get(this.apiUrl)
                 .then(response => {
-                    // handle success
-                    console.log(response.data.specializations);
+                    console.log(response.data);
+                    let profiles = response.data.profiles
+                    console.log(this.specializationId)
+                    console.log(profiles[0].id)
+
+                    // Qua non funziona, da capire come mai
+                    const filteredProfiles = profiles.filter(profile => profile.id === this.specializationId)
+                    console.log(filteredProfiles)
                     this.specializations = response.data.specializations;
                 })
                 .catch(function (error) {
-                    // handle error
                     console.log(error);
                 })
         },
+    },
+    created() {
+        this.getApiProfile()
     }
 }
 </script>

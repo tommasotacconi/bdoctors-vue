@@ -8,6 +8,7 @@ export const store = reactive({
   reviewPage: false,
   sponsorshipPage: false,
   statisticPage: false,
+  searchedSpecialization: null,
 
   // Variable for toggle sidebar inside dashboard
   sidebar: true,
