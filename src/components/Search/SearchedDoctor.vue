@@ -64,6 +64,10 @@ export default {
                 })
 
 
+        },
+        getProfileId(index) {
+            console.log(this.doctors[index])
+            store.doctorProfile = this.doctors[index]
         }
     },
     computed: {
@@ -88,13 +92,13 @@ export default {
         <div class="loader" v-if="!loaded"></div>
         <div v-if="loaded">
             <div class="title">
-                <h2>Ricerca per: {{ specializationName }}
+                <h2>Ricerca per: <span class="specialization-title">{{ specializationName }}</span>
                 </h2>
                 <!-- It's not working -->
                 <!-- {{ doctors[0].user.specializations[0].name }} -->
             </div>
             <div class="doctors-list">
-                <div class="doctor-card" v-for="doctor in doctors">
+                <div class="doctor-card" v-for="(doctor, index) in doctors" @click="getProfileId(index)">
                     <img src="https://media.istockphoto.com/id/1340883379/photo/young-doctor-hospital-medical-medicine-health-care-clinic-office-portrait-glasses-man.jpg?s=612x612&w=0&k=20&c=_H4VUPBkS0gEj5ZdZzQo-Hw3lMuyofJpB-P9yS92Wyw="
                         class="doctor-photo" alt="doctor photo">
                     <section class="doctor-information">
@@ -131,6 +135,7 @@ h5 {
 
 .specialization-title {
     text-transform: lowercase;
+    font-weight: 400;
 }
 
 .doctors-list {
@@ -189,7 +194,7 @@ img {
     animation: l9 2s infinite linear;
     position: absolute;
     top: 50%;
-    left: 59%;
+    left: 50%;
 }
 
 @keyframes l9 {
