@@ -16,6 +16,7 @@ export default {
                 .then(response => {
                     console.log(response);
                     this.profileData = response.data.data;
+                    localStorage.setItem('user_id', response.data.data.doctor.id)
                 })
                 .catch(function (error) {
                     console.log(error);

@@ -3,15 +3,13 @@ import axios from "axios";
 import Multiselect from "../Generics/Multiselect.vue";
 import PhotoUpload from "../Generics/PhotoUpload.vue";
 import CvUpload from "../Generics/CvUpload.vue";
-import { store } from '../../../js/store.js';
 
 
 export default {
     data() {
         return {
-            store,
             formData: {
-                user_id: "",
+                user_id: localStorage.getItem('user_id'),
                 first_name: "",
                 last_name: "",
                 email: "",
@@ -22,6 +20,7 @@ export default {
                 specializations: [],
                 services: "",
                 photo: null,
+                photoUrl: "",
                 curriculum: null,
             },
             apiUrl: 'http://127.0.0.1:8000/api/profiles/edit/',
@@ -48,10 +47,10 @@ export default {
     methods: {
 
         updateForm() {
-            axios.post(this.store.apiUri + 'profiles/edit/' + this.store.informationPageId, this.formData)
+            axios.post('http://localhost:8000/api/profiles/edit/' + this.formData.user_id, this.formData)
                 .then(response => {
-                    console.log('store api', this.store.apiUri + 'profiles/edit/' + this.store.informationPageId)
                     console.log('Profile updated', response.data)
+                    this.formData.curriculum.photoUrl = response.data.data.photoUrl;
                 })
                 .catch(function (error) {
                     // handle error
@@ -128,9 +127,8 @@ export default {
         },
 
         getProfileData() {
-            axios.get(this.store.apiUri + 'profiles/edit/' + this.store.informationPageId, this.formData)
+            axios.get('http://localhost:8000/api/profiles/edit/' + this.formData.user_id, this.formData)
                 .then(response => {
-                    console.log('store api', store.apiUri)
 
                     this.formData = response.data.data;
                     this.formData.user_id = response.data.data.doctor.id;
@@ -145,7 +143,6 @@ export default {
                 })
                 .catch(function (error) {
                     // handle error
-                    console.log('store api', `${store.apiUri}profiles/edit/${store.informationPageId}`);
                     console.error("failed", error)
                 })
                 .finally(function () {
