@@ -8,7 +8,8 @@ export default {
             store,
             searchedDoctor: [],
             apiUrl: 'http://localhost:8000/api/profiles',
-            specializationId: store.searchedSpecialization
+            specializationId: store.searchedSpecialization,
+            doctors: []
         }
     },
     methods: {
@@ -35,6 +36,7 @@ export default {
                         }
                     }
                     console.log(filteredProfiles)
+                    this.doctors = filteredProfiles
 
                     this.specializations = response.data.specializations;
                 })
@@ -52,22 +54,19 @@ export default {
 <template>
     <main class="container ">
         <div class="title">
-            <h2>Ricerca per: <span class="specialization-title">...</span></h2>
+            <h2>Ricerca per: <span class="specialization-title"> {{ doctors[0].user.specializations[0].name }}</span>
+            </h2>
         </div>
         <div class="doctors-list">
-            <div class="doctor-card" v-for="doctor in 6">
+            <div class="doctor-card" v-for="doctor in doctors">
                 <img src="https://media.istockphoto.com/id/1340883379/photo/young-doctor-hospital-medical-medicine-health-care-clinic-office-portrait-glasses-man.jpg?s=612x612&w=0&k=20&c=_H4VUPBkS0gEj5ZdZzQo-Hw3lMuyofJpB-P9yS92Wyw="
                     class="doctor-photo" alt="doctor photo">
                 <section class="doctor-information">
                     <div class="doctor-name">
-                        <strong>Nome Cognome</strong>
+                        <strong>{{ doctor.user.first_name }} {{ doctor.user.last_name }}</strong>
                     </div>
                     <div class="doctor-services">
-                        Prestazioni: Lorem ipsum dolor sit, amet consectetur adipisicing elit. Repellat mollitia
-                        voluptatem
-                        quod deleniti, quibusdam eius nisi necessitatibus! Nesciunt ducimus, explicabo, enim aliquid
-                        magni
-                        natus blanditiis iure eum cum praesentium corporis.
+                        {{ doctor.services }}
                     </div>
                 </section>
             </div>
@@ -82,8 +81,7 @@ export default {
 }
 
 .specialization-title {
-    opacity: 0.5;
-    font-size: 1.5rem;
+    text-transform: lowercase;
 }
 
 .doctors-list {
