@@ -18,7 +18,7 @@ export default {
 				.then(response => {
 					console.log(response);
 					this.responseStatus = true;
-					this.$router.push({ name: 'dashboard', params: { id: response.data.data.id } })
+					this.$router.push({ name: 'dashboard', params: { id: response.data.user.id } })
 				})
 				.catch(function (error) {
 					console.log(error);
