@@ -17,8 +17,9 @@ export default {
                 .then(response => {
                     console.log(response.data);
                     let profiles = response.data.profiles
+                    console.log(profiles)
                     console.log(this.specializationId)
-                    console.log(profiles[0].id)
+                    console.log(profiles[0].user.specializations[0].id)
                     console.log(store.searchedSpecialization)
 
                     // Qua non funziona, da capire come mai
@@ -29,7 +30,7 @@ export default {
                     let filteredProfiles = []
                     for (let i = 0; i < profiles.length; i++) {
                         let profile = profiles[i]
-                        if (profile.id == store.searchedSpecialization) {
+                        if (profile.user.specializations[0].id == store.searchedSpecialization) {
                             filteredProfiles.push(profile)
                         }
                     }
