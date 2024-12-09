@@ -6,7 +6,7 @@ export default {
     data() {
         return {
             profileData: {},
-						// loader temporary cancelled
+            // loader temporary cancelled
             loaded: true,
             store,
         }
@@ -45,58 +45,58 @@ export default {
         <div class="general-main">
             <div class="loader" v-if="!loaded"></div>
             <section class="card-general" v-if="loaded">
-							<div class="card mb-3">
-								<div class="card-flex">
-									<div class="img-doctor">
-										<img src="https://media.istockphoto.com/id/1340883379/photo/young-doctor-hospital-medical-medicine-health-care-clinic-office-portrait-glasses-man.jpg?s=612x612&w=0&k=20&c=_H4VUPBkS0gEj5ZdZzQo-Hw3lMuyofJpB-P9yS92Wyw="
-										class="img-flui" alt="doctor photo">
-									</div>
-									<div class="card-body-title-section">
-										<h2 class="card-title">
-											Nome Cognome
-											<!-- {{ profileData.doctor.first_name }} {{ profileData.doctor.last_name }} -->
-										</h2>
-									</div>
-									<div class="card-body-text-section">
-											<ul class="d-flex flex-wrap row-gap-3 ul-child-elements">
-													<li>
-															<h3>Curriculum</h3>
-															<div class="data-element curriculum-element">
-																Nome del file
-															</div>
-													</li>
-													<li class="">
-															<h3>Specializzazione</h3>
-															<div class="data-element specializations-element">
-																Anatomia patologica, Cardiologia
-															</div> 
-															<!-- {{ profileData.doctor.specializations[0].name }} -->
-													</li>
-													<li>
-															<h3>Indirizzo</h3>
-															<div class="data-element address-element">
-																Via nome di via
-															</div>
-															<!-- {{ profileData.office_address }} -->
-													</li>
-													<li>
-															<h3>Telefono</h3>
-															<div class="data-element telephone-element">
-																00000000
-															</div>
-															<!-- {{ profileData.phone }} -->
-													</li>
-													<li>
-															<h3>Prestazioni</h3>
-															<div class="data-element services-element">
-																Elenco di prestazioni
-															</div>
-															<!-- {{ profileData.services }} -->
-													</li>
-											</ul>
-									</div>
-								</div>
-							</div>
+                <div class="card mb-3">
+                    <div class="card-flex">
+                        <div class="img-doctor">
+                            <img src="https://media.istockphoto.com/id/1340883379/photo/young-doctor-hospital-medical-medicine-health-care-clinic-office-portrait-glasses-man.jpg?s=612x612&w=0&k=20&c=_H4VUPBkS0gEj5ZdZzQo-Hw3lMuyofJpB-P9yS92Wyw="
+                                class="img-flui" alt="doctor photo">
+                        </div>
+                        <div class="card-body-title-section">
+                            <h2 class="card-title">
+                                Nome Cognome
+                                <!-- {{ profileData.doctor.first_name }} {{ profileData.doctor.last_name }} -->
+                            </h2>
+                        </div>
+                        <div class="card-body-text-section">
+                            <ul class="d-flex flex-wrap row-gap-3 ul-child-elements">
+                                <li>
+                                    <h3>Curriculum</h3>
+                                    <div class="data-element curriculum-element">
+                                        Nome del file
+                                    </div>
+                                </li>
+                                <li class="">
+                                    <h3>Specializzazione</h3>
+                                    <div class="data-element specializations-element">
+                                        Anatomia patologica, Cardiologia
+                                    </div>
+                                    <!-- {{ profileData.doctor.specializations[0].name }} -->
+                                </li>
+                                <li>
+                                    <h3>Indirizzo</h3>
+                                    <div class="data-element address-element">
+                                        Via nome di via
+                                    </div>
+                                    <!-- {{ profileData.office_address }} -->
+                                </li>
+                                <li>
+                                    <h3>Telefono</h3>
+                                    <div class="data-element telephone-element">
+                                        00000000
+                                    </div>
+                                    <!-- {{ profileData.phone }} -->
+                                </li>
+                                <li>
+                                    <h3>Prestazioni</h3>
+                                    <div class="data-element services-element">
+                                        Elenco di prestazioni
+                                    </div>
+                                    <!-- {{ profileData.services }} -->
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
             </section>
         </div>
     </main>
@@ -109,7 +109,7 @@ h2 {
 }
 
 h3 {
-		font-size: 1.2rem;
+    font-size: 1.2rem;
 }
 
 h5 {
@@ -130,21 +130,21 @@ p {
 }
 
 .card {
-		min-height: 80vh;
-		margin-top: 50px;
-		padding: 0 50px;
+    min-height: 80vh;
+    margin-top: 50px;
+    padding: 0 50px;
     border-radius: 40px;
     background-color: #D8F9FF;
     border: 0;
     text-align: center;
     width: 80%;
 
-		position: relative;
+    position: relative;
 }
 
 .card-flex {
     display: flex;
-		flex-wrap: wrap;
+    flex-wrap: wrap;
 }
 
 .img-doctor {
@@ -155,37 +155,37 @@ p {
 }
 
 .card img {
-		width: 90%;
-		margin: 15px;
+    width: 90%;
+    margin: 15px;
     border-radius: 50%;
     border: 3px solid #65B0FF;
 }
 
 .card-body-title-section {
-	flex-basis: 60%;
+    flex-basis: 60%;
 }
 
 .card-title {
-	position: relative;
-	top: 50%;
-	translate: 0 -50%
+    position: relative;
+    top: 50%;
+    translate: 0 -50%
 }
 
 .card-body-text-section {
-		flex-grow: 1;
+    flex-grow: 1;
     border-top: 2px solid var(--color-complementary);
     padding-top: 16px;
 
-		ul.ul-child-elements > * {
-			flex-basis: 50%;
-			height: 130px;
-		}
+    ul.ul-child-elements>* {
+        flex-basis: 50%;
+        height: 130px;
+    }
 }
 
 ul {
     text-align: start;
-		padding-left: 0;
-		list-style-type: none;
+    padding-left: 0;
+    list-style-type: none;
 }
 
 .edit-profile {
@@ -197,10 +197,10 @@ ul {
     font-weight: bold;
     border: 1px solid var(--color-primary);
 
-		position: absolute;
-		bottom: 15px;
-		left: 50%;
-		translate: -50% 0;
+    position: absolute;
+    bottom: 15px;
+    left: 50%;
+    translate: -50% 0;
 }
 
 
@@ -298,15 +298,15 @@ ul {
         width: 70%;
     }
 
-		.card-title {
-			margin-top: 50px;
-			margin-bottom: 0;
-		}
+    .card-title {
+        margin-top: 50px;
+        margin-bottom: 0;
+    }
 }
 
 @media only screen and (max-width: 780px) {
-	.card-body-text-section ul {
-		flex-direction: column;
-	}
+    .card-body-text-section ul {
+        flex-direction: column;
+    }
 }
 </style>
