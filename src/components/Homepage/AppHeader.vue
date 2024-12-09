@@ -40,7 +40,8 @@ export default {
             console.log("Specializzazione selezionata:", this.selectedSpecialization);
             store.searchedSpecialization = this.selectedSpecialization
             this.$router.push({ name: 'search', params: { searchId: this.selectedSpecialization } })
-        }
+        },
+
     },
     mounted() {
         this.getApi()

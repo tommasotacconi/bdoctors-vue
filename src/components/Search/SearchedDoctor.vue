@@ -8,8 +8,10 @@ export default {
             store,
             searchedDoctor: [],
             apiUrl: 'http://localhost:8000/api/profiles',
+            specializationApiUrl: 'http://127.0.0.1:8000/api/specializations',
             specializationId: store.searchedSpecialization,
-            doctors: []
+            doctors: [],
+            specializationName: '',
         }
     },
     methods: {
@@ -41,9 +43,31 @@ export default {
                     console.log(error);
                 })
         },
+        getSpecializationName() {
+            axios.get(this.specializationApiUrl)
+                .then(response => {
+                    // handle success
+                    console.log(response.data.specializations);
+                    let specializationArray = response.data.specializations
+                    for (let i = 0; specializationArray.length; i++) {
+                        let specialization = specializationArray[i]
+                        if (store.searchedSpecialization === specialization.id) {
+                            this.specializationName = specialization.name
+                            return
+                        }
+                    }
+                })
+                .catch(function (error) {
+                    // handle error
+                    console.log(error);
+                })
+
+
+        }
     },
     created() {
         this.getApiProfile()
+        this.getSpecializationName()
     }
 }
 </script>
@@ -51,7 +75,7 @@ export default {
 <template>
     <main class="container">
         <div class="title">
-            <h2>Ricerca per:
+            <h2>Ricerca per: {{ specializationName }}
             </h2>
             <!-- It's not working -->
             <!-- {{ doctors[0].user.specializations[0].name }} -->
