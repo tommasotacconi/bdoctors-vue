@@ -19,7 +19,7 @@ const routes = [
     { path: '/search/:searchId', component: AdvancedSearch, name: 'search' },
 		// Path to doctor, within specialization id, of doctord id selected (first id for specialization
 		// second for doctor)
-    { path: '/search/:id/:id', component: DoctorShow, name: 'search.show' },
+    { path: '/search/:searchId/:id', component: DoctorShow, name: 'search.show' },
 ]
 
 const router = createRouter({
