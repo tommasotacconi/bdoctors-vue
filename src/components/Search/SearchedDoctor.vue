@@ -77,7 +77,6 @@ export default {
             } else if (!this.showDoctor) {
                 this.showDoctor = true
             }
-            console.log(this.showDoctor)
 
         },
 
@@ -85,7 +84,6 @@ export default {
             console.log(this.doctors[index])
             !this.showDoctor ? true : false
             store.doctorProfile = this.doctors[index]
-            console.log(this.showDoctor)
         },
 
     },
@@ -108,17 +106,20 @@ export default {
 
 <template>
     <main class="container">
+        <!-- Loader -->
         <div class="loader" v-if="!loaded"></div>
+
+        <!-- Components -->
         <div v-if="loaded">
+            <!-- If showDoctor is true, the show card is visible -->
             <div v-if="showDoctor" class="general-show-doctor">
                 <DoctorShow />
             </div>
+            <!-- If showDoctor is false, the list of doctors are visible -->
             <div @click="removeShowDoctor" :class="showDoctor ? 'show-doctor-active' : ''">
                 <div class="title">
                     <h2>Ricerca per: <span class="specialization-title">{{ specializationName }}</span>
                     </h2>
-                    <!-- It's not working -->
-                    <!-- {{ doctors[0].user.specializations[0].name }} -->
                 </div>
 
                 <div class="advanced-filter">
