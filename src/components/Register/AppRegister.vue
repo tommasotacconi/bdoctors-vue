@@ -28,8 +28,14 @@ export default {
 	},
 	methods: {
 		updateSpecs(specializations) {
-			this.specializations = specializations;
-			console.log('current specializations', this.specializations);
+			// Prepare a constant array result to insert ids value
+			const result = [];
+			// Insert ids taken from specializations parameter in reactive variable specializations, property of errors 
+			for (let i = 0; i < specializations.length; i++) {
+				result.push(specializations[i].id);
+			}
+			this.specializations = result;
+			console.log('---current specializations---', this.specializations);
 		},
 		checkFormValidity() {
 			// Subscribe errors object with an empty one, to be ready for a next validation
