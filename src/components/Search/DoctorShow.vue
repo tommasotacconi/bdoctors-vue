@@ -60,34 +60,34 @@ export default {
 									<div class="card-body-text-section">
 											<ul class="d-flex flex-wrap row-gap-3 ul-child-elements">
 													<li>
-															<strong>Curriculum</strong>
+															<h3>Curriculum</h3>
 															<div class="data-element curriculum-element">
 																Nome del file
 															</div>
 													</li>
 													<li class="">
-															<strong>Specializzazione</strong>
+															<h3>Specializzazione</h3>
 															<div class="data-element specializations-element">
 																Anatomia patologica, Cardiologia
 															</div> 
 															<!-- {{ profileData.doctor.specializations[0].name }} -->
 													</li>
 													<li>
-															<strong>Indirizzo</strong>
+															<h3>Indirizzo</h3>
 															<div class="data-element address-element">
 																Via nome di via
 															</div>
 															<!-- {{ profileData.office_address }} -->
 													</li>
 													<li>
-															<strong>Telefono</strong>
+															<h3>Telefono</h3>
 															<div class="data-element telephone-element">
 																00000000
 															</div>
 															<!-- {{ profileData.phone }} -->
 													</li>
 													<li>
-															<strong>Prestazioni</strong>
+															<h3>Prestazioni</h3>
 															<div class="data-element services-element">
 																Elenco di prestazioni
 															</div>
@@ -108,8 +108,8 @@ h2 {
     text-align: center;
 }
 
-h4 {
-    margin: 0;
+h3 {
+		font-size: 1.2rem;
 }
 
 h5 {
@@ -178,6 +178,7 @@ p {
 
 		ul.ul-child-elements > * {
 			flex-basis: 50%;
+			height: 130px;
 		}
 }
 
@@ -296,5 +297,16 @@ ul {
     .img-doctor {
         width: 70%;
     }
+
+		.card-title {
+			margin-top: 50px;
+			margin-bottom: 0;
+		}
+}
+
+@media only screen and (max-width: 780px) {
+	.card-body-text-section ul {
+		flex-direction: column;
+	}
 }
 </style>
