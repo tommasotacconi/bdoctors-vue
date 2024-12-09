@@ -1,29 +1,40 @@
 import axios from 'axios';
 
-const instance = axios.create({
-    baseURL: 'http://localhost:8000',
-    withCredentials: true,
+// Create axios instance with custom config
+const axiosInstance = axios.create({
+    baseURL: 'http://127.0.0.1:8000',
     headers: {
-        'X-Requested-With': 'XMLHttpRequest',
-        'Accept': 'application/json'
-    }
+        'Accept': 'application/json',
+        'Content-Type': 'application/json',
+    },
+    withCredentials: true
 });
 
-// Interceptor per ottenere il CSRF token prima di ogni richiesta
-instance.interceptors.request.use(async config => {
-    // Escludi la richiesta del CSRF token stessa per evitare loop infiniti
-    if (config.url.includes('sanctum/csrf-cookie')) {
+// Add request interceptor
+axiosInstance.interceptors.request.use(
+    config => {
+        const token = localStorage.getItem('authToken');
+        if (token) {
+            config.headers['Authorization'] = `Bearer ${token}`;
+        }
         return config;
+    },
+    error => {
+        return Promise.reject(error);
     }
+);
 
-    // Ottieni il CSRF token solo se non è già stato fatto
-    if (!document.cookie.includes('XSRF-TOKEN')) {
-        await axios.get('http://localhost:8000/sanctum/csrf-cookie', {
-            withCredentials: true
-        });
+// Add response interceptor
+axiosInstance.interceptors.response.use(
+    response => response,
+    error => {
+        if (error.response?.status === 401) {
+            // Handle unauthorized access
+            localStorage.removeItem('authToken');
+            window.location.href = '/user/login';
+        }
+        return Promise.reject(error);
     }
+);
 
-    return config;
-});
-
-export default instance;
+export default axiosInstance;

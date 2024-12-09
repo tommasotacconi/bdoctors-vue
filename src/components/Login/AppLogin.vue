@@ -1,5 +1,5 @@
 <script>
-import axios from 'axios';
+import axios from '../../axios';
 
 export default {
 	data() {
@@ -12,17 +12,28 @@ export default {
 	methods: {
 		async sendLoginData() {
 			try {
-				const response = await axios.post('http://127.0.0.1:8000/api/login', {
+				const response = await axios.post('/api/login', {
 					email: this.inputEmail,
 					password: this.inputPassword
 				});
-				console.log(response);
-				this.responseStatus = true;
-				this.$router.push({ name: 'dashboard', params: { id: response.data.data.id } });
+
+				if (response.data.token) {
+					localStorage.setItem('authToken', response.data.token);
+				}
+
+				if (response.data.success && response.data.data) {
+					this.responseStatus = true;
+					await this.$router.push(`/user/${response.data.data.id}`);
+				}
 			} catch (error) {
-				console.log(error);
+				this.responseStatus = false;
+				console.error('Login error:', error);
 			}
 		},
+		logout() {
+			localStorage.removeItem('authToken');
+			this.$router.push('/');
+		}
 	}
 }
 </script>
