@@ -1,22 +1,24 @@
 <script>
 import AppHeader from '../components/Homepage/AppHeader.vue';
-import AppMainHome from '../components/Homepage/AppMainHome.vue';
+import axios from 'axios';
+import SearchedDoctor from '../components/Search/SearchedDoctor.vue';
 
 export default {
     data() {
         return {
+
         }
     },
     components: {
         AppHeader,
-        AppMainHome,
+        SearchedDoctor
     }
 }
 </script>
 
 <template>
     <AppHeader />
-    <AppMainHome />
+    <SearchedDoctor />
 </template>
 
 <style scoped></style>

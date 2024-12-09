@@ -1,8 +1,16 @@
 <script>
+import axios from 'axios';
+import { store } from '../../../js/store';
+import { RouterLink } from 'vue-router';
+
 export default {
     data() {
         return {
-            logout: false
+            logout: false,
+            apiUrl: 'http://127.0.0.1:8000/api/specializations',
+            specializations: [],
+            selectedSpecialization: null,
+            store,
         }
     },
     methods: {
@@ -15,7 +23,32 @@ export default {
                     this.logout = false
                 }, 5000)
             }
-        }
+        },
+        getApi() {
+            axios.get(this.apiUrl)
+                .then(response => {
+                    // handle success
+                    console.log(response.data.specializations);
+                    this.specializations = response.data.specializations;
+                })
+                .catch(function (error) {
+                    // handle error
+                    console.log(error);
+                })
+        },
+        chooseSpecialization() {
+            console.log("Specializzazione selezionata:", this.selectedSpecialization);
+            store.searchedSpecialization = this.selectedSpecialization
+            this.$router.push({
+                name: 'search', params: { searchId: this.selectedSpecialization },
+            })
+        },
+
+    },
+    computed: {
+    },
+    mounted() {
+        this.getApi()
     }
 }
 </script>
@@ -38,12 +71,24 @@ export default {
                     </div>
                 </routerLink>
                 <div class="search-bar">
-                    <div class="input-group search-form">
+                    <!-- Old search-bar -->
+                    <!-- <div class="input-group search-form">
                         <input type="text" class="form-control" placeholder="Ricerca il tuo medico!"
                             aria-label="Ricerca il tuo medico!" aria-describedby="button-addon2">
                         <button class="btn btn-outline-secondary" type="button" id="button-addon2"><i
                                 class="fa-solid fa-magnifying-glass"></i></button>
-                    </div>
+                    </div> -->
+
+                    <!-- Updated search bar for specializations -->
+                    <select @change="chooseSpecialization()" v-model="selectedSpecialization" v-if="!$route.params.id"
+                        class="form-select" aria-label="Specialization Search">
+                        <option value="" disabled selected>Ricerca il medico per specializzazione!</option>
+                        <option v-for="(specialization, index) in specializations" :key="index"
+                            :value=specialization.id>{{
+                                specialization.name
+                            }}
+                        </option>
+                    </select>
                 </div>
             </section>
             <div class="right-header d-flex" v-if="!$route.params.id">
