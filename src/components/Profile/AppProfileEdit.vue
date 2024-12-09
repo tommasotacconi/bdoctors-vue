@@ -46,15 +46,35 @@ export default {
     },
     methods: {
 
+        handlePhoto(photo) {
+            this.formData.photo = photo;
+        },
+
+        handleCurriculum(curriculum) {
+            this.formData.curriculum = curriculum;
+        },
+
+        //Method to use a photo frontend side
+        getImagePath: function (imgPath) {
+            return new URL(imgPath, 'http://localhost:8000/').href;
+        },
+
         updateForm() {
-            axios.post('http://localhost:8000/api/profiles/edit/' + this.formData.user_id, this.formData)
+
+            axios.post('http://localhost:8000/api/profiles/edit/' + this.formData.user_id, this.formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            })
                 .then(response => {
                     console.log('Profile updated', response.data)
-                    this.formData.curriculum.photoUrl = response.data.data.photoUrl;
+                    this.formData.photoUrl = response.data.photoUrl;
+                    console.log(response.data.photoUrl);
                 })
                 .catch(function (error) {
                     // handle error
-                    console.error(error);
+                    console.error(error)
+                    console.log(error.response.data.errors);
                 })
                 .finally(function () {
                     // always executed
@@ -85,8 +105,8 @@ export default {
             if (!this.formData.office_address) this.errors.office_address = "L'indirizzo è obbligatorio.";
             if (!this.formData.oldSpecializations && !this.formData.specializations) this.errors.specializations = "Inserire almeno una specializzazione.";
             if (!this.formData.services) this.errors.services = "Inserire almeno una prestazione.";
-            // if (!this.formData.photo) this.errors.photo = "La foto è obbligatoria";
-            // if (!this.formData.curriculum) this.errors.curriculum = "Il curriculum è obbligatorio.";
+            if (!this.formData.photo) this.errors.photo = "La foto è obbligatoria";
+            if (!this.formData.curriculum) this.errors.curriculum = "Il curriculum è obbligatorio.";
 
             if (!this.errors.length) {
                 this.validated = true;
@@ -177,7 +197,7 @@ export default {
             <div class="mb-3 col-4">
                 <label for="first_name" class="form-label">Nome</label>
                 <input type="text" class="form-control" :class="{ 'invalid-input': errors.first_name }" id="first_name"
-                    v-model="formData.first_name" required>
+                    v-model.trim="formData.first_name" required>
                 <div class="invalid" v-if="errors.first_name">
                     <p> {{ errors.first_name }} </p>
                 </div>
@@ -185,7 +205,7 @@ export default {
             <div class="mb-3 col-4">
                 <label for="last_name" class="form-label">Cognome</label>
                 <input type="text" class="form-control" :class="{ 'invalid-input': errors.last_name }" id="last_name"
-                    v-model="formData.last_name" required>
+                    v-model.trim="formData.last_name" required>
                 <div class="invalid" v-if="errors.last_name">
                     <p> {{ errors.last_name }} </p>
                 </div>
@@ -193,7 +213,7 @@ export default {
             <div class="mb-3 col-4">
                 <label for="email" class="form-label">Email</label>
                 <input type="email" class="form-control" :class="{ 'invalid-input': errors.email }" id="email"
-                    v-model="formData.email" required>
+                    v-model.trim="formData.email" required>
                 <div class="invalid" v-if="errors.email">
                     <p> {{ errors.email }} </p>
                 </div>
@@ -201,7 +221,7 @@ export default {
             <div class="mb-3 col-6">
                 <label for="password" class="form-label">Password</label>
                 <input type="password" class="form-control" :class="{ 'invalid-input': errors.password }" id="password"
-                    v-model="formData.password" required>
+                    v-model.trim="formData.password" required>
                 <div class="invalid" v-if="errors.password">
                     <p> {{ errors.password }} </p>
                 </div>
@@ -209,7 +229,7 @@ export default {
             <div class="mb-3 col-6">
                 <label for="phone" class="form-label">Telefono</label>
                 <input type="tel" class="form-control" :class="{ 'invalid-input': errors.phone }" id="phone"
-                    v-model="formData.phone" required>
+                    v-model.trim="formData.phone" required>
                 <div class="invalid" v-if="errors.phone">
                     <p> {{ errors.phone }} </p>
                 </div>
@@ -246,7 +266,7 @@ export default {
             </div>
             <div class="mb-3 d-flex flex-column col-6">
                 <label for="photo" class="form-label">Foto profilo</label>
-                <PhotoUpload v-model="formData.photo"></PhotoUpload>
+                <PhotoUpload v-model="formData.photo" @file-selected="handlePhoto"></PhotoUpload>
                 <!-- <input type="text" class="form-control" :class="{ 'invalid-input': errors.photo }" id="photo"
                     placeholder="Inserisci un file valido" @change="formData.photo" required> -->
                 <div class="invalid" v-if="errors.photo">
@@ -256,7 +276,7 @@ export default {
             <div class="mb-3 d-flex flex-column col-6">
                 <label for="curriculum" class="form-label">Curriculum
                     Vitae</label>
-                <CvUpload v-model="formData.curriculum"></CvUpload>
+                <CvUpload v-model="formData.curriculum" @file-selected="handleCurriculum"></CvUpload>
                 <!-- <input type="text" class="form-control" :class="{ 'invalid-input': errors.curriculum }" id="curriculum"
                     placeholder="Inserisci un file valido" @change="formData.curriculum" required> -->
                 <div class="invalid" v-if="errors.curriculum">
@@ -272,8 +292,8 @@ export default {
             </div>
 
             <!-- Modal -->
-            <div class="modal fade" id="myModal" tabindex="-1" aria-hidden="true" v-if="validated">
-                <div class="modal-dialog modal-dialog-centered">
+            <div class="modal fade" id="myModal" tabindex="-1" aria-hidden="false" v-if="validated === true">
+                <div class="modal-dialog modal-d    ialog-centered">
                     <div class="modal-content">
                         <div class="modal-header">
                             <button type="button" class="btn-close" data-bs-dismiss="myModal"
