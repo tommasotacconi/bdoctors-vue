@@ -1,12 +1,14 @@
 <script>
 import axios from "axios";
 import Multiselect from "../Generics/Multiselect.vue";
+import PhotoUpload from "../Generics/PhotoUpload.vue";
+import CvUpload from "../Generics/CvUpload.vue";
 
 export default {
     data() {
         return {
             formData: {
-                user_id: 253,
+                user_id: 252,
                 photo: 'https://it.images.search.yahoo.com/search/images;_ylt=AwrLAD51f1Bn3wABKk7c5olQ;_ylu=Y29sbwNpcjIEcG9zAzEEdnRpZAMEc2VjA3BpdnM-?p=bender+foto&fr2=piv-web&type=E210IT1590G0&fr=mcafee&guccounter=1#id=0&iurl=https%3A%2F%2Fexternal-preview.redd.it%2F5GA8Zk4JnsMRR88HcZPb402OPXShU3cb05CYZbY7p4g.jpg%3Fauto%3Dwebp%26s%3D40ae96faadffd9bc008c03dc7de21ba4d7c8ae0d&action=click',
                 curriculum: "asasasaasddfsdgvfdsdsffffgfsdgsdggsdgsdgsdasdfasfasfasffffffffffffffffffasasasaasddfsdgvfdsdsffasasasaasddfsdgvfdsdsffffgfsdgdsgdsgasasasaasddfsdgvfdsdsffffgfsdgdsgdsgsdgsdgsdgsdgsdgsdgsdgsdgdsgsdgsdgsdgssdgsdgsdgsdgsdgsdgsdgsdgdsgsdgsdgsdgsffgfsdgdsgdsgsdgsdgsdgsdgsdgsdgsdgsdgdsgsdgsdgsdgsgsdgsdgsdgsggsasa",
             },
@@ -23,6 +25,8 @@ export default {
     },
     components: {
         Multiselect,
+        PhotoUpload,
+        CvUpload
     },
 
     methods: {
@@ -121,8 +125,9 @@ export default {
             </div>
             <div class="mb-3">
                 <label for="photo" class="form-label">Foto profilo</label>
-                <input type="text" class="form-control" :class="errors.photo && 'invalid-input'" id="photo"
-                    placeholder="Inserisci un file valido" @change="formData.photo" required>
+                <PhotoUpload v-model="formData.photo"></PhotoUpload>
+                <!-- <input type="text" class="form-control" :class="errors.photo && 'invalid-input'" id="photo"
+                    placeholder="Inserisci un file valido" @change="formData.photo" required> -->
                 <div class="invalid" v-if="errors.photo">
                     <p> {{ errors.photo }} </p>
                 </div>
@@ -130,8 +135,9 @@ export default {
             <div class="mb-3">
                 <label for="curriculum" class="form-label">Curriculum
                     Vitae</label>
-                <input type="text" class="form-control" :class="errors.curriculum && 'invalid-input'" id="curriculum"
-                    placeholder="Inserisci un file valido" @change="formData.curriculum" required>
+                <CvUpload v-model="formData.curriculum"></CvUpload>
+                <!-- <input type="text" class="form-control" :class="errors.curriculum && 'invalid-input'" id="curriculum"
+                    placeholder="Inserisci un file valido" @change="formData.curriculum" required> -->
                 <div class="invalid" v-if="errors.curriculum">
                     <p> {{ errors.curriculum }} </p>
                 </div>
