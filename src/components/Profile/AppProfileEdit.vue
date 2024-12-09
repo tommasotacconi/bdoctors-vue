@@ -20,8 +20,9 @@ export default {
                 specializations: [],
                 services: "",
                 photo: null,
-                photoUrl: "",
+                // photoUrl: "",
                 curriculum: null,
+                // curriculumUrl: '',
             },
             apiUrl: 'http://127.0.0.1:8000/api/profiles/edit/',
             errors: {
@@ -55,9 +56,9 @@ export default {
         },
 
         //Method to use a photo frontend side
-        getImagePath: function (imgPath) {
-            return new URL(imgPath, 'http://localhost:8000/').href;
-        },
+        // getImagePath: function (imgPath) {
+        //     return new URL(imgPath, 'http://localhost:8000/').href;
+        // },
 
         updateForm() {
 
@@ -68,8 +69,6 @@ export default {
             })
                 .then(response => {
                     console.log('Profile updated', response.data)
-                    this.formData.photoUrl = response.data.photoUrl;
-                    console.log(response.data.photoUrl);
                 })
                 .catch(function (error) {
                     // handle error
@@ -276,7 +275,7 @@ export default {
             <div class="mb-3 d-flex flex-column col-6">
                 <label for="curriculum" class="form-label">Curriculum
                     Vitae</label>
-                <CvUpload v-model="formData.curriculum" @file-selected="handleCurriculum"></CvUpload>
+                <CvUpload v-model="formData.curriculum" @cv-selected="handleCurriculum"></CvUpload>
                 <!-- <input type="text" class="form-control" :class="{ 'invalid-input': errors.curriculum }" id="curriculum"
                     placeholder="Inserisci un file valido" @change="formData.curriculum" required> -->
                 <div class="invalid" v-if="errors.curriculum">
