@@ -1,6 +1,7 @@
 <script>
 import axios from 'axios';
 import { store } from '../../../js/store';
+import DoctorShow from './DoctorShow.vue';
 
 export default {
     data() {
@@ -13,7 +14,11 @@ export default {
             doctors: [],
             specializationName: '',
             loaded: false,
+            showDoctor: false,
         }
+    },
+    components: {
+        DoctorShow,
     },
     methods: {
         getApiProfile() {
@@ -65,10 +70,22 @@ export default {
 
 
         },
+
+        removeShowDoctor() {
+            if (this.showDoctor) {
+                this.showDoctor = false
+            } else if (!this.showDoctor) {
+                this.showDoctor = true
+            }
+
+        },
+
         getProfileId(index) {
             console.log(this.doctors[index])
+            !this.showDoctor ? true : false
             store.doctorProfile = this.doctors[index]
-        }
+        },
+
     },
     computed: {
         showLoader() {
@@ -89,44 +106,52 @@ export default {
 
 <template>
     <main class="container">
+        <!-- Loader -->
         <div class="loader" v-if="!loaded"></div>
+
+        <!-- Components -->
         <div v-if="loaded">
-            <div class="title">
-                <h2>Ricerca per: <span class="specialization-title">{{ specializationName }}</span>
-                </h2>
-                <!-- It's not working -->
-                <!-- {{ doctors[0].user.specializations[0].name }} -->
+            <!-- If showDoctor is true, the show card is visible -->
+            <div v-if="showDoctor" class="general-show-doctor">
+                <DoctorShow />
             </div>
-
-            <div class="advanced-filter">
-                <div class="average-votes">
-
+            <!-- If showDoctor is false, the list of doctors are visible -->
+            <div @click="removeShowDoctor" :class="showDoctor ? 'show-doctor-active' : ''">
+                <div class="title">
+                    <h2>Ricerca per: <span class="specialization-title">{{ specializationName }}</span>
+                    </h2>
                 </div>
-                <div class="number-reviews">
 
+                <div class="advanced-filter">
+                    <div class="average-votes">
+
+                    </div>
+                    <div class="number-reviews">
+
+                    </div>
                 </div>
-            </div>
 
-            <div class="doctors-list">
-                <div class="doctor-card" v-for="(doctor, index) in doctors" @click="getProfileId(index)">
-                    <img src="https://media.istockphoto.com/id/1340883379/photo/young-doctor-hospital-medical-medicine-health-care-clinic-office-portrait-glasses-man.jpg?s=612x612&w=0&k=20&c=_H4VUPBkS0gEj5ZdZzQo-Hw3lMuyofJpB-P9yS92Wyw="
-                        class="doctor-photo" alt="doctor photo">
-                    <section class="doctor-information">
-                        <h5 class="doctor-name">
-                            {{ doctor.user.first_name }} {{ doctor.user.last_name }}
-                        </h5>
-                        <div class="doctor-address">
-                            <strong>Ufficio:</strong> {{ doctor.office_address }}
-                        </div>
-                        <div class="doctor-services">
-                            <strong>Prestazioni:</strong> {{ doctor.services }}
-                        </div>
-                    </section>
+                <div class="doctors-list">
+                    <div class="doctor-card" v-for="(doctor, index) in doctors" @click="getProfileId(index)">
+                        <img src="https://media.istockphoto.com/id/1340883379/photo/young-doctor-hospital-medical-medicine-health-care-clinic-office-portrait-glasses-man.jpg?s=612x612&w=0&k=20&c=_H4VUPBkS0gEj5ZdZzQo-Hw3lMuyofJpB-P9yS92Wyw="
+                            class="doctor-photo" alt="doctor photo">
+                        <section class="doctor-information">
+                            <h5 class="doctor-name">
+                                {{ doctor.user.first_name }} {{ doctor.user.last_name }}
+                            </h5>
+                            <div class="doctor-address">
+                                <strong>Ufficio:</strong> {{ doctor.office_address }}
+                            </div>
+                            <div class="doctor-services">
+                                <strong>Prestazioni:</strong> {{ doctor.services }}
+                            </div>
+                        </section>
 
-                    <!-- We can put the router link all over the card -->
-                    <!-- <section class="profile-show">
-                        <button class="button-profile-show">Profilo</button>
-                    </section> -->
+                        <!-- We can put the router link all over the card -->
+                        <!-- <section class="profile-show">
+                            <button class="button-profile-show">Profilo</button>
+                        </section> -->
+                    </div>
                 </div>
             </div>
         </div>
@@ -183,6 +208,20 @@ img {
     color: var(--color-primary);
     font-weight: bold;
     border: 1px solid var(--color-primary);
+}
+
+
+/* Show Doctor */
+.general-show-doctor {
+    position: fixed;
+    top: 80px;
+    left: 25%;
+    z-index: 1;
+    width: 50%;
+}
+
+.show-doctor-active {
+    opacity: 0.3;
 }
 
 
