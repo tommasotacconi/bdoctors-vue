@@ -16,26 +16,25 @@ export default {
         getApiProfile() {
             axios.get(this.apiUrl)
                 .then(response => {
-                    console.log(response.data);
                     let profiles = response.data.profiles
-                    console.log(profiles)
-                    console.log(this.specializationId)
-                    console.log(profiles[0].user.specializations[0].id)
-                    console.log(store.searchedSpecialization)
 
-                    // Qua non funziona, da capire come mai
-                    profiles.filter(profile => profile.id === store.searchedSpecialization)
-                    console.log(profiles)
-
-                    // Idem qui con un for normale
+                    // Not the best solution but it works
+                    // It filter every profiles we have and push it in an empty array that includes only the profiles with the correct specialization
                     let filteredProfiles = []
                     for (let i = 0; i < profiles.length; i++) {
                         let profile = profiles[i]
                         if (profile.user.specializations[0].id == store.searchedSpecialization) {
                             filteredProfiles.push(profile)
                         }
+                        let specializationsProfile = profile.user.specializations
+                        if (specializationsProfile.length === 2) {
+                            let count = 0
+                            console.log(count++)
+                            if (profile.user.specializations[1].id == store.searchedSpecialization) {
+                                filteredProfiles.push(profile)
+                            }
+                        }
                     }
-                    console.log(filteredProfiles)
                     this.doctors = filteredProfiles
 
                     this.specializations = response.data.specializations;
@@ -52,21 +51,24 @@ export default {
 </script>
 
 <template>
-    <main class="container ">
+    <main class="container container-doctor-list">
         <div class="title">
-            <h2>Ricerca per: <span class="specialization-title"> {{ doctors[0].user.specializations[0].name }}</span>
-            </h2>
+            <!-- <h2>Ricerca per: {{ doctors[0].user.specializations[0].name }}
+            </h2> -->
         </div>
         <div class="doctors-list">
             <div class="doctor-card" v-for="doctor in doctors">
                 <img src="https://media.istockphoto.com/id/1340883379/photo/young-doctor-hospital-medical-medicine-health-care-clinic-office-portrait-glasses-man.jpg?s=612x612&w=0&k=20&c=_H4VUPBkS0gEj5ZdZzQo-Hw3lMuyofJpB-P9yS92Wyw="
                     class="doctor-photo" alt="doctor photo">
                 <section class="doctor-information">
-                    <div class="doctor-name">
-                        <strong>{{ doctor.user.first_name }} {{ doctor.user.last_name }}</strong>
+                    <h5 class="doctor-name">
+                        {{ doctor.user.first_name }} {{ doctor.user.last_name }}
+                    </h5>
+                    <div class="doctor-address">
+                        <strong>Ufficio:</strong> {{ doctor.office_address }}
                     </div>
                     <div class="doctor-services">
-                        {{ doctor.services }}
+                        <strong>Prestazioni:</strong> {{ doctor.services }}
                     </div>
                 </section>
             </div>
@@ -75,6 +77,10 @@ export default {
 </template>
 
 <style scoped>
+h5 {
+    margin-bottom: 15px;
+}
+
 .title {
     text-align: center;
     margin: 30px 0 20px 0;
@@ -84,11 +90,17 @@ export default {
     text-transform: lowercase;
 }
 
+.container-doctor-list {
+    display: flex;
+    justify-content: center;
+}
+
 .doctors-list {
     display: flex;
-    gap: 40px;
-    justify-content: space-between;
+    gap: 50px 110px;
+    justify-content: start;
     flex-wrap: wrap;
+    align-content: stretch;
 }
 
 .doctor-card {
@@ -109,6 +121,4 @@ img {
     border: 3px solid #65B0FF;
     height: 200px;
 }
-
-.doctor-information {}
 </style>
