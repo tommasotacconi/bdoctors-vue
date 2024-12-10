@@ -57,7 +57,7 @@ export default {
         },
 
         createProfile() {
-            axios.post('http://localhost:8000/api/profiles', this.formData, {
+            axios.post('http://localhost:8000/api/profiles/' + this.formData.user_id, this.formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
                 },
