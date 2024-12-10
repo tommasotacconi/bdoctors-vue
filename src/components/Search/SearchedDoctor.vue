@@ -73,6 +73,7 @@ export default {
 
         },
 
+        // Non più utile
         // removeShowDoctor() {
         //     if (this.showDoctor) {
         //         this.showDoctor = false
@@ -116,7 +117,10 @@ export default {
         <div v-if="loaded">
             <div>
                 <div class="title">
-                    <h2>Ricerca per: <span class="specialization-title">{{ specializationName }}</span>
+                    <h2>Ricerca per: <span class="specialization-title">{{ specializationName }} </span><span
+                            class="total-specialization-doctor"> (Totale esperti: {{
+                                doctors.length
+                            }})</span>
                     </h2>
                 </div>
 
@@ -180,6 +184,12 @@ h5 {
     justify-content: start;
     flex-wrap: wrap;
     align-content: stretch;
+}
+
+.total-specialization-doctor {
+    font-style: oblique;
+    font-weight: normal;
+    font-size: 1.8rem;
 }
 
 .doctor-card {
