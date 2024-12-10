@@ -9,6 +9,7 @@ export default {
             messagesApiUrl: 'http://localhost:8000/api/messages',
             messagesProfile: [],
             messageSelected: [],
+            loaded: false,
         }
     },
     methods: {
@@ -37,20 +38,36 @@ export default {
         },
     },
     mounted() {
+        this.showLoader
+
+    },
+    created() {
         this.getApiMessages()
-    }
+    },
+    computed: {
+        showLoader() {
+            setTimeout(() => {
+                this.loaded = true
+            }, 2000)
+
+        }
+    },
 }
 </script>
 
 <template>
     <main class="container">
-        <div class="general-cards-container">
+        <div class="loader" v-if="!loaded"></div>
+        <div v-else class="general-cards-container">
             <div class="all-messages">
                 <div class="card-inbox">
                     <div class="card-header-title">
                         <h5 class="title">Messaggi arrivati</h5>
-                        <div class="messages-number"><strong>Totale:</strong> <span class="total-number">10</span></div>
+                        <div class="messages-number"><strong>Totale:</strong> <span class="total-number">{{
+                            messagesProfile.length }}</span></div>
                     </div>
+
+                    <!-- Nuovo sistema di lista -->
                     <div class="card-body-list">
                         <ul class="list-general" v-for="(message, index) in messagesProfile"
                             @click="selectMessage(index)">
@@ -99,6 +116,7 @@ li {
 
 ul {
     border-bottom: 3px dashed var(--color-secondary);
+    padding-left: 10px;
 }
 
 /* Inbox Card */
@@ -118,7 +136,7 @@ ul {
 
 .card-header-title {
     padding: 10px 15px;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -195,9 +213,38 @@ ul {
     border-bottom: 2px dashed var(--color-secondary);
 }
 
-/* Is better with a space? */
-/* .message-content {
-    display: flex;
-    gap: 10px;
-} */
+/* Loader progressive */
+.loader {
+    --r1: 154%;
+    --r2: 68.5%;
+    width: 60px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background:
+        radial-gradient(var(--r1) var(--r2) at top, #0000 79.5%, var(--color-secondary) 80%),
+        radial-gradient(var(--r1) var(--r2) at bottom, var(--color-secondary) 79.5%, #0000 80%),
+        radial-gradient(var(--r1) var(--r2) at top, #0000 79.5%, var(--color-secondary) 80%),
+        #ccc;
+    background-size: 50.5% 220%;
+    background-position: -100% 0%, 0% 0%, 100% 0%;
+    background-repeat: no-repeat;
+    animation: l9 2s infinite linear;
+    position: absolute;
+    top: 50%;
+    left: 59%;
+}
+
+@keyframes l9 {
+    33% {
+        background-position: 0% 33%, 100% 33%, 200% 33%
+    }
+
+    66% {
+        background-position: -100% 66%, 0% 66%, 100% 66%
+    }
+
+    100% {
+        background-position: 0% 100%, 100% 100%, 200% 100%
+    }
+}
 </style>
