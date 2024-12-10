@@ -10,6 +10,7 @@ export default {
             loaded: false,
             reviewsProfiles: [],
             reviewsProfile: [],
+            reviewSelected: [],
         }
     },
     methods: {
@@ -33,6 +34,11 @@ export default {
                     console.log(error);
                 })
         },
+        selectReview(index) {
+            this.reviewSelected = this.reviewsProfile[index]
+            console.log(this.reviewsProfile[index])
+        },
+
     },
     mounted() {
         this.showLoader
@@ -58,13 +64,14 @@ export default {
             <div class="card-general card-reviews">
                 <div class="card-header-title">
                     <h5 class="title">Recensioni ricevute</h5>
-                    <div class="reviews-number"><strong>Totale:</strong> <span class="total-number">10</span></div>
+                    <div class="reviews-number"><strong>Totale:</strong> <span class="total-number">{{
+                        reviewsProfile.length }}</span></div>
                 </div>
                 <div class="card-body-list">
-                    <ul class="list-general" v-for="(message, index) in 10" @click="selectMessage(index)">
-                        <li class="list-email">email</li>
-                        <li class="list-name">nome e cognome</li>
-                        <li class="list-content">preview</li>
+                    <ul class="list-general" v-for="(review, index) in reviewsProfile" @click="selectReview(index)">
+                        <li class="list-email">{{ review.email }}</li>
+                        <li class="list-name">{{ review.first_name }} {{ review.last_name }}</li>
+                        <li class="list-content">{{ review.content }}</li>
                     </ul>
                 </div>
             </div>
@@ -79,18 +86,13 @@ export default {
                 </div>
 
                 <div class="review-name">
-                    <strong>Da:</strong> Mario Rossi
+                    <strong>Da:</strong> {{ reviewSelected.first_name }} {{ reviewSelected.last_name }}
                 </div>
                 <div class="review-email">
-                    <strong>E-mail:</strong> mariorossi@gmail.com
+                    <strong>E-mail:</strong> {{ reviewSelected.email }}
                 </div>
                 <div class="review-content">
-                    <div><strong>Contenuto:</strong></div> <span>Lorem ipsum dolor sit amet consectetur adipisicing
-                        elit. Veniam
-                        velit officia quaerat
-                        similique
-                        ducimus excepturi dolore aliquam sed blanditiis maxime voluptas error perspiciatis sequi
-                        officiis ullam delectus rerum, vero dolorem?</span>
+                    <div><strong>Contenuto:</strong></div> <span>{{ reviewSelected.content }}</span>
                 </div>
             </div>
         </div>
@@ -98,6 +100,24 @@ export default {
 </template>
 
 <style scoped>
+/* General */
+li {
+    text-decoration: none;
+    list-style-type: none;
+    display: flex;
+    align-items: center;
+    max-height: 25px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+ul {
+    border-bottom: 3px dashed var(--color-secondary);
+    padding-left: 10px;
+}
+
+
 /* Card reviews */
 .card-reviews-container {
     border: 3px solid var(--color-complementary);
@@ -132,19 +152,29 @@ export default {
 
 .card-body-list {
     display: flex;
+    flex-direction: column;
     padding: 0 15px;
+}
+
+.list-general {
+    display: flex;
+    gap: 10px;
 }
 
 .list-email {
     flex-basis: 20%;
     border-right: 3px dashed var(--color-secondary);
-    border-bottom: 3px solid var(--color-secondary);
 }
 
 .list-name {
     flex-basis: 20%;
     border-right: 3px dashed var(--color-secondary);
-    border-bottom: 3px solid var(--color-secondary);
+
+}
+
+.list-content {
+    flex-basis: 60%;
+
 }
 
 .list-preview {
