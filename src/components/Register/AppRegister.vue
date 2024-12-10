@@ -107,6 +107,8 @@ export default {
 	components: {
 		Multiselect,
 		AppAlert
+	},
+	computed: {
 	}
 }
 </script>
@@ -159,7 +161,7 @@ export default {
 			<!-- password input -->
 			<div class="col-md-12 mb-2">
 				<label for="password-input" class="badge rounded-pill">Password</label>
-				<input type="text" id="password-input" class="form-control" :class="{ 'invalid-element': errors.password.length }" v-model.trim="password">
+				<input type="password" id="password-input" class="form-control" :class="{ 'invalid-element': errors.password.length }" v-model.trim="password">
 				<div class="invalid-element" v-if="errors.password.length">
 					<div v-for="(error, index) in errors.password" :key="index">{{ error }}</div>
 				</div>
@@ -167,7 +169,7 @@ export default {
 			<!-- confirm password input -->
 			<div class="col-md-12 mb-2">
 				<label for="password-confirmation-input" class="badge rounded-pill">Conferma password</label>
-				<input type="text" id="password-confirmation-input" class="form-control" :class="{ 'invalid-element': errors.passwordConfirmation.length }" v-model.trim="passwordConfirmation">
+				<input type="password" id="password-confirmation-input" class="form-control" :class="{ 'invalid-element': errors.passwordConfirmation.length }" v-model.trim="passwordConfirmation">
 				<div class="invalid-element" v-if="errors.passwordConfirmation.length">
 					<div v-for="(error, index) in errors.passwordConfirmation" :key="index">{{ error }}</div>
 				</div>
@@ -219,7 +221,7 @@ label {
 }
 
 input {
-	height: 3.5rem;
+	height: 3.2rem;
 	border: 2px solid #65B0FF;
 }
 
