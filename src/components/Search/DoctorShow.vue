@@ -9,6 +9,15 @@ export default {
             // loader temporary cancelled
             loaded: true,
             store,
+            messageForm: {
+                patient_email: '',
+                message: '',
+            },
+            errors: {
+                patient_email: "",
+                message: ''
+            },
+            messageFormValidated: false,
         }
     },
     methods: {
@@ -22,6 +31,36 @@ export default {
                     console.log(error);
                 });
         },
+
+        sendMessage() {
+            axios.post()
+        },
+
+        validEmail(email) {
+            const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+            return re.test(email);
+        },
+
+        validateMessage() {
+            if (!this.messageForm.email) {
+                this.errors.email = "L'email è obbligatoria.";
+            } else if (!this.validEmail(this.messageForm.email)) {
+                this.errors.email = "L'email inserita non è valida.";
+            }
+            if (!this.messageForm.message) {
+                this.errors.message = "Inserisci il corpo del messaggio"
+            }
+
+            if (!this.errors.length) {
+                this.messageFormValidated = true;
+
+                if (this.messageFormValidated = true) {
+                    this.sendMessage();
+                }
+            }
+            console.log(this.messageForm);
+            console.log(this.errors);
+        }
     },
     computed: {
         showLoader() {
@@ -97,6 +136,28 @@ export default {
                                     <!-- {{ profileData.services }} -->
                                 </li>
                             </ul>
+                            <div>
+                                <form action="" method="post" class="form-control">
+                                    <div class="mb-3 col-4">
+                                        <label for="patient_email" class="form-label">Email</label>
+                                        <input type="email" class="form-control"
+                                            :class="{ 'invalid-input': errors.email }" id="patient_email"
+                                            v-model.trim="patient_email" required>
+                                        <div class="invalid" v-if="errors.email">
+                                            <p> {{ errors.email }} </p>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3 col-4">
+                                        <label for="message" class="form-label">Messaggio</label>
+                                        <textarea class="form-control" id="message" rows="3"
+                                            v-model="messageForm.message"></textarea>
+                                        <div class="invalid" v-if="errors.email">
+                                            <p> {{ errors.email }} </p>
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary  btn-submit" ">Invia messaggio</button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -312,5 +373,18 @@ ul {
     .card-body-text-section ul {
         flex-direction: column;
     }
+}
+
+// message form
+.btn-submit {
+    background-color: var(--color-secondary);
+}
+
+.invalid {
+    color: red;
+}
+
+.invalid-input {
+    border-color: red;
 }
 </style>

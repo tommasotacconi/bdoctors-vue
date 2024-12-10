@@ -213,7 +213,7 @@ img {
 
 /* Show Doctor */
 .general-show-doctor {
-    position: fixed;
+
     top: 80px;
     left: 25%;
     z-index: 1;
