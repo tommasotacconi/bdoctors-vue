@@ -93,6 +93,15 @@ export default {
             console.log(store.searchedSpecialization)
         },
 
+        // Metodo media voti
+        // for (let i = 0; i < reviewsProfile.length; i++) {
+        //                 let review = reviewsProfile[i]
+        //                 totalNumberVote += review.votes
+        //             }
+        //             this.averageVote = totalNumberVote / reviewsProfile.length
+        //             console.log(Math.round(this.averageVote))
+        //         }
+
     },
     computed: {
         showLoader() {
