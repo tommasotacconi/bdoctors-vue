@@ -15,6 +15,7 @@ export default {
             specializationId: store.searchedSpecialization,
             doctors: [],
             specializationName: '',
+            rating: null,
             loaded: false,
             showDoctor: false,
         }
@@ -138,8 +139,25 @@ export default {
 
                 <div class="advanced-filter">
                     <div class="average-votes">
-                        <div class="votes">
-                            <p>Filtra per voto: <i class="fa-solid fa-stethoscope" v-for="star in 5"></i></p>
+                        <div class="votes d-flex">
+                            <p>Filtra per media voti: </p>
+                            <div class="rating mx-3">
+                                <input type="radio" id="vote5" name="rating" value="5" v-model="rating">
+                                <label for="vote5"><i class="fa-solid fa-stethoscope"></i>
+                                </label>
+                                <input type="radio" id="vote4" name="rating" value="4" v-model="rating">
+                                <label for="vote4"><i class="fa-solid fa-stethoscope"></i>
+                                </label>
+                                <input type="radio" id="vote3" name="rating" value="3" v-model="rating">
+                                <label for="vote3"><i class="fa-solid fa-stethoscope"></i>
+                                </label>
+                                <input type="radio" id="vote2" name="rating" value="2" v-model="rating">
+                                <label for="vote2"><i class="fa-solid fa-stethoscope"></i>
+                                </label>
+                                <input type="radio" id="vote1" name="rating" value="1" v-model="rating">
+                                <label for="vote1"><i class="fa-solid fa-stethoscope"></i>
+                                </label>
+                            </div>
                         </div>
                         <div class="reviews-number d-flex gap-3">
                             <p>Filtra per numero di recensioni:
@@ -200,11 +218,6 @@ h5 {
     font-weight: 400;
 }
 
-
-/* Advanced-filter */
-.fa-stethoscope:hover {
-    color: red;
-}
 
 /* Doctor list */
 .doctors-list {
@@ -297,6 +310,32 @@ img {
 
     100% {
         background-position: 0% 100%, 100% 100%, 200% 100%
+    }
+}
+
+/*Rating */
+.rating {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+
+    & input {
+        display: none;
+    }
+
+    & label {
+        font-size: 24px;
+        cursor: pointer;
+    }
+
+    & label:hover,
+    & label:hover~label {
+        color: var(--color-complementary)
+    }
+
+    & input:checked~label {
+        color: var(--color-complementary)
     }
 }
 </style>
