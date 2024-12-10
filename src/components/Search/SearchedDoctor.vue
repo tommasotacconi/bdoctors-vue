@@ -57,7 +57,7 @@ export default {
                     // handle success
                     console.log(response.data.specializations);
                     let specializationArray = response.data.specializations
-                    for (let i = 0; specializationArray.length; i++) {
+                    for (let i = 0; i < specializationArray.length; i++) {
                         let specialization = specializationArray[i]
                         if (store.searchedSpecialization === specialization.id) {
                             this.specializationName = specialization.name
@@ -84,9 +84,10 @@ export default {
 
         goToShowPage(doctor, index) {
             store.doctorProfile = doctor
-            this.$router.push({ name: 'search.show', params: { searchId: store.searchedSpecialization, id: index } })
             console.log(index)
             console.log(store.searchedSpecialization)
+            if (index)
+                this.$router.push({ name: 'search.show', params: { searchId: store.searchedSpecialization, id: index } });
         },
 
     },
