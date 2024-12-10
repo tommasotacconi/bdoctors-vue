@@ -39,9 +39,9 @@ export default {
         chooseSpecialization() {
             console.log("Specializzazione selezionata:", this.selectedSpecialization);
             store.searchedSpecialization = this.selectedSpecialization.id
-            let selectedSpecializationName = this.selectedSpecialization.name
+            store.selectedSpecializationName = this.selectedSpecialization.name
             this.$router.push({
-                name: 'search', params: { searchId: selectedSpecializationName.trim().replace(/ /g, "-").toLowerCase() },
+                name: 'search', params: { searchId: store.selectedSpecializationName.trim().replace(/ /g, "-").toLowerCase() },
             })
         },
 
@@ -86,7 +86,7 @@ export default {
                         <option value="" disabled selected>Ricerca il medico per specializzazione!</option>
                         <option v-for="(specialization, index) in specializations" :key="index" :value=specialization>{{
                             specialization.name
-                            }}
+                        }}
                         </option>
                     </select>
                 </div>
