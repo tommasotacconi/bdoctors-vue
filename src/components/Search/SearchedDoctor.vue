@@ -42,6 +42,7 @@ export default {
                         }
                     }
                     this.doctors = filteredProfiles
+                    console.log(this.doctors)
 
                     this.specializations = response.data.specializations;
                 })
@@ -142,15 +143,16 @@ export default {
                             <div class="doctor-address">
                                 <strong>Ufficio:</strong> {{ doctor.office_address }}
                             </div>
-                            <div class="doctor-services">
-                                <strong>Prestazioni:</strong> {{ doctor.services }}
+                            <div class="doctor-specialization">
+                                <strong>Specializzazioni:</strong>
+                                <ul>
+                                    <li v-for="doctorSpecialization in doctor.user.specializations">
+                                        {{ doctorSpecialization.name }}
+                                    </li>
+                                </ul>
+
                             </div>
                         </section>
-
-                        <!-- We can put the router link all over the card -->
-                        <!-- <section class="profile-show">
-                            <button class="button-profile-show">Profilo</button>
-                        </section> -->
                     </div>
                 </div>
             </div>
