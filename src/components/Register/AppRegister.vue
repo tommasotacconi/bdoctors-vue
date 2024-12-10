@@ -78,6 +78,8 @@ export default {
 			this.passwordConfirmation = [];
 		},
 		sendRegistrationData() {
+			// Reset alert to hidden state
+			this.isAlertShown = false;
 			// Runs the validation to control if it can move forward
 			if (!this.checkFormValidity()) return
 			// Makes the call
