@@ -2,6 +2,7 @@
 import axios from 'axios';
 import { store } from '../../../js/store';
 import DoctorShow from './DoctorShow.vue';
+import { RouterLink } from 'vue-router';
 
 export default {
     data() {
@@ -72,19 +73,20 @@ export default {
 
         },
 
-        removeShowDoctor() {
-            if (this.showDoctor) {
-                this.showDoctor = false
-            } else if (!this.showDoctor) {
-                this.showDoctor = true
-            }
+        // removeShowDoctor() {
+        //     if (this.showDoctor) {
+        //         this.showDoctor = false
+        //     } else if (!this.showDoctor) {
+        //         this.showDoctor = true
+        //     }
 
-        },
+        // },
 
-        getProfileId(index) {
-            console.log(this.doctors[index])
-            !this.showDoctor ? true : false
-            store.doctorProfile = this.doctors[index]
+        goToShowPage(doctor, index) {
+            store.doctorProfile = doctor
+            this.$router.push({ name: 'search.show', params: { searchId: store.searchedSpecialization, id: index } })
+            console.log(index)
+            console.log(store.searchedSpecialization)
         },
 
     },
@@ -112,12 +114,7 @@ export default {
 
         <!-- Components -->
         <div v-if="loaded">
-            <!-- If showDoctor is true, the show card is visible -->
-            <div v-if="showDoctor" class="general-show-doctor">
-                <DoctorShow />
-            </div>
-            <!-- If showDoctor is false, the list of doctors are visible -->
-            <div @click="removeShowDoctor" :class="showDoctor ? 'show-doctor-active' : ''">
+            <div>
                 <div class="title">
                     <h2>Ricerca per: <span class="specialization-title">{{ specializationName }}</span>
                     </h2>
@@ -132,8 +129,9 @@ export default {
                     </div>
                 </div>
 
+
                 <div class="doctors-list">
-                    <div class="doctor-card" v-for="(doctor, index) in doctors" @click="getProfileId(index)">
+                    <div class="doctor-card" v-for="(doctor, index) in doctors" @click="goToShowPage(doctor, index)">
                         <img src="https://media.istockphoto.com/id/1340883379/photo/young-doctor-hospital-medical-medicine-health-care-clinic-office-portrait-glasses-man.jpg?s=612x612&w=0&k=20&c=_H4VUPBkS0gEj5ZdZzQo-Hw3lMuyofJpB-P9yS92Wyw="
                             class="doctor-photo" alt="doctor photo">
                         <section class="doctor-information">
@@ -155,6 +153,7 @@ export default {
                         </section>
                     </div>
                 </div>
+
             </div>
         </div>
     </main>
@@ -212,9 +211,9 @@ img {
     border: 1px solid var(--color-primary);
 }
 
-
+/* Non più utile */
 /* Show Doctor */
-.general-show-doctor {
+/* .general-show-doctor {
     position: fixed;
     top: 80px;
     left: 25%;
@@ -224,7 +223,7 @@ img {
 
 .show-doctor-active {
     opacity: 0.3;
-}
+} */
 
 
 /* Loader progressive */
