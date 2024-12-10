@@ -7,6 +7,8 @@ export default {
         return {
             store,
             messagesApiUrl: 'http://localhost:8000/api/messages',
+            messagesProfile: [],
+            messageSelected: [],
         }
     },
     methods: {
@@ -22,17 +24,17 @@ export default {
 
                     const messagesProfile = messagesProfiles.filter(message => message.profile_id === idProfile)
                     console.log(messagesProfile)
-
-
+                    this.messagesProfile = messagesProfile
                 })
                 .catch(function (error) {
                     // handle error
                     console.log(error);
                 })
         },
-        getMessages() {
-
-        }
+        selectMessage(index) {
+            this.messageSelected = this.messagesProfile[index]
+            console.log(this.messagesProfile[index])
+        },
     },
     mounted() {
         this.getApiMessages()
@@ -49,16 +51,21 @@ export default {
                         <h5 class="title">Messaggi arrivati</h5>
                         <div class="messages-number"><strong>Totale:</strong> <span class="total-number">10</span></div>
                     </div>
-                    <div class="card-body-list" v-for="(message, index) in 10">
-                        <ul class="list-group list-group-flush list-email" @click="selectMessage(index)">
-                            <li class="list-group-item">E-mail</li>
+                    <div class="card-body-list">
+                        <ul class="list-general" v-for="(message, index) in messagesProfile"
+                            @click="selectMessage(index)">
+                            <li class="list-email">{{ message.email }}</li>
+                            <li class="list-name">{{ message.first_name }} {{ message.last_name }}</li>
+                            <li class="list-content">{{ message.content }}</li>
                         </ul>
-                        <ul class="list-group list-group-flush list-name" @click="selectMessage(index)">
-                            <li class="list-group-item">Nome e Cognome</li>
+
+                        <!-- Vecchio sistema di lista, il nuovo è più facile da mantenere -->
+                        <!-- <ul class="list-group list-group-flush list-name" @click="selectMessage(message, index)">
+                            <li class="list-group-item">{{ message.first_name }} {{ message.last_name }}</li>
                         </ul>
-                        <ul class="list-group list-group-flush list-preview" @click="selectMessage(index)">
-                            <li class="list-group-item">Preview</li>
-                        </ul>
+                        <ul class="list-group list-group-flush list-preview" @click="selectMessage(message, index)">
+                            <li class="list-group-item">{{ message.content }}</li>
+                        </ul> -->
                     </div>
                 </div>
             </div>
@@ -87,8 +94,19 @@ export default {
 </template>
 
 <style scoped>
-/* Inbox Card */
+/* General */
+li {
+    text-decoration: none;
+    list-style-type: none;
+    display: flex;
+    align-items: center;
+}
 
+ul {
+    border-bottom: 3px dashed var(--color-secondary);
+}
+
+/* Inbox Card */
 .card-inbox::-webkit-scrollbar {
     width: 10px;
     position: relative;
@@ -129,19 +147,28 @@ export default {
 
 .card-body-list {
     display: flex;
+    flex-direction: column;
     padding: 0 15px;
+}
+
+.list-general {
+    display: flex;
+    gap: 10px;
 }
 
 .list-email {
     flex-basis: 20%;
     border-right: 3px dashed var(--color-secondary);
-    border-bottom: 3px solid var(--color-secondary);
 }
 
 .list-name {
     flex-basis: 20%;
     border-right: 3px dashed var(--color-secondary);
-    border-bottom: 3px solid var(--color-secondary);
+
+}
+
+.list-content {
+    flex-basis: 60%;
 }
 
 .list-preview {
