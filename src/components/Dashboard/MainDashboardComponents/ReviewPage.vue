@@ -11,6 +11,7 @@ export default {
             reviewsProfiles: [],
             reviewsProfile: [],
             reviewSelected: [],
+            averageVote: 0,
         }
     },
     methods: {
@@ -27,7 +28,19 @@ export default {
 
                     const reviewsProfile = reviewsProfiles.filter(review => review.profile_id === idProfile)
                     console.log(reviewsProfile)
+                    let totalNumberVote = 0
+
+                    // Calcola la media voti
+                    // for (let i = 0; i < reviewsProfile.length; i++) {
+                    //     let review = reviewsProfile[i]
+                    //     totalNumberVote += review.votes
+                    // }
+                    // this.averageVote = totalNumberVote / reviewsProfile.length
+                    // console.log(Math.round(this.averageVote))
+
                     this.reviewsProfile = reviewsProfile
+
+
                 })
                 .catch(function (error) {
                     // handle error
@@ -38,6 +51,16 @@ export default {
             this.reviewSelected = this.reviewsProfile[index]
             console.log(this.reviewsProfile[index])
         },
+        // showAverageVote() {
+        //     let totalNumberVote = 0
+        //     let reviewsProfile = this.reviewsProfile
+        //     for (let i = 0; i < reviewsProfile.length; i++) {
+        //         let review = reviewsProfile[i]
+        //         totalNumberVote += review.votes
+        //     }
+        //     this.averageVote = totalNumberVote / reviewsProfile.length
+        //     console.log(Math.round(this.averageVote))
+        // }
 
     },
     mounted() {
@@ -45,8 +68,12 @@ export default {
 
     },
     created() {
-        this.getApiReviews()
+        this.getApiReviews();
+
     },
+    // updated() {
+    //     this.showAverageVote();
+    // },
     computed: {
         showLoader() {
             setTimeout(() => {
