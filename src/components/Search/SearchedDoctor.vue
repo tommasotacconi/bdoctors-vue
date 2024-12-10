@@ -33,7 +33,14 @@ export default {
                     for (let i = 0; i < profiles.length; i++) {
                         let profile = profiles[i]
                         if (profile.user.specializations[0].id == store.searchedSpecialization) {
+                            // if (profile.sponsorships[0].id === 1) {
+                            //     filteredProfiles.push(profile)
+
+                            // } else {
+                            //     filteredProfiles.unshift(profile)
+                            // }
                             filteredProfiles.push(profile)
+
                         }
                         let specializationsProfile = profile.user.specializations
                         if (specializationsProfile.length === 2) {
