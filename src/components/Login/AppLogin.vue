@@ -18,7 +18,7 @@ export default {
 				.then(response => {
 					console.log(response);
 					this.responseStatus = true;
-					this.$router.push({ name: 'dashboard', params: { id: response.data.data.id } })
+					this.$router.push({ name: 'dashboard', params: { id: response.data.user.id } })
 				})
 				.catch(function (error) {
 					console.log(error);
@@ -39,7 +39,7 @@ export default {
 			<div class="col-12">
 				<!-- Password input -->
 				<label for="password-input" class="badge rounded-pill">Password</label>
-				<input type="text" id="password-input" class="form-control mb-3" v-model="inputPassword">
+				<input type="password" id="password-input" class="form-control mb-3" v-model="inputPassword">
 			</div>
 			<!-- Button wrappers -->
 			<div class="buttons-wrapper col-12">
@@ -79,7 +79,7 @@ label {
 }
 
 input {
-	height: 3rem;
+	height: 3.2rem;
 	border: 2px solid #65B0FF;
 }
 

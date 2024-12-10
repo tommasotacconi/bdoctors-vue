@@ -6,17 +6,25 @@ export default {
 
     data() {
         return {
-            value: [],
+            value: this.specializations,
             options: [],
             apiUrl: "http://127.0.0.1:8000/api/specializations"
         }
     },
+    props: {
+        specializations: {
+            type: Array,
+            required: true,
+        }
+    },
     components: { VueMultiselect },
     methods: {
+
         // Get Specializations through API call
         getSpecializations() {
             axios.get(this.apiUrl)
                 .then(response => {
+                    this.value = this.specializations;
                     this.options = response.data.specializations;
                     console.log(response);
                 })
@@ -40,9 +48,9 @@ export default {
         },
 
     },
-    mounted() {
+    beforeMount() {
         this.getSpecializations();
-    }
+    },
 }
 
 </script>

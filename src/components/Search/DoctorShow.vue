@@ -1,12 +1,13 @@
 <script>
 import axios from 'axios';
-import { store } from '../../../../js/store.js';
+import { store } from '../../../js/store.js';
 
 export default {
     data() {
         return {
             profileData: {},
-            loaded: false,
+            // loader temporary cancelled
+            loaded: true,
             store,
         }
     },
@@ -14,9 +15,8 @@ export default {
         getProfileData() {
             axios.get(this.store.apiUri + 'profiles/' + this.store.informationPageId)
                 .then(response => {
-                    console.log(response);
+                    // console.log(response);
                     this.profileData = response.data.data;
-                    localStorage.setItem('user_id', response.data.data.doctor.id)
                 })
                 .catch(function (error) {
                     console.log(error);
@@ -43,65 +43,60 @@ export default {
 <template>
     <main class="container d-flex justify-content-center">
         <div class="general-main">
-            <h2>Profilo</h2>
             <div class="loader" v-if="!loaded"></div>
             <section class="card-general" v-if="loaded">
-                <div class="card mb-3" v-if="Object.keys(profileData).length">
+                <div class="card mb-3">
                     <div class="card-flex">
                         <div class="img-doctor">
                             <img src="https://media.istockphoto.com/id/1340883379/photo/young-doctor-hospital-medical-medicine-health-care-clinic-office-portrait-glasses-man.jpg?s=612x612&w=0&k=20&c=_H4VUPBkS0gEj5ZdZzQo-Hw3lMuyofJpB-P9yS92Wyw="
                                 class="img-flui" alt="doctor photo">
                         </div>
-                        <div class="card-body-general">
-                            <div class="card-body">
-                                <div class="card-title-section">
-                                    <h4 class="card-title">{{ profileData.doctor.first_name }} {{
-                                        profileData.doctor.last_name }}
-                                    </h4>
-                                    <div class="main-information-section">
-                                        <section class="email-section d-flex gap-1 align-items-center">
-                                            <h5>Email:</h5>
-                                            <p>{{ profileData.doctor.email }}</p>
-                                        </section>
-                                        <section class="password-section d-flex gap-1 align-items-center">
-                                            <h5>Password:</h5>
-                                            <p>*********</p>
-                                        </section>
-                                    </div>
-                                </div>
-                                <div class="card-text">
-                                    <ul>
-                                        <li>
-                                            <strong>Curriculum:</strong> Nome del file
-                                        </li>
-                                        <li>
-                                            <strong>Specializzazione:</strong> {{
-                                                profileData.doctor.specializations[0].name }}
-                                        </li>
-                                        <li>
-                                            <strong>Indirizzo:</strong> {{ profileData.office_address }}
-                                        </li>
-                                        <li>
-                                            <strong>Telefono:</strong> {{ profileData.phone }}
-                                        </li>
-                                        <li>
-                                            <strong>Prestazioni:</strong> {{ profileData.services }}
-                                        </li>
-                                    </ul>
-                                </div>
-                                <routerLink :to="{ name: 'edit' }"><button href="#" class="edit-profile">Modifica il tuo
-                                        profilo</button></routerLink>
-                            </div>
+                        <div class="card-body-title-section">
+                            <h2 class="card-title">
+                                {{ store.doctorProfile.user.first_name }} {{ store.doctorProfile.user.last_name }}
+                                <!-- {{ profileData.doctor.first_name }} {{ profileData.doctor.last_name }} -->
+                            </h2>
                         </div>
-                    </div>
-                </div>
-                <div class="card mb-3" v-else>
-                    <div class="card-create">
-                        <routerLink :to="{ name: 'create' }">
-                            <div class="plus"><i class="fa-solid fa-plus"></i></div>
-                        </routerLink>
-                        <div class="create-profile-text">
-                            Il tuo profilo sembra essere un po' vuoto... che ne dici di aggiungerci qualcosa?
+                        <div class="card-body-text-section">
+                            <ul class="d-flex flex-wrap row-gap-3 ul-child-elements">
+                                <li id="curriculum-border">
+                                    <h3>Curriculum</h3>
+                                    <div class="data-element curriculum-element">
+                                        Curriculum.pdf
+                                    </div>
+                                </li>
+                                <li id="specialization-border">
+                                    <h3>Specializzazione</h3>
+                                    <div class="data-element specializations-element">
+                                        <ul>
+                                            <li v-for="specialization in store.doctorProfile.user.specializations">{{
+                                                specialization.name }}</li>
+                                        </ul>
+                                    </div>
+                                    <!-- {{ profileData.doctor.specializations[0].name }} -->
+                                </li>
+                                <li id="address-border">
+                                    <h3>Indirizzo</h3>
+                                    <div class="data-element address-element">
+                                        {{ store.doctorProfile.office_address }}
+                                    </div>
+                                    <!-- {{ profileData.office_address }} -->
+                                </li>
+                                <li id="phone-border">
+                                    <h3>Telefono</h3>
+                                    <div class="data-element telephone-element">
+                                        {{ store.doctorProfile.phone }}
+                                    </div>
+                                    <!-- {{ profileData.phone }} -->
+                                </li>
+                                <li id="services-border">
+                                    <h3>Prestazioni</h3>
+                                    <div class="data-element services-element">
+                                        {{ store.doctorProfile.services }}
+                                    </div>
+                                    <!-- {{ profileData.services }} -->
+                                </li>
+                            </ul>
                         </div>
                     </div>
                 </div>
@@ -110,14 +105,14 @@ export default {
     </main>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 h2 {
     margin-bottom: 40px;
     text-align: center;
 }
 
-h4 {
-    margin: 0;
+h3 {
+    font-size: 1.2rem;
 }
 
 h5 {
@@ -138,15 +133,21 @@ p {
 }
 
 .card {
+    min-height: 80vh;
+    margin-top: 50px;
+    padding: 0 50px;
     border-radius: 40px;
     background-color: #D8F9FF;
     border: 0;
     text-align: center;
     width: 80%;
+
+    position: relative;
 }
 
 .card-flex {
     display: flex;
+    flex-wrap: wrap;
 }
 
 .img-doctor {
@@ -156,42 +157,40 @@ p {
     justify-content: center;
 }
 
-.card-body-general {
+.card img {
+    width: 90%;
+    margin: 15px;
+    border-radius: 50%;
+    border: 3px solid #65B0FF;
+}
+
+.card-body-title-section {
     flex-basis: 60%;
 }
 
-.card img {
-    border-radius: 50%;
-    width: 90%;
-    border: 3px solid #65B0FF;
-    margin: 15px;
+.card-title {
+    position: relative;
+    top: 50%;
+    translate: 0 -50%
 }
 
-.card-body {
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-
-.card-text {
+.card-body-text-section {
+    flex-grow: 1;
     border-top: 2px solid var(--color-complementary);
     padding-top: 16px;
-}
 
-.main-information-section {
-    padding: 15px 0;
-}
-
-.email-section,
-.password-section {
-    padding: 5px 0;
+    ul.ul-child-elements>* {
+        flex-basis: 50%;
+        height: 130px;
+    }
 }
 
 ul {
     text-align: start;
+    padding-left: 0;
+    list-style-type: none;
 }
+
 
 .edit-profile {
     background-color: var(--color-secondary);
@@ -201,6 +200,11 @@ ul {
     color: var(--color-primary);
     font-weight: bold;
     border: 1px solid var(--color-primary);
+
+    position: absolute;
+    bottom: 15px;
+    left: 50%;
+    translate: -50% 0;
 }
 
 
@@ -296,6 +300,17 @@ ul {
 
     .img-doctor {
         width: 70%;
+    }
+
+    .card-title {
+        margin-top: 50px;
+        margin-bottom: 0;
+    }
+}
+
+@media only screen and (max-width: 780px) {
+    .card-body-text-section ul {
+        flex-direction: column;
     }
 }
 </style>

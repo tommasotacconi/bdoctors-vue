@@ -6,6 +6,7 @@ import Dashboard from '../src/pages/Dashboard.vue'
 import ProfileEdit from '../src/pages/ProfileEdit.vue'
 import Createpage from '../src/pages/Createpage.vue'
 import AdvancedSearch from '../src/pages/AdvancedSearch.vue'
+import DoctorShow from '../src/components/Search/DoctorShow.vue'
 
 const routes = [
     { path: '/', component: Homepage, name: 'homepage' },
@@ -14,7 +15,11 @@ const routes = [
     { path: '/user/:id', component: Dashboard, name: 'dashboard' },
     { path: '/user/:id/edit', component: ProfileEdit, name: 'edit' },
     { path: '/user/:id/create', component: Createpage, name: 'create' },
-    { path: '/search/:id', component: AdvancedSearch, name: 'search' },
+		// Path to all doctors with selected specialization id  
+    { path: '/search/:searchId', component: AdvancedSearch, name: 'search' },
+		// Path to doctor, within specialization id, of doctord id selected (first id for specialization
+		// second for doctor)
+    { path: '/search/:searchId/:id', component: DoctorShow, name: 'search.show' },
 ]
 
 const router = createRouter({
