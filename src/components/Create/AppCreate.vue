@@ -55,7 +55,7 @@ export default {
         handleCurriculum(curriculum) {
             this.formData.curriculum = curriculum;
         },
-         //commento per commit
+         //commento per commit 2
         createProfile() {
             axios.post('http://localhost:8000/api/profiles/' + this.formData.user_id, this.formData, {
                 headers: {
