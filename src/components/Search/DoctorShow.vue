@@ -231,12 +231,7 @@ export default {
                                 <h5 class="my-3">Lascia una recensione</h5>
                                 <form action="" method="POST" class="form-control py-3" @submit.prevent="sendReviewForm"
                                     novalidate>
-                                    <div class="mb-3 col-12">
-                                        <label for="review" class="form-label">Messaggio</label>
-                                        <textarea class="form-control" id="review" rows="3"
-                                            placeholder="Inserisci qui la tua recensione..."
-                                            v-model="reviewForm.review"></textarea>
-                                    </div>
+                                    <label class="form-label" for="rating">Valutazione</label>
                                     <div class="rating">
                                         <input type="radio" id="vote5" name="rating" value="5"
                                             v-model="reviewForm.rating">
@@ -258,6 +253,12 @@ export default {
                                             v-model="reviewForm.rating">
                                         <label for="vote1"><i class="fa-solid fa-stethoscope"></i>
                                         </label>
+                                    </div>
+                                    <div class="mb-3 col-12">
+                                        <label for="review" class="form-label">Messaggio</label>
+                                        <textarea class="form-control" id="review" rows="3"
+                                            placeholder="Inserisci qui la tua recensione..."
+                                            v-model="reviewForm.review"></textarea>
                                     </div>
                                     <div>
 
