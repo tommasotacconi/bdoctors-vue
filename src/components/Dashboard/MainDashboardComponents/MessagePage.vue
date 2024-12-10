@@ -112,6 +112,10 @@ li {
     list-style-type: none;
     display: flex;
     align-items: center;
+    max-height: 25px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 ul {
@@ -182,6 +186,7 @@ ul {
 
 .list-content {
     flex-basis: 60%;
+
 }
 
 .list-preview {
@@ -211,6 +216,10 @@ ul {
 .message-email,
 .message-name {
     border-bottom: 2px dashed var(--color-secondary);
+}
+
+.message-content {
+    margin-bottom: 12px;
 }
 
 /* Loader progressive */
