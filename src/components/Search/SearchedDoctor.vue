@@ -11,6 +11,7 @@ export default {
             searchedDoctor: [],
             apiUrl: 'http://localhost:8000/api/profiles',
             specializationApiUrl: 'http://127.0.0.1:8000/api/specializations',
+            reviewsApiURl: 'http://localhost:8000/api/reviews',
             specializationId: store.searchedSpecialization,
             doctors: [],
             specializationName: '',
@@ -33,12 +34,6 @@ export default {
                     for (let i = 0; i < profiles.length; i++) {
                         let profile = profiles[i]
                         if (profile.user.specializations[0].id == store.searchedSpecialization) {
-                            // if (profile.sponsorships[0].id === 1) {
-                            //     filteredProfiles.push(profile)
-
-                            // } else {
-                            //     filteredProfiles.unshift(profile)
-                            // }
                             filteredProfiles.push(profile)
 
                         }
@@ -134,7 +129,17 @@ export default {
 
                 <div class="advanced-filter">
                     <div class="average-votes">
+                        <div class="votes">
+                            <p>Filtra per voto: <i class="fa-solid fa-stethoscope" v-for="star in 5"></i></p>
+                        </div>
+                        <div class="reviews-number d-flex gap-3">
+                            <p>Filtra per numero di recensioni:
 
+                            </p>
+                            <form action="">
+                                <input type="number">
+                            </form>
+                        </div>
                     </div>
                     <div class="number-reviews">
 
@@ -186,6 +191,13 @@ h5 {
     font-weight: 400;
 }
 
+
+/* Advanced-filter */
+.fa-stethoscope:hover {
+    color: red;
+}
+
+/* Doctor list */
 .doctors-list {
     display: flex;
     gap: 50px 110px;
