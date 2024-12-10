@@ -40,6 +40,8 @@ export default {
             console.log("Specializzazione selezionata:", this.selectedSpecialization);
             store.searchedSpecialization = this.selectedSpecialization.id
             store.selectedSpecializationName = this.selectedSpecialization.name
+
+            // Nuova pagina nella quale usiamo i nomi. Piccola concatenazione di metodi per togliere gli spazi e rendere tutto minuscolo
             this.$router.push({
                 name: 'search', params: { searchId: store.selectedSpecializationName.trim().replace(/ /g, "-").toLowerCase() },
             })
@@ -86,7 +88,7 @@ export default {
                         <option value="" disabled selected>Ricerca il medico per specializzazione!</option>
                         <option v-for="(specialization, index) in specializations" :key="index" :value=specialization>{{
                             specialization.name
-                        }}
+                            }}
                         </option>
                     </select>
                 </div>

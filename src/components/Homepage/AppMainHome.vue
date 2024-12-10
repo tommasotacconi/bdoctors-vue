@@ -15,7 +15,9 @@ export default {
 
 <template>
     <SponsoredDoctors />
-    <main>
+
+    <!-- Dietro richeista dei pm sono stati cancellati gli altri dottori al fine di mantenere solamente quelli sponsorizzati -->
+    <!-- <main>
         <div class="container normal-doctor-container">
             <h2>Tutti i nostri dottori</h2>
             <div class="card-container">
@@ -30,7 +32,7 @@ export default {
                 </div>
             </div>
         </div>
-    </main>
+    </main> -->
 </template>
 
 <style scoped>
