@@ -74,18 +74,13 @@ export default {
                     <h5 class="title">Messaggio selezionato</h5>
 
                     <div class="message-name">
-                        <strong>Da:</strong> Mario Rossi
+                        <strong>Da:</strong> {{ messageSelected.first_name }} {{ messageSelected.last_name }}
                     </div>
                     <div class="message-email">
-                        <strong>E-mail:</strong> mariorossi@gmail.com
+                        <strong>E-mail:</strong> {{ messageSelected.email }}
                     </div>
                     <div class="message-content">
-                        <div><strong>Contenuto:</strong></div> <span>Lorem ipsum dolor sit amet consectetur adipisicing
-                            elit. Veniam
-                            velit officia quaerat
-                            similique
-                            ducimus excepturi dolore aliquam sed blanditiis maxime voluptas error perspiciatis sequi
-                            officiis ullam delectus rerum, vero dolorem?</span>
+                        <div><strong>Contenuto:</strong></div> <span>{{ messageSelected.content }}</span>
                     </div>
                 </div>
             </div>
