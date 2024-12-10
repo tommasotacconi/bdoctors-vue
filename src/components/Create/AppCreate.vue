@@ -1,14 +1,16 @@
 <script>
 import axios from "axios";
 import Multiselect from "../Generics/Multiselect.vue";
+import PhotoUpload from "../Generics/PhotoUpload.vue";
+import CvUpload from "../Generics/CvUpload.vue";
 
 export default {
     data() {
         return {
             formData: {
-                user_id: 253,
-                photo: 'https://it.images.search.yahoo.com/search/images;_ylt=AwrLAD51f1Bn3wABKk7c5olQ;_ylu=Y29sbwNpcjIEcG9zAzEEdnRpZAMEc2VjA3BpdnM-?p=bender+foto&fr2=piv-web&type=E210IT1590G0&fr=mcafee&guccounter=1#id=0&iurl=https%3A%2F%2Fexternal-preview.redd.it%2F5GA8Zk4JnsMRR88HcZPb402OPXShU3cb05CYZbY7p4g.jpg%3Fauto%3Dwebp%26s%3D40ae96faadffd9bc008c03dc7de21ba4d7c8ae0d&action=click',
-                curriculum: "asasasaasddfsdgvfdsdsffffgfsdgsdggsdgsdgsdasdfasfasfasffffffffffffffffffasasasaasddfsdgvfdsdsffasasasaasddfsdgvfdsdsffffgfsdgdsgdsgasasasaasddfsdgvfdsdsffffgfsdgdsgdsgsdgsdgsdgsdgsdgsdgsdgsdgdsgsdgsdgsdgssdgsdgsdgsdgsdgsdgsdgsdgdsgsdgsdgsdgsffgfsdgdsgdsgsdgsdgsdgsdgsdgsdgsdgsdgdsgsdgsdgsdgsgsdgsdgsdgsggsasa",
+                user_id: localStorage.getItem('user_id'),
+                photo: null,
+                curriculum: null,
             },
             apiUrl: 'http://127.0.0.1:8000/api/profiles',
             errors: {
@@ -23,6 +25,8 @@ export default {
     },
     components: {
         Multiselect,
+        PhotoUpload,
+        CvUpload
     },
 
     methods: {
@@ -32,26 +36,43 @@ export default {
             else if (isNaN(this.formData.phone)) { this.errors.phone = "Il numero di telefono può contenere solo numeri" };
             if (!this.formData.office_address) this.errors.office_address = "L'indirizzo è obbligatorio.";
             if (!this.formData.services) this.errors.services = "Inserire almeno una prestazione.";
-            // if (!this.formData.photo) this.errors.photo = "La foto è obbligatoria";
-            // if (!this.formData.curriculum) this.errors.curriculum = "Il curriculum è obbligatorio.";
+            if (!this.formData.photo) this.errors.photo = "La foto è obbligatoria";
+            if (!this.formData.curriculum) this.errors.curriculum = "Il curriculum è obbligatorio.";
             if (!this.errors.length) {
                 this.validated = true;
                 if (this.validated = true) {
-                    axios.post(this.apiUrl, this.formData)
-                        .then(response => {
-                            console.log('Success', response.data);
-                        })
-                        .catch(error => {
-                            // handle error
-                            console.error(error);
-                        })
-                        .finally(function () {
-                            // always executed
-                        });
+                    this.createProfile();
                 }
             }
             console.log(this.formData);
             console.log(this.errors);
+        },
+
+        handlePhoto(photo) {
+            this.formData.photo = photo;
+        },
+
+        handleCurriculum(curriculum) {
+            this.formData.curriculum = curriculum;
+        },
+
+        createProfile() {
+            axios.post('http://localhost:8000/api/profiles', this.formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            })
+                .then(response => {
+                    console.log('Profile created', response.data)
+                })
+                .catch(function (error) {
+                    // handle error
+                    console.error(error)
+                    console.log(error.response.data.errors);
+                })
+                .finally(function () {
+                    // always executed
+                });
         },
 
 
@@ -71,18 +92,6 @@ export default {
 
 
         mounted() {
-            axios.get(this.apiUrl)
-                .then(response => {
-                    this.formData;
-                    console.log(response);
-                })
-                .catch(function (error) {
-                    // handle error
-                    console.error(error);
-                })
-                .finally(function () {
-                    // always executed
-                });
         }
     },
 }
@@ -91,7 +100,6 @@ export default {
 <template>
     <div class="container py-3">
         <h1 class="text-center">Crea il tuo profilo</h1>
-
 
         <form action="" method="POST" class="row py-4 my-4" id="edit-form" @submit.prevent="validateForm" novalidate>
 
@@ -119,23 +127,22 @@ export default {
                     <p> {{ errors.services }} </p>
                 </div>
             </div>
-            <div class="mb-3">
+            <div class="mb-3 d-flex flex-column col-6">
                 <label for="photo" class="form-label">Foto profilo</label>
-                <input type="text" class="form-control" :class="errors.photo && 'invalid-input'" id="photo"
-                    placeholder="Inserisci un file valido" @change="formData.photo" required>
-                <div class="invalid" v-if="errors.photo">
+                <PhotoUpload v-model="formData.photo" @file-selected="handlePhoto"></PhotoUpload>
+                <div>
                     <p> {{ errors.photo }} </p>
                 </div>
             </div>
-            <div class="mb-3">
+            <div class="mb-3 d-flex flex-column col-6">
                 <label for="curriculum" class="form-label">Curriculum
                     Vitae</label>
-                <input type="text" class="form-control" :class="errors.curriculum && 'invalid-input'" id="curriculum"
-                    placeholder="Inserisci un file valido" @change="formData.curriculum" required>
+                <CvUpload v-model="formData.curriculum" @cv-selected="handleCurriculum"></CvUpload>
                 <div class="invalid" v-if="errors.curriculum">
                     <p> {{ errors.curriculum }} </p>
                 </div>
             </div>
+
             <div class="mb-3">
                 <!-- <button type="submit" class="btn me-2 btn-submit">Modifica</button>
                     <button type="reset" class="btn btn-reset">Reset</button> -->
