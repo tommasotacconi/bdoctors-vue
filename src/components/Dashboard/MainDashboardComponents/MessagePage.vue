@@ -1,13 +1,41 @@
 <script>
 import { store } from '../../../../js/store.js'
+import axios from 'axios';
 
 export default {
     data() {
         return {
-            store
+            store,
+            messagesApiUrl: 'http://localhost:8000/api/messages',
         }
     },
     methods: {
+        getApiMessages() {
+            axios.get(this.messagesApiUrl)
+                .then(response => {
+                    // handle success
+                    console.log(response.data);
+                    let messagesProfiles = response.data.messages
+                    console.log(messagesProfiles)
+                    let idProfile = store.profileDataGeneral.id
+                    console.log(idProfile)
+
+                    const messagesProfile = messagesProfiles.filter(message => message.profile_id === idProfile)
+                    console.log(messagesProfile)
+
+
+                })
+                .catch(function (error) {
+                    // handle error
+                    console.log(error);
+                })
+        },
+        getMessages() {
+
+        }
+    },
+    mounted() {
+        this.getApiMessages()
     }
 }
 </script>
