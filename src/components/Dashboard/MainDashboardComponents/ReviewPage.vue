@@ -30,6 +30,9 @@ export default {
                     console.log(reviewsProfile)
                     let totalNumberVote = 0
 
+                    this.reviewsProfile = reviewsProfile
+
+
                     // Calcola la media voti
                     // for (let i = 0; i < reviewsProfile.length; i++) {
                     //     let review = reviewsProfile[i]
@@ -37,8 +40,6 @@ export default {
                     // }
                     // this.averageVote = totalNumberVote / reviewsProfile.length
                     // console.log(Math.round(this.averageVote))
-
-                    this.reviewsProfile = reviewsProfile
 
 
                 })
@@ -51,29 +52,31 @@ export default {
             this.reviewSelected = this.reviewsProfile[index]
             console.log(this.reviewsProfile[index])
         },
-        // showAverageVote() {
-        //     let totalNumberVote = 0
-        //     let reviewsProfile = this.reviewsProfile
-        //     for (let i = 0; i < reviewsProfile.length; i++) {
-        //         let review = reviewsProfile[i]
-        //         totalNumberVote += review.votes
-        //     }
-        //     this.averageVote = totalNumberVote / reviewsProfile.length
-        //     console.log(Math.round(this.averageVote))
-        // }
+        showAverageVote() {
+            let totalNumberVote = 0
+            let reviewsProfile = this.reviewsProfile
+            for (let i = 0; i < reviewsProfile.length; i++) {
+                let review = reviewsProfile[i]
+                totalNumberVote += review.votes
+            }
+            this.averageVote = Math.round(totalNumberVote / reviewsProfile.length)
+            console.log(this.averageVote)
+        }
 
     },
-    mounted() {
+    beforeCreate() {
         this.showLoader
+
 
     },
     created() {
         this.getApiReviews();
+        // this.showAverageVote();
 
     },
-    // updated() {
-    //     this.showAverageVote();
-    // },
+    mounted() {
+        // this.showAverageVote();
+    },
     computed: {
         showLoader() {
             setTimeout(() => {
@@ -96,6 +99,7 @@ export default {
                 </div>
                 <div class="card-body-list">
                     <ul class="list-general" v-for="(review, index) in reviewsProfile" @click="selectReview(index)">
+                        <li class="list-vote"><i class="fa-solid fa-stethoscope" v-for="star in 5"></i></li>
                         <li class="list-email">{{ review.email }}</li>
                         <li class="list-name">{{ review.first_name }} {{ review.last_name }}</li>
                         <li class="list-content">{{ review.content }}</li>
@@ -108,7 +112,7 @@ export default {
                 <div class="title-star">
                     <h5 class="title">Recensione selezionata</h5>
                     <div class="star">
-                        <strong>Voto: </strong> <i class="fa-solid fa-stethoscope" v-for="star in 4"></i>
+                        <strong>Voto: </strong> <i class="fa-solid fa-stethoscope" v-for="star in averageVote"></i>
                     </div>
                 </div>
 
@@ -188,6 +192,11 @@ ul {
     gap: 10px;
 }
 
+.list-vote {
+    flex-basis: 10%;
+    border-right: 3px dashed var(--color-secondary);
+}
+
 .list-email {
     flex-basis: 20%;
     border-right: 3px dashed var(--color-secondary);
@@ -200,7 +209,7 @@ ul {
 }
 
 .list-content {
-    flex-basis: 60%;
+    flex-basis: 50%;
 
 }
 
