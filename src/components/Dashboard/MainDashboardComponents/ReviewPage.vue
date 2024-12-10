@@ -1,10 +1,54 @@
 <script>
+import { store } from '../../../../js/store.js'
+import axios from 'axios';
+
 export default {
     data() {
         return {
+            store,
+            reviewsApiUrl: 'http://localhost:8000/api/reviews',
+            loaded: false,
+            reviewsProfiles: [],
+            reviewsProfile: [],
+        }
+    },
+    methods: {
+        getApiReviews() {
+            axios.get(this.reviewsApiUrl)
+                .then(response => {
+                    // handle success
+                    console.log(response.data);
+                    let reviewsProfiles = response.data.reviews
+                    console.log(reviewsProfiles)
+                    let idProfile = store.profileDataGeneral.id
+                    console.log(idProfile)
+                    console.log(reviewsProfiles[0].profile_id)
+
+                    const reviewsProfile = reviewsProfiles.filter(review => review.profile_id === idProfile)
+                    console.log(reviewsProfile)
+                    this.reviewsProfile = reviewsProfile
+                })
+                .catch(function (error) {
+                    // handle error
+                    console.log(error);
+                })
+        },
+    },
+    mounted() {
+        this.showLoader
+
+    },
+    created() {
+        this.getApiReviews()
+    },
+    computed: {
+        showLoader() {
+            setTimeout(() => {
+                this.loaded = true
+            }, 2000)
 
         }
-    }
+    },
 }
 </script>
 
@@ -16,15 +60,11 @@ export default {
                     <h5 class="title">Recensioni ricevute</h5>
                     <div class="reviews-number"><strong>Totale:</strong> <span class="total-number">10</span></div>
                 </div>
-                <div class="card-body-list" v-for="(message, index) in 10">
-                    <ul class="list-group list-group-flush list-email" @click="selectMessage(index)">
-                        <li class="list-group-item">E-mail</li>
-                    </ul>
-                    <ul class="list-group list-group-flush list-name" @click="selectMessage(index)">
-                        <li class="list-group-item">Nome e Cognome</li>
-                    </ul>
-                    <ul class="list-group list-group-flush list-preview" @click="selectMessage(index)">
-                        <li class="list-group-item">Preview</li>
+                <div class="card-body-list">
+                    <ul class="list-general" v-for="(message, index) in 10" @click="selectMessage(index)">
+                        <li class="list-email">email</li>
+                        <li class="list-name">nome e cognome</li>
+                        <li class="list-content">preview</li>
                     </ul>
                 </div>
             </div>
@@ -80,7 +120,7 @@ export default {
 
 .reviews-number {
     border-radius: 20px;
-    border: 3px solid var(--color-secondary);
+    border: 3px dashed var(--color-secondary);
     padding: 8px 15px;
     background-color: var(--color-secondary);
     color: white;
