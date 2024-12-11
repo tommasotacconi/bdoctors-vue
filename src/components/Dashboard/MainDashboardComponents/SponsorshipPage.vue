@@ -2,8 +2,13 @@
 export default {
     data() {
         return {
-
+            price: null,
         }
+    },
+    methods: {
+        getPriceBronze() {
+
+        },
     }
 }
 </script>
@@ -13,7 +18,7 @@ export default {
         <h2>Sponsorizzazione</h2>
         <div class="sponsored-description">
             <p>
-                Investi nelle tue competenze sponsorizzando il profilo!
+                Investi nelle tue competenze, sponsorizza il tuo profilo!
                 <br>
                 Un profilo sponsorizzato compare nella homepage e viene sempre posizionato in cima nella pagina di
                 ricerca.
@@ -22,24 +27,33 @@ export default {
 
             </p>
         </div>
-        <h4>Scegli la tua sponsorizzazione:</h4>
+        <h3>Scegli la tua sponsorizzazione:</h3>
         <section class="sponsor-cards">
             <div class="sponsor-card card-bronze">
                 <div class="card-description">
-                    <p>Garantito per 24 ore</p>
-                    <p>2,99€</p>
+                    <p class="hour-sponsorship">Garantito per 24 ore</p>
+                    <p class="price">2,99€</p>
                 </div>
                 <div class="premium-star"><i class="fa-solid fa-star"></i></div>
             </div>
             <div class="sponsor-card card-silver">
-                <p class="card-description">Garantito per 72 ore</p>
-                <p>5,99€</p>
+                <div class="card-description">
+                    <p class="hour-sponsorship">Garantito per 72 ore</p>
+                    <p class="price">5,99€</p>
+                </div>
+                <div class="premium-star"><i class="fa-solid fa-star"></i></div>
             </div>
             <div class="sponsor-card card-gold">
-                <p class="card-description">Garantito per 144 ore</p>
-                <p>9,99€</p>
+                <div class="card-description">
+                    <p class="hour-sponsorship">Garantito per 144 ore</p>
+                    <p class="price">9,99€</p>
+                </div>
+                <div class="premium-star"><i class="fa-solid fa-star"></i></div>
             </div>
         </section>
+        <div class="button-pay-now-general">
+            <button class="button-pay-now">Sponsorizzati ora</button>
+        </div>
     </main>
 </template>
 
@@ -53,13 +67,15 @@ h2 {
     text-align: center;
 }
 
-h4 {
+h3 {
     margin: 20px;
     text-align: center;
 }
 
 .sponsored-description {
-    padding-bottom: 10px;
+    padding-bottom: 20px;
+    text-align: center;
+    font-size: 1.2rem;
 }
 
 
@@ -67,7 +83,7 @@ h4 {
 .sponsor-cards {
     display: flex;
     justify-content: center;
-    gap: 10px;
+    gap: 15px;
 }
 
 .sponsor-card {
@@ -97,12 +113,41 @@ h4 {
     display: inline;
     font-size: 0.9rem;
     background-color: white;
-    border-bottom-left-radius: 30%;
+    border-bottom-left-radius: 35%;
     border: 1px solid white;
     padding: 10px;
     color: #FFCC00;
     position: absolute;
     top: 0px;
     right: 0px;
+}
+
+.card-description {
+    text-align: center;
+}
+
+.hour-sponsorship {
+    font-size: 1.2rem;
+}
+
+.price {
+    font-style: italic;
+    font-size: 0.9rem;
+}
+
+.button-pay-now-general {
+    display: flex;
+    justify-content: center;
+    margin-top: 25px;
+}
+
+.button-pay-now {
+    background-color: var(--color-complementary);
+    border-radius: 20px;
+    padding: 8px 15px;
+    text-decoration: none;
+    color: var(--color-primary);
+    font-weight: bold;
+    border: 1px solid var(--color-primary);
 }
 </style>
