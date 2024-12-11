@@ -86,7 +86,7 @@ export default {
     <main class="container">
         <div class="loader" v-if="!loaded"></div>
         <div v-else>
-            <div v-if="!reviewsProfile">
+            <div v-if="reviewsProfile.length > 0">
                 <div class="card-reviews-container">
                     <div class="card-general card-reviews">
                         <div class="card-header-title">
@@ -129,7 +129,7 @@ export default {
                     </div>
                 </div>
             </div>
-            <div v-else class="card-general mt-5">
+            <div v-else class="empty-card-general mt-5">
                 <div class="card mb-3">
                     <div class="card-create">
                         <div class="create-profile-text">
@@ -275,7 +275,7 @@ ul:hover {
 
 
 /* Se non è presente nessuna recensione */
-.card-general {
+.empty-card-general {
     display: flex;
     flex-direction: column;
     align-items: center;
