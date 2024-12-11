@@ -18,6 +18,7 @@ export default {
             rating: null,
             loaded: false,
             showDoctor: false,
+            filteredDoctorsByVotes: [],
         }
     },
     components: {
@@ -46,7 +47,7 @@ export default {
                         }
                     }
                     this.doctors = filteredProfiles
-                    console.log(this.doctors)
+                    console.log('Dottori nei data', this.doctors)
 
                     this.specializations = response.data.specializations;
                 })
@@ -92,15 +93,36 @@ export default {
             console.log(store.searchedSpecialization)
         },
 
-        // Metodo media voti
-        // for (let i = 0; i < reviewsProfile.length; i++) {
-        //                 let review = reviewsProfile[i]
-        //                 totalNumberVote += review.votes
-        //             }
-        //             this.averageVote = totalNumberVote / reviewsProfile.length
-        //             console.log(Math.round(this.averageVote))
-        //         }
+        getFilteredVotesProfiles() {
+            this.getApiProfile();
 
+            const filteredDoctors = [];
+
+            for (let i = 0; i < this.doctors.length; i++) {
+                let singleDoctor = { id: null, averageVotes: null }
+                let doctor = this.doctors[i];
+                let doctorID = doctor.id
+                singleDoctor.id = doctorID;
+                console.log('singolo medico', doctor)
+                let reviews = doctor.reviews;
+                // console.log('Recensioni:', reviews);
+                let votesSum = null;
+                for (let j = 0; j < reviews.length; j++) {
+                    let review = reviews[j];
+                    // console.log("Singola recensione:", review);
+                    votesSum += parseInt(review.votes);
+                }
+                // console.log("Somma voti per ogni medico:", votesSum)
+                let averageVotes = null;
+                averageVotes = Math.round(votesSum / reviews.length)
+                console.log('La media dei voti del medico è:', averageVotes)
+                singleDoctor.averageVotes = averageVotes;
+                filteredDoctors.push(singleDoctor);
+                console.log('singleDoctor', singleDoctor)
+            }
+            console.log('Array Dottori filtrati nel metodo:', filteredDoctors)
+            this.filteredDoctorsByVotes = filteredDoctors;
+        },
     },
     computed: {
         showLoader() {
@@ -110,8 +132,9 @@ export default {
         }
     },
     created() {
-        this.getApiProfile()
-        this.getSpecializationName()
+        this.getApiProfile();
+        this.getSpecializationName();
+        this.getFilteredVotesProfiles();
     },
     mounted() {
         this.showLoader
@@ -140,27 +163,30 @@ export default {
                         <div class="votes d-flex">
                             <p>Filtra per media voti: </p>
                             <div class="rating mx-3">
-                                <input type="radio" id="vote5" name="rating" value="5" v-model="rating">
-                                <label for="vote5"><i class="fa-solid fa-stethoscope"></i>
-                                </label>
-                                <input type="radio" id="vote4" name="rating" value="4" v-model="rating">
-                                <label for="vote4"><i class="fa-solid fa-stethoscope"></i>
-                                </label>
-                                <input type="radio" id="vote3" name="rating" value="3" v-model="rating">
-                                <label for="vote3"><i class="fa-solid fa-stethoscope"></i>
-                                </label>
-                                <input type="radio" id="vote2" name="rating" value="2" v-model="rating">
-                                <label for="vote2"><i class="fa-solid fa-stethoscope"></i>
-                                </label>
-                                <input type="radio" id="vote1" name="rating" value="1" v-model="rating">
-                                <label for="vote1"><i class="fa-solid fa-stethoscope"></i>
-                                </label>
+                                <form action="" method="get" class="form-control rating mx-3"
+                                    @submit.prevent="getFilteredVotesProfiles">
+                                    <button type="submit" class="btn btn-sm -btn-primary">Filtra</button>
+                                    <input type="radio" id="vote5" name="rating" value="5" v-model="rating">
+                                    <label for="vote5"><i class="fa-solid fa-stethoscope"></i>
+                                    </label>
+                                    <input type="radio" id="vote4" name="rating" value="4" v-model="rating">
+                                    <label for="vote4"><i class="fa-solid fa-stethoscope"></i>
+                                    </label>
+                                    <input type="radio" id="vote3" name="rating" value="3" v-model="rating">
+                                    <label for="vote3"><i class="fa-solid fa-stethoscope"></i>
+                                    </label>
+                                    <input type="radio" id="vote2" name="rating" value="2" v-model="rating">
+                                    <label for="vote2"><i class="fa-solid fa-stethoscope"></i>
+                                    </label>
+                                    <input type="radio" id="vote1" name="rating" value="1" v-model="rating">
+                                    <label for="vote1"><i class="fa-solid fa-stethoscope"></i>
+                                    </label>
+                                </form>
                             </div>
+
                         </div>
                         <div class="reviews-number d-flex gap-3">
-                            <p>Filtra per numero di recensioni:
-
-                            </p>
+                            <p>Filtra per numero di recensioni:</p>
                             <form action="">
                                 <input type="number">
                             </form>

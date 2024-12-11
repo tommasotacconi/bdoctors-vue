@@ -59,7 +59,7 @@ export default {
         handleCurriculum(curriculum) {
             this.formData.curriculum = curriculum;
         },
-         //commento per commit 2
+        //commento per commit 2
         createProfile() {
             axios.post('http://localhost:8000/api/profiles/' + this.store.informationPageId, this.formData, {
                 headers: {
@@ -100,13 +100,12 @@ export default {
         // },
 
 
-        
+
     },
     created() {
-			this.store.informationPageId = this.$route.params.id;
-            console.log(store.informationPageId, 'dio cane');
-            console.log('ciaoo daje sono io');
-		}
+        this.store.informationPageId = this.$route.params.id;
+        console.log(store.informationPageId);
+    }
 }
 </script>
 
