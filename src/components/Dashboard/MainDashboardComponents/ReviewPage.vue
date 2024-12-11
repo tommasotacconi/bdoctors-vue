@@ -86,41 +86,56 @@ export default {
     <main class="container">
         <div class="loader" v-if="!loaded"></div>
         <div v-else>
-            <div class="card-reviews-container">
-                <div class="card-general card-reviews">
-                    <div class="card-header-title">
-                        <h5 class="title">Recensioni ricevute</h5>
-                        <div class="reviews-number"><strong>Totale:</strong> <span class="total-number">{{
-                            reviewsProfile.length }}</span></div>
+            <div v-if="!reviewsProfile">
+                <div class="card-reviews-container">
+                    <div class="card-general card-reviews">
+                        <div class="card-header-title">
+                            <h5 class="title">Recensioni ricevute</h5>
+                            <div class="reviews-number"><strong>Totale:</strong> <span class="total-number">{{
+                                reviewsProfile.length }}</span></div>
+                        </div>
+                        <div class="card-body-list">
+                            <ul class="list-general" v-for="(review, index) in reviewsProfile"
+                                @click="selectReview(index)">
+                                <li class="list-vote"><i class="fa-solid fa-stethoscope"
+                                        v-for="star in review.votes"></i>
+                                </li>
+                                <li class="list-email">{{ review.email }}</li>
+                                <li class="list-name">{{ review.first_name }} {{ review.last_name }}</li>
+                                <li class="list-content">{{ review.content }}</li>
+                            </ul>
+                        </div>
                     </div>
-                    <div class="card-body-list">
-                        <ul class="list-general" v-for="(review, index) in reviewsProfile" @click="selectReview(index)">
-                            <li class="list-vote"><i class="fa-solid fa-stethoscope" v-for="star in review.votes"></i>
-                            </li>
-                            <li class="list-email">{{ review.email }}</li>
-                            <li class="list-name">{{ review.first_name }} {{ review.last_name }}</li>
-                            <li class="list-content">{{ review.content }}</li>
-                        </ul>
+                </div>
+                <div class="card-general card-review">
+                    <div class="card-selected-review">
+                        <div class="title-star">
+                            <h5 class="title">Recensione selezionata</h5>
+                            <div class="star">
+                                <strong>Voto: </strong> <i class="fa-solid fa-stethoscope"
+                                    v-for="star in averageVote"></i>
+                            </div>
+                        </div>
+
+                        <div class="review-name">
+                            <strong>Da:</strong> {{ reviewSelected.first_name }} {{ reviewSelected.last_name }}
+                        </div>
+                        <div class="review-email">
+                            <strong>E-mail:</strong> {{ reviewSelected.email }}
+                        </div>
+                        <div class="review-content">
+                            <div><strong>Contenuto:</strong></div> <span>{{ reviewSelected.content }}</span>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="card-general card-review">
-                <div class="card-selected-review">
-                    <div class="title-star">
-                        <h5 class="title">Recensione selezionata</h5>
-                        <div class="star">
-                            <strong>Voto: </strong> <i class="fa-solid fa-stethoscope" v-for="star in averageVote"></i>
+            <div v-else class="card-general mt-5">
+                <div class="card mb-3">
+                    <div class="card-create">
+                        <div class="create-profile-text">
+                            Al momento non è ancora presente nessuna recensione, <span class="eng-sentence">keep up the
+                                good work!</span>
                         </div>
-                    </div>
-
-                    <div class="review-name">
-                        <strong>Da:</strong> {{ reviewSelected.first_name }} {{ reviewSelected.last_name }}
-                    </div>
-                    <div class="review-email">
-                        <strong>E-mail:</strong> {{ reviewSelected.email }}
-                    </div>
-                    <div class="review-content">
-                        <div><strong>Contenuto:</strong></div> <span>{{ reviewSelected.content }}</span>
                     </div>
                 </div>
             </div>
@@ -256,6 +271,39 @@ ul:hover {
 .review-email,
 .review-name {
     border-bottom: 2px dashed var(--color-secondary);
+}
+
+
+/* Se non è presente nessuna recensione */
+.card-general {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.card {
+    border-radius: 40px;
+    background-color: #D8F9FF;
+    border: 0;
+    text-align: center;
+    width: 80%;
+}
+
+.card-create {
+    padding: 30px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+}
+
+.create-profile-text {
+    opacity: 0.5;
+}
+
+.eng-sentence {
+    font-style: italic;
 }
 
 
