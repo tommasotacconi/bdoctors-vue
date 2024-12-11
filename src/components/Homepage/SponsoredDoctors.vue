@@ -102,6 +102,7 @@ export default {
 <style scoped>
 ul {
     text-align: start;
+    padding-left: 20px;
 }
 
 /* Sponsored Doctor */
@@ -142,5 +143,9 @@ ul {
     width: 70%;
     border: 1px solid var(--color-primary);
     margin-top: 10px;
+}
+
+.card-text {
+    text-align: start;
 }
 </style>
