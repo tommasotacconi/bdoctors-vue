@@ -57,6 +57,7 @@ export default {
 
 <template>
     <main class="container">
+        <h2>Messaggi</h2>
         <div class="loader" v-if="!loaded"></div>
         <div v-else class="general-cards-container">
             <div class="all-messages">
@@ -107,6 +108,11 @@ export default {
 
 <style scoped>
 /* General */
+h2 {
+    margin-bottom: 40px;
+    text-align: center;
+}
+
 li {
     text-decoration: none;
     list-style-type: none;

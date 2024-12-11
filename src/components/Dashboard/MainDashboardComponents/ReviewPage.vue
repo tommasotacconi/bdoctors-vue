@@ -84,6 +84,8 @@ export default {
 
 <template>
     <main class="container">
+        <h2>Recensioni</h2>
+
         <div class="loader" v-if="!loaded"></div>
         <div v-else>
             <div v-if="reviewsProfile.length > 0">
@@ -145,6 +147,11 @@ export default {
 
 <style scoped>
 /* General */
+h2 {
+    margin-bottom: 40px;
+    text-align: center;
+}
+
 li {
     text-decoration: none;
     list-style-type: none;
