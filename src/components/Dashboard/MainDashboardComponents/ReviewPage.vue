@@ -116,7 +116,7 @@ export default {
                             <div class="star">
                                 <strong>Voto: </strong>
                                 <span>
-                                    <i class="fa-solid fa-stethoscope" v-for="star in averageVote"></i>
+                                    <i class="fa-solid fa-stethoscope" v-for="star in reviewSelected.votes"></i>
                                 </span>
                             </div>
                         </div>
