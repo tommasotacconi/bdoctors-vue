@@ -1,9 +1,32 @@
 <script>
+import axios from 'axios';
+
 export default {
     data() {
         return {
-
+            sponsorshipsApiUrl: 'http://localhost:8000/api/sponsorships',
         }
+    },
+    methods: {
+        getApiSponsorships() {
+            axios.get(this.sponsorshipsApiUrl)
+                .then(response => {
+                    // handle success
+                    console.log(response.data.sponsorships);
+                    let sponsorships = response.data.sponsorships
+                    for (let i = 0; i < sponsorships.length; i++) {
+                        console.log('test')
+                    }
+
+                })
+                .catch(function (error) {
+                    // handle error
+                    console.log(error);
+                })
+        },
+    },
+    mounted() {
+        this.getApiSponsorships()
     }
 }
 </script>

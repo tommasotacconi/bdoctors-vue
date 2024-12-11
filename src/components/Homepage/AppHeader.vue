@@ -28,7 +28,6 @@ export default {
             axios.get(this.apiUrl)
                 .then(response => {
                     // handle success
-                    console.log(response.data.specializations);
                     this.specializations = response.data.specializations;
                 })
                 .catch(function (error) {
@@ -88,7 +87,7 @@ export default {
                         <option value="" disabled selected>Ricerca il medico per specializzazione!</option>
                         <option v-for="(specialization, index) in specializations" :key="index" :value=specialization>{{
                             specialization.name
-                            }}
+                        }}
                         </option>
                     </select>
                 </div>
