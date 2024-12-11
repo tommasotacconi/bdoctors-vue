@@ -1,10 +1,87 @@
 <script>
+import { store } from '../../../../js/store.js'
+import axios from 'axios';
+
 export default {
     data() {
         return {
+            store,
+            reviewsApiUrl: 'http://localhost:8000/api/reviews',
+            loaded: false,
+            reviewsProfiles: [],
+            reviewsProfile: [],
+            reviewSelected: [],
+            averageVote: 0,
+        }
+    },
+    methods: {
+        getApiReviews() {
+            axios.get(this.reviewsApiUrl)
+                .then(response => {
+                    // handle success
+                    console.log(response.data);
+                    let reviewsProfiles = response.data.reviews
+                    console.log(reviewsProfiles)
+                    let idProfile = store.profileDataGeneral.id
+                    console.log(idProfile)
+                    console.log(reviewsProfiles[0].profile_id)
+
+                    const reviewsProfile = reviewsProfiles.filter(review => review.profile_id === idProfile)
+                    console.log(reviewsProfile)
+                    let totalNumberVote = 0
+
+                    // Calcola la media voti
+                    // for (let i = 0; i < reviewsProfile.length; i++) {
+                    //     let review = reviewsProfile[i]
+                    //     totalNumberVote += review.votes
+                    // }
+                    // this.averageVote = totalNumberVote / reviewsProfile.length
+                    // console.log(Math.round(this.averageVote))
+
+                    this.reviewsProfile = reviewsProfile
+
+
+                })
+                .catch(function (error) {
+                    // handle error
+                    console.log(error);
+                })
+        },
+        selectReview(index) {
+            this.reviewSelected = this.reviewsProfile[index]
+            console.log(this.reviewsProfile[index])
+        },
+        // showAverageVote() {
+        //     let totalNumberVote = 0
+        //     let reviewsProfile = this.reviewsProfile
+        //     for (let i = 0; i < reviewsProfile.length; i++) {
+        //         let review = reviewsProfile[i]
+        //         totalNumberVote += review.votes
+        //     }
+        //     this.averageVote = totalNumberVote / reviewsProfile.length
+        //     console.log(Math.round(this.averageVote))
+        // }
+
+    },
+    mounted() {
+        this.showLoader
+
+    },
+    created() {
+        this.getApiReviews();
+
+    },
+    // updated() {
+    //     this.showAverageVote();
+    // },
+    computed: {
+        showLoader() {
+            setTimeout(() => {
+                this.loaded = true
+            }, 2000)
 
         }
-    }
+    },
 }
 </script>
 
@@ -14,17 +91,14 @@ export default {
             <div class="card-general card-reviews">
                 <div class="card-header-title">
                     <h5 class="title">Recensioni ricevute</h5>
-                    <div class="reviews-number"><strong>Totale:</strong> <span class="total-number">10</span></div>
+                    <div class="reviews-number"><strong>Totale:</strong> <span class="total-number">{{
+                        reviewsProfile.length }}</span></div>
                 </div>
-                <div class="card-body-list" v-for="(message, index) in 10">
-                    <ul class="list-group list-group-flush list-email" @click="selectMessage(index)">
-                        <li class="list-group-item">E-mail</li>
-                    </ul>
-                    <ul class="list-group list-group-flush list-name" @click="selectMessage(index)">
-                        <li class="list-group-item">Nome e Cognome</li>
-                    </ul>
-                    <ul class="list-group list-group-flush list-preview" @click="selectMessage(index)">
-                        <li class="list-group-item">Preview</li>
+                <div class="card-body-list">
+                    <ul class="list-general" v-for="(review, index) in reviewsProfile" @click="selectReview(index)">
+                        <li class="list-email">{{ review.email }}</li>
+                        <li class="list-name">{{ review.first_name }} {{ review.last_name }}</li>
+                        <li class="list-content">{{ review.content }}</li>
                     </ul>
                 </div>
             </div>
@@ -39,18 +113,13 @@ export default {
                 </div>
 
                 <div class="review-name">
-                    <strong>Da:</strong> Mario Rossi
+                    <strong>Da:</strong> {{ reviewSelected.first_name }} {{ reviewSelected.last_name }}
                 </div>
                 <div class="review-email">
-                    <strong>E-mail:</strong> mariorossi@gmail.com
+                    <strong>E-mail:</strong> {{ reviewSelected.email }}
                 </div>
                 <div class="review-content">
-                    <div><strong>Contenuto:</strong></div> <span>Lorem ipsum dolor sit amet consectetur adipisicing
-                        elit. Veniam
-                        velit officia quaerat
-                        similique
-                        ducimus excepturi dolore aliquam sed blanditiis maxime voluptas error perspiciatis sequi
-                        officiis ullam delectus rerum, vero dolorem?</span>
+                    <div><strong>Contenuto:</strong></div> <span>{{ reviewSelected.content }}</span>
                 </div>
             </div>
         </div>
@@ -58,6 +127,24 @@ export default {
 </template>
 
 <style scoped>
+/* General */
+li {
+    text-decoration: none;
+    list-style-type: none;
+    display: flex;
+    align-items: center;
+    max-height: 25px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+ul {
+    border-bottom: 3px dashed var(--color-secondary);
+    padding-left: 10px;
+}
+
+
 /* Card reviews */
 .card-reviews-container {
     border: 3px solid var(--color-complementary);
@@ -80,7 +167,7 @@ export default {
 
 .reviews-number {
     border-radius: 20px;
-    border: 3px solid var(--color-secondary);
+    border: 3px dashed var(--color-secondary);
     padding: 8px 15px;
     background-color: var(--color-secondary);
     color: white;
@@ -92,19 +179,29 @@ export default {
 
 .card-body-list {
     display: flex;
+    flex-direction: column;
     padding: 0 15px;
+}
+
+.list-general {
+    display: flex;
+    gap: 10px;
 }
 
 .list-email {
     flex-basis: 20%;
     border-right: 3px dashed var(--color-secondary);
-    border-bottom: 3px solid var(--color-secondary);
 }
 
 .list-name {
     flex-basis: 20%;
     border-right: 3px dashed var(--color-secondary);
-    border-bottom: 3px solid var(--color-secondary);
+
+}
+
+.list-content {
+    flex-basis: 60%;
+
 }
 
 .list-preview {
