@@ -7,7 +7,16 @@ export default {
     },
     methods: {
         getPriceBronze() {
-
+            this.price = 2.99
+            console.log(this.price)
+        },
+        getPriceSilver() {
+            this.price = 5.99
+            console.log(this.price)
+        },
+        getPriceGold() {
+            this.price = 9.99
+            console.log(this.price)
         },
     }
 }
@@ -29,21 +38,21 @@ export default {
         </div>
         <h3>Scegli la tua sponsorizzazione:</h3>
         <section class="sponsor-cards">
-            <div class="sponsor-card card-bronze">
+            <div class="sponsor-card card-bronze" @click="getPriceBronze()">
                 <div class="card-description">
                     <p class="hour-sponsorship">Garantito per 24 ore</p>
                     <p class="price">2,99€</p>
                 </div>
                 <div class="premium-star"><i class="fa-solid fa-star"></i></div>
             </div>
-            <div class="sponsor-card card-silver">
+            <div class="sponsor-card card-silver" @click="getPriceSilver()">
                 <div class="card-description">
                     <p class="hour-sponsorship">Garantito per 72 ore</p>
                     <p class="price">5,99€</p>
                 </div>
                 <div class="premium-star"><i class="fa-solid fa-star"></i></div>
             </div>
-            <div class="sponsor-card card-gold">
+            <div class="sponsor-card card-gold" @click="getPriceGold()">
                 <div class="card-description">
                     <p class="hour-sponsorship">Garantito per 144 ore</p>
                     <p class="price">9,99€</p>
