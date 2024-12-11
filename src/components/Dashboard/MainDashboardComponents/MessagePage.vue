@@ -127,6 +127,7 @@ ul {
 ul:hover {
     background-color: var(--color-secondary);
     color: white;
+    cursor: pointer;
 }
 
 

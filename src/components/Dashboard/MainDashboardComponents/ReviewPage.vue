@@ -34,12 +34,13 @@ export default {
 
 
                     // Calcola la media voti
-                    // for (let i = 0; i < reviewsProfile.length; i++) {
-                    //     let review = reviewsProfile[i]
-                    //     totalNumberVote += review.votes
-                    // }
-                    // this.averageVote = totalNumberVote / reviewsProfile.length
-                    // console.log(Math.round(this.averageVote))
+                    for (let i = 0; i < reviewsProfile.length; i++) {
+                        let review = reviewsProfile[i]
+                        totalNumberVote += review.votes
+                    }
+                    console.log(reviewsProfile.length)
+                    this.averageVote = Math.round(totalNumberVote / reviewsProfile.length)
+                    console.log(Math.round(this.averageVote))
 
 
                 })
@@ -52,16 +53,16 @@ export default {
             this.reviewSelected = this.reviewsProfile[index]
             console.log(this.reviewsProfile[index])
         },
-        showAverageVote() {
-            let totalNumberVote = 0
-            let reviewsProfile = this.reviewsProfile
-            for (let i = 0; i < reviewsProfile.length; i++) {
-                let review = reviewsProfile[i]
-                totalNumberVote += review.votes
-            }
-            this.averageVote = Math.round(totalNumberVote / reviewsProfile.length)
-            console.log(this.averageVote)
-        }
+        // showAverageVote() {
+        //     let totalNumberVote = 0
+        //     let reviewsProfile = this.reviewsProfile
+        //     for (let i = 0; i < reviewsProfile.length; i++) {
+        //         let review = reviewsProfile[i]
+        //         totalNumberVote += review.votes
+        //     }
+        //     this.averageVote = Math.round(totalNumberVote / reviewsProfile.length)
+        //     console.log(this.averageVote)
+        // }
 
     },
     beforeCreate() {
@@ -99,7 +100,7 @@ export default {
                 </div>
                 <div class="card-body-list">
                     <ul class="list-general" v-for="(review, index) in reviewsProfile" @click="selectReview(index)">
-                        <li class="list-vote"><i class="fa-solid fa-stethoscope" v-for="star in 5"></i></li>
+                        <li class="list-vote"><i class="fa-solid fa-stethoscope" v-for="star in review.votes"></i></li>
                         <li class="list-email">{{ review.email }}</li>
                         <li class="list-name">{{ review.first_name }} {{ review.last_name }}</li>
                         <li class="list-content">{{ review.content }}</li>
@@ -153,6 +154,7 @@ ul {
 ul:hover {
     background-color: var(--color-secondary);
     color: white;
+    cursor: pointer;
 }
 
 
