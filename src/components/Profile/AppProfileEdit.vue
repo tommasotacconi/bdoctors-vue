@@ -141,9 +141,15 @@ export default {
         },
 
         updateSpecs(specializations) {
-            this.formData.specializations = specializations;
-            console.log(this.formData.specializations);
-        },
+			// Prepare a constant array result to insert ids value
+			const result = [];
+			// Insert ids taken from specializations parameter in reactive variable specializations, property of errors 
+			for (let i = 0; i < specializations.length; i++) {
+				result.push(specializations[i].id);
+			}
+			this.specializations = result;
+			console.log('---current specializations---', this.specializations);
+		},
 
         getProfileData() {
             axios.get('http://localhost:8000/api/profiles/edit/' + this.formData.user_id, this.formData)
