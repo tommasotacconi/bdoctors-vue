@@ -104,8 +104,7 @@ export default {
     },
     created() {
 			this.store.informationPageId = this.$route.params.id;
-            console.log(store.informationPageId, 'dio cane');
-            console.log('ciaoo daje sono io');
+            console.log(store.informationPageId);
 		}
 }
 </script>
