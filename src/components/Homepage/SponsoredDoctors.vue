@@ -1,13 +1,18 @@
 <script>
 import axios from 'axios';
+import { RouterLink } from 'vue-router';
+import { store } from '../../../js/store.js';
+
 
 export default {
     data() {
         return {
+            store,
             sponsorshipsApiUrl: 'http://localhost:8000/api/sponsorships',
             profilesApiUrl: 'http://localhost:8000/api/profiles',
             usersSponsoredId: [],
             profilesId: [],
+            filteredProfile: [],
         }
     },
     methods: {
@@ -41,15 +46,22 @@ export default {
                     let profiles = response.data.profiles
                     let usersSponsoredId = this.usersSponsoredId
 
-                    const filteredProfile = profiles.filter(element => usersSponsoredId.includes(element.user_id)
+                    this.filteredProfile = profiles.filter(element => usersSponsoredId.includes(element.user_id)
                     )
 
-                    console.log(filteredProfile)
+                    console.log(this.filteredProfile)
                 })
                 .catch(function (error) {
                     // handle error
                     console.log(error);
                 })
+        },
+        goToShowPage(doctor, index) {
+            store.doctorProfile = doctor
+            let completeName = doctor.user.first_name + '-' + doctor.user.last_name
+            this.$router.push({ name: 'search.show', params: { searchId: 'doctor', id: completeName.toLowerCase() } })
+            console.log(index)
+            console.log(store.searchedSpecialization)
         },
     },
     mounted() {
@@ -64,13 +76,21 @@ export default {
         <div class="container sponsored-doctor-container">
             <h2>Dottori in evidenza</h2>
             <div class="sponsored-card-container">
-                <div class="card card-sponsored d-flex" style="width: 18rem;" v-for="doctor in 15">
+                <div class="card card-sponsored d-flex" style="width: 18rem;" v-for="(doctor, index) in filteredProfile"
+                    @click="goToShowPage(doctor, index)">
                     <img src="https://media.istockphoto.com/id/1340883379/photo/young-doctor-hospital-medical-medicine-health-care-clinic-office-portrait-glasses-man.jpg?s=612x612&w=0&k=20&c=_H4VUPBkS0gEj5ZdZzQo-Hw3lMuyofJpB-P9yS92Wyw="
                         class="card-img-top" alt="...">
                     <div class="card-body">
-                        <h5 class="card-title">Nome medico</h5>
-                        <p class="card-text">Specializzazioni medico</p>
-                        <a href="#" class="btn btn-primary">Profilo medico</a>
+                        <h5 class="card-title">{{ doctor.user.first_name }} {{ doctor.user.last_name }}</h5>
+                        <div class="card-text">
+                            <ul>
+                                <li v-for="doctorSpecialization in doctor.user.specializations">
+                                    {{ doctorSpecialization.name }}
+                                </li>
+                            </ul>
+                        </div>
+                        <!-- Bottone cassato, procediamo con il click su scheda intera -->
+                        <!-- <button class="btn btn-primary">Profilo medico</button> -->
                     </div>
                 </div>
             </div>
@@ -80,6 +100,10 @@ export default {
 </template>
 
 <style scoped>
+ul {
+    text-align: start;
+}
+
 /* Sponsored Doctor */
 .sponsored-doctor-container h2 {
     text-align: center;
