@@ -11,9 +11,11 @@ export default {
             searchedDoctor: [],
             apiUrl: 'http://localhost:8000/api/profiles',
             specializationApiUrl: 'http://127.0.0.1:8000/api/specializations',
+            reviewsApiURl: 'http://localhost:8000/api/reviews',
             specializationId: store.searchedSpecialization,
             doctors: [],
             specializationName: '',
+            rating: null,
             loaded: false,
             showDoctor: false,
         }
@@ -34,6 +36,7 @@ export default {
                         let profile = profiles[i]
                         if (profile.user.specializations[0].id == store.searchedSpecialization) {
                             filteredProfiles.push(profile)
+
                         }
                         let specializationsProfile = profile.user.specializations
                         if (specializationsProfile.length === 2) {
@@ -73,6 +76,7 @@ export default {
 
         },
 
+        // Non più utile
         // removeShowDoctor() {
         //     if (this.showDoctor) {
         //         this.showDoctor = false
@@ -84,10 +88,20 @@ export default {
 
         goToShowPage(doctor, index) {
             store.doctorProfile = doctor
-            this.$router.push({ name: 'search.show', params: { searchId: store.searchedSpecialization, id: index } })
+            let completeName = doctor.user.first_name + '-' + doctor.user.last_name
+            this.$router.push({ name: 'search.show', params: { searchId: store.selectedSpecializationName.trim().replace(/ /g, "-").toLowerCase(), id: completeName.toLowerCase() } })
             console.log(index)
             console.log(store.searchedSpecialization)
         },
+
+        // Metodo media voti
+        // for (let i = 0; i < reviewsProfile.length; i++) {
+        //                 let review = reviewsProfile[i]
+        //                 totalNumberVote += review.votes
+        //             }
+        //             this.averageVote = totalNumberVote / reviewsProfile.length
+        //             console.log(Math.round(this.averageVote))
+        //         }
 
     },
     computed: {
@@ -116,13 +130,43 @@ export default {
         <div v-if="loaded">
             <div>
                 <div class="title">
-                    <h2>Ricerca per: <span class="specialization-title">{{ specializationName }}</span>
+                    <h2>Ricerca per: <span class="specialization-title">{{ specializationName }} </span><span
+                            class="total-specialization-doctor"> (Totale esperti: {{
+                                doctors.length
+                            }})</span>
                     </h2>
                 </div>
 
                 <div class="advanced-filter">
                     <div class="average-votes">
+                        <div class="votes d-flex">
+                            <p>Filtra per media voti: </p>
+                            <div class="rating mx-3">
+                                <input type="radio" id="vote5" name="rating" value="5" v-model="rating">
+                                <label for="vote5"><i class="fa-solid fa-stethoscope"></i>
+                                </label>
+                                <input type="radio" id="vote4" name="rating" value="4" v-model="rating">
+                                <label for="vote4"><i class="fa-solid fa-stethoscope"></i>
+                                </label>
+                                <input type="radio" id="vote3" name="rating" value="3" v-model="rating">
+                                <label for="vote3"><i class="fa-solid fa-stethoscope"></i>
+                                </label>
+                                <input type="radio" id="vote2" name="rating" value="2" v-model="rating">
+                                <label for="vote2"><i class="fa-solid fa-stethoscope"></i>
+                                </label>
+                                <input type="radio" id="vote1" name="rating" value="1" v-model="rating">
+                                <label for="vote1"><i class="fa-solid fa-stethoscope"></i>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="reviews-number d-flex gap-3">
+                            <p>Filtra per numero di recensioni:
 
+                            </p>
+                            <form action="">
+                                <input type="number">
+                            </form>
+                        </div>
                     </div>
                     <div class="number-reviews">
 
@@ -174,12 +218,20 @@ h5 {
     font-weight: 400;
 }
 
+
+/* Doctor list */
 .doctors-list {
     display: flex;
     gap: 50px 110px;
     justify-content: start;
     flex-wrap: wrap;
     align-content: stretch;
+}
+
+.total-specialization-doctor {
+    font-style: oblique;
+    font-weight: normal;
+    font-size: 1.8rem;
 }
 
 .doctor-card {
@@ -258,6 +310,32 @@ img {
 
     100% {
         background-position: 0% 100%, 100% 100%, 200% 100%
+    }
+}
+
+/*Rating */
+.rating {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+
+    & input {
+        display: none;
+    }
+
+    & label {
+        font-size: 24px;
+        cursor: pointer;
+    }
+
+    & label:hover,
+    & label:hover~label {
+        color: var(--color-complementary)
+    }
+
+    & input:checked~label {
+        color: var(--color-complementary)
     }
 }
 </style>

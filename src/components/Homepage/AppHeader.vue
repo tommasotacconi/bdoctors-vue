@@ -28,7 +28,6 @@ export default {
             axios.get(this.apiUrl)
                 .then(response => {
                     // handle success
-                    console.log(response.data.specializations);
                     this.specializations = response.data.specializations;
                 })
                 .catch(function (error) {
@@ -38,9 +37,12 @@ export default {
         },
         chooseSpecialization() {
             console.log("Specializzazione selezionata:", this.selectedSpecialization);
-            store.searchedSpecialization = this.selectedSpecialization
+            store.searchedSpecialization = this.selectedSpecialization.id
+            store.selectedSpecializationName = this.selectedSpecialization.name
+
+            // Nuova pagina nella quale usiamo i nomi. Piccola concatenazione di metodi per togliere gli spazi e rendere tutto minuscolo
             this.$router.push({
-                name: 'search', params: { searchId: this.selectedSpecialization },
+                name: 'search', params: { searchId: store.selectedSpecializationName.trim().replace(/ /g, "-").toLowerCase() },
             })
         },
 
@@ -83,10 +85,9 @@ export default {
                     <select @change="chooseSpecialization()" v-model="selectedSpecialization" v-if="!$route.params.id"
                         class="form-select" aria-label="Specialization Search">
                         <option value="" disabled selected>Ricerca il medico per specializzazione!</option>
-                        <option v-for="(specialization, index) in specializations" :key="index"
-                            :value=specialization.id>{{
-                                specialization.name
-                            }}
+                        <option v-for="(specialization, index) in specializations" :key="index" :value=specialization>{{
+                            specialization.name
+                        }}
                         </option>
                     </select>
                 </div>
