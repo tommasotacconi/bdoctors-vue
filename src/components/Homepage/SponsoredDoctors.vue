@@ -100,8 +100,6 @@ export default {
                                 </li>
                             </ul>
                         </div>
-                        <!-- Bottone cassato, procediamo con il click su scheda intera -->
-                        <!-- <button class="btn btn-primary">Profilo medico</button> -->
                     </div>
                 </div>
             </div>
