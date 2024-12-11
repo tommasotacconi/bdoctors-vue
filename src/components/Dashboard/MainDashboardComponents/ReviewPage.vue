@@ -40,7 +40,7 @@ export default {
                     }
                     console.log(reviewsProfile.length)
                     this.averageVote = Math.round(totalNumberVote / reviewsProfile.length)
-                    console.log(Math.round(this.averageVote))
+                    console.log(this.averageVote)
 
 
                 })
