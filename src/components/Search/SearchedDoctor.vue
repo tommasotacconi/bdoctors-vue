@@ -92,21 +92,6 @@ export default {
             console.log(store.searchedSpecialization)
         },
 
-        getRatedDoctors() {
-            axios.get(this.apiUrl, {
-                params: {
-
-                }
-            })
-                .then(response => {
-                    // handle success
-                    console.log(response.data.specializations);
-                })
-                .catch(function (error) {
-                    // handle error
-                    console.log(error);
-                })
-        }
         // Metodo media voti
         // for (let i = 0; i < reviewsProfile.length; i++) {
         //                 let review = reviewsProfile[i]
@@ -155,8 +140,7 @@ export default {
                         <div class="votes d-flex">
                             <p>Filtra per media voti: </p>
                             <div class="rating mx-3">
-                                <input type="radio" id="vote5" name="rating" value="5" v-model="rating"
-                                    @click="getRatedDoctors()">
+                                <input type="radio" id="vote5" name="rating" value="5" v-model="rating">
                                 <label for="vote5"><i class="fa-solid fa-stethoscope"></i>
                                 </label>
                                 <input type="radio" id="vote4" name="rating" value="4" v-model="rating">

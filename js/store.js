@@ -11,6 +11,7 @@ export const store = reactive({
 
   // Variable needed for the advanced search
   searchedSpecialization: null,
+  selectedSpecializationName: null,
 
   // Variable for the show profile card in advanced search 
   doctorProfile: null,

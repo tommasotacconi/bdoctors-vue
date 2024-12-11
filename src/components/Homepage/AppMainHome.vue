@@ -15,7 +15,7 @@ export default {
 
 <template>
     <SponsoredDoctors />
-    <main>
+    <!-- <main>
         <div class="container normal-doctor-container">
             <h2>Tutti i nostri dottori</h2>
             <div class="card-container">
@@ -30,7 +30,7 @@ export default {
                 </div>
             </div>
         </div>
-    </main>
+    </main> -->
 </template>
 
 <style scoped>

@@ -57,6 +57,7 @@ export default {
 
 <template>
     <main class="container">
+        <h2>Messaggi</h2>
         <div class="loader" v-if="!loaded"></div>
         <div v-else class="general-cards-container">
             <div class="all-messages">
@@ -107,6 +108,11 @@ export default {
 
 <style scoped>
 /* General */
+h2 {
+    margin-bottom: 40px;
+    text-align: center;
+}
+
 li {
     text-decoration: none;
     list-style-type: none;
@@ -121,7 +127,15 @@ li {
 ul {
     border-bottom: 3px dashed var(--color-secondary);
     padding-left: 10px;
+    padding: 5px;
 }
+
+ul:hover {
+    background-color: var(--color-secondary);
+    color: white;
+    cursor: pointer;
+}
+
 
 /* Inbox Card */
 .card-inbox::-webkit-scrollbar {
