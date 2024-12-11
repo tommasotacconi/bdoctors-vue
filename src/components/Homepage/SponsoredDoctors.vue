@@ -37,61 +37,14 @@ export default {
             axios.get(this.profilesApiUrl)
                 .then(response => {
                     // handle success
-                    // console.log(response.data.profiles);
+
                     let profiles = response.data.profiles
-                    for (let i = 0; i < profiles.length; i++) {
-                        let profile = profiles[i]
-                        this.profilesId.push(profile.user_id)
-                    }
-                    // console.log(this.profilesId)
-                    let profilesId = this.profilesId
                     let usersSponsoredId = this.usersSponsoredId
-                    const filteredProfile = []
 
-                    // for (let i = 0; i < profilesId.length; i++) {
-                    //     let profileId = profilesId[i]
-                    //     for (let j = 0; j < usersSponsoredId.length; j++) {
-                    //         let userSponsoredId = usersSponsoredId[j]
-                    //         if (profileId === userSponsoredId) {
-                    //             filteredProfile.push(profileId)
-                    //         }
-                    //     }
-                    // }
-
-                    console.log(profiles)
-                    console.log(usersSponsoredId)
-                    for (let i = 0; i < profiles.length; i++) {
-                        let profile = profiles[i]
-                        for (let j = 0; j < usersSponsoredId.length; j++) {
-                            let userSponsoredId = usersSponsoredId[j]
-                            if (profile.user_id === userSponsoredId) {
-                                filteredProfile.push(profile)
-                            }
-
-                        }
-                    }
+                    const filteredProfile = profiles.filter(element => usersSponsoredId.includes(element.user_id)
+                    )
 
                     console.log(filteredProfile)
-
-
-
-                    // let filteredProfiles = []
-                    // for (let i = 0; i < profiles.length; i++) {
-                    //     let profile = profiles[i]
-                    //     if (profile.user.specializations[0].id == store.searchedSpecialization) {
-                    //         filteredProfiles.push(profile)
-
-                    //     }
-                    //     let specializationsProfile = profile.user.specializations
-                    //     if (specializationsProfile.length === 2) {
-                    //         if (profile.user.specializations[1].id == store.searchedSpecialization) {
-                    //             filteredProfiles.push(profile)
-                    //         }
-                    //     }
-                    // }
-                    // this.doctors = filteredProfiles
-                    // console.log(this.doctors)
-
                 })
                 .catch(function (error) {
                     // handle error
