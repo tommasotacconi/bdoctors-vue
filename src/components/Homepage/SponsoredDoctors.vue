@@ -5,6 +5,7 @@ export default {
     data() {
         return {
             sponsorshipsApiUrl: 'http://localhost:8000/api/sponsorships',
+            userId: [],
         }
     },
     methods: {
@@ -15,14 +16,23 @@ export default {
                     console.log(response.data.sponsorships);
                     let sponsorships = response.data.sponsorships
                     for (let i = 0; i < sponsorships.length; i++) {
-                        console.log('test')
+                        let sponsorshipProfiles = sponsorships[i].profiles
+
+                        for (let j = 0; j < sponsorshipProfiles.length; j++) {
+                            let sponsored = sponsorshipProfiles[j]
+                            this.userId.push(sponsored.user_id)
+                        }
                     }
+                    console.log(this.userId)
 
                 })
                 .catch(function (error) {
                     // handle error
                     console.log(error);
                 })
+        },
+        getApiProfiles() {
+
         },
     },
     mounted() {
