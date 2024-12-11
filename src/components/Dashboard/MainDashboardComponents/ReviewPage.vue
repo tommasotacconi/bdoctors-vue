@@ -65,18 +65,11 @@ export default {
         // }
 
     },
-    beforeCreate() {
+    mounted() {
         this.showLoader
-
-
     },
     created() {
         this.getApiReviews();
-        // this.showAverageVote();
-
-    },
-    mounted() {
-        // this.showAverageVote();
     },
     computed: {
         showLoader() {
@@ -91,40 +84,44 @@ export default {
 
 <template>
     <main class="container">
-        <div class="card-reviews-container">
-            <div class="card-general card-reviews">
-                <div class="card-header-title">
-                    <h5 class="title">Recensioni ricevute</h5>
-                    <div class="reviews-number"><strong>Totale:</strong> <span class="total-number">{{
-                        reviewsProfile.length }}</span></div>
-                </div>
-                <div class="card-body-list">
-                    <ul class="list-general" v-for="(review, index) in reviewsProfile" @click="selectReview(index)">
-                        <li class="list-vote"><i class="fa-solid fa-stethoscope" v-for="star in review.votes"></i></li>
-                        <li class="list-email">{{ review.email }}</li>
-                        <li class="list-name">{{ review.first_name }} {{ review.last_name }}</li>
-                        <li class="list-content">{{ review.content }}</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <div class="card-general card-review">
-            <div class="card-selected-review">
-                <div class="title-star">
-                    <h5 class="title">Recensione selezionata</h5>
-                    <div class="star">
-                        <strong>Voto: </strong> <i class="fa-solid fa-stethoscope" v-for="star in averageVote"></i>
+        <div class="loader" v-if="!loaded"></div>
+        <div v-else>
+            <div class="card-reviews-container">
+                <div class="card-general card-reviews">
+                    <div class="card-header-title">
+                        <h5 class="title">Recensioni ricevute</h5>
+                        <div class="reviews-number"><strong>Totale:</strong> <span class="total-number">{{
+                            reviewsProfile.length }}</span></div>
+                    </div>
+                    <div class="card-body-list">
+                        <ul class="list-general" v-for="(review, index) in reviewsProfile" @click="selectReview(index)">
+                            <li class="list-vote"><i class="fa-solid fa-stethoscope" v-for="star in review.votes"></i>
+                            </li>
+                            <li class="list-email">{{ review.email }}</li>
+                            <li class="list-name">{{ review.first_name }} {{ review.last_name }}</li>
+                            <li class="list-content">{{ review.content }}</li>
+                        </ul>
                     </div>
                 </div>
+            </div>
+            <div class="card-general card-review">
+                <div class="card-selected-review">
+                    <div class="title-star">
+                        <h5 class="title">Recensione selezionata</h5>
+                        <div class="star">
+                            <strong>Voto: </strong> <i class="fa-solid fa-stethoscope" v-for="star in averageVote"></i>
+                        </div>
+                    </div>
 
-                <div class="review-name">
-                    <strong>Da:</strong> {{ reviewSelected.first_name }} {{ reviewSelected.last_name }}
-                </div>
-                <div class="review-email">
-                    <strong>E-mail:</strong> {{ reviewSelected.email }}
-                </div>
-                <div class="review-content">
-                    <div><strong>Contenuto:</strong></div> <span>{{ reviewSelected.content }}</span>
+                    <div class="review-name">
+                        <strong>Da:</strong> {{ reviewSelected.first_name }} {{ reviewSelected.last_name }}
+                    </div>
+                    <div class="review-email">
+                        <strong>E-mail:</strong> {{ reviewSelected.email }}
+                    </div>
+                    <div class="review-content">
+                        <div><strong>Contenuto:</strong></div> <span>{{ reviewSelected.content }}</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -259,5 +256,41 @@ ul:hover {
 .review-email,
 .review-name {
     border-bottom: 2px dashed var(--color-secondary);
+}
+
+
+/* Loader progressive */
+.loader {
+    --r1: 154%;
+    --r2: 68.5%;
+    width: 60px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background:
+        radial-gradient(var(--r1) var(--r2) at top, #0000 79.5%, var(--color-secondary) 80%),
+        radial-gradient(var(--r1) var(--r2) at bottom, var(--color-secondary) 79.5%, #0000 80%),
+        radial-gradient(var(--r1) var(--r2) at top, #0000 79.5%, var(--color-secondary) 80%),
+        #ccc;
+    background-size: 50.5% 220%;
+    background-position: -100% 0%, 0% 0%, 100% 0%;
+    background-repeat: no-repeat;
+    animation: l9 2s infinite linear;
+    position: absolute;
+    top: 50%;
+    left: 59%;
+}
+
+@keyframes l9 {
+    33% {
+        background-position: 0% 33%, 100% 33%, 200% 33%
+    }
+
+    66% {
+        background-position: -100% 66%, 0% 66%, 100% 66%
+    }
+
+    100% {
+        background-position: 0% 100%, 100% 100%, 200% 100%
+    }
 }
 </style>
