@@ -10,6 +10,8 @@ export default {
             loaded: true,
             store,
             messageForm: {
+                patient_firstname: '',
+                patient_lastname: '',
                 patient_email: '',
                 message: '',
             },
@@ -19,6 +21,8 @@ export default {
             },
             errors: {
                 messageForm: {
+                    patient_firstname: '',
+                    patient_lastname: '',
                     patient_email: "",
                     message: ''
                 },
@@ -85,16 +89,26 @@ export default {
         },
 
         validateMessageForm() {
-            if (!this.messageForm.email) {
-                this.errors.messageForm.email = "L'email è obbligatoria.";
-            } else if (!this.validEmail(this.messageForm.email)) {
-                this.errors.messageForm.email = "L'email inserita non è valida.";
+            if (!this.messageForm.patient_firstname) {
+                this.errors.messageForm.patient_firstname = 'Il nome è obbligatorio.';
+            } else if (this.messageForm.patient_firstname.length <= 2) {
+                this.errors.messageForm.patient_firstname = 'Il nome deve contenere almeno 3 caratteri.';
+            };
+            if (!this.messageForm.patient_lastname) {
+                this.errors.messageForm.patient_lastname = "Il cognome è obbligatorio."
+            } else if (this.messageForm.patient_lastname.length <= 2) {
+                this.errors.messageForm.patient_lastname = "Il cognome deve contenere almeno 3 caratteri."
+            };
+            if (!this.messageForm.patient_email) {
+                this.errors.messageForm.patient_email = "L'email è obbligatoria.";
+            } else if (!this.validEmail(this.messageForm.patient_email)) {
+                this.errors.messageForm.patient_email = "L'email inserita non è valida.";
             }
             if (!this.messageForm.message) {
                 this.errors.messageForm.message = "Inserisci il corpo del messaggio"
             }
 
-            if (!this.errors.length) {
+            if (!this.errors.messageForm.length) {
                 this.messageFormValidated = true;
                 this.sendMessageForm();
 
@@ -208,8 +222,27 @@ export default {
                             <form method="POST" class="form-control py-3" @submit.prevent="validateMessageForm"
                                 novalidate>
                                 <div class="mb-3 col-12">
+                                    <label for="patient_firstname" class="form-label">Nome</label>
+                                    <input type="text" class="form-control"
+                                        :class="{ 'invalid-input': errors.messageForm.patient_firstname }"
+                                        id="patient_firstname" v-model.trim="messageForm.patient_firstname" required>
+                                    <div class="invalid" v-if="errors.messageForm.patient_firstname">
+                                        <p> {{ errors.messageForm.patient_firstname }} </p>
+                                    </div>
+                                </div>
+                                <div class="mb-3 col-12">
+                                    <label for="patient_lastname" class="form-label">Cognome</label>
+                                    <input type="text" class="form-control"
+                                        :class="{ 'invalid-input': errors.messageForm.patient_lastname }"
+                                        id="patient_lastname" v-model.trim="messageForm.patient_lastname" required>
+                                    <div class="invalid" v-if="errors.messageForm.patient_lastname">
+                                        <p> {{ errors.messageForm.patient_lastname }} </p>
+                                    </div>
+                                </div>
+                                <div class="mb-3 col-12">
                                     <label for="patient_email" class="form-label">Email</label>
-                                    <input type="email" class="form-control" :class="{ 'invalid-input': errors.email }"
+                                    <input type="email" class="form-control"
+                                        :class="{ 'invalid-input': errors.messageForm.patient_email }"
                                         id="patient_email" placeholder="Inserisci il tuo indirizzo email"
                                         v-model.trim="messageForm.patient_email" required>
                                     <div class="invalid" v-if="errors.messageForm.patient_email">
@@ -218,7 +251,8 @@ export default {
                                 </div>
                                 <div class="mb-3 col-12">
                                     <label for="message" class="form-label align-start">Messaggio</label>
-                                    <textarea class="form-control" id="message" rows="3"
+                                    <textarea class="form-control"
+                                        :class="{ 'invalid-input': errors.messageForm.message }" id="message" rows="3"
                                         v-model="messageForm.message"></textarea>
                                     <div class="invalid" v-if="errors.messageForm.message">
                                         <p> {{ errors.messageForm.message }} </p>
