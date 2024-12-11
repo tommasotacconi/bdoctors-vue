@@ -5,7 +5,9 @@ export default {
     data() {
         return {
             sponsorshipsApiUrl: 'http://localhost:8000/api/sponsorships',
-            userId: [],
+            profilesApiUrl: 'http://localhost:8000/api/profiles',
+            usersSponsoredId: [],
+            profilesId: [],
         }
     },
     methods: {
@@ -13,17 +15,17 @@ export default {
             axios.get(this.sponsorshipsApiUrl)
                 .then(response => {
                     // handle success
-                    console.log(response.data.sponsorships);
+                    // console.log(response.data.sponsorships);
                     let sponsorships = response.data.sponsorships
                     for (let i = 0; i < sponsorships.length; i++) {
                         let sponsorshipProfiles = sponsorships[i].profiles
 
                         for (let j = 0; j < sponsorshipProfiles.length; j++) {
                             let sponsored = sponsorshipProfiles[j]
-                            this.userId.push(sponsored.user_id)
+                            this.usersSponsoredId.push(sponsored.user_id)
                         }
                     }
-                    console.log(this.userId)
+                    // console.log(this.userId)
 
                 })
                 .catch(function (error) {
@@ -32,11 +34,74 @@ export default {
                 })
         },
         getApiProfiles() {
+            axios.get(this.profilesApiUrl)
+                .then(response => {
+                    // handle success
+                    // console.log(response.data.profiles);
+                    let profiles = response.data.profiles
+                    for (let i = 0; i < profiles.length; i++) {
+                        let profile = profiles[i]
+                        this.profilesId.push(profile.user_id)
+                    }
+                    // console.log(this.profilesId)
+                    let profilesId = this.profilesId
+                    let usersSponsoredId = this.usersSponsoredId
+                    const filteredProfile = []
 
+                    // for (let i = 0; i < profilesId.length; i++) {
+                    //     let profileId = profilesId[i]
+                    //     for (let j = 0; j < usersSponsoredId.length; j++) {
+                    //         let userSponsoredId = usersSponsoredId[j]
+                    //         if (profileId === userSponsoredId) {
+                    //             filteredProfile.push(profileId)
+                    //         }
+                    //     }
+                    // }
+
+                    console.log(profiles)
+                    console.log(usersSponsoredId)
+                    for (let i = 0; i < profiles.length; i++) {
+                        let profile = profiles[i]
+                        for (let j = 0; j < usersSponsoredId.length; j++) {
+                            let userSponsoredId = usersSponsoredId[j]
+                            if (profile.user_id === userSponsoredId) {
+                                filteredProfile.push(profile)
+                            }
+
+                        }
+                    }
+
+                    console.log(filteredProfile)
+
+
+
+                    // let filteredProfiles = []
+                    // for (let i = 0; i < profiles.length; i++) {
+                    //     let profile = profiles[i]
+                    //     if (profile.user.specializations[0].id == store.searchedSpecialization) {
+                    //         filteredProfiles.push(profile)
+
+                    //     }
+                    //     let specializationsProfile = profile.user.specializations
+                    //     if (specializationsProfile.length === 2) {
+                    //         if (profile.user.specializations[1].id == store.searchedSpecialization) {
+                    //             filteredProfiles.push(profile)
+                    //         }
+                    //     }
+                    // }
+                    // this.doctors = filteredProfiles
+                    // console.log(this.doctors)
+
+                })
+                .catch(function (error) {
+                    // handle error
+                    console.log(error);
+                })
         },
     },
     mounted() {
         this.getApiSponsorships()
+        this.getApiProfiles()
     }
 }
 </script>
