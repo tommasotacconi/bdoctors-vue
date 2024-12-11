@@ -1,36 +1,89 @@
 <script>
 import { store } from '../../../../js/store.js'
+import axios from 'axios';
 
 export default {
     data() {
         return {
-            store
+            store,
+            messagesApiUrl: 'http://localhost:8000/api/messages',
+            messagesProfile: [],
+            messageSelected: [],
+            loaded: false,
         }
     },
     methods: {
-    }
+        getApiMessages() {
+            axios.get(this.messagesApiUrl)
+                .then(response => {
+                    // handle success
+                    console.log(response.data);
+                    let messagesProfiles = response.data.messages
+                    console.log(messagesProfiles)
+                    let idProfile = store.profileDataGeneral.id
+                    console.log(idProfile)
+
+                    const messagesProfile = messagesProfiles.filter(message => message.profile_id === idProfile)
+                    console.log(messagesProfile)
+                    this.messagesProfile = messagesProfile
+                })
+                .catch(function (error) {
+                    // handle error
+                    console.log(error);
+                })
+        },
+        selectMessage(index) {
+            this.messageSelected = this.messagesProfile[index]
+            console.log(this.messagesProfile[index])
+        },
+    },
+    mounted() {
+        this.showLoader
+
+    },
+    created() {
+        this.getApiMessages()
+    },
+    computed: {
+        showLoader() {
+            setTimeout(() => {
+                this.loaded = true
+            }, 2000)
+
+        }
+    },
 }
 </script>
 
 <template>
     <main class="container">
-        <div class="general-cards-container">
+        <h2>Messaggi</h2>
+        <div class="loader" v-if="!loaded"></div>
+        <div v-else class="general-cards-container">
             <div class="all-messages">
                 <div class="card-inbox">
                     <div class="card-header-title">
                         <h5 class="title">Messaggi arrivati</h5>
-                        <div class="messages-number"><strong>Totale:</strong> <span class="total-number">10</span></div>
+                        <div class="messages-number"><strong>Totale:</strong> <span class="total-number">{{
+                            messagesProfile.length }}</span></div>
                     </div>
-                    <div class="card-body-list" v-for="(message, index) in 10">
-                        <ul class="list-group list-group-flush list-email" @click="selectMessage(index)">
-                            <li class="list-group-item">E-mail</li>
+
+                    <!-- Nuovo sistema di lista -->
+                    <div class="card-body-list">
+                        <ul class="list-general" v-for="(message, index) in messagesProfile"
+                            @click="selectMessage(index)">
+                            <li class="list-email">{{ message.email }}</li>
+                            <li class="list-name">{{ message.first_name }} {{ message.last_name }}</li>
+                            <li class="list-content">{{ message.content }}</li>
                         </ul>
-                        <ul class="list-group list-group-flush list-name" @click="selectMessage(index)">
-                            <li class="list-group-item">Nome e Cognome</li>
+
+                        <!-- Vecchio sistema di lista, il nuovo è più facile da mantenere -->
+                        <!-- <ul class="list-group list-group-flush list-name" @click="selectMessage(message, index)">
+                            <li class="list-group-item">{{ message.first_name }} {{ message.last_name }}</li>
                         </ul>
-                        <ul class="list-group list-group-flush list-preview" @click="selectMessage(index)">
-                            <li class="list-group-item">Preview</li>
-                        </ul>
+                        <ul class="list-group list-group-flush list-preview" @click="selectMessage(message, index)">
+                            <li class="list-group-item">{{ message.content }}</li>
+                        </ul> -->
                     </div>
                 </div>
             </div>
@@ -39,18 +92,13 @@ export default {
                     <h5 class="title">Messaggio selezionato</h5>
 
                     <div class="message-name">
-                        <strong>Da:</strong> Mario Rossi
+                        <strong>Da:</strong> {{ messageSelected.first_name }} {{ messageSelected.last_name }}
                     </div>
                     <div class="message-email">
-                        <strong>E-mail:</strong> mariorossi@gmail.com
+                        <strong>E-mail:</strong> {{ messageSelected.email }}
                     </div>
                     <div class="message-content">
-                        <div><strong>Contenuto:</strong></div> <span>Lorem ipsum dolor sit amet consectetur adipisicing
-                            elit. Veniam
-                            velit officia quaerat
-                            similique
-                            ducimus excepturi dolore aliquam sed blanditiis maxime voluptas error perspiciatis sequi
-                            officiis ullam delectus rerum, vero dolorem?</span>
+                        <div><strong>Contenuto:</strong></div> <span>{{ messageSelected.content }}</span>
                     </div>
                 </div>
             </div>
@@ -59,8 +107,37 @@ export default {
 </template>
 
 <style scoped>
-/* Inbox Card */
+/* General */
+h2 {
+    margin-bottom: 40px;
+    text-align: center;
+}
 
+li {
+    text-decoration: none;
+    list-style-type: none;
+    display: flex;
+    align-items: center;
+    max-height: 25px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+ul {
+    border-bottom: 3px dashed var(--color-secondary);
+    padding-left: 10px;
+    padding: 5px;
+}
+
+ul:hover {
+    background-color: var(--color-secondary);
+    color: white;
+    cursor: pointer;
+}
+
+
+/* Inbox Card */
 .card-inbox::-webkit-scrollbar {
     width: 10px;
     position: relative;
@@ -77,7 +154,7 @@ export default {
 
 .card-header-title {
     padding: 10px 15px;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -101,19 +178,29 @@ export default {
 
 .card-body-list {
     display: flex;
+    flex-direction: column;
     padding: 0 15px;
+}
+
+.list-general {
+    display: flex;
+    gap: 10px;
 }
 
 .list-email {
     flex-basis: 20%;
     border-right: 3px dashed var(--color-secondary);
-    border-bottom: 3px solid var(--color-secondary);
 }
 
 .list-name {
     flex-basis: 20%;
     border-right: 3px dashed var(--color-secondary);
-    border-bottom: 3px solid var(--color-secondary);
+
+}
+
+.list-content {
+    flex-basis: 60%;
+
 }
 
 .list-preview {
@@ -145,9 +232,42 @@ export default {
     border-bottom: 2px dashed var(--color-secondary);
 }
 
-/* Is better with a space? */
-/* .message-content {
-    display: flex;
-    gap: 10px;
-} */
+.message-content {
+    margin-bottom: 12px;
+}
+
+/* Loader progressive */
+.loader {
+    --r1: 154%;
+    --r2: 68.5%;
+    width: 60px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background:
+        radial-gradient(var(--r1) var(--r2) at top, #0000 79.5%, var(--color-secondary) 80%),
+        radial-gradient(var(--r1) var(--r2) at bottom, var(--color-secondary) 79.5%, #0000 80%),
+        radial-gradient(var(--r1) var(--r2) at top, #0000 79.5%, var(--color-secondary) 80%),
+        #ccc;
+    background-size: 50.5% 220%;
+    background-position: -100% 0%, 0% 0%, 100% 0%;
+    background-repeat: no-repeat;
+    animation: l9 2s infinite linear;
+    position: absolute;
+    top: 50%;
+    left: 59%;
+}
+
+@keyframes l9 {
+    33% {
+        background-position: 0% 33%, 100% 33%, 200% 33%
+    }
+
+    66% {
+        background-position: -100% 66%, 0% 66%, 100% 66%
+    }
+
+    100% {
+        background-position: 0% 100%, 100% 100%, 200% 100%
+    }
+}
 </style>

@@ -22,5 +22,7 @@ export const store = reactive({
   // Api uri
   apiUri: 'http://localhost:8000/api/',
   // Api call for profile information
-  informationPageId: ''
+  informationPageId: '',
+
+  profileDataGeneral: {},
 })
