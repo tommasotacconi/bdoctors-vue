@@ -99,10 +99,9 @@ export default {
             const filteredDoctors = [];
 
             for (let i = 0; i < this.doctors.length; i++) {
-                let singleDoctor = { id: null, averageVotes: null }
+                let singleDoctor = { doctor: [], averageVotes: null }
                 let doctor = this.doctors[i];
-                let doctorID = doctor.id
-                singleDoctor.id = doctorID;
+                singleDoctor.doctor = doctor;
                 console.log('singolo medico', doctor)
                 let reviews = doctor.reviews;
                 // console.log('Recensioni:', reviews);
@@ -117,7 +116,8 @@ export default {
                 averageVotes = Math.round(votesSum / reviews.length)
                 console.log('La media dei voti del medico è:', averageVotes)
                 singleDoctor.averageVotes = averageVotes;
-                filteredDoctors.push(singleDoctor);
+                if (singleDoctor.averageVotes >= this.rating)
+                    filteredDoctors.push(singleDoctor);
                 console.log('singleDoctor', singleDoctor)
             }
             console.log('Array Dottori filtrati nel metodo:', filteredDoctors)
@@ -165,7 +165,8 @@ export default {
                             <div class="rating mx-3">
                                 <form action="" method="get" class="form-control rating mx-3"
                                     @submit.prevent="getFilteredVotesProfiles">
-                                    <button type="submit" class="btn btn-sm -btn-primary">Filtra</button>
+                                    <button type="reset" class="btn btn-sm btn-primary">Reset</button>
+                                    <button type="submit" class="btn btn-sm btn-secondary">Filtra</button>
                                     <input type="radio" id="vote5" name="rating" value="5" v-model="rating">
                                     <label for="vote5"><i class="fa-solid fa-stethoscope"></i>
                                     </label>
@@ -197,8 +198,7 @@ export default {
                     </div>
                 </div>
 
-
-                <div class="doctors-list">
+                <div class="doctors-list" v-if="!filteredDoctorsByVotes.length">
                     <div class="doctor-card" v-for="(doctor, index) in doctors" @click="goToShowPage(doctor, index)">
                         <img src="https://media.istockphoto.com/id/1340883379/photo/young-doctor-hospital-medical-medicine-health-care-clinic-office-portrait-glasses-man.jpg?s=612x612&w=0&k=20&c=_H4VUPBkS0gEj5ZdZzQo-Hw3lMuyofJpB-P9yS92Wyw="
                             class="doctor-photo" alt="doctor photo">
@@ -221,9 +221,36 @@ export default {
                         </section>
                     </div>
                 </div>
+                <div class="doctors-list" v-else>
+                    <div class="doctor-card" v-for="(doctor, index) in filteredDoctorsByVotes"
+                        @click="goToShowPage(doctor, index)">
+                        <img src="https://media.istockphoto.com/id/1340883379/photo/young-doctor-hospital-medical-medicine-health-care-clinic-office-portrait-glasses-man.jpg?s=612x612&w=0&k=20&c=_H4VUPBkS0gEj5ZdZzQo-Hw3lMuyofJpB-P9yS92Wyw="
+                            class="doctor-photo" alt="doctor photo">
+                        <section class="doctor-information">
+                            <h5 class="doctor-name">
+                                {{ doctor.doctor.user.first_name }} {{ doctor.doctor.user.last_name }}
+                            </h5>
+                            <div class="doctor-address">
+                                <strong>Ufficio:</strong> {{ doctor.office_address }}
+                            </div>
+                            <div class="doctor-specialization">
+                                <strong>Specializzazioni:</strong>
+                                <ul>
+                                    <li v-for="doctorSpecialization in doctor.doctor.user.specializations">
+                                        {{ doctorSpecialization.name }}
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="doctor-address">
+                                <strong>Media recensioni:</strong> {{ doctor.averageVotes }}
+                            </div>
+                        </section>
+                    </div>
+                </div>
 
             </div>
         </div>
+        <div v-else-if="filteredDoctorsByVotes.length"></div>
     </main>
 </template>
 
