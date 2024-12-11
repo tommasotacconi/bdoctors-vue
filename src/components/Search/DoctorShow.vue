@@ -76,7 +76,7 @@ export default {
         // Method to send patients reviews
 
         sendReviewForm() {
-            axios.post('', this.reviewForm)
+            axios.post('http://localhost:8000/api/reviews', this.reviewForm)
                 .then(response => {
                     console.log('Review sent.', response.data)
                 })
