@@ -121,7 +121,14 @@ li {
 ul {
     border-bottom: 3px dashed var(--color-secondary);
     padding-left: 10px;
+    padding: 5px;
 }
+
+ul:hover {
+    background-color: var(--color-secondary);
+    color: white;
+}
+
 
 /* Inbox Card */
 .card-inbox::-webkit-scrollbar {

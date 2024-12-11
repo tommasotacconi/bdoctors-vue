@@ -146,6 +146,13 @@ li {
 ul {
     border-bottom: 3px dashed var(--color-secondary);
     padding-left: 10px;
+    padding: 5px;
+
+}
+
+ul:hover {
+    background-color: var(--color-secondary);
+    color: white;
 }
 
 
@@ -237,6 +244,7 @@ ul {
 .fa-stethoscope {
     color: red;
     font-size: 1.2rem;
+    padding-top: 5px;
 }
 
 .review-email,
