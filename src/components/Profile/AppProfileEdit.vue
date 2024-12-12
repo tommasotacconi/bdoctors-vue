@@ -80,7 +80,7 @@ export default {
                 });
         },
 
-        resetErrorsMessageFields() {
+        resetErrorsFields() {
             this.errors.first_name = '';
             this.errors.last_name = '';
             this.errors.email = '';
@@ -88,15 +88,13 @@ export default {
             this.errors.phone = '';
             this.errors.office_address = '';
             this.errors.specializations = '';
-            console.log('Campo specializzazioni resettato', this.errors.specializations)
             this.errors.services = '';
-            console.log('Campo prestazioni resettato', this.errors.services)
             this.errors.photo = '';
             this.errors.curriculum = '';
         },
 
         validateForm() {
-            this.resetErrorsMessageFields();
+            this.resetErrorsFields();
             if (!this.formData.first_name) {
                 this.errors.first_name = 'Il nome è obbligatorio.';
             } else if (this.formData.first_name.length <= 2) {
