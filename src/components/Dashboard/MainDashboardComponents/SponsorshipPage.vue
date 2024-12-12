@@ -8,6 +8,7 @@ export default {
             store,
             price: null,
             profilesApiUrl: 'http://localhost:8000/api/profiles',
+            sponsorships: [],
             sponsorship: false,
         }
     },
@@ -33,9 +34,11 @@ export default {
 
                     let profileDataGeneral = store.profileDataGeneral
 
-                    let sponsorship = response.data.profiles[profileDataGeneral.id].sponsorships
+                    let sponsorships = response.data.profiles[profileDataGeneral.id].sponsorships
+                    this.sponsorships = sponsorships
+                    console.log(this.sponsorships)
 
-                    if (sponsorship.length) {
+                    if (sponsorships.length) {
                         this.sponsorship = true
                     } else {
                         this.sponsorship = false
@@ -48,9 +51,25 @@ export default {
                     console.log(error);
                 })
         },
+        getTypeSponsorship() {
+            if (this.sponsorships[0].id === 1) {
+                console.log('test')
+                return 'card-bronze'
+            } else if (this.sponsorships[0].id === 2) {
+                console.log('test')
+
+                return 'card-silver'
+            } else if (this.sponsorships[0].id === 3) {
+                console.log('test')
+
+                return 'card-gold'
+            }
+
+        }
     },
     created() {
         this.getApiProfiles()
+        // this.getTypeSponsorship()
     }
 }
 </script>
@@ -58,43 +77,53 @@ export default {
 <template>
     <main class="container">
         <h2>Sponsorizzazione</h2>
-        <div class="sponsored-description">
-            <p>
-                Investi nelle tue competenze, sponsorizza il tuo profilo!
-                <br>
-                Un profilo sponsorizzato compare nella homepage e viene sempre posizionato in cima nella pagina di
-                ricerca.
-            </p>
-            <p>
+        <div class="is-not-sponsored" v-if="!sponsorship">
+            <div class="sponsored-description">
+                <p>
+                    Investi nelle tue competenze, sponsorizza il tuo profilo!
+                    <br>
+                    Un profilo sponsorizzato compare nella homepage e viene sempre posizionato in cima nella pagina di
+                    ricerca.
+                </p>
+                <p>
 
-            </p>
+                </p>
+            </div>
+            <h3>Scegli la tua sponsorizzazione:</h3>
+            <section class="sponsor-cards">
+                <button class="sponsor-card card-bronze" @click="getPriceBronze()">
+                    <div class="card-description">
+                        <p class="hour-sponsorship">Garantito per 24 ore</p>
+                        <p class="price">2,99€</p>
+                    </div>
+                    <div class="premium-star"><i class="fa-solid fa-star"></i></div>
+                </button>
+                <button class="sponsor-card card-silver" @click="getPriceSilver()">
+
+                    <div class="card-description">
+                        <p class="hour-sponsorship">Garantito per 72 ore</p>
+                        <p class="price">5,99€</p>
+                    </div>
+                    <div class="premium-star"><i class="fa-solid fa-star"></i></div>
+
+                </button>
+                <button class="sponsor-card card-gold" @click="getPriceGold()">
+                    <div class="card-description">
+                        <p class="hour-sponsorship">Garantito per 144 ore</p>
+                        <p class="price">9,99€</p>
+                    </div>
+                    <div class="premium-star"><i class="fa-solid fa-star"></i></div>
+                </button>
+            </section>
         </div>
-        <h3>Scegli la tua sponsorizzazione:</h3>
-        <section class="sponsor-cards">
-            <button class="sponsor-card card-bronze" @click="getPriceBronze()">
+        <div class="is-sponsored" v-else>
+            <div class="sponsor-card" @click="getTypeSponsorship">
                 <div class="card-description">
-                    <p class="hour-sponsorship">Garantito per 24 ore</p>
-                    <p class="price">2,99€</p>
+                    <p class="hour-sponsorship">Il tuo profilo è sponsorizzato</p>
                 </div>
                 <div class="premium-star"><i class="fa-solid fa-star"></i></div>
-            </button>
-            <button class="sponsor-card card-silver" @click="getPriceSilver()">
-
-                <div class="card-description">
-                    <p class="hour-sponsorship">Garantito per 72 ore</p>
-                    <p class="price">5,99€</p>
-                </div>
-                <div class="premium-star"><i class="fa-solid fa-star"></i></div>
-
-            </button>
-            <button class="sponsor-card card-gold" @click="getPriceGold()">
-                <div class="card-description">
-                    <p class="hour-sponsorship">Garantito per 144 ore</p>
-                    <p class="price">9,99€</p>
-                </div>
-                <div class="premium-star"><i class="fa-solid fa-star"></i></div>
-            </button>
-        </section>
+            </div>
+        </div>
     </main>
 </template>
 
