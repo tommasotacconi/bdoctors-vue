@@ -20,8 +20,13 @@ export default {
     data() {
         return {
             data: {
-                labels: ['January', 'February', 'March'],
-                datasets: [{ data: [40, 20, 12] }]
+                labels: ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'],
+                datasets: [
+                    {
+                        data: [50, 20, 12],
+                        backgroundColor: '#65B0FF',
+                    }
+                ]
             },
             options: {
                 responsive: true
@@ -32,18 +37,9 @@ export default {
 </script>
 
 <template>
-    <main>
-        <div class="container">
-            <h2>Statistiche</h2>
-            <Bar :data="data" :options="options" />
-        </div>
-
-    </main>
+    <div class="char">
+        <Bar :data="data" :options="options" />
+    </div>
 </template>
 
-<style scoped>
-h2 {
-    margin-bottom: 40px;
-    text-align: center;
-}
-</style>
+<style scoped></style>
