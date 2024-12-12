@@ -1,5 +1,6 @@
 <script>
 import axios from "axios";
+import { store } from "../../../js/store";
 import Multiselect from "../Generics/Multiselect.vue";
 import PhotoUpload from "../Generics/PhotoUpload.vue";
 import CvUpload from "../Generics/CvUpload.vue";
@@ -8,9 +9,10 @@ export default {
     data() {
         return {
             formData: {
-                user_id: localStorage.getItem('user_id'),
+                //user_id: localStorage.getItem('user_id'),
                 photo: null,
                 curriculum: null,
+                user_id: store.informationPageId
             },
             apiUrl: 'http://127.0.0.1:8000/api/profiles',
             errors: {
@@ -21,6 +23,8 @@ export default {
                 curriculum: ""
             },
             validated: false,
+            store,
+            profileData: {},
         }
     },
     components: {
@@ -55,15 +59,20 @@ export default {
         handleCurriculum(curriculum) {
             this.formData.curriculum = curriculum;
         },
-
+        //commento per commit 2
         createProfile() {
-            axios.post('http://localhost:8000/api/profiles', this.formData, {
+            axios.post('http://localhost:8000/api/profiles/' + this.store.informationPageId, this.formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
                 },
             })
                 .then(response => {
-                    console.log('Profile created', response.data)
+                    console.log('Profile created', response.data);
+                    this.profileData = response.data.data;
+
+                    // Data da condividere all'interno degli altri componenti
+                    //store.profileDataGeneral = response.data.data
+                    //localStorage.setItem('user_id', response.data.data.doctor.id)
                 })
                 .catch(function (error) {
                     // handle error
@@ -91,9 +100,12 @@ export default {
         // },
 
 
-        mounted() {
-        }
+
     },
+    created() {
+        this.store.informationPageId = this.$route.params.id;
+        console.log(store.informationPageId);
+    }
 }
 </script>
 
