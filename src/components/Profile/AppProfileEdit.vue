@@ -158,12 +158,12 @@ export default {
         updateSpecs(specializations) {
             // Prepare a constant array result to insert ids value
             const result = [];
-            // Insert ids taken from specializations parameter in reactive variable specializations, property of errors 
+            // Insert ids taken from specializations parameter in reactive variable specializations, property of errors --CHECK THIS COMMENT-- 
             for (let i = 0; i < specializations.length; i++) {
                 result.push(specializations[i].id);
             }
-            this.specializations = result;
-            console.log('---current specializations---', this.specializations);
+            this.formData.specializations = result;
+            console.log('---current specializations---', this.formData.specializations);
         },
 
         getProfileData() {
