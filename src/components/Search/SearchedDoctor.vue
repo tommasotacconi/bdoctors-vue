@@ -104,7 +104,7 @@ export default {
                 singleDoctor.doctor = doctor;
                 console.log('singolo medico', doctor)
                 let reviews = doctor.reviews;
-                // console.log('Recensioni:', reviews);
+                console.log('Recensioni:', reviews);
                 let votesSum = null;
                 for (let j = 0; j < reviews.length; j++) {
                     let review = reviews[j];
