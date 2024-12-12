@@ -91,6 +91,19 @@ export default {
         },
 
         //Validation methods
+        resetErrorsMessageFields() {
+            this.errors.messageForm.first_name = '';
+            this.errors.messageForm.last_name = '';
+            this.errors.messageForm.email = '';
+            this.errors.messageForm.content = '';
+        },
+        resetErrorsReviewFields() {
+            this.errors.reviewForm.first_name = '';
+            this.errors.reviewForm.last_name = '';
+            this.errors.reviewForm.email = '';
+            this.errors.reviewForm.content = '';
+            this.errors.reviewForm.votes = '';
+        },
 
         validEmail(email) {
             const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -98,6 +111,7 @@ export default {
         },
 
         validateMessageForm() {
+            this.resetErrorsMessageFields();
             if (!this.messageForm.first_name) {
                 this.errors.messageForm.first_name = 'Il nome è obbligatorio.';
             } else if (this.messageForm.first_name.length <= 2) {
@@ -120,13 +134,14 @@ export default {
             if (!this.errors.messageForm.length) {
                 this.messageFormValidated = true;
                 this.sendMessageForm();
-
             }
+
             console.log(this.messageForm);
             console.log(this.errors.messageForm);
         },
 
         validateReviewForm() {
+            this.resetErrorsReviewFields();
             if (!this.reviewForm.first_name) {
                 this.errors.reviewForm.first_name = 'Il nome è obbligatorio.';
             } else if (this.reviewForm.first_name.length <= 2) {
@@ -352,8 +367,8 @@ export default {
                                         <label for="vote1"><i class="fa-solid fa-stethoscope"></i>
                                         </label>
                                     </div>
-                                    <div>
-
+                                    <div class="invalid mb-3" v-if="errors.reviewForm.votes">
+                                        <p> {{ errors.reviewForm.votes }} </p>
                                     </div>
                                     <button type="submit" class="btn btn-primary btn-submit">Invia
                                         recensione</button>
