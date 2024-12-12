@@ -84,7 +84,9 @@ export default {
 <template>
     <main class="mt-4">
         <div class="container sponsored-doctor-container">
-            <h2>Dottori in evidenza</h2>
+            <div class="title-banner">
+                <h1>Dottori in evidenza</h1>
+            </div>
             <div class="loader" v-if="!loaded"></div>
             <div class="sponsored-card-container">
                 <div class="card card-sponsored d-flex" style="width: 18rem;" v-for="(doctor, index) in filteredProfile"
@@ -112,6 +114,12 @@ export default {
 ul {
     text-align: start;
     padding-left: 20px;
+}
+
+.title-banner {
+    padding: 15px 10px;
+    margin-bottom: 20px;
+    background: linear-gradient(90deg, rgba(243, 255, 255, 0.8337710084033614) 2%, rgb(92, 189, 228) 9%, rgba(231, 246, 249, 0.29315476190476186) 85%);
 }
 
 /* Sponsored Doctor */
@@ -152,11 +160,12 @@ ul {
     cursor: pointer;
     /* border: 4px solid #FFCC00; */
     background-color: #FFCC00;
+    background: linear-gradient(to right, #FFCC00, #FCF6BA, #daa22b, #FBF5B7, #FFCC00);
     color: #0033FF;
 }
 
 .card-sponsored:hover img {
-    border: 2px solid #0033FF;
+    border: 2px solid white;
 }
 
 .card img {
