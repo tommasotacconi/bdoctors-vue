@@ -131,7 +131,11 @@ export default {
                 this.errors.messageForm.content = "Inserisci il corpo del messaggio"
             }
 
-            if (!this.errors.messageForm.length) {
+            if (!this.errors.messageForm.first_name &&
+                !this.errors.messageForm.last_name &&
+                !this.errors.messageForm.email &&
+                !this.errors.messageForm.content
+            ) {
                 this.messageFormValidated = true;
                 this.sendMessageForm();
             }
@@ -164,10 +168,18 @@ export default {
                 this.errors.reviewForm.votes = "Devi inserire da 1 a 5 stetoscopi per poter inviare la tua recensione"
             }
 
-            if (!this.errors.reviewForm.length) {
+            if (!this.errors.messageForm.first_name &&
+                !this.errors.messageForm.last_name &&
+                !this.errors.messageForm.email &&
+                !this.errors.messageForm.content &&
+                !this.errors.messageForm.votes) {
                 this.reviewFormValidated = true;
                 this.sendReviewForm();
             }
+        },
+
+        setValidationFalse() {
+            this.messageFormValidated = false;
         }
     },
 
@@ -261,8 +273,8 @@ export default {
                         <div class="forms col-6">
                             <!-- Message Form -->
                             <h5 class="my-3">Contatta lo specialista</h5>
-                            <form method="POST" class="form-control py-3" @submit.prevent="validateMessageForm"
-                                novalidate>
+                            <form method="POST" class="form-control py-3" id="messageForm"
+                                @submit.prevent="validateMessageForm" novalidate>
                                 <div class="mb-3 col-12">
                                     <label for="first_name" class="form-label">Nome</label>
                                     <input type="text" class="form-control"
@@ -300,7 +312,14 @@ export default {
                                         <p> {{ errors.messageForm.content }} </p>
                                     </div>
                                 </div>
-                                <button type="submit" class="btn btn-primary btn-submit">Invia messaggio</button>
+                                <button type="submit" class="btn btn-primary btn-submit"
+                                    :class="{ 'disabled': messageFormValidated === true }">Invia
+                                    messaggio</button>
+
+                                <div v-if="messageFormValidated === true" class="my-3">
+                                    Il tuo messaggio è stato inviato correttamente.
+                                    <button type="reset" class="btn btn-sm btn-primary">Conferma</button>
+                                </div>
                             </form>
 
                             <div class="my-3 py-3">
@@ -370,7 +389,8 @@ export default {
                                     <div class="invalid mb-3" v-if="errors.reviewForm.votes">
                                         <p> {{ errors.reviewForm.votes }} </p>
                                     </div>
-                                    <button type="submit" class="btn btn-primary btn-submit">Invia
+                                    <button type="submit" class="btn btn-primary btn-submit"
+                                        :class="{ 'disabled': reviewFormValidated === true }">Invia
                                         recensione</button>
                                 </form>
                             </div>
