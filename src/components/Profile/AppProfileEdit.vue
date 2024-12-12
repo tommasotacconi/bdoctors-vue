@@ -169,16 +169,23 @@ export default {
         getProfileData() {
             axios.get('http://localhost:8000/api/profiles/edit/' + this.formData.user_id, this.formData)
                 .then(response => {
-
+										console.log(response)
                     this.formData = response.data.data;
                     this.formData.user_id = response.data.data.doctor.id;
                     this.formData.first_name = response.data.data.doctor.first_name;
                     this.formData.last_name = response.data.data.doctor.last_name;
                     this.formData.email = response.data.data.doctor.email;
                     this.formData.password = response.data.data.doctor.password;
-                    this.formData.oldSpecializations = response.data.data.doctor.specializations;
-
-                    console.log(response)
+										// Construct an array of ids in oldSpecializations
+										const oldSpecializations = response.data.data.doctor.specializations;
+										let result = [];
+										for (let i = 0; i < oldSpecializations.length; i++) {
+											const currentOldSpecialization = oldSpecializations[i].id;
+											result.push(currentOldSpecialization);
+										}
+										this.formData.oldSpecializations = result;
+										console.log(this.formData.oldSpecializations);
+										// console.log of formData filled after get
                     console.log('formData after call', this.formData);
                 })
                 .catch(function (error) {
@@ -188,18 +195,19 @@ export default {
                 .finally(function () {
                     // always executed
                 });
-        }
-    },
-    computed: {
-        openProfile() {
+        },
+
+				openProfile() {
             // Once the user's been redirected to his profile, the modal's backdrop disappears
             // const backdrop = document.querySelector('.modal-backdrop');
             // if (backdrop) {
             //     backdrop.remove();
             // }
             // redirect to user profile
-            this.$router.push('/user/:id');
+            this.$router.push({ name: 'dashboard', params: { id: response.data.user.id } });
         }
+    },
+    computed: {
     },
     created: function () {
         this.getProfileData();
