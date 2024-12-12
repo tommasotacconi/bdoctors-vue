@@ -11,6 +11,7 @@ export default {
             messageSelected: [],
             loaded: false,
             messageSelectedFlag: false,
+            normalHourDate: null,
         }
     },
     methods: {
@@ -27,6 +28,13 @@ export default {
                     const messagesProfile = messagesProfiles.filter(message => message.profile_id === idProfile)
                     console.log(messagesProfile)
                     this.messagesProfile = messagesProfile
+
+                    // Fixed date
+                    // let hourDate = this.messagesProfile[index].updated_at
+                    // console.log(hourDate)
+                    // const date = new Date(hourDate)
+                    // this.normalHourDate = date.toLocaleString()
+                    // console.log(this.normalHourDate)
                 })
                 .catch(function (error) {
                     // handle error
@@ -37,7 +45,24 @@ export default {
             this.messageSelected = this.messagesProfile[index]
             this.messageSelectedFlag = true
             console.log(this.messagesProfile[index])
+            console.log(this.messagesProfile[index])
+
+            // Fixed date
+            // let hourDate = this.messagesProfile[index].updated_at
+            // console.log(hourDate)
+            // const date = new Date(hourDate)
+            // this.normalHourDate = date.toLocaleString()
+            // console.log(this.normalHourDate)
         },
+        getNormalFormatHourDate(index) {
+            // Fixed date
+            let hourDate = this.messagesProfile[index].updated_at
+            console.log(hourDate)
+            const date = new Date(hourDate)
+            this.normalHourDate = date.toLocaleString()
+            console.log(this.normalHourDate)
+            return date.toLocaleString()
+        }
     },
     mounted() {
         this.showLoader
@@ -74,6 +99,7 @@ export default {
                     <div class="card-body-list">
                         <ul class="list-general" v-for="(message, index) in messagesProfile"
                             @click="selectMessage(index)">
+                            <li class="list-date-hour">{{ getNormalFormatHourDate(index) }}</li>
                             <li class="list-email">{{ message.email }}</li>
                             <li class="list-name">{{ message.first_name }} {{ message.last_name }}</li>
                             <li class="list-content">{{ message.content }}</li>
@@ -189,19 +215,24 @@ ul:hover {
     gap: 10px;
 }
 
+.list-date-hour {
+    flex-basis: 15%;
+    border-right: 3px dashed var(--color-secondary);
+}
+
 .list-email {
     flex-basis: 20%;
     border-right: 3px dashed var(--color-secondary);
 }
 
 .list-name {
-    flex-basis: 20%;
+    flex-basis: 15%;
     border-right: 3px dashed var(--color-secondary);
 
 }
 
 .list-content {
-    flex-basis: 60%;
+    flex-basis: 50%;
 
 }
 
