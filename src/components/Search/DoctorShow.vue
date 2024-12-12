@@ -176,6 +176,10 @@ export default {
                 this.reviewFormValidated = true;
                 this.sendReviewForm();
             }
+        },
+
+        setValidationFalse() {
+            this.messageFormValidated = false;
         }
     },
 
@@ -269,8 +273,8 @@ export default {
                         <div class="forms col-6">
                             <!-- Message Form -->
                             <h5 class="my-3">Contatta lo specialista</h5>
-                            <form method="POST" class="form-control py-3" @submit.prevent="validateMessageForm"
-                                novalidate>
+                            <form method="POST" class="form-control py-3" id="messageForm"
+                                @submit.prevent="validateMessageForm" novalidate>
                                 <div class="mb-3 col-12">
                                     <label for="first_name" class="form-label">Nome</label>
                                     <input type="text" class="form-control"
@@ -311,6 +315,11 @@ export default {
                                 <button type="submit" class="btn btn-primary btn-submit"
                                     :class="{ 'disabled': messageFormValidated === true }">Invia
                                     messaggio</button>
+
+                                <div v-if="messageFormValidated === true" class="my-3">
+                                    Il tuo messaggio è stato inviato correttamente.
+                                    <button type="reset" class="btn btn-sm btn-primary">Conferma</button>
+                                </div>
                             </form>
 
                             <div class="my-3 py-3">

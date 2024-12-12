@@ -55,11 +55,6 @@ export default {
             this.formData.curriculum = curriculum;
         },
 
-        //Method to use a photo frontend side
-        // getImagePath: function (imgPath) {
-        //     return new URL(imgPath, 'http://localhost:8000/').href;
-        // },
-
         updateForm() {
 
             axios.post('http://localhost:8000/api/profiles/edit/' + this.formData.user_id, this.formData, {
@@ -115,7 +110,7 @@ export default {
             if (!this.formData.phone) { this.errors.phone = "Il numero di telefono è obbligatorio." }
             else if (isNaN(this.formData.phone)) { this.errors.phone = "Il numero di telefono può contenere solo numeri" };
             if (!this.formData.office_address) this.errors.office_address = "L'indirizzo è obbligatorio.";
-            if (!this.formData.oldSpecializations.length || !this.formData.specializations.length) this.errors.specializations = "Inserire almeno una specializzazione.";
+            if (!this.formData.oldSpecializations.length && !this.formData.specializations.length) this.errors.specializations = "Inserire almeno una specializzazione.";
             if (!this.formData.services) this.errors.services = "Inserire almeno una prestazione.";
             if (!this.formData.photo) this.errors.photo = "La foto è obbligatoria";
             if (!this.formData.curriculum) this.errors.curriculum = "Il curriculum è obbligatorio.";
