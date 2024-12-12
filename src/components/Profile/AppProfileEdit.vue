@@ -80,8 +80,23 @@ export default {
                 });
         },
 
+        resetErrorsMessageFields() {
+            this.errors.first_name = '';
+            this.errors.last_name = '';
+            this.errors.email = '';
+            this.errors.password = '';
+            this.errors.phone = '';
+            this.errors.office_address = '';
+            this.errors.specializations = '';
+            console.log('Campo specializzazioni resettato', this.errors.specializations)
+            this.errors.services = '';
+            console.log('Campo prestazioni resettato', this.errors.services)
+            this.errors.photo = '';
+            this.errors.curriculum = '';
+        },
+
         validateForm() {
-            this.errors = [];
+            this.resetErrorsMessageFields();
             if (!this.formData.first_name) {
                 this.errors.first_name = 'Il nome è obbligatorio.';
             } else if (this.formData.first_name.length <= 2) {
@@ -102,7 +117,7 @@ export default {
             if (!this.formData.phone) { this.errors.phone = "Il numero di telefono è obbligatorio." }
             else if (isNaN(this.formData.phone)) { this.errors.phone = "Il numero di telefono può contenere solo numeri" };
             if (!this.formData.office_address) this.errors.office_address = "L'indirizzo è obbligatorio.";
-            if (!this.formData.oldSpecializations && !this.formData.specializations) this.errors.specializations = "Inserire almeno una specializzazione.";
+            if (!this.formData.oldSpecializations.length || !this.formData.specializations.length) this.errors.specializations = "Inserire almeno una specializzazione.";
             if (!this.formData.services) this.errors.services = "Inserire almeno una prestazione.";
             if (!this.formData.photo) this.errors.photo = "La foto è obbligatoria";
             if (!this.formData.curriculum) this.errors.curriculum = "Il curriculum è obbligatorio.";
@@ -141,15 +156,15 @@ export default {
         },
 
         updateSpecs(specializations) {
-			// Prepare a constant array result to insert ids value
-			const result = [];
-			// Insert ids taken from specializations parameter in reactive variable specializations, property of errors 
-			for (let i = 0; i < specializations.length; i++) {
-				result.push(specializations[i].id);
-			}
-			this.specializations = result;
-			console.log('---current specializations---', this.specializations);
-		},
+            // Prepare a constant array result to insert ids value
+            const result = [];
+            // Insert ids taken from specializations parameter in reactive variable specializations, property of errors 
+            for (let i = 0; i < specializations.length; i++) {
+                result.push(specializations[i].id);
+            }
+            this.specializations = result;
+            console.log('---current specializations---', this.specializations);
+        },
 
         getProfileData() {
             axios.get('http://localhost:8000/api/profiles/edit/' + this.formData.user_id, this.formData)
@@ -260,6 +275,9 @@ export default {
             <div class="mb-3 col-6">
                 <label for="specializations" class="form-label">Specializzazioni</label>
                 <Multiselect @send-values="updateSpecs" :specializations="formData.oldSpecializations" />
+                <div class="invalid" v-if="errors.specializations">
+                    <p> {{ errors.specializations }} </p>
+                </div>
             </div>
             <div class="mb-3">
                 <label for="services" class="form-label">Prestazioni</label>
