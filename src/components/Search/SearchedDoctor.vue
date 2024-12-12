@@ -86,9 +86,13 @@ export default {
         // },
 
         goToShowPage(doctor, index) {
-            store.doctorProfile = doctor
-            let completeName = doctor.user.first_name + '-' + doctor.user.last_name
-            this.$router.push({ name: 'search.show', params: { searchId: store.selectedSpecializationName.trim().replace(/ /g, "-").toLowerCase(), id: completeName.toLowerCase() } })
+            if (this.filteredDoctorsByVotes.length) {
+                this.$router.push({ name: 'search.show', params: { searchId: store.selectedSpecializationName.trim().replace(/ /g, "-").toLowerCase(), id: doctor.doctor.id } })
+            } else {
+                store.doctorProfile = doctor
+                let completeName = doctor.user.first_name + '-' + doctor.user.last_name
+                this.$router.push({ name: 'search.show', params: { searchId: store.selectedSpecializationName.trim().replace(/ /g, "-").toLowerCase(), id: completeName.toLowerCase() } })
+            }
             console.log(index)
             console.log(store.searchedSpecialization)
         },
