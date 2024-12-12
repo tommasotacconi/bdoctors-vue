@@ -120,12 +120,19 @@ export default {
             if (!this.formData.photo) this.errors.photo = "La foto è obbligatoria";
             if (!this.formData.curriculum) this.errors.curriculum = "Il curriculum è obbligatorio.";
 
-            if (!this.errors.length) {
+            if (!this.errors.first_name &&
+                !this.errors.last_name &&
+                !this.errors.email &&
+                !this.errors.password &&
+                !this.errors.phone &&
+                !this.errors.office_address &&
+                !this.errors.specializations &&
+                !this.errors.services &&
+                !this.errors.photo &&
+                !this.errors.curriculum
+            ) {
                 this.validated = true;
-
-                if (this.validated = true) {
-                    this.updateForm();
-                }
+                this.updateForm();
             }
             console.log(this.formData);
             console.log(this.errors);
