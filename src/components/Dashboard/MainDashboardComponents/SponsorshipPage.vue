@@ -155,6 +155,13 @@ export default {
 </template>
 
 <style scoped>
+main {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
 p {
     margin: 0
 }
@@ -259,5 +266,9 @@ button {
 
 .button-pay-now:hover {
     scale: 1.1;
+}
+
+.is-sponsored {
+    width: 50%;
 }
 </style>
