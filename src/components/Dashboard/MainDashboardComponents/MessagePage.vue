@@ -11,7 +11,6 @@ export default {
             messageSelected: [],
             loaded: false,
             messageSelectedFlag: false,
-            normalHourDate: null,
         }
     },
     methods: {
@@ -59,9 +58,18 @@ export default {
             let hourDate = this.messagesProfile[index].updated_at
             console.log(hourDate)
             const date = new Date(hourDate)
-            this.normalHourDate = date.toLocaleString()
-            console.log(this.normalHourDate)
-            return date.toLocaleString()
+
+            // Così posso togliere i secondi
+            const options = {
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit",
+                timeZone: "Europe/Rome"
+            };
+
+            return date.toLocaleString("it-IT", options)
         }
     },
     mounted() {
