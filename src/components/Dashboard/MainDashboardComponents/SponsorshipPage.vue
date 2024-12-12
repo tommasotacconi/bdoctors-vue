@@ -10,6 +10,9 @@ export default {
             profilesApiUrl: 'http://localhost:8000/api/profiles',
             sponsorships: [],
             sponsorship: false,
+            cardBronze: false,
+            cardSilver: false,
+            cardGold: false,
         }
     },
     methods: {
@@ -45,6 +48,16 @@ export default {
                     }
 
                     console.log(this.sponsorship)
+
+
+                    if (this.sponsorships[0].id === 1) {
+                        console.log('test')
+                        this.cardBronze = true
+                    } else if (this.sponsorships[0].id === 2) {
+                        this.cardSilver = true
+                    } else if (this.sponsorships[0].id === 3) {
+                        this.cardGold = true
+                    }
                 })
                 .catch(function (error) {
                     // handle error
@@ -69,6 +82,8 @@ export default {
     },
     created() {
         this.getApiProfiles()
+    },
+    mounted() {
         // this.getTypeSponsorship()
     }
 }
@@ -117,7 +132,19 @@ export default {
             </section>
         </div>
         <div class="is-sponsored" v-else>
-            <div class="sponsor-card" @click="getTypeSponsorship">
+            <div class="sponsor-card card-bronze" v-if="cardBronze">
+                <div class="card-description">
+                    <p class="hour-sponsorship">Il tuo profilo è sponsorizzato</p>
+                </div>
+                <div class="premium-star"><i class="fa-solid fa-star"></i></div>
+            </div>
+            <div class="sponsor-card card-silver" v-else-if="cardSilver">
+                <div class="card-description">
+                    <p class="hour-sponsorship">Il tuo profilo è sponsorizzato</p>
+                </div>
+                <div class="premium-star"><i class="fa-solid fa-star"></i></div>
+            </div>
+            <div class="sponsor-card card-gold" v-else-if="cardGold">
                 <div class="card-description">
                     <p class="hour-sponsorship">Il tuo profilo è sponsorizzato</p>
                 </div>
