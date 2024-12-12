@@ -65,7 +65,7 @@ export default {
     <main>
         <div class="container">
             <h2>Statistiche</h2>
-            <MessageChart />
+            <MessageChart :messagesProfile="messagesProfile" />
         </div>
 
     </main>

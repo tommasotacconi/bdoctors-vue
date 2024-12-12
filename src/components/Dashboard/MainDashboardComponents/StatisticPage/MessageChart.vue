@@ -23,15 +23,20 @@ export default {
                 labels: ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'],
                 datasets: [
                     {
-                        data: [50, 20, 12],
+                        data: [40, 20, 12],
                         backgroundColor: '#65B0FF',
                     }
-                ]
+                ],
+
             },
             options: {
                 responsive: true
             }
         }
+    },
+    props: {
+        messagesProfile: Array,
+        required: true,
     }
 }
 </script>
