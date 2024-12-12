@@ -40,7 +40,7 @@ export default {
                     }
                     console.log(reviewsProfile.length)
                     this.averageVote = Math.round(totalNumberVote / reviewsProfile.length)
-                    console.log(Math.round(this.averageVote))
+                    console.log(this.averageVote)
 
 
                 })
@@ -114,8 +114,10 @@ export default {
                         <div class="title-star">
                             <h5 class="title">Recensione selezionata</h5>
                             <div class="star">
-                                <strong>Voto: </strong> <i class="fa-solid fa-stethoscope"
-                                    v-for="star in averageVote"></i>
+                                <strong>Voto: </strong>
+                                <span>
+                                    <i class="fa-solid fa-stethoscope" v-for="star in reviewSelected.votes"></i>
+                                </span>
                             </div>
                         </div>
 

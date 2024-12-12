@@ -92,7 +92,7 @@ h3 {
 .sponsor-cards {
     display: flex;
     justify-content: center;
-    gap: 15px;
+    gap: 30px;
 }
 
 .sponsor-card {
@@ -103,7 +103,12 @@ h3 {
     font-weight: bold;
     /* box-shadow: 5px 5px 15px 1px black; */
     position: relative;
-    flex-basis: 30%
+    flex-basis: 30%;
+    cursor: pointer;
+}
+
+.sponsor-card:hover {
+    scale: 1.1;
 }
 
 .card-bronze {
@@ -158,5 +163,9 @@ h3 {
     color: var(--color-primary);
     font-weight: bold;
     border: 1px solid var(--color-primary);
+}
+
+.button-pay-now:hover {
+    scale: 1.1;
 }
 </style>
