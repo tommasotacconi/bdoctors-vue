@@ -156,9 +156,12 @@ export default {
             <div>
                 <div class="title">
                     <h2>Ricerca per: <span class="specialization-title">{{ specializationName }} </span><span
-                            class="total-specialization-doctor"> (Totale esperti: {{
+                            v-if="!filteredDoctorsByVotes.length" class="total-specialization-doctor"> (Totale esperti:
+                            {{
                                 doctors.length
                             }})</span>
+                        <span v-else class="total-specialization-doctor"> (Totale esperti: {{
+                            filteredDoctorsByVotes.length }})</span>
                     </h2>
                 </div>
 
