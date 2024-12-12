@@ -20,13 +20,14 @@ export default {
     data() {
         return {
             data: {
-                labels: ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'],
-                datasets: [
-                    {
-                        data: [40, 20, 12],
-                        backgroundColor: '#65B0FF',
-                    }
-                ],
+                // labels: ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'],
+                // datasets: [
+                //     {
+                //         data: [40, 20, 12],
+                //         backgroundColor: '#65B0FF',
+                //     }
+
+                // ],
 
             },
             options: {
@@ -34,17 +35,31 @@ export default {
             }
         }
     },
+    methods: {
+        getMessagesProfile() {
+            let messagesProfile = this.messagesProfile
+            console.log(messagesProfile[0].id)
+            return messagesProfile[0].id
+        }
+    },
     props: {
-        messagesProfile: Array,
-        required: true,
-    }
+        messagesProfile: {
+            type: Array,
+            required: true
+        },
+        charData: {
+            type: Object,
+            required: true
+        }
+    },
 }
 </script>
 
 <template>
     <div class="char">
-        <Bar :data="data" :options="options" />
+        <Bar :data="charData" :options="options" />
     </div>
+    {{ console.log(charData) }}
 </template>
 
 <style scoped></style>

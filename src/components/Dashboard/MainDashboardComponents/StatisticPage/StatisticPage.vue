@@ -9,6 +9,19 @@ export default {
             store,
             messagesApiUrl: 'http://localhost:8000/api/messages',
             messagesProfile: [],
+            charData: {
+                labels: [
+                    'Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'
+                ],
+                datasets: [
+                    {
+                        data: [
+                            40, 20, 12
+                        ],
+                        backgroundColor: '#65B0FF',
+                    }
+                ]
+            }
         }
     },
     components: {
@@ -28,6 +41,22 @@ export default {
                     const messagesProfile = messagesProfiles.filter(message => message.profile_id === idProfile)
                     console.log(messagesProfile)
                     this.messagesProfile = messagesProfile
+
+                    // Costruzione oggetto charData
+                    // let charData = {
+                    //     lebels: [
+                    //         'Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'
+                    //     ],
+                    //     datasets: [
+                    //         {
+                    //             data: [
+                    //                 40, 20, 12
+                    //             ],
+                    //             backgroundColor: '#65B0FF',
+                    //         }
+                    //     ]
+                    // }
+
                 })
                 .catch(function (error) {
                     // handle error
@@ -65,7 +94,7 @@ export default {
     <main>
         <div class="container">
             <h2>Statistiche</h2>
-            <MessageChart :messagesProfile="messagesProfile" />
+            <MessageChart :messagesProfile="messagesProfile" :charData="charData" />
         </div>
 
     </main>
