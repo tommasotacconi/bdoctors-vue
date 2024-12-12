@@ -10,20 +10,33 @@ export default {
             loaded: true,
             store,
             messageForm: {
-                patient_email: '',
-                message: '',
+                profile_id: store.doctorProfile.user.id,
+                first_name: '',
+                last_name: '',
+                email: '',
+                content: '',
             },
             reviewForm: {
-                review: '',
-                rating: ''
+                profile_id: store.doctorProfile.user.id,
+                first_name: '',
+                last_name: '',
+                email: '',
+                content: '',
+                votes: ''
             },
             errors: {
                 messageForm: {
-                    patient_email: "",
-                    message: ''
+                    first_name: '',
+                    last_name: '',
+                    email: "",
+                    content: ''
                 },
                 reviewForm: {
-                    rating: null,
+                    first_name: '',
+                    last_name: '',
+                    email: "",
+                    content: '',
+                    votes: null,
                 }
 
             },
@@ -46,14 +59,14 @@ export default {
         // Method to send patients messages
 
         sendMessageForm() {
-            axios.post('', this.messageForm)
+            axios.post('http://localhost:8000/api/messages', this.messageForm)
                 .then(response => {
                     console.log('Message sent.', response.data)
                 })
                 .catch(function (error) {
                     // handle error
                     console.error(error)
-                    console.log(error.response.data.errors);
+                    console.log(error.response.data);
                 })
                 .finally(function () {
                     // always executed
@@ -63,7 +76,7 @@ export default {
         // Method to send patients reviews
 
         sendReviewForm() {
-            axios.post('', this.reviewForm)
+            axios.post('http://localhost:8000/api/reviews', this.reviewForm)
                 .then(response => {
                     console.log('Review sent.', response.data)
                 })
@@ -78,6 +91,19 @@ export default {
         },
 
         //Validation methods
+        resetErrorsMessageFields() {
+            this.errors.messageForm.first_name = '';
+            this.errors.messageForm.last_name = '';
+            this.errors.messageForm.email = '';
+            this.errors.messageForm.content = '';
+        },
+        resetErrorsReviewFields() {
+            this.errors.reviewForm.first_name = '';
+            this.errors.reviewForm.last_name = '';
+            this.errors.reviewForm.email = '';
+            this.errors.reviewForm.content = '';
+            this.errors.reviewForm.votes = '';
+        },
 
         validEmail(email) {
             const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -85,33 +111,89 @@ export default {
         },
 
         validateMessageForm() {
+            this.resetErrorsMessageFields();
+            if (!this.messageForm.first_name) {
+                this.errors.messageForm.first_name = 'Il nome è obbligatorio.';
+            } else if (this.messageForm.first_name.length <= 2) {
+                this.errors.messageForm.first_name = 'Il nome deve contenere almeno 3 caratteri.';
+            };
+            if (!this.messageForm.last_name) {
+                this.errors.messageForm.last_name = "Il cognome è obbligatorio."
+            } else if (this.messageForm.last_name.length <= 2) {
+                this.errors.messageForm.last_name = "Il cognome deve contenere almeno 3 caratteri."
+            };
             if (!this.messageForm.email) {
                 this.errors.messageForm.email = "L'email è obbligatoria.";
             } else if (!this.validEmail(this.messageForm.email)) {
                 this.errors.messageForm.email = "L'email inserita non è valida.";
             }
-            if (!this.messageForm.message) {
-                this.errors.messageForm.message = "Inserisci il corpo del messaggio"
+            if (!this.messageForm.content) {
+                this.errors.messageForm.content = "Inserisci il corpo del messaggio"
             }
 
-            if (!this.errors.length) {
+            if (!this.errors.messageForm.first_name &&
+                !this.errors.messageForm.last_name &&
+                !this.errors.messageForm.email &&
+                !this.errors.messageForm.content
+            ) {
                 this.messageFormValidated = true;
                 this.sendMessageForm();
-
             }
+
             console.log(this.messageForm);
             console.log(this.errors.messageForm);
         },
 
         validateReviewForm() {
-            if (!this.reviewForm.rating) {
-                this.errors.reviewForm.rating = "Devi inserire da 1 a 5 stetoscopi per poter inviare la tua recensione"
+            this.resetErrorsReviewFields();
+            if (!this.reviewForm.first_name) {
+                this.errors.reviewForm.first_name = 'Il nome è obbligatorio.';
+            } else if (this.reviewForm.first_name.length <= 2) {
+                this.errors.reviewForm.first_name = 'Il nome deve contenere almeno 3 caratteri.';
+            };
+            if (!this.reviewForm.last_name) {
+                this.errors.reviewForm.last_name = "Il cognome è obbligatorio."
+            } else if (this.reviewForm.last_name.length <= 2) {
+                this.errors.reviewForm.last_name = "Il cognome deve contenere almeno 3 caratteri."
+            };
+            if (!this.reviewForm.email) {
+                this.errors.reviewForm.email = "L'email è obbligatoria.";
+            } else if (!this.validEmail(this.reviewForm.email)) {
+                this.errors.reviewForm.email = "L'email inserita non è valida.";
+            }
+            if (!this.reviewForm.content) {
+                this.errors.reviewForm.content = "Inserisci il corpo del messaggio"
+            }
+            if (!this.reviewForm.votes) {
+                this.errors.reviewForm.votes = "Devi inserire da 1 a 5 stetoscopi per poter inviare la tua recensione"
             }
 
-            if (!this.errors.reviewForm.length) {
+            if (!this.errors.reviewForm.first_name &&
+                !this.errors.reviewForm.last_name &&
+                !this.errors.reviewForm.email &&
+                !this.errors.reviewForm.content &&
+                !this.errors.reviewForm.votes
+            ) {
                 this.reviewFormValidated = true;
                 this.sendReviewForm();
             }
+        },
+
+        resetMessageForm() {
+            this.messageFormValidated = false;
+            this.messageForm.first_name = '';
+            this.messageForm.last_name = '';
+            this.messageForm.email = '';
+            this.messageForm.content = '';
+        },
+
+        resetReviewForm() {
+            this.reviewFormValidated = false;
+            this.reviewForm.first_name = '';
+            this.reviewForm.last_name = '';
+            this.reviewForm.email = '';
+            this.reviewForm.content = '';
+            this.reviewForm.votes = null;
         }
     },
 
@@ -205,68 +287,143 @@ export default {
                         <div class="forms col-6">
                             <!-- Message Form -->
                             <h5 class="my-3">Contatta lo specialista</h5>
-                            <form method="POST" class="form-control py-3" @submit.prevent="validateMessageForm"
-                                novalidate>
-                                <div class="mb-3 col-12">
-                                    <label for="patient_email" class="form-label">Email</label>
-                                    <input type="email" class="form-control" :class="{ 'invalid-input': errors.email }"
-                                        id="patient_email" placeholder="Inserisci il tuo indirizzo email"
-                                        v-model.trim="messageForm.patient_email" required>
-                                    <div class="invalid" v-if="errors.messageForm.patient_email">
-                                        <p> {{ errors.messageForm.patient_email }} </p>
+                            <div class="form-frame">
+                                <form method="POST" class="form-control py-3" id="messageForm"
+                                    @submit.prevent="validateMessageForm" novalidate
+                                    v-if="messageFormValidated === false">
+                                    <div class="mb-3 col-12">
+                                        <label for="first_name" class="form-label">Nome</label>
+                                        <input type="text" placeholder="Inserisci il tuo nome" class="form-control"
+                                            :class="{ 'invalid-input': errors.messageForm.first_name }" id="first_name"
+                                            v-model.trim="messageForm.first_name" required>
+                                        <div class="invalid" v-if="errors.messageForm.first_name">
+                                            <p> {{ errors.messageForm.first_name }} </p>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="mb-3 col-12">
-                                    <label for="message" class="form-label align-start">Messaggio</label>
-                                    <textarea class="form-control" id="message" rows="3"
-                                        v-model="messageForm.message"></textarea>
-                                    <div class="invalid" v-if="errors.messageForm.message">
-                                        <p> {{ errors.messageForm.message }} </p>
+                                    <div class="mb-3 col-12">
+                                        <label for="last_name" class="form-label">Cognome</label>
+                                        <input type="text" placeholder="Inserisci il tuo cognome" class="form-control"
+                                            :class="{ 'invalid-input': errors.messageForm.last_name }" id="last_name"
+                                            v-model.trim="messageForm.last_name" required>
+                                        <div class="invalid" v-if="errors.messageForm.last_name">
+                                            <p> {{ errors.messageForm.last_name }} </p>
+                                        </div>
                                     </div>
+                                    <div class="mb-3 col-12">
+                                        <label for="email" class="form-label">Email</label>
+                                        <input type="email" class="form-control"
+                                            :class="{ 'invalid-input': errors.messageForm.email }" id="email"
+                                            placeholder="Inserisci il tuo indirizzo email"
+                                            v-model.trim="messageForm.email" required>
+                                        <div class="invalid" v-if="errors.messageForm.email">
+                                            <p> {{ errors.messageForm.email }} </p>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3 col-12">
+                                        <label for="content" class="form-label align-start">Messaggio</label>
+                                        <textarea class="form-control" placeholder="Scrivi qui il tuo messaggio"
+                                            :class="{ 'invalid-input': errors.messageForm.content }" id="content"
+                                            rows="3" v-model="messageForm.content"></textarea>
+                                        <div class="invalid" v-if="errors.messageForm.content">
+                                            <p> {{ errors.messageForm.content }} </p>
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary btn-submit"
+                                        :class="{ 'disabled': messageFormValidated === true }">Invia
+                                        messaggio</button>
+                                </form>
+
+                                <div v-else class="my-3">
+                                    <p class="my-2">
+                                        Il tuo messaggio è stato inviato correttamente.
+                                    </p>
+                                    <button type="button" @click="resetMessageForm"
+                                        class="btn btn-sm btn-primary">Conferma</button>
                                 </div>
-                                <button type="submit" class="btn btn-primary btn-submit">Invia messaggio</button>
-                            </form>
+                            </div>
 
                             <div class="my-3 py-3">
                                 <h5 class="my-3">Lascia una recensione</h5>
-                                <form action="" method="POST" class="form-control py-3" @submit.prevent="sendReviewForm"
-                                    novalidate>
-                                    <label class="form-label" for="rating">Valutazione</label>
-                                    <div class="rating">
-                                        <input type="radio" id="vote5" name="rating" value="5"
-                                            v-model="reviewForm.rating">
-                                        <label for="vote5"><i class="fa-solid fa-stethoscope"></i>
-                                        </label>
-                                        <input type="radio" id="vote4" name="rating" value="4"
-                                            v-model="reviewForm.rating">
-                                        <label for="vote4"><i class="fa-solid fa-stethoscope"></i>
-                                        </label>
-                                        <input type="radio" id="vote3" name="rating" value="3"
-                                            v-model="reviewForm.rating">
-                                        <label for="vote3"><i class="fa-solid fa-stethoscope"></i>
-                                        </label>
-                                        <input type="radio" id="vote2" name="rating" value="2"
-                                            v-model="reviewForm.rating">
-                                        <label for="vote2"><i class="fa-solid fa-stethoscope"></i>
-                                        </label>
-                                        <input type="radio" id="vote1" name="rating" value="1"
-                                            v-model="reviewForm.rating">
-                                        <label for="vote1"><i class="fa-solid fa-stethoscope"></i>
-                                        </label>
-                                    </div>
-                                    <div class="mb-3 col-12">
-                                        <label for="review" class="form-label">Messaggio</label>
-                                        <textarea class="form-control" id="review" rows="3"
-                                            placeholder="Inserisci qui la tua recensione..."
-                                            v-model="reviewForm.review"></textarea>
-                                    </div>
-                                    <div>
+                                <div class="form-frame">
+                                    <form method="POST" class="form-control py-3" @submit.prevent="validateReviewForm"
+                                        novalidate v-if="reviewFormValidated === false">
 
+                                        <div class="mb-3 col-12">
+                                            <label for="first_name" class="form-label">Nome</label>
+                                            <input type="text" class="form-control"
+                                                :class="{ 'invalid-input': errors.reviewForm.first_name }"
+                                                id="first_name" v-model.trim="reviewForm.first_name" required>
+                                            <div class="invalid" v-if="errors.reviewForm.first_name">
+                                                <p> {{ errors.reviewForm.first_name }} </p>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3 col-12">
+                                            <label for="last_name" class="form-label">Cognome</label>
+                                            <input type="text" class="form-control"
+                                                :class="{ 'invalid-input': errors.reviewForm.last_name }" id="last_name"
+                                                v-model.trim="reviewForm.last_name" required>
+                                            <div class="invalid" v-if="errors.reviewForm.last_name">
+                                                <p> {{ errors.reviewForm.last_name }} </p>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3 col-12">
+                                            <label for="email" class="form-label">Email</label>
+                                            <input type="email" class="form-control"
+                                                :class="{ 'invalid-input': errors.reviewForm.email }" id="email"
+                                                placeholder="Inserisci il tuo indirizzo email"
+                                                v-model.trim="reviewForm.email" required>
+                                            <div class="invalid" v-if="errors.reviewForm.email">
+                                                <p> {{ errors.reviewForm.email }} </p>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3 col-12">
+                                            <label for="content" class="form-label align-start">Messaggio</label>
+                                            <textarea class="form-control"
+                                                :class="{ 'invalid-input': errors.reviewForm.content }" id="content"
+                                                rows="3" v-model="reviewForm.content"></textarea>
+                                            <div class="invalid" v-if="errors.reviewForm.content">
+                                                <p> {{ errors.reviewForm.content }} </p>
+                                            </div>
+                                        </div>
+                                        <div class="votes">
+                                            <input type="radio" id="vote5" name="votes" value="5"
+                                                v-model="reviewForm.votes">
+                                            <label for="vote5"><i class="fa-solid fa-stethoscope"></i>
+                                            </label>
+                                            <input type="radio" id="vote4" name="votes" value="4"
+                                                v-model="reviewForm.votes">
+                                            <label for="vote4"><i class="fa-solid fa-stethoscope"></i>
+                                            </label>
+                                            <input type="radio" id="vote3" name="votes" value="3"
+                                                v-model="reviewForm.votes">
+                                            <label for="vote3"><i class="fa-solid fa-stethoscope"></i>
+                                            </label>
+                                            <input type="radio" id="vote2" name="votes" value="2"
+                                                v-model="reviewForm.votes">
+                                            <label for="vote2"><i class="fa-solid fa-stethoscope"></i>
+                                            </label>
+                                            <input type="radio" id="vote1" name="votes" value="1"
+                                                v-model="reviewForm.votes">
+                                            <label for="vote1"><i class="fa-solid fa-stethoscope"></i>
+                                            </label>
+                                        </div>
+                                        <div class="invalid mb-3" v-if="errors.reviewForm.votes">
+                                            <p> {{ errors.reviewForm.votes }} </p>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary btn-submit"
+                                            :class="{ 'disabled': reviewFormValidated === true }">Invia
+                                            recensione</button>
+                                    </form>
+                                    <div v-else class="my-3">
+                                        <p class="my-2">
+                                            La tua recensione è stata inviata correttamente.
+                                        </p>
+                                        <button type="button" @click="resetReviewForm"
+                                            class="btn btn-sm btn-primary">Conferma</button>
                                     </div>
-                                    <button type="submit" class="btn btn-primary btn-submit">Invia
-                                        recensione</button>
-                                </form>
+                                </div>
                             </div>
+
                         </div>
                     </div>
                 </div>
@@ -382,6 +539,14 @@ ul {
 }
 
 form {
+    border-radius: 40px;
+}
+
+.form-frame {
+    display: flex;
+    min-height: 400px;
+    justify-content: center;
+    align-items: center;
     border-radius: 40px;
     border: 3px solid #65B0FF;
 }
@@ -517,8 +682,8 @@ form {
     border-color: red;
 }
 
-/*Rating */
-.rating {
+/*votes */
+.votes {
     margin-bottom: 20px;
     display: flex;
     flex-direction: row-reverse;

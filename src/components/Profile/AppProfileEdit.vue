@@ -55,11 +55,6 @@ export default {
             this.formData.curriculum = curriculum;
         },
 
-        //Method to use a photo frontend side
-        // getImagePath: function (imgPath) {
-        //     return new URL(imgPath, 'http://localhost:8000/').href;
-        // },
-
         updateForm() {
 
             axios.post('http://localhost:8000/api/profiles/edit/' + this.formData.user_id, this.formData, {
@@ -80,8 +75,21 @@ export default {
                 });
         },
 
+        resetErrorsFields() {
+            this.errors.first_name = '';
+            this.errors.last_name = '';
+            this.errors.email = '';
+            this.errors.password = '';
+            this.errors.phone = '';
+            this.errors.office_address = '';
+            this.errors.specializations = '';
+            this.errors.services = '';
+            this.errors.photo = '';
+            this.errors.curriculum = '';
+        },
+
         validateForm() {
-            this.errors = [];
+            this.resetErrorsFields();
             if (!this.formData.first_name) {
                 this.errors.first_name = 'Il nome è obbligatorio.';
             } else if (this.formData.first_name.length <= 2) {
@@ -102,17 +110,24 @@ export default {
             if (!this.formData.phone) { this.errors.phone = "Il numero di telefono è obbligatorio." }
             else if (isNaN(this.formData.phone)) { this.errors.phone = "Il numero di telefono può contenere solo numeri" };
             if (!this.formData.office_address) this.errors.office_address = "L'indirizzo è obbligatorio.";
-            if (!this.formData.oldSpecializations && !this.formData.specializations) this.errors.specializations = "Inserire almeno una specializzazione.";
+            if (!this.formData.oldSpecializations.length && !this.formData.specializations.length) this.errors.specializations = "Inserire almeno una specializzazione.";
             if (!this.formData.services) this.errors.services = "Inserire almeno una prestazione.";
             if (!this.formData.photo) this.errors.photo = "La foto è obbligatoria";
             if (!this.formData.curriculum) this.errors.curriculum = "Il curriculum è obbligatorio.";
 
-            if (!this.errors.length) {
+            if (!this.errors.first_name &&
+                !this.errors.last_name &&
+                !this.errors.email &&
+                !this.errors.password &&
+                !this.errors.phone &&
+                !this.errors.office_address &&
+                !this.errors.specializations &&
+                !this.errors.services &&
+                !this.errors.photo &&
+                !this.errors.curriculum
+            ) {
                 this.validated = true;
-
-                if (this.validated = true) {
-                    this.updateForm();
-                }
+                this.updateForm();
             }
             console.log(this.formData);
             console.log(this.errors);
@@ -141,8 +156,14 @@ export default {
         },
 
         updateSpecs(specializations) {
-            this.formData.specializations = specializations;
-            console.log(this.formData.specializations);
+            // Prepare a constant array result to insert ids value
+            const result = [];
+            // Insert ids taken from specializations parameter in reactive variable specializations, property of errors --CHECK THIS COMMENT-- 
+            for (let i = 0; i < specializations.length; i++) {
+                result.push(specializations[i].id);
+            }
+            this.formData.specializations = result;
+            console.log('---current specializations---', this.formData.specializations);
         },
 
         getProfileData() {
@@ -254,6 +275,9 @@ export default {
             <div class="mb-3 col-6">
                 <label for="specializations" class="form-label">Specializzazioni</label>
                 <Multiselect @send-values="updateSpecs" :specializations="formData.oldSpecializations" />
+                <div class="invalid" v-if="errors.specializations">
+                    <p> {{ errors.specializations }} </p>
+                </div>
             </div>
             <div class="mb-3">
                 <label for="services" class="form-label">Prestazioni</label>

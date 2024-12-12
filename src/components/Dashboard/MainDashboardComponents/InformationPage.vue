@@ -16,6 +16,10 @@ export default {
                 .then(response => {
                     console.log(response);
                     this.profileData = response.data.data;
+
+                    // Data da condividere all'interno degli altri componenti
+                    store.profileDataGeneral = response.data.data
+                    console.log('data general nello store:', store.profileDataGeneral)
                     localStorage.setItem('user_id', response.data.data.doctor.id)
                 })
                 .catch(function (error) {

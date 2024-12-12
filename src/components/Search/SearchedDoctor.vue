@@ -11,11 +11,14 @@ export default {
             searchedDoctor: [],
             apiUrl: 'http://localhost:8000/api/profiles',
             specializationApiUrl: 'http://127.0.0.1:8000/api/specializations',
+            reviewsApiURl: 'http://localhost:8000/api/reviews',
             specializationId: store.searchedSpecialization,
             doctors: [],
             specializationName: '',
+            rating: null,
             loaded: false,
             showDoctor: false,
+            filteredDoctorsByVotes: [],
         }
     },
     components: {
@@ -34,6 +37,7 @@ export default {
                         let profile = profiles[i]
                         if (profile.user.specializations[0].id == store.searchedSpecialization) {
                             filteredProfiles.push(profile)
+
                         }
                         let specializationsProfile = profile.user.specializations
                         if (specializationsProfile.length === 2) {
@@ -43,7 +47,7 @@ export default {
                         }
                     }
                     this.doctors = filteredProfiles
-                    console.log(this.doctors)
+                    console.log('Dottori nei data', this.doctors)
 
                     this.specializations = response.data.specializations;
                 })
@@ -69,10 +73,9 @@ export default {
                     // handle error
                     console.log(error);
                 })
-
-
         },
 
+        // Non più utile
         // removeShowDoctor() {
         //     if (this.showDoctor) {
         //         this.showDoctor = false
@@ -83,12 +86,51 @@ export default {
         // },
 
         goToShowPage(doctor, index) {
-            store.doctorProfile = doctor
-            this.$router.push({ name: 'search.show', params: { searchId: store.searchedSpecialization, id: index } })
+            if (this.filteredDoctorsByVotes.length) {
+                this.$router.push({ name: 'search.show', params: { searchId: store.selectedSpecializationName.trim().replace(/ /g, "-").toLowerCase(), id: doctor.doctor.id } })
+            } else {
+                store.doctorProfile = doctor
+                let completeName = doctor.user.first_name + '-' + doctor.user.last_name
+                this.$router.push({ name: 'search.show', params: { searchId: store.selectedSpecializationName.trim().replace(/ /g, "-").toLowerCase(), id: completeName.toLowerCase() } })
+            }
             console.log(index)
             console.log(store.searchedSpecialization)
         },
 
+        getFilteredVotesProfiles() {
+            this.getApiProfile();
+
+            const filteredDoctors = [];
+
+            for (let i = 0; i < this.doctors.length; i++) {
+                let singleDoctor = { doctor: [], averageVotes: null }
+                let doctor = this.doctors[i];
+                singleDoctor.doctor = doctor;
+                console.log('singolo medico', doctor)
+                let reviews = doctor.reviews;
+                // console.log('Recensioni:', reviews);
+                let votesSum = null;
+                for (let j = 0; j < reviews.length; j++) {
+                    let review = reviews[j];
+                    // console.log("Singola recensione:", review);
+                    votesSum += parseInt(review.votes);
+                }
+                // console.log("Somma voti per ogni medico:", votesSum)
+                let averageVotes = null;
+                averageVotes = Math.round(votesSum / reviews.length)
+                console.log('La media dei voti del medico è:', averageVotes)
+                singleDoctor.averageVotes = averageVotes;
+                if (singleDoctor.averageVotes >= this.rating)
+                    filteredDoctors.push(singleDoctor);
+                console.log('singleDoctor', singleDoctor)
+            }
+            console.log('Array Dottori filtrati nel metodo:', filteredDoctors)
+            this.filteredDoctorsByVotes = filteredDoctors;
+        },
+
+        emptyFilteredDoctors() {
+            return this.filteredDoctorsByVotes = [];
+        }
     },
     computed: {
         showLoader() {
@@ -98,8 +140,9 @@ export default {
         }
     },
     created() {
-        this.getApiProfile()
-        this.getSpecializationName()
+        this.getApiProfile();
+        this.getSpecializationName();
+        this.getFilteredVotesProfiles();
     },
     mounted() {
         this.showLoader
@@ -116,21 +159,58 @@ export default {
         <div v-if="loaded">
             <div>
                 <div class="title">
-                    <h2>Ricerca per: <span class="specialization-title">{{ specializationName }}</span>
+                    <h2>Ricerca per: <span class="specialization-title">{{ specializationName }} </span><span
+                            v-if="!filteredDoctorsByVotes.length" class="total-specialization-doctor"> (Totale esperti:
+                            {{
+                                doctors.length
+                            }})</span>
+                        <span v-else class="total-specialization-doctor"> (Totale esperti: {{
+                            filteredDoctorsByVotes.length }})</span>
                     </h2>
                 </div>
 
                 <div class="advanced-filter">
                     <div class="average-votes">
+                        <div class="votes d-flex">
+                            <p>Filtra per media voti: </p>
+                            <div class="rating mx-3">
+                                <form action="" method="get" class="form-control rating mx-3"
+                                    @submit.prevent="getFilteredVotesProfiles">
+                                    <button type="reset" class="btn btn-sm btn-primary"
+                                        @click="emptyFilteredDoctors">Reset</button>
+                                    <button type="submit" class="btn btn-sm btn-secondary">Filtra</button>
+                                    <input type="radio" id="vote5" name="rating" value="5" v-model="rating">
+                                    <label for="vote5"><i class="fa-solid fa-stethoscope"></i>
+                                    </label>
+                                    <input type="radio" id="vote4" name="rating" value="4" v-model="rating">
+                                    <label for="vote4"><i class="fa-solid fa-stethoscope"></i>
+                                    </label>
+                                    <input type="radio" id="vote3" name="rating" value="3" v-model="rating">
+                                    <label for="vote3"><i class="fa-solid fa-stethoscope"></i>
+                                    </label>
+                                    <input type="radio" id="vote2" name="rating" value="2" v-model="rating">
+                                    <label for="vote2"><i class="fa-solid fa-stethoscope"></i>
+                                    </label>
+                                    <input type="radio" id="vote1" name="rating" value="1" v-model="rating">
+                                    <label for="vote1"><i class="fa-solid fa-stethoscope"></i>
+                                    </label>
+                                </form>
+                            </div>
 
+                        </div>
+                        <div class="reviews-number d-flex gap-3">
+                            <p>Filtra per numero di recensioni:</p>
+                            <form action="">
+                                <input type="number">
+                            </form>
+                        </div>
                     </div>
                     <div class="number-reviews">
 
                     </div>
                 </div>
 
-
-                <div class="doctors-list">
+                <div class="doctors-list" v-if="!filteredDoctorsByVotes.length">
                     <div class="doctor-card" v-for="(doctor, index) in doctors" @click="goToShowPage(doctor, index)">
                         <img src="https://media.istockphoto.com/id/1340883379/photo/young-doctor-hospital-medical-medicine-health-care-clinic-office-portrait-glasses-man.jpg?s=612x612&w=0&k=20&c=_H4VUPBkS0gEj5ZdZzQo-Hw3lMuyofJpB-P9yS92Wyw="
                             class="doctor-photo" alt="doctor photo">
@@ -153,9 +233,36 @@ export default {
                         </section>
                     </div>
                 </div>
+                <div class="doctors-list" v-else>
+                    <div class="doctor-card" v-for="(doctor, index) in filteredDoctorsByVotes"
+                        @click="goToShowPage(doctor, index)">
+                        <img src="https://media.istockphoto.com/id/1340883379/photo/young-doctor-hospital-medical-medicine-health-care-clinic-office-portrait-glasses-man.jpg?s=612x612&w=0&k=20&c=_H4VUPBkS0gEj5ZdZzQo-Hw3lMuyofJpB-P9yS92Wyw="
+                            class="doctor-photo" alt="doctor photo">
+                        <section class="doctor-information">
+                            <h5 class="doctor-name">
+                                {{ doctor.doctor.user.first_name }} {{ doctor.doctor.user.last_name }}
+                            </h5>
+                            <div class="doctor-address">
+                                <strong>Ufficio:</strong> {{ doctor.office_address }}
+                            </div>
+                            <div class="doctor-specialization">
+                                <strong>Specializzazioni:</strong>
+                                <ul>
+                                    <li v-for="doctorSpecialization in doctor.doctor.user.specializations">
+                                        {{ doctorSpecialization.name }}
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="doctor-address">
+                                <strong>Media recensioni:</strong> {{ doctor.averageVotes }}
+                            </div>
+                        </section>
+                    </div>
+                </div>
 
             </div>
         </div>
+        <div v-else-if="filteredDoctorsByVotes.length"></div>
     </main>
 </template>
 
@@ -174,12 +281,20 @@ h5 {
     font-weight: 400;
 }
 
+
+/* Doctor list */
 .doctors-list {
     display: flex;
     gap: 50px 110px;
     justify-content: start;
     flex-wrap: wrap;
     align-content: stretch;
+}
+
+.total-specialization-doctor {
+    font-style: oblique;
+    font-weight: normal;
+    font-size: 1.8rem;
 }
 
 .doctor-card {
@@ -258,6 +373,32 @@ img {
 
     100% {
         background-position: 0% 100%, 100% 100%, 200% 100%
+    }
+}
+
+/*Rating */
+.rating {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+
+    & input {
+        display: none;
+    }
+
+    & label {
+        font-size: 24px;
+        cursor: pointer;
+    }
+
+    & label:hover,
+    & label:hover~label {
+        color: var(--color-complementary)
+    }
+
+    & input:checked~label {
+        color: var(--color-complementary)
     }
 }
 </style>
