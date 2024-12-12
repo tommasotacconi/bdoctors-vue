@@ -131,7 +131,11 @@ export default {
                 this.errors.messageForm.content = "Inserisci il corpo del messaggio"
             }
 
-            if (!this.errors.messageForm.length) {
+            if (!this.errors.messageForm.first_name &&
+                !this.errors.messageForm.last_name &&
+                !this.errors.messageForm.email &&
+                !this.errors.messageForm.content
+            ) {
                 this.messageFormValidated = true;
                 this.sendMessageForm();
             }
@@ -164,7 +168,11 @@ export default {
                 this.errors.reviewForm.votes = "Devi inserire da 1 a 5 stetoscopi per poter inviare la tua recensione"
             }
 
-            if (!this.errors.reviewForm.length) {
+            if (!this.errors.messageForm.first_name &&
+                !this.errors.messageForm.last_name &&
+                !this.errors.messageForm.email &&
+                !this.errors.messageForm.content &&
+                !this.errors.messageForm.votes) {
                 this.reviewFormValidated = true;
                 this.sendReviewForm();
             }
@@ -300,7 +308,9 @@ export default {
                                         <p> {{ errors.messageForm.content }} </p>
                                     </div>
                                 </div>
-                                <button type="submit" class="btn btn-primary btn-submit">Invia messaggio</button>
+                                <button type="submit" class="btn btn-primary btn-submit"
+                                    :class="{ 'disabled': messageFormValidated === true }">Invia
+                                    messaggio</button>
                             </form>
 
                             <div class="my-3 py-3">
@@ -370,7 +380,8 @@ export default {
                                     <div class="invalid mb-3" v-if="errors.reviewForm.votes">
                                         <p> {{ errors.reviewForm.votes }} </p>
                                     </div>
-                                    <button type="submit" class="btn btn-primary btn-submit">Invia
+                                    <button type="submit" class="btn btn-primary btn-submit"
+                                        :class="{ 'disabled': reviewFormValidated === true }">Invia
                                         recensione</button>
                                 </form>
                             </div>
