@@ -180,6 +180,10 @@ export default {
 
         setValidationFalse() {
             this.messageFormValidated = false;
+            this.messageForm.first_name = '';
+            this.messageForm.last_name = '';
+            this.messageForm.email = '';
+            this.messageForm.content = '';
         }
     },
 
@@ -274,7 +278,7 @@ export default {
                             <!-- Message Form -->
                             <h5 class="my-3">Contatta lo specialista</h5>
                             <form method="POST" class="form-control py-3" id="messageForm"
-                                @submit.prevent="validateMessageForm" novalidate>
+                                @submit.prevent="validateMessageForm" novalidate v-if="messageFormValidated === false">
                                 <div class="mb-3 col-12">
                                     <label for="first_name" class="form-label">Nome</label>
                                     <input type="text" class="form-control"
@@ -315,12 +319,13 @@ export default {
                                 <button type="submit" class="btn btn-primary btn-submit"
                                     :class="{ 'disabled': messageFormValidated === true }">Invia
                                     messaggio</button>
-
-                                <div v-if="messageFormValidated === true" class="my-3">
-                                    Il tuo messaggio è stato inviato correttamente.
-                                    <button type="reset" class="btn btn-sm btn-primary">Conferma</button>
-                                </div>
                             </form>
+
+                            <div v-else class="my-3">
+                                Il tuo messaggio è stato inviato correttamente.
+                                <button type="button" @click="setValidationFalse"
+                                    class="btn btn-sm btn-primary">Conferma</button>
+                            </div>
 
                             <div class="my-3 py-3">
                                 <h5 class="my-3">Lascia una recensione</h5>
