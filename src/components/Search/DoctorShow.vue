@@ -168,22 +168,32 @@ export default {
                 this.errors.reviewForm.votes = "Devi inserire da 1 a 5 stetoscopi per poter inviare la tua recensione"
             }
 
-            if (!this.errors.messageForm.first_name &&
-                !this.errors.messageForm.last_name &&
-                !this.errors.messageForm.email &&
-                !this.errors.messageForm.content &&
-                !this.errors.messageForm.votes) {
+            if (!this.errors.reviewForm.first_name &&
+                !this.errors.reviewForm.last_name &&
+                !this.errors.reviewForm.email &&
+                !this.errors.reviewForm.content &&
+                !this.errors.reviewForm.votes
+            ) {
                 this.reviewFormValidated = true;
                 this.sendReviewForm();
             }
         },
 
-        setValidationFalse() {
+        resetMessageForm() {
             this.messageFormValidated = false;
             this.messageForm.first_name = '';
             this.messageForm.last_name = '';
             this.messageForm.email = '';
             this.messageForm.content = '';
+        },
+
+        resetReviewForm() {
+            this.reviewFormValidated = false;
+            this.reviewForm.first_name = '';
+            this.reviewForm.last_name = '';
+            this.reviewForm.email = '';
+            this.reviewForm.content = '';
+            this.reviewForm.votes = null;
         }
     },
 
@@ -277,128 +287,143 @@ export default {
                         <div class="forms col-6">
                             <!-- Message Form -->
                             <h5 class="my-3">Contatta lo specialista</h5>
-                            <form method="POST" class="form-control py-3" id="messageForm"
-                                @submit.prevent="validateMessageForm" novalidate v-if="messageFormValidated === false">
-                                <div class="mb-3 col-12">
-                                    <label for="first_name" class="form-label">Nome</label>
-                                    <input type="text" class="form-control"
-                                        :class="{ 'invalid-input': errors.messageForm.first_name }" id="first_name"
-                                        v-model.trim="messageForm.first_name" required>
-                                    <div class="invalid" v-if="errors.messageForm.first_name">
-                                        <p> {{ errors.messageForm.first_name }} </p>
-                                    </div>
-                                </div>
-                                <div class="mb-3 col-12">
-                                    <label for="last_name" class="form-label">Cognome</label>
-                                    <input type="text" class="form-control"
-                                        :class="{ 'invalid-input': errors.messageForm.last_name }" id="last_name"
-                                        v-model.trim="messageForm.last_name" required>
-                                    <div class="invalid" v-if="errors.messageForm.last_name">
-                                        <p> {{ errors.messageForm.last_name }} </p>
-                                    </div>
-                                </div>
-                                <div class="mb-3 col-12">
-                                    <label for="email" class="form-label">Email</label>
-                                    <input type="email" class="form-control"
-                                        :class="{ 'invalid-input': errors.messageForm.email }" id="email"
-                                        placeholder="Inserisci il tuo indirizzo email" v-model.trim="messageForm.email"
-                                        required>
-                                    <div class="invalid" v-if="errors.messageForm.email">
-                                        <p> {{ errors.messageForm.email }} </p>
-                                    </div>
-                                </div>
-                                <div class="mb-3 col-12">
-                                    <label for="content" class="form-label align-start">Messaggio</label>
-                                    <textarea class="form-control"
-                                        :class="{ 'invalid-input': errors.messageForm.content }" id="content" rows="3"
-                                        v-model="messageForm.content"></textarea>
-                                    <div class="invalid" v-if="errors.messageForm.content">
-                                        <p> {{ errors.messageForm.content }} </p>
-                                    </div>
-                                </div>
-                                <button type="submit" class="btn btn-primary btn-submit"
-                                    :class="{ 'disabled': messageFormValidated === true }">Invia
-                                    messaggio</button>
-                            </form>
-
-                            <div v-else class="my-3">
-                                Il tuo messaggio è stato inviato correttamente.
-                                <button type="button" @click="setValidationFalse"
-                                    class="btn btn-sm btn-primary">Conferma</button>
-                            </div>
-
-                            <div class="my-3 py-3">
-                                <h5 class="my-3">Lascia una recensione</h5>
-                                <form action="" method="POST" class="form-control py-3"
-                                    @submit.prevent="validateReviewForm" novalidate>
-
+                            <div class="form-frame">
+                                <form method="POST" class="form-control py-3" id="messageForm"
+                                    @submit.prevent="validateMessageForm" novalidate
+                                    v-if="messageFormValidated === false">
                                     <div class="mb-3 col-12">
                                         <label for="first_name" class="form-label">Nome</label>
-                                        <input type="text" class="form-control"
-                                            :class="{ 'invalid-input': errors.reviewForm.first_name }" id="first_name"
-                                            v-model.trim="reviewForm.first_name" required>
-                                        <div class="invalid" v-if="errors.reviewForm.first_name">
-                                            <p> {{ errors.reviewForm.first_name }} </p>
+                                        <input type="text" placeholder="Inserisci il tuo nome" class="form-control"
+                                            :class="{ 'invalid-input': errors.messageForm.first_name }" id="first_name"
+                                            v-model.trim="messageForm.first_name" required>
+                                        <div class="invalid" v-if="errors.messageForm.first_name">
+                                            <p> {{ errors.messageForm.first_name }} </p>
                                         </div>
                                     </div>
                                     <div class="mb-3 col-12">
                                         <label for="last_name" class="form-label">Cognome</label>
-                                        <input type="text" class="form-control"
-                                            :class="{ 'invalid-input': errors.reviewForm.last_name }" id="last_name"
-                                            v-model.trim="reviewForm.last_name" required>
-                                        <div class="invalid" v-if="errors.reviewForm.last_name">
-                                            <p> {{ errors.reviewForm.last_name }} </p>
+                                        <input type="text" placeholder="Inserisci il tuo cognome" class="form-control"
+                                            :class="{ 'invalid-input': errors.messageForm.last_name }" id="last_name"
+                                            v-model.trim="messageForm.last_name" required>
+                                        <div class="invalid" v-if="errors.messageForm.last_name">
+                                            <p> {{ errors.messageForm.last_name }} </p>
                                         </div>
                                     </div>
                                     <div class="mb-3 col-12">
                                         <label for="email" class="form-label">Email</label>
                                         <input type="email" class="form-control"
-                                            :class="{ 'invalid-input': errors.reviewForm.email }" id="email"
+                                            :class="{ 'invalid-input': errors.messageForm.email }" id="email"
                                             placeholder="Inserisci il tuo indirizzo email"
-                                            v-model.trim="reviewForm.email" required>
-                                        <div class="invalid" v-if="errors.reviewForm.email">
-                                            <p> {{ errors.reviewForm.email }} </p>
+                                            v-model.trim="messageForm.email" required>
+                                        <div class="invalid" v-if="errors.messageForm.email">
+                                            <p> {{ errors.messageForm.email }} </p>
                                         </div>
                                     </div>
                                     <div class="mb-3 col-12">
                                         <label for="content" class="form-label align-start">Messaggio</label>
-                                        <textarea class="form-control"
-                                            :class="{ 'invalid-input': errors.reviewForm.content }" id="content"
-                                            rows="3" v-model="reviewForm.content"></textarea>
-                                        <div class="invalid" v-if="errors.reviewForm.content">
-                                            <p> {{ errors.reviewForm.content }} </p>
+                                        <textarea class="form-control" placeholder="Scrivi qui il tuo messaggio"
+                                            :class="{ 'invalid-input': errors.messageForm.content }" id="content"
+                                            rows="3" v-model="messageForm.content"></textarea>
+                                        <div class="invalid" v-if="errors.messageForm.content">
+                                            <p> {{ errors.messageForm.content }} </p>
                                         </div>
                                     </div>
-                                    <div class="votes">
-                                        <input type="radio" id="vote5" name="votes" value="5"
-                                            v-model="reviewForm.votes">
-                                        <label for="vote5"><i class="fa-solid fa-stethoscope"></i>
-                                        </label>
-                                        <input type="radio" id="vote4" name="votes" value="4"
-                                            v-model="reviewForm.votes">
-                                        <label for="vote4"><i class="fa-solid fa-stethoscope"></i>
-                                        </label>
-                                        <input type="radio" id="vote3" name="votes" value="3"
-                                            v-model="reviewForm.votes">
-                                        <label for="vote3"><i class="fa-solid fa-stethoscope"></i>
-                                        </label>
-                                        <input type="radio" id="vote2" name="votes" value="2"
-                                            v-model="reviewForm.votes">
-                                        <label for="vote2"><i class="fa-solid fa-stethoscope"></i>
-                                        </label>
-                                        <input type="radio" id="vote1" name="votes" value="1"
-                                            v-model="reviewForm.votes">
-                                        <label for="vote1"><i class="fa-solid fa-stethoscope"></i>
-                                        </label>
-                                    </div>
-                                    <div class="invalid mb-3" v-if="errors.reviewForm.votes">
-                                        <p> {{ errors.reviewForm.votes }} </p>
-                                    </div>
                                     <button type="submit" class="btn btn-primary btn-submit"
-                                        :class="{ 'disabled': reviewFormValidated === true }">Invia
-                                        recensione</button>
+                                        :class="{ 'disabled': messageFormValidated === true }">Invia
+                                        messaggio</button>
                                 </form>
+
+                                <div v-else class="my-3">
+                                    <p class="my-2">
+                                        Il tuo messaggio è stato inviato correttamente.
+                                    </p>
+                                    <button type="button" @click="resetMessageForm"
+                                        class="btn btn-sm btn-primary">Conferma</button>
+                                </div>
                             </div>
+
+                            <div class="my-3 py-3">
+                                <h5 class="my-3">Lascia una recensione</h5>
+                                <div class="form-frame">
+                                    <form method="POST" class="form-control py-3" @submit.prevent="validateReviewForm"
+                                        novalidate v-if="reviewFormValidated === false">
+
+                                        <div class="mb-3 col-12">
+                                            <label for="first_name" class="form-label">Nome</label>
+                                            <input type="text" class="form-control"
+                                                :class="{ 'invalid-input': errors.reviewForm.first_name }"
+                                                id="first_name" v-model.trim="reviewForm.first_name" required>
+                                            <div class="invalid" v-if="errors.reviewForm.first_name">
+                                                <p> {{ errors.reviewForm.first_name }} </p>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3 col-12">
+                                            <label for="last_name" class="form-label">Cognome</label>
+                                            <input type="text" class="form-control"
+                                                :class="{ 'invalid-input': errors.reviewForm.last_name }" id="last_name"
+                                                v-model.trim="reviewForm.last_name" required>
+                                            <div class="invalid" v-if="errors.reviewForm.last_name">
+                                                <p> {{ errors.reviewForm.last_name }} </p>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3 col-12">
+                                            <label for="email" class="form-label">Email</label>
+                                            <input type="email" class="form-control"
+                                                :class="{ 'invalid-input': errors.reviewForm.email }" id="email"
+                                                placeholder="Inserisci il tuo indirizzo email"
+                                                v-model.trim="reviewForm.email" required>
+                                            <div class="invalid" v-if="errors.reviewForm.email">
+                                                <p> {{ errors.reviewForm.email }} </p>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3 col-12">
+                                            <label for="content" class="form-label align-start">Messaggio</label>
+                                            <textarea class="form-control"
+                                                :class="{ 'invalid-input': errors.reviewForm.content }" id="content"
+                                                rows="3" v-model="reviewForm.content"></textarea>
+                                            <div class="invalid" v-if="errors.reviewForm.content">
+                                                <p> {{ errors.reviewForm.content }} </p>
+                                            </div>
+                                        </div>
+                                        <div class="votes">
+                                            <input type="radio" id="vote5" name="votes" value="5"
+                                                v-model="reviewForm.votes">
+                                            <label for="vote5"><i class="fa-solid fa-stethoscope"></i>
+                                            </label>
+                                            <input type="radio" id="vote4" name="votes" value="4"
+                                                v-model="reviewForm.votes">
+                                            <label for="vote4"><i class="fa-solid fa-stethoscope"></i>
+                                            </label>
+                                            <input type="radio" id="vote3" name="votes" value="3"
+                                                v-model="reviewForm.votes">
+                                            <label for="vote3"><i class="fa-solid fa-stethoscope"></i>
+                                            </label>
+                                            <input type="radio" id="vote2" name="votes" value="2"
+                                                v-model="reviewForm.votes">
+                                            <label for="vote2"><i class="fa-solid fa-stethoscope"></i>
+                                            </label>
+                                            <input type="radio" id="vote1" name="votes" value="1"
+                                                v-model="reviewForm.votes">
+                                            <label for="vote1"><i class="fa-solid fa-stethoscope"></i>
+                                            </label>
+                                        </div>
+                                        <div class="invalid mb-3" v-if="errors.reviewForm.votes">
+                                            <p> {{ errors.reviewForm.votes }} </p>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary btn-submit"
+                                            :class="{ 'disabled': reviewFormValidated === true }">Invia
+                                            recensione</button>
+                                    </form>
+                                    <div v-else class="my-3">
+                                        <p class="my-2">
+                                            La tua recensione è stata inviata correttamente.
+                                        </p>
+                                        <button type="button" @click="resetReviewForm"
+                                            class="btn btn-sm btn-primary">Conferma</button>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -514,6 +539,14 @@ ul {
 }
 
 form {
+    border-radius: 40px;
+}
+
+.form-frame {
+    display: flex;
+    min-height: 400px;
+    justify-content: center;
+    align-items: center;
     border-radius: 40px;
     border: 3px solid #65B0FF;
 }
