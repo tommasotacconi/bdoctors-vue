@@ -123,6 +123,10 @@ export default {
             console.log('Array Dottori filtrati nel metodo:', filteredDoctors)
             this.filteredDoctorsByVotes = filteredDoctors;
         },
+
+        emptyFilteredDoctors() {
+            return this.filteredDoctorsByVotes = [];
+        }
     },
     computed: {
         showLoader() {
@@ -165,7 +169,8 @@ export default {
                             <div class="rating mx-3">
                                 <form action="" method="get" class="form-control rating mx-3"
                                     @submit.prevent="getFilteredVotesProfiles">
-                                    <button type="reset" class="btn btn-sm btn-primary">Reset</button>
+                                    <button type="reset" class="btn btn-sm btn-primary"
+                                        @click="emptyFilteredDoctors">Reset</button>
                                     <button type="submit" class="btn btn-sm btn-secondary">Filtra</button>
                                     <input type="radio" id="vote5" name="rating" value="5" v-model="rating">
                                     <label for="vote5"><i class="fa-solid fa-stethoscope"></i>
