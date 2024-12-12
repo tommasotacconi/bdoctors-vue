@@ -1,8 +1,14 @@
 <script>
+import axios from 'axios';
+import { store } from '../../../../js/store.js';
+
 export default {
     data() {
         return {
+            store,
             price: null,
+            profilesApiUrl: 'http://localhost:8000/api/profiles',
+            sponsorship: false,
         }
     },
     methods: {
@@ -18,6 +24,33 @@ export default {
             this.price = 9.99
             console.log(this.price)
         },
+        getApiProfiles() {
+            axios.get(this.profilesApiUrl)
+                .then(response => {
+                    // Controllo per verificare se l'utente ha la sponsorizzazione o meno
+                    // Al momento non tiene conto del fatto che sia attiva o meno visto nessuna lo è
+                    // In caso sarebbe sufficiente usare l'api e cercare ...doctor.has_active_sponsorship
+
+                    let profileDataGeneral = store.profileDataGeneral
+
+                    let sponsorship = response.data.profiles[profileDataGeneral.id].sponsorships
+
+                    if (sponsorship.length) {
+                        this.sponsorship = true
+                    } else {
+                        this.sponsorship = false
+                    }
+
+                    console.log(this.sponsorship)
+                })
+                .catch(function (error) {
+                    // handle error
+                    console.log(error);
+                })
+        },
+    },
+    created() {
+        this.getApiProfiles()
     }
 }
 </script>
