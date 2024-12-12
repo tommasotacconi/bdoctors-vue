@@ -38,31 +38,30 @@ export default {
         </div>
         <h3>Scegli la tua sponsorizzazione:</h3>
         <section class="sponsor-cards">
-            <div class="sponsor-card card-bronze" @click="getPriceBronze()">
+            <button class="sponsor-card card-bronze" @click="getPriceBronze()">
                 <div class="card-description">
                     <p class="hour-sponsorship">Garantito per 24 ore</p>
                     <p class="price">2,99€</p>
                 </div>
                 <div class="premium-star"><i class="fa-solid fa-star"></i></div>
-            </div>
-            <div class="sponsor-card card-silver" @click="getPriceSilver()">
+            </button>
+            <button class="sponsor-card card-silver" @click="getPriceSilver()">
+
                 <div class="card-description">
                     <p class="hour-sponsorship">Garantito per 72 ore</p>
                     <p class="price">5,99€</p>
                 </div>
                 <div class="premium-star"><i class="fa-solid fa-star"></i></div>
-            </div>
-            <div class="sponsor-card card-gold" @click="getPriceGold()">
+
+            </button>
+            <button class="sponsor-card card-gold" @click="getPriceGold()">
                 <div class="card-description">
                     <p class="hour-sponsorship">Garantito per 144 ore</p>
                     <p class="price">9,99€</p>
                 </div>
                 <div class="premium-star"><i class="fa-solid fa-star"></i></div>
-            </div>
+            </button>
         </section>
-        <div class="button-pay-now-general">
-            <button class="button-pay-now">Sponsorizzati ora</button>
-        </div>
     </main>
 </template>
 
@@ -77,8 +76,12 @@ h2 {
 }
 
 h3 {
-    margin: 20px;
+    margin: 30px 0 30px 0;
     text-align: center;
+}
+
+button {
+    border: 0;
 }
 
 .sponsored-description {
