@@ -12,6 +12,7 @@ export default {
             reviewsProfile: [],
             reviewSelected: [],
             averageVote: 0,
+            reviewSelectedFlag: false,
         }
     },
     methods: {
@@ -51,6 +52,8 @@ export default {
         },
         selectReview(index) {
             this.reviewSelected = this.reviewsProfile[index]
+            this.reviewSelectedFlag = true
+
             console.log(this.reviewsProfile[index])
         },
         // showAverageVote() {
@@ -109,7 +112,7 @@ export default {
                         </div>
                     </div>
                 </div>
-                <div class="card-general card-review">
+                <div class="card-general card-review" v-if="reviewSelectedFlag">
                     <div class="card-selected-review">
                         <div class="title-star">
                             <h5 class="title">Recensione selezionata</h5>

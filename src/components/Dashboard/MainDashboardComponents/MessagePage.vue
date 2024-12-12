@@ -10,6 +10,7 @@ export default {
             messagesProfile: [],
             messageSelected: [],
             loaded: false,
+            messageSelectedFlag: false,
         }
     },
     methods: {
@@ -34,6 +35,7 @@ export default {
         },
         selectMessage(index) {
             this.messageSelected = this.messagesProfile[index]
+            this.messageSelectedFlag = true
             console.log(this.messagesProfile[index])
         },
     },
@@ -87,7 +89,7 @@ export default {
                     </div>
                 </div>
             </div>
-            <div class="selected-message">
+            <div class="selected-message" v-if="messageSelectedFlag">
                 <div class="card-selected-message">
                     <h5 class="title">Messaggio selezionato</h5>
 
