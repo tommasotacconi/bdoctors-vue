@@ -16,7 +16,7 @@ export default {
                 datasets: [
                     {
                         data: [
-                            40, 20, 12
+                            40, 20, 12, 15, 16, 10, 42, 34, 37, 25, 41, 5
                         ],
                         backgroundColor: '#65B0FF',
                     }
@@ -94,7 +94,9 @@ export default {
     <main>
         <div class="container">
             <h2>Statistiche</h2>
-            <MessageChart :messagesProfile="messagesProfile" :charData="charData" />
+            <MessageChart />
+            <!-- <MessageChart :messagesProfile="messagesProfile" :charData="charData" /> -->
+
         </div>
 
     </main>

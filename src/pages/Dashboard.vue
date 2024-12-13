@@ -2,23 +2,65 @@
 import HeaderDashboard from '../components/Dashboard/HeaderDashboard.vue';
 import MainDashboard from '../components/Dashboard/MainDashboard.vue';
 import SidebarDashboard from '../components/Dashboard/SidebarDashboard.vue';
-
-import { store } from '../../js/store.js'
+import axios from 'axios';
+import { store } from '../../js/store.js';
 
 export default {
     data() {
         return {
-            store
+            store,
+            messagesApiUrl: 'http://localhost:8000/api/messages',
+            messagesProfile: [],
         }
+    },
+    methods: {
+        getApiMessages() {
+            axios.get(this.messagesApiUrl)
+                .then(response => {
+                    // handle success
+                    console.log(response.data);
+                    let messagesProfiles = response.data.messages
+                    console.log(messagesProfiles)
+                    let idProfile = store.profileDataGeneral.id
+                    console.log(idProfile)
+
+                    const messagesProfile = messagesProfiles.filter(message => message.profile_id === idProfile)
+                    console.log(messagesProfile)
+                    this.messagesProfile = messagesProfile
+                    store.charData = {
+                        labels: [
+                            'Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'
+                        ],
+                        datasets: [
+                            {
+                                data: [
+                                    40, 20, 12, 15, 16, 10, 42, 34, 37, 25, 41, 5
+                                ],
+                                backgroundColor: '#65B0FF',
+                            }
+                        ]
+                    }
+                    store.test = 'test'
+
+                })
+                .catch(function (error) {
+                    // handle error
+                    console.log(error);
+                })
+        },
     },
     components: {
         SidebarDashboard,
         HeaderDashboard,
         MainDashboard,
     },
-		created: function () {
-			this.store.informationPageId = this.$route.params.id
-		}
+    mounted() {
+
+    },
+    created: function () {
+        this.store.informationPageId = this.$route.params.id
+        this.getApiMessages()
+    }
 }
 </script>
 

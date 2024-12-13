@@ -1,4 +1,6 @@
 <script>
+import { store } from '../../../../../js/store.js';
+
 import {
     Chart as ChartJS,
     Title,
@@ -19,6 +21,7 @@ export default {
     },
     data() {
         return {
+            store,
             data: {
                 // labels: ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'],
                 // datasets: [
@@ -42,24 +45,26 @@ export default {
             return messagesProfile[0].id
         }
     },
-    props: {
-        messagesProfile: {
-            type: Array,
-            required: true
-        },
-        charData: {
-            type: Object,
-            required: true
-        }
-    },
+    // props: {
+    //     messagesProfile: {
+    //         type: Array,
+    //         required: true
+    //     },
+    //     charData: {
+    //         type: Object,
+    //         required: true
+    //     }
+    // },
 }
 </script>
 
 <template>
     <div class="char">
-        <Bar :data="charData" :options="options" />
+        <Bar :data="store.charData" :options="options" />
     </div>
-    {{ console.log(charData) }}
+    {{ console.log(store.charData) }}
+    {{ console.log(store.test) }}
+
 </template>
 
 <style scoped></style>
