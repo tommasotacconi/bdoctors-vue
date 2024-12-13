@@ -101,7 +101,7 @@ export default {
             axios.get('http://localhost:8000/api/reviews/filter')
                 .then(response => {
                     // handle success
-                    console.log(response.data);
+                    console.log('RECENSIONI FILTRATEEEE', response.data);
 
                 })
                 .catch(function (error) {
@@ -111,6 +111,10 @@ export default {
         },
 
         getFilteredVotesProfiles() {
+
+
+            this.getFilteredReviews();
+
             this.getApiProfile();
 
             const filteredDoctors = [];
@@ -155,7 +159,6 @@ export default {
     created() {
         this.getApiProfile();
         this.getSpecializationName();
-        this.getFilteredVotesProfiles();
     },
     mounted() {
         this.showLoader
@@ -188,7 +191,7 @@ export default {
                             <p>Filtra per media voti: </p>
                             <div class="rating mx-3">
                                 <form action="" method="get" class="form-control rating mx-3"
-                                    @submit.prevent="getFilteredReviews">
+                                    @submit.prevent="getFilteredVotesProfiles">
                                     <button type="reset" class="btn btn-sm btn-primary"
                                         @click="emptyFilteredDoctors">Reset</button>
                                     <button type="submit" class="btn btn-sm btn-secondary">Filtra</button>
