@@ -61,9 +61,9 @@ export default {
         <div class="container">
             <h2>Statistiche</h2>
             <div class="display-button">
-                <button class="button-char" @click="getMessagesChart">Statistiche messaggi</button>
-                <button class="button-char" @click="getReviewsChart">Statistiche recensioni</button>
-                <button class="button-char" @click="getVotesChart">Statistiche voti</button>
+                <button class="button-char" @click="getMessagesChart">Messaggi</button>
+                <button class="button-char" @click="getReviewsChart">Recensioni</button>
+                <button class="button-char" @click="getVotesChart">Voti</button>
             </div>
             <div class="component-chart">
                 <MessageChart v-if="messagesFlag" />
@@ -96,5 +96,6 @@ h2 {
     color: var(--color-primary);
     font-weight: bold;
     border: 1px solid var(--color-primary);
+    width: 130px;
 }
 </style>

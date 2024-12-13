@@ -34,8 +34,10 @@ export default {
                 scales: {
                     y: {
                         ticks: {
-                            stepSize: 1
-                        }
+                            stepSize: 1,
+                        },
+                        min: 0,
+                        max: 5,
                     }
                 }
             }
