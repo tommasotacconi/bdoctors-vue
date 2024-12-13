@@ -21,13 +21,34 @@ export default {
                     console.log(response.data);
                     let messagesProfiles = response.data.messages
                     console.log(messagesProfiles)
-                    let idProfile = store.profileDataGeneral.id
+                    // let idProfile = store.profileDataGeneral.id
+                    let idProfile = this.$route.params.id
                     console.log(idProfile)
                     console.log(this.$route.params.id)
 
-                    const messagesProfile = messagesProfiles.filter(message => message.profile_id === idProfile)
+                    const messagesProfile = messagesProfiles.filter(message => message.profile_id == idProfile)
                     console.log(messagesProfile)
-                    this.messagesProfile = messagesProfile
+
+                    // Trasformo il valore updated_at in una data leggibile facilmente in modo da riprenderla successivamente
+                    messagesProfile.forEach(message => {
+                        let hourDate = message.updated_at
+                        console.log(hourDate)
+                        const date = new Date(hourDate)
+
+                        const options = {
+                            year: "numeric",
+                            month: "2-digit",
+                        };
+
+                        message.updated_at = date.toLocaleString("it-IT", options)
+                    })
+                    console.log(messagesProfile)
+
+                    // Parte relativa alla creazione della statistisca dinamica
+                    const messagesProfileDecember = messagesProfile.filter(message => message.updated_at.includes(12))
+                    console.log(messagesProfileDecember)
+
+
                     store.charData = {
                         labels: [
                             'Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'
@@ -35,19 +56,34 @@ export default {
                         datasets: [
                             {
                                 data: [
-                                    40, 20, 12, 15, 16, 10, 42, 34, 37, 25, 41, 5
+                                    40, 20, 12, 15, 16, 10, 42, 34, 37, 25, 41, messagesProfileDecember.length
                                 ],
                                 backgroundColor: '#65B0FF',
                             }
                         ]
                     }
-                    store.test = 'test'
 
                 })
                 .catch(function (error) {
                     // handle error
                     console.log(error);
                 })
+        },
+        getNormalFormatDate() {
+            let hourDate = message.updated_at
+            console.log(hourDate)
+            const date = new Date(hourDate)
+
+            const options = {
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit",
+                timeZone: "Europe/Rome"
+            };
+
+            return date.toLocaleString("it-IT", options)
         },
     },
     components: {
