@@ -43,6 +43,7 @@ export default {
                         message.updated_at = date.toLocaleString("it-IT", options)
                     })
                     console.log(messagesProfile)
+                    store.messagesProfile = messagesProfile
 
                     // Parte relativa alla creazione della statistisca dinamica
                     const messagesProfileJanuary = messagesProfile.filter(message => message.updated_at.startsWith('01/'));

@@ -2,6 +2,8 @@
 import axios from 'axios';
 import MessageChart from './MessageChart.vue';
 import { store } from '../../../../../js/store';
+import ReviewsChart from './ReviewsChart.vue';
+import VotesChart from './VotesChart.vue';
 
 export default {
     data() {
@@ -9,6 +11,9 @@ export default {
             store,
             messagesApiUrl: 'http://localhost:8000/api/messages',
             messagesProfile: [],
+            messagesFlag: true,
+            reviewsFlag: false,
+            votesFlag: false,
             charData: {
                 labels: [
                     'Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'
@@ -26,12 +31,27 @@ export default {
     },
     components: {
         MessageChart,
+        ReviewsChart,
+        VotesChart,
     },
     methods: {
-
+        getMessagesChart() {
+            this.messagesFlag = true
+            this.reviewsFlag = false
+            this.votesFlag = false
+        },
+        getReviewsChart() {
+            this.messagesFlag = false
+            this.reviewsFlag = true
+            this.votesFlag = false
+        },
+        getVotesChart() {
+            this.messagesFlag = false
+            this.reviewsFlag = false
+            this.votesFlag = true
+        }
     },
     created() {
-        // this.getApiMessages()
     },
 }
 </script>
@@ -40,8 +60,14 @@ export default {
     <main>
         <div class="container">
             <h2>Statistiche</h2>
-            <MessageChart />
-
+            <div class="display-button">
+                <button class="button-char" @click="getMessagesChart">Statistiche messaggi</button>
+                <button class="button-char" @click="getReviewsChart">Statistiche recensioni</button>
+                <button class="button-char" @click="getVotesChart">Statistiche voti</button>
+            </div>
+            <MessageChart v-if="messagesFlag" />
+            <ReviewsChart v-if="reviewsFlag" />
+            <VotesChart v-if="votesFlag" />
         </div>
 
     </main>
@@ -51,5 +77,22 @@ export default {
 h2 {
     margin-bottom: 40px;
     text-align: center;
+}
+
+.display-button {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-bottom: 20px;
+}
+
+.button-char {
+    background-color: var(--color-secondary);
+    border-radius: 20px;
+    padding: 8px 15px;
+    text-decoration: none;
+    color: var(--color-primary);
+    font-weight: bold;
+    border: 1px solid var(--color-primary);
 }
 </style>

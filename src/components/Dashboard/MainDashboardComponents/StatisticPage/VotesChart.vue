@@ -48,12 +48,11 @@ export default {
 </script>
 
 <template>
-    <h4>Messaggi ricevuti <span class="total-year">(Totale anno: {{ store.messagesProfile.length }})</span>
+    <h4>Voti ricevuti <span class="total-year">(Totale anno: {{ store.messagesProfile.length }})</span>
     </h4>
     <div class="char">
         <Bar :data="store.charData" :options="options" />
     </div>
-
 </template>
 
 <style scoped>
