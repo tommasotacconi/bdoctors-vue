@@ -16,6 +16,7 @@ export default {
             specializationName: '',
             doctors: [],
             rating: null,
+            reviewsNumber: null,
             loaded: false,
             showDoctor: false,
             filteredDoctors: [],
@@ -86,20 +87,22 @@ export default {
         // },
 
         goToShowPage(doctor, index) {
+            let completeName = "";
             if (this.filteredDoctors.length) {
-                this.$router.push({ name: 'search.show', params: { searchId: store.selectedSpecializationName.trim().replace(/ /g, "-").toLowerCase(), id: doctor.doctor.id } })
+                completeName = doctor.first_name + '-' + doctor.last_name
             } else {
                 store.doctorProfile = doctor
-                let completeName = doctor.user.first_name + '-' + doctor.user.last_name
-                this.$router.push({ name: 'search.show', params: { searchId: store.selectedSpecializationName.trim().replace(/ /g, "-").toLowerCase(), id: completeName.toLowerCase() } })
+                completeName = doctor.user.first_name + '-' + doctor.user.last_name
             }
+            this.$router.push({ name: 'search.show', params: { searchId: store.selectedSpecializationName.trim().replace(/ /g, "-").toLowerCase(), id: completeName.toLowerCase() } })
             console.log(index)
             console.log(store.searchedSpecialization)
         },
 
         getFilteredReviews() {
+            let url = `http://localhost:8000/api/reviews/filter/${this.specializationId}/${this.rating}/${this.reviewsNumber}`;
 
-            axios.get(`http://localhost:8000/api/reviews/filter/${this.specializationId}/${this.rating}`, {
+            axios.get(url, {
             })
                 .then(response => {
                     // handle success
@@ -109,13 +112,16 @@ export default {
                 })
                 .catch(function (error) {
                     // handle error
-                    console.log(error);
+                    console.log(error)
+                    console.log(error.response.data.message);
                 })
         },
 
-        emptyFilteredDoctors() {
-            return (this.filteredDoctors = [], this.rating = null);
-        }
+        resetInputs() {
+            return (this.filteredDoctors = [],
+                this.rating = null,
+                this.reviewsNumber = null);
+        },
     },
     computed: {
         showLoader() {
@@ -125,7 +131,6 @@ export default {
         }
     },
     created() {
-
         this.getApiProfile();
         this.getSpecializationName();
     },
@@ -154,16 +159,14 @@ export default {
                     </h2>
                 </div>
 
-                <div class="advanced-filter">
-                    <div class="average-votes">
+                <div class="advanced-filter d-flex">
+                    <!-- Average Votes Filter Input -->
+                    <div class="average-votes col-4">
                         <div class="votes d-flex">
                             <p>Filtra per media voti: </p>
                             <div class="rating mx-3">
-                                <form action="" method="get" class="form-control rating mx-3"
+                                <form method="get" class="form-control rating mx-3"
                                     @submit.prevent="getFilteredReviews">
-                                    <button type="reset" class="btn btn-sm btn-primary"
-                                        :class="{ 'disabled': rating === null }"
-                                        @click="emptyFilteredDoctors">Reset</button>
                                     <button type="submit" class="btn btn-sm btn-secondary"
                                         :class="{ 'disabled': rating === null }">Filtra</button>
                                     <input type="radio" id="vote5" name="rating" value="5" v-model="rating">
@@ -183,19 +186,28 @@ export default {
                                     </label>
                                 </form>
                             </div>
-
                         </div>
-                        <div class="reviews-number d-flex gap-3">
-                            <p>Filtra per numero di recensioni:</p>
-                            <form action="">
-                                <input type="number">
-                            </form>
-                        </div>
-                    </div>
-                    <div class="number-reviews">
 
                     </div>
+
+                    <!-- Reviews Number Filter Input-->
+                    <div class="reviews-number d-flex gap-3 col-4">
+                        <p>Filtra per numero di recensioni:</p>
+                        <form action="" method="GET" class="form-control mx-3 d-flex"
+                            @submit.prevent="getFilteredReviews">
+                            <input type="number" class="form-control" id="reviews" name="reviews" min="0"
+                                v-model="reviewsNumber">
+                            <button type="submit" :class="{ 'disabled': reviewsNumber === null }"
+                                class="btn btn-sm btn-secondary">Filtra</button>
+                        </form>
+                    </div>
+
+                    <!-- Reset Input Fields Button -->
+                    <button type="reset" class="btn btn-sm btn-primary"
+                        :class="{ 'disabled': rating === null && reviewsNumber === null }" @click="resetInputs">Cancella
+                        Filtri</button>
                 </div>
+
 
                 <div class="doctors-list" v-if="!filteredDoctors.length">
                     <div class="doctor-card" v-for="(doctor, index) in doctors" @click="goToShowPage(doctor, index)">
