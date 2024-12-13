@@ -28,7 +28,9 @@ export const store = reactive({
   profileDataGeneral: {},
 
   // Dashboard Chart
-  charData: {},
+  charDataMessages: {},
+  charDataREviews: {},
   messagesProfile: [],
+  reviewsProfile: [],
 })
 

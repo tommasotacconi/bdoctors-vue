@@ -51,7 +51,7 @@ export default {
     <h4>Messaggi ricevuti <span class="total-year">(Totale anno: {{ store.messagesProfile.length }})</span>
     </h4>
     <div class="char">
-        <Bar :data="store.charData" :options="options" />
+        <Bar :data="store.charDataMessages" :options="options" />
     </div>
 
 </template>

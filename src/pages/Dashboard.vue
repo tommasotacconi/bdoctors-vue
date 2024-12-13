@@ -64,7 +64,7 @@ export default {
                     const messagesProfileDecember = messagesProfile.filter(message => message.updated_at.startsWith('12/'));
 
 
-                    store.charData = {
+                    store.charDataMessages = {
                         labels: [
                             'Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'
                         ],
@@ -132,19 +132,90 @@ export default {
                     const reviewsProfileNovember = reviewsProfile.filter(message => message.updated_at.startsWith('11/'));
                     const reviewsProfileDecember = reviewsProfile.filter(message => message.updated_at.startsWith('12/'));
 
+                    console.log(reviewsProfileDecember[0].content)
 
-                    store.charData = {
+                    store.charDataReviews = {
                         labels: [
                             'Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'
                         ],
                         datasets: [
                             {
                                 data: [
-                                    messagesProfileJanuary.length, messagesProfileFebruary.length, messagesProfileMarch.length, messagesProfileApril.length, messagesProfileMay.length, messagesProfileJune.length, messagesProfileJuly.length, messagesProfileAugust.length, messagesProfileSeptember.length, messagesProfileOctober.length, messagesProfileNovember.length, messagesProfileDecember.length
+                                    reviewsProfileJanuary.length, reviewsProfileFebruary.length, reviewsProfileMarch.length, reviewsProfileApril.length, reviewsProfileMay.length, reviewsProfileJune.length, reviewsProfileJuly.length, reviewsProfileAugust.length, reviewsProfileSeptember.length, reviewsProfileOctober.length, reviewsProfileNovember.length, reviewsProfileDecember.length
                                 ],
                                 backgroundColor: '#65B0FF',
                                 // qui si può inserire il label
-                                // label: 'test'
+                            }
+                        ]
+                    }
+
+                })
+                .catch(function (error) {
+                    // handle error
+                    console.log(error);
+                })
+        },
+
+        getApiVotes() {
+            axios.get(this.reviewsApiUrl)
+                .then(response => {
+                    // handle success
+                    console.log(response.data);
+                    let reviewsProfiles = response.data.reviews
+                    console.log(reviewsProfiles[0].profile_id)
+                    // let idProfile = store.profileDataGeneral.id
+                    let idProfile = this.$route.params.id
+                    console.log(idProfile)
+                    console.log(this.$route.params.id)
+
+                    const reviewsProfile = reviewsProfiles.filter(review => review.profile_id == idProfile)
+                    console.log(reviewsProfile)
+
+                    // Trasformo il valore updated_at in una data leggibile facilmente in modo da riprenderla successivamente
+                    reviewsProfile.forEach(message => {
+                        let hourDate = message.updated_at
+                        console.log(hourDate)
+                        const date = new Date(hourDate)
+
+                        const options = {
+                            year: "numeric",
+                            month: "2-digit",
+                        };
+
+                        message.updated_at = date.toLocaleString("it-IT", options)
+                    })
+                    console.log(reviewsProfile)
+                    store.reviewsProfile = reviewsProfile
+
+                    // Parte relativa alla creazione della statistisca dinamica
+                    const reviewsProfileJanuary = reviewsProfile.filter(message => message.updated_at.startsWith('01/'));
+                    const reviewsProfileFebruary = reviewsProfile.filter(message => message.updated_at.startsWith('02/'));
+                    const reviewsProfileMarch = reviewsProfile.filter(message => message.updated_at.startsWith('03/'));
+                    const reviewsProfileApril = reviewsProfile.filter(message => message.updated_at.startsWith('04/'));
+                    const reviewsProfileMay = reviewsProfile.filter(message => message.updated_at.startsWith('05/'));
+                    const reviewsProfileJune = reviewsProfile.filter(message => message.updated_at.startsWith('06/'));
+                    const reviewsProfileJuly = reviewsProfile.filter(message => message.updated_at.startsWith('07/'));
+                    const reviewsProfileAugust = reviewsProfile.filter(message => message.updated_at.startsWith('08/'));
+                    const reviewsProfileSeptember = reviewsProfile.filter(message => message.updated_at.startsWith('09/'));
+                    const reviewsProfileOctober = reviewsProfile.filter(message => message.updated_at.startsWith('10/'));
+                    const reviewsProfileNovember = reviewsProfile.filter(message => message.updated_at.startsWith('11/'));
+                    const reviewsProfileDecember = reviewsProfile.filter(message => message.updated_at.startsWith('12/'));
+
+                    console.log(reviewsProfileDecember[0].votes)
+
+
+
+                    store.charDataReviews = {
+                        labels: [
+                            'Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'
+                        ],
+                        datasets: [
+                            {
+                                data: [
+                                    reviewsProfileJanuary.length, reviewsProfileFebruary.length, reviewsProfileMarch.length, reviewsProfileApril.length, reviewsProfileMay.length, reviewsProfileJune.length, reviewsProfileJuly.length, reviewsProfileAugust.length, reviewsProfileSeptember.length, reviewsProfileOctober.length, reviewsProfileNovember.length, reviewsProfileDecember.length
+                                ],
+                                backgroundColor: '#65B0FF',
+                                // qui si può inserire il label
                             }
                         ]
                     }
@@ -185,6 +256,7 @@ export default {
         this.store.informationPageId = this.$route.params.id
         this.getApiMessages()
         this.getApiReviews()
+        this.getApiVotes()
     }
 }
 </script>

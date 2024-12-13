@@ -65,9 +65,11 @@ export default {
                 <button class="button-char" @click="getReviewsChart">Statistiche recensioni</button>
                 <button class="button-char" @click="getVotesChart">Statistiche voti</button>
             </div>
-            <MessageChart v-if="messagesFlag" />
-            <ReviewsChart v-if="reviewsFlag" />
-            <VotesChart v-if="votesFlag" />
+            <div class="component-chart">
+                <MessageChart v-if="messagesFlag" />
+                <ReviewsChart v-if="reviewsFlag" />
+                <VotesChart v-if="votesFlag" />
+            </div>
         </div>
 
     </main>
@@ -83,7 +85,7 @@ h2 {
     display: flex;
     justify-content: center;
     gap: 30px;
-    margin-bottom: 20px;
+    margin-bottom: 30px;
 }
 
 .button-char {
