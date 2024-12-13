@@ -29,6 +29,6 @@ export const store = reactive({
 
   // Dashboard Chart
   charData: {},
-  test: ''
+  messagesProfile: [],
 })
 
