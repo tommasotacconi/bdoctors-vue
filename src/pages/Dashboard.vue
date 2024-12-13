@@ -69,6 +69,8 @@ export default {
                                     messagesProfileJanuary.length, messagesProfileFebruary.length, messagesProfileMarch.length, messagesProfileApril.length, messagesProfileMay.length, messagesProfileJune.length, messagesProfileJuly.length, messagesProfileAugust.length, messagesProfileSeptember.length, messagesProfileOctober.length, messagesProfileNovember.length, messagesProfileDecember.length
                                 ],
                                 backgroundColor: '#65B0FF',
+                                // qui si può inserire il label
+                                // label: 'test'
                             }
                         ]
                     }
