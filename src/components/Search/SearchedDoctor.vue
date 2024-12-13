@@ -97,6 +97,19 @@ export default {
             console.log(store.searchedSpecialization)
         },
 
+        getFilteredReviews() {
+            axios.get('http://localhost:8000/api/reviews/filter')
+                .then(response => {
+                    // handle success
+                    console.log(response.data);
+
+                })
+                .catch(function (error) {
+                    // handle error
+                    console.log(error);
+                })
+        },
+
         getFilteredVotesProfiles() {
             this.getApiProfile();
 
@@ -175,7 +188,7 @@ export default {
                             <p>Filtra per media voti: </p>
                             <div class="rating mx-3">
                                 <form action="" method="get" class="form-control rating mx-3"
-                                    @submit.prevent="getFilteredVotesProfiles">
+                                    @submit.prevent="getFilteredReviews">
                                     <button type="reset" class="btn btn-sm btn-primary"
                                         @click="emptyFilteredDoctors">Reset</button>
                                     <button type="submit" class="btn btn-sm btn-secondary">Filtra</button>
