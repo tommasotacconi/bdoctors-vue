@@ -48,10 +48,10 @@ export default {
 </script>
 
 <template>
-    <h4>Voti ricevuti <span class="total-year">(Totale anno: {{ store.reviewsProfile.length }})</span>
+    <h4>Voti ricevuti <span class="total-year">(Totale voti annuali: {{ store.reviewsProfile.length }})</span>
     </h4>
     <div class="char">
-        <Bar :data="store.charDataReviews" :options="options" />
+        <Bar :data="store.charDataVotes" :options="options" />
     </div>
 </template>
 

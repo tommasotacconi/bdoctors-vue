@@ -203,16 +203,22 @@ export default {
 
                     console.log(reviewsProfileDecember[0].votes)
 
+                    // Funzione che calcola la media dei voti
+                    this.showAverageVote(reviewsProfileDecember)
+                    console.log(this.showAverageVote(reviewsProfileDecember))
 
 
-                    store.charDataReviews = {
+
+
+
+                    store.charDataVotes = {
                         labels: [
                             'Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'
                         ],
                         datasets: [
                             {
                                 data: [
-                                    reviewsProfileJanuary.length, reviewsProfileFebruary.length, reviewsProfileMarch.length, reviewsProfileApril.length, reviewsProfileMay.length, reviewsProfileJune.length, reviewsProfileJuly.length, reviewsProfileAugust.length, reviewsProfileSeptember.length, reviewsProfileOctober.length, reviewsProfileNovember.length, reviewsProfileDecember.length
+                                    this.showAverageVote(reviewsProfileJanuary), this.showAverageVote(reviewsProfileFebruary), this.showAverageVote(reviewsProfileMarch), this.showAverageVote(reviewsProfileApril), this.showAverageVote(reviewsProfileMay), this.showAverageVote(reviewsProfileJune), this.showAverageVote(reviewsProfileJuly), this.showAverageVote(reviewsProfileAugust), this.showAverageVote(reviewsProfileSeptember), this.showAverageVote(reviewsProfileOctober), this.showAverageVote(reviewsProfileNovember), this.showAverageVote(reviewsProfileDecember)
                                 ],
                                 backgroundColor: '#65B0FF',
                                 // qui si può inserire il label
@@ -225,6 +231,16 @@ export default {
                     // handle error
                     console.log(error);
                 })
+        },
+
+        showAverageVote(reviewsProfile) {
+            let totalNumberVote = 0
+
+            for (let i = 0; i < reviewsProfile.length; i++) {
+                let review = reviewsProfile[i]
+                totalNumberVote += review.votes
+            }
+            return Math.round(totalNumberVote / reviewsProfile.length)
         },
 
         getNormalFormatDate() {
