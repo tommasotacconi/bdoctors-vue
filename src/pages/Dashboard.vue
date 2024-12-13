@@ -23,6 +23,7 @@ export default {
                     console.log(messagesProfiles)
                     let idProfile = store.profileDataGeneral.id
                     console.log(idProfile)
+                    console.log(this.$route.params.id)
 
                     const messagesProfile = messagesProfiles.filter(message => message.profile_id === idProfile)
                     console.log(messagesProfile)
