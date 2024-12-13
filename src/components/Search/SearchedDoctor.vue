@@ -15,7 +15,7 @@ export default {
             specializationId: store.searchedSpecialization,
             doctors: [],
             specializationName: '',
-            rating: null,
+            rating: 4,
             loaded: false,
             showDoctor: false,
             filteredDoctorsByVotes: [],
@@ -98,7 +98,12 @@ export default {
         },
 
         getFilteredReviews() {
-            axios.get('http://localhost:8000/api/reviews/filter')
+            axios.get('http://localhost:8000/api/reviews/filter/{id}/{rating}', {
+                params: {
+                    id: this.specializationId,
+                    rating: this.rating,
+                }
+            })
                 .then(response => {
                     // handle success
                     console.log('RECENSIONI FILTRATEEEE', response.data);
