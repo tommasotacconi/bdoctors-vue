@@ -13,12 +13,12 @@ export default {
             specializationApiUrl: 'http://127.0.0.1:8000/api/specializations',
             reviewsApiURl: 'http://localhost:8000/api/reviews',
             specializationId: store.searchedSpecialization,
-            doctors: [],
             specializationName: '',
-            rating: 4,
+            doctors: [],
+            rating: null,
             loaded: false,
             showDoctor: false,
-            filteredDoctorsByVotes: [],
+            filteredDoctors: [],
         }
     },
     components: {
@@ -86,7 +86,7 @@ export default {
         // },
 
         goToShowPage(doctor, index) {
-            if (this.filteredDoctorsByVotes.length) {
+            if (this.filteredDoctors.length) {
                 this.$router.push({ name: 'search.show', params: { searchId: store.selectedSpecializationName.trim().replace(/ /g, "-").toLowerCase(), id: doctor.doctor.id } })
             } else {
                 store.doctorProfile = doctor
@@ -98,16 +98,14 @@ export default {
         },
 
         getFilteredReviews() {
-            axios.get('http://localhost:8000/api/reviews/filter/{id}/{rating}', {
-                params: {
-                    id: this.specializationId,
-                    rating: this.rating,
-                }
+
+            axios.get(`http://localhost:8000/api/reviews/filter/${this.specializationId}/${this.rating}`, {
             })
                 .then(response => {
                     // handle success
                     console.log('RECENSIONI FILTRATEEEE', response.data);
-
+                    this.filteredDoctors = response.data
+                    console.log(this.filteredDoctors)
                 })
                 .catch(function (error) {
                     // handle error
@@ -115,43 +113,41 @@ export default {
                 })
         },
 
-        getFilteredVotesProfiles() {
+        // getFilteredVotesProfiles() {
+        //     this.getFilteredReviews();
 
+        //     this.getApiProfile();
 
-            this.getFilteredReviews();
+        //     const filteredDoctors = [];
 
-            this.getApiProfile();
-
-            const filteredDoctors = [];
-
-            for (let i = 0; i < this.doctors.length; i++) {
-                let singleDoctor = { doctor: [], averageVotes: null }
-                let doctor = this.doctors[i];
-                singleDoctor.doctor = doctor;
-                console.log('singolo medico', doctor)
-                let reviews = doctor.reviews;
-                // console.log('Recensioni:', reviews);
-                let votesSum = null;
-                for (let j = 0; j < reviews.length; j++) {
-                    let review = reviews[j];
-                    // console.log("Singola recensione:", review);
-                    votesSum += parseInt(review.votes);
-                }
-                // console.log("Somma voti per ogni medico:", votesSum)
-                let averageVotes = null;
-                averageVotes = Math.round(votesSum / reviews.length)
-                console.log('La media dei voti del medico è:', averageVotes)
-                singleDoctor.averageVotes = averageVotes;
-                if (singleDoctor.averageVotes >= this.rating)
-                    filteredDoctors.push(singleDoctor);
-                console.log('singleDoctor', singleDoctor)
-            }
-            console.log('Array Dottori filtrati nel metodo:', filteredDoctors)
-            this.filteredDoctorsByVotes = filteredDoctors;
-        },
+        //     for (let i = 0; i < this.doctors.length; i++) {
+        //         let singleDoctor = { doctor: [], averageVotes: null }
+        //         let doctor = this.doctors[i];
+        //         singleDoctor.doctor = doctor;
+        //         console.log('singolo medico', doctor)
+        //         let reviews = doctor.reviews;
+        //         // console.log('Recensioni:', reviews);
+        //         let votesSum = null;
+        //         for (let j = 0; j < reviews.length; j++) {
+        //             let review = reviews[j];
+        //             // console.log("Singola recensione:", review);
+        //             votesSum += parseInt(review.votes);
+        //         }
+        //         // console.log("Somma voti per ogni medico:", votesSum)
+        //         let averageVotes = null;
+        //         averageVotes = Math.round(votesSum / reviews.length)
+        //         console.log('La media dei voti del medico è:', averageVotes)
+        //         singleDoctor.averageVotes = averageVotes;
+        //         if (singleDoctor.averageVotes >= this.rating)
+        //             filteredDoctors.push(singleDoctor);
+        //         console.log('singleDoctor', singleDoctor)
+        //     }
+        //     console.log('Array Dottori filtrati nel metodo:', filteredDoctors)
+        //     this.filteredDoctors = filteredDoctors;
+        // },
 
         emptyFilteredDoctors() {
-            return this.filteredDoctorsByVotes = [];
+            return this.filteredDoctors = [];
         }
     },
     computed: {
@@ -162,6 +158,7 @@ export default {
         }
     },
     created() {
+
         this.getApiProfile();
         this.getSpecializationName();
     },
@@ -181,12 +178,12 @@ export default {
             <div>
                 <div class="title">
                     <h2>Ricerca per: <span class="specialization-title">{{ specializationName }} </span><span
-                            v-if="!filteredDoctorsByVotes.length" class="total-specialization-doctor"> (Totale esperti:
+                            v-if="!filteredDoctors.length" class="total-specialization-doctor"> (Totale esperti:
                             {{
                                 doctors.length
                             }})</span>
                         <span v-else class="total-specialization-doctor"> (Totale esperti: {{
-                            filteredDoctorsByVotes.length }})</span>
+                            filteredDoctors.length }})</span>
                     </h2>
                 </div>
 
@@ -196,7 +193,7 @@ export default {
                             <p>Filtra per media voti: </p>
                             <div class="rating mx-3">
                                 <form action="" method="get" class="form-control rating mx-3"
-                                    @submit.prevent="getFilteredVotesProfiles">
+                                    @submit.prevent="getFilteredReviews">
                                     <button type="reset" class="btn btn-sm btn-primary"
                                         @click="emptyFilteredDoctors">Reset</button>
                                     <button type="submit" class="btn btn-sm btn-secondary">Filtra</button>
@@ -231,7 +228,7 @@ export default {
                     </div>
                 </div>
 
-                <div class="doctors-list" v-if="!filteredDoctorsByVotes.length">
+                <div class="doctors-list" v-if="!filteredDoctors.length">
                     <div class="doctor-card" v-for="(doctor, index) in doctors" @click="goToShowPage(doctor, index)">
                         <img src="https://media.istockphoto.com/id/1340883379/photo/young-doctor-hospital-medical-medicine-health-care-clinic-office-portrait-glasses-man.jpg?s=612x612&w=0&k=20&c=_H4VUPBkS0gEj5ZdZzQo-Hw3lMuyofJpB-P9yS92Wyw="
                             class="doctor-photo" alt="doctor photo">
@@ -255,27 +252,27 @@ export default {
                     </div>
                 </div>
                 <div class="doctors-list" v-else>
-                    <div class="doctor-card" v-for="(doctor, index) in filteredDoctorsByVotes"
+                    <div class="doctor-card" v-for="(doctor, index) in filteredDoctors"
                         @click="goToShowPage(doctor, index)">
                         <img src="https://media.istockphoto.com/id/1340883379/photo/young-doctor-hospital-medical-medicine-health-care-clinic-office-portrait-glasses-man.jpg?s=612x612&w=0&k=20&c=_H4VUPBkS0gEj5ZdZzQo-Hw3lMuyofJpB-P9yS92Wyw="
                             class="doctor-photo" alt="doctor photo">
                         <section class="doctor-information">
                             <h5 class="doctor-name">
-                                {{ doctor.doctor.user.first_name }} {{ doctor.doctor.user.last_name }}
+                                {{ doctor.first_name }} {{ doctor.last_name }}
                             </h5>
                             <div class="doctor-address">
-                                <strong>Ufficio:</strong> {{ doctor.office_address }}
+                                <strong>Ufficio:</strong> {{ doctor.home_address }}
                             </div>
                             <div class="doctor-specialization">
                                 <strong>Specializzazioni:</strong>
                                 <ul>
-                                    <li v-for="doctorSpecialization in doctor.doctor.user.specializations">
+                                    <li v-for="doctorSpecialization in doctor.specializations">
                                         {{ doctorSpecialization.name }}
                                     </li>
                                 </ul>
                             </div>
                             <div class="doctor-address">
-                                <strong>Media recensioni:</strong> {{ doctor.averageVotes }}
+                                <strong>Media voti:</strong> {{ doctor.media_voti }}
                             </div>
                         </section>
                     </div>
@@ -283,7 +280,7 @@ export default {
 
             </div>
         </div>
-        <div v-else-if="filteredDoctorsByVotes.length"></div>
+        <div v-else-if="filteredDoctors.length"></div>
     </main>
 </template>
 

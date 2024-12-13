@@ -1,6 +1,7 @@
 <script>
 import axios from 'axios';
 import { store } from '../../../js/store.js';
+import HeaderDashboard from '../Dashboard/HeaderDashboard.vue'
 
 export default {
     data() {
@@ -44,6 +45,10 @@ export default {
             reviewFormValidated: false,
         }
     },
+    components: {
+        HeaderDashboard,
+    },
+
     methods: {
         getProfileData() {
             axios.get(this.store.apiUri + 'profiles/' + this.store.informationPageId)
@@ -215,6 +220,7 @@ export default {
 </script>
 
 <template>
+    <HeaderDashboard />
     <main class="container d-flex justify-content-center">
         <div class="general-main">
             <div class="loader" v-if="!loaded"></div>
