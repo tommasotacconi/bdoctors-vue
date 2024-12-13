@@ -28,64 +28,10 @@ export default {
         MessageChart,
     },
     methods: {
-        getApiMessages() {
-            axios.get(this.messagesApiUrl)
-                .then(response => {
-                    // handle success
-                    console.log(response.data);
-                    let messagesProfiles = response.data.messages
-                    console.log(messagesProfiles)
-                    let idProfile = store.profileDataGeneral.id
-                    console.log(idProfile)
 
-                    const messagesProfile = messagesProfiles.filter(message => message.profile_id === idProfile)
-                    console.log(messagesProfile)
-                    this.messagesProfile = messagesProfile
-
-                    // Costruzione oggetto charData
-                    // let charData = {
-                    //     lebels: [
-                    //         'Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'
-                    //     ],
-                    //     datasets: [
-                    //         {
-                    //             data: [
-                    //                 40, 20, 12
-                    //             ],
-                    //             backgroundColor: '#65B0FF',
-                    //         }
-                    //     ]
-                    // }
-
-                })
-                .catch(function (error) {
-                    // handle error
-                    console.log(error);
-                })
-        },
-
-        // Per controllare la data e l'ora dei messaggi e recensioni
-        getNormalFormatHourDate(index) {
-            // Fixed date
-            let hourDate = this.messagesProfile[index].updated_at
-            console.log(hourDate)
-            const date = new Date(hourDate)
-
-            // Così posso togliere i secondi
-            const options = {
-                year: "numeric",
-                month: "2-digit",
-                day: "2-digit",
-                hour: "2-digit",
-                minute: "2-digit",
-                timeZone: "Europe/Rome"
-            };
-
-            return date.toLocaleString("it-IT", options)
-        }
     },
     created() {
-        this.getApiMessages()
+        // this.getApiMessages()
     },
 }
 </script>
@@ -95,7 +41,6 @@ export default {
         <div class="container">
             <h2>Statistiche</h2>
             <MessageChart />
-            <!-- <MessageChart :messagesProfile="messagesProfile" :charData="charData" /> -->
 
         </div>
 

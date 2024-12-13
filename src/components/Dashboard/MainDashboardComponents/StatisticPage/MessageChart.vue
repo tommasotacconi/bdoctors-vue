@@ -57,16 +57,6 @@ export default {
             return messagesProfile[0].id
         }
     },
-    // props: {
-    //     messagesProfile: {
-    //         type: Array,
-    //         required: true
-    //     },
-    //     charData: {
-    //         type: Object,
-    //         required: true
-    //     }
-    // },
 }
 </script>
 
