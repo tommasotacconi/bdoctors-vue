@@ -45,8 +45,18 @@ export default {
                     console.log(messagesProfile)
 
                     // Parte relativa alla creazione della statistisca dinamica
-                    const messagesProfileDecember = messagesProfile.filter(message => message.updated_at.includes(12))
-                    console.log(messagesProfileDecember)
+                    const messagesProfileJanuary = messagesProfile.filter(message => message.updated_at.startsWith('01/'));
+                    const messagesProfileFebruary = messagesProfile.filter(message => message.updated_at.startsWith('02/'));
+                    const messagesProfileMarch = messagesProfile.filter(message => message.updated_at.startsWith('03/'));
+                    const messagesProfileApril = messagesProfile.filter(message => message.updated_at.startsWith('04/'));
+                    const messagesProfileMay = messagesProfile.filter(message => message.updated_at.startsWith('05/'));
+                    const messagesProfileJune = messagesProfile.filter(message => message.updated_at.startsWith('06/'));
+                    const messagesProfileJuly = messagesProfile.filter(message => message.updated_at.startsWith('07/'));
+                    const messagesProfileAugust = messagesProfile.filter(message => message.updated_at.startsWith('08/'));
+                    const messagesProfileSeptember = messagesProfile.filter(message => message.updated_at.startsWith('09/'));
+                    const messagesProfileOctober = messagesProfile.filter(message => message.updated_at.startsWith('10/'));
+                    const messagesProfileNovember = messagesProfile.filter(message => message.updated_at.startsWith('11/'));
+                    const messagesProfileDecember = messagesProfile.filter(message => message.updated_at.startsWith('12/'));
 
 
                     store.charData = {
@@ -56,7 +66,7 @@ export default {
                         datasets: [
                             {
                                 data: [
-                                    40, 20, 12, 15, 16, 10, 42, 34, 37, 25, 41, messagesProfileDecember.length
+                                    messagesProfileJanuary.length, messagesProfileFebruary.length, messagesProfileMarch.length, messagesProfileApril.length, messagesProfileMay.length, messagesProfileJune.length, messagesProfileJuly.length, messagesProfileAugust.length, messagesProfileSeptember.length, messagesProfileOctober.length, messagesProfileNovember.length, messagesProfileDecember.length
                                 ],
                                 backgroundColor: '#65B0FF',
                             }
