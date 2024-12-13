@@ -3,6 +3,7 @@ import axios from 'axios';
 import { store } from '../../../js/store';
 import DoctorShow from './DoctorShow.vue';
 import { RouterLink } from 'vue-router';
+import { finiteOrDefault } from 'chart.js/helpers';
 
 export default {
     data() {
@@ -16,7 +17,7 @@ export default {
             specializationName: '',
             doctors: [],
             rating: null,
-            reviewsNumber: null,
+            inputReviews: null,
             loaded: false,
             showDoctor: false,
             filteredDoctors: [],
@@ -100,15 +101,24 @@ export default {
         },
 
         getFilteredReviews() {
-            let url = `http://localhost:8000/api/reviews/filter/${this.specializationId}/${this.rating}/${this.reviewsNumber}`;
+            let url = `http://localhost:8000/api/reviews/filter/${this.specializationId}/${this.rating}/${this.inputReviews}`;
 
             axios.get(url, {
             })
                 .then(response => {
                     // handle success
                     console.log('RECENSIONI FILTRATEEEE', response.data);
-                    this.filteredDoctors = response.data
-                    console.log(this.filteredDoctors)
+                    this.filteredDoctors = response.data;
+                    console.log('filtered doctors:', this.filteredDoctors)
+
+                    this.$router.push({
+                        name: 'search',
+                        params: {
+                            searchId: store.selectedSpecializationName.trim().replace(/ /g, "-").toLowerCase(),
+                            ...(this.rating !== null && this.rating !== undefined ? { inputRating: `input-rating:${this.rating}` } : {}),
+                            ...(this.inputReviews !== null && this.inputReviews !== undefined ? { inputReviews: `input-reviews:${this.inputReviews}` } : {})
+                        }
+                    });
                 })
                 .catch(function (error) {
                     // handle error
@@ -118,9 +128,9 @@ export default {
         },
 
         resetInputs() {
-            return (this.filteredDoctors = [],
-                this.rating = null,
-                this.reviewsNumber = null);
+            this.rating = null;
+            this.inputReviews = null;
+            this.getFilteredReviews();
         },
     },
     computed: {
@@ -131,7 +141,8 @@ export default {
         }
     },
     created() {
-        this.getApiProfile();
+        // this.getApiProfile();
+        this.getFilteredReviews();
         this.getSpecializationName();
     },
     mounted() {
@@ -196,20 +207,20 @@ export default {
                         <form action="" method="GET" class="form-control mx-3 d-flex"
                             @submit.prevent="getFilteredReviews">
                             <input type="number" class="form-control" id="reviews" name="reviews" min="0"
-                                v-model="reviewsNumber">
-                            <button type="submit" :class="{ 'disabled': reviewsNumber === null }"
+                                v-model="inputReviews">
+                            <button type="submit" :class="{ 'disabled': inputReviews === null }"
                                 class="btn btn-sm btn-secondary">Filtra</button>
                         </form>
                     </div>
 
                     <!-- Reset Input Fields Button -->
                     <button type="reset" class="btn btn-sm btn-primary"
-                        :class="{ 'disabled': rating === null && reviewsNumber === null }" @click="resetInputs">Cancella
+                        :class="{ 'disabled': rating === null && inputReviews === null }" @click="resetInputs">Cancella
                         Filtri</button>
                 </div>
 
 
-                <div class="doctors-list" v-if="!filteredDoctors.length">
+                <!-- <div class="doctors-list" v-if="!filteredDoctors.length">
                     <div class="doctor-card" v-for="(doctor, index) in doctors" @click="goToShowPage(doctor, index)">
                         <img src="https://media.istockphoto.com/id/1340883379/photo/young-doctor-hospital-medical-medicine-health-care-clinic-office-portrait-glasses-man.jpg?s=612x612&w=0&k=20&c=_H4VUPBkS0gEj5ZdZzQo-Hw3lMuyofJpB-P9yS92Wyw="
                             class="doctor-photo" alt="doctor photo">
@@ -231,8 +242,8 @@ export default {
                             </div>
                         </section>
                     </div>
-                </div>
-                <div class="doctors-list" v-else>
+                </div> -->
+                <div class="doctors-list" v-if="filteredDoctors.length">
                     <div class="doctor-card" v-for="(doctor, index) in filteredDoctors"
                         @click="goToShowPage(doctor, index)">
                         <img src="https://media.istockphoto.com/id/1340883379/photo/young-doctor-hospital-medical-medicine-health-care-clinic-office-portrait-glasses-man.jpg?s=612x612&w=0&k=20&c=_H4VUPBkS0gEj5ZdZzQo-Hw3lMuyofJpB-P9yS92Wyw="
@@ -242,21 +253,19 @@ export default {
                                 {{ doctor.first_name }} {{ doctor.last_name }}
                             </h5>
                             <div class="doctor-address">
-                                <strong>Ufficio:</strong> {{ doctor.home_address }}
+                                <strong>Ufficio:</strong> {{ doctor.office_address }}
                             </div>
-                            <div class="doctor-specialization">
-                                <strong>Specializzazioni:</strong>
-                                <ul>
-                                    <li v-for="doctorSpecialization in doctor.specializations">
-                                        {{ doctorSpecialization.name }}
-                                    </li>
-                                </ul>
+                            <div class="doctor-average">
+                                <strong>Media voti:</strong> {{ doctor.media_voti ? doctor.media_voti : "-" }}
                             </div>
-                            <div class="doctor-address">
-                                <strong>Media voti:</strong> {{ doctor.media_voti }}
+                            <div class="doctor-reviews">
+                                <strong>Recensioni ricevute:</strong> {{ doctor.media_voti ? doctor.media_voti : "-" }}
                             </div>
                         </section>
                     </div>
+                </div>
+                <div v-else>
+                    <p>Nessun risultato trovato</p>
                 </div>
 
             </div>
