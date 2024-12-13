@@ -113,41 +113,8 @@ export default {
                 })
         },
 
-        // getFilteredVotesProfiles() {
-        //     this.getFilteredReviews();
-
-        //     this.getApiProfile();
-
-        //     const filteredDoctors = [];
-
-        //     for (let i = 0; i < this.doctors.length; i++) {
-        //         let singleDoctor = { doctor: [], averageVotes: null }
-        //         let doctor = this.doctors[i];
-        //         singleDoctor.doctor = doctor;
-        //         console.log('singolo medico', doctor)
-        //         let reviews = doctor.reviews;
-        //         // console.log('Recensioni:', reviews);
-        //         let votesSum = null;
-        //         for (let j = 0; j < reviews.length; j++) {
-        //             let review = reviews[j];
-        //             // console.log("Singola recensione:", review);
-        //             votesSum += parseInt(review.votes);
-        //         }
-        //         // console.log("Somma voti per ogni medico:", votesSum)
-        //         let averageVotes = null;
-        //         averageVotes = Math.round(votesSum / reviews.length)
-        //         console.log('La media dei voti del medico è:', averageVotes)
-        //         singleDoctor.averageVotes = averageVotes;
-        //         if (singleDoctor.averageVotes >= this.rating)
-        //             filteredDoctors.push(singleDoctor);
-        //         console.log('singleDoctor', singleDoctor)
-        //     }
-        //     console.log('Array Dottori filtrati nel metodo:', filteredDoctors)
-        //     this.filteredDoctors = filteredDoctors;
-        // },
-
         emptyFilteredDoctors() {
-            return this.filteredDoctors = [];
+            return (this.filteredDoctors = [], this.rating = null);
         }
     },
     computed: {
@@ -195,8 +162,10 @@ export default {
                                 <form action="" method="get" class="form-control rating mx-3"
                                     @submit.prevent="getFilteredReviews">
                                     <button type="reset" class="btn btn-sm btn-primary"
+                                        :class="{ 'disabled': rating === null }"
                                         @click="emptyFilteredDoctors">Reset</button>
-                                    <button type="submit" class="btn btn-sm btn-secondary">Filtra</button>
+                                    <button type="submit" class="btn btn-sm btn-secondary"
+                                        :class="{ 'disabled': rating === null }">Filtra</button>
                                     <input type="radio" id="vote5" name="rating" value="5" v-model="rating">
                                     <label for="vote5"><i class="fa-solid fa-stethoscope"></i>
                                     </label>
