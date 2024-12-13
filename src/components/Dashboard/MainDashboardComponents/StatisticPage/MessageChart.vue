@@ -39,6 +39,13 @@ export default {
                     legend: {
                         display: false
                     }
+                },
+                scales: {
+                    y: {
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
                 }
             }
         }
@@ -64,6 +71,7 @@ export default {
 </script>
 
 <template>
+    <h4>Messaggi ricevuti</h4>
     <div class="char">
         <Bar :data="store.charData" :options="options" />
     </div>
@@ -72,4 +80,9 @@ export default {
 
 </template>
 
-<style scoped></style>
+<style scoped>
+h4 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+</style>
