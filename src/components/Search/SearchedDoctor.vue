@@ -74,6 +74,19 @@ export default {
                     console.log(error);
                 })
         },
+				isSponsored(profileId) {
+						// Search doctor with profileId parsed using test function and find:
+						// 1.Define const for result and test function
+						let searchedDoctor;
+						function isSearchedProfileId(element) {
+								return element.id === profileId;
+						}
+						// 2.Find
+						searchedDoctor = this.doctors.find(isSearchedProfileId)
+
+						// Check if it has sponsorships to return a boolean value
+						return !!searchedDoctor.sponsorships.length;
+				},
 
         // Non più utile
         // removeShowDoctor() {
@@ -133,7 +146,38 @@ export default {
             setTimeout(() => {
                 this.loaded = true
             }, 2000)
-        }
+        },
+				orderedDoctors() {
+					console.log('--this.doctors--', this.doctors);
+					// Define array to be ordered
+					const toOrderArray = [...this.doctors];
+					console.log('--toOrderArray--', toOrderArray);
+					// Put with sponsorships doctors to top:
+					// 1. Set up useful variables and functions
+					const checkFn = this.isSponsored;
+					let firstItemRemoved = undefined;
+					// 2. Processing data
+					for (let i = toOrderArray.length - 1; i >= 0; i--) {
+						const currElement = toOrderArray[i];
+						if (checkFn(currElement.id)) {
+							// Check if the removed item has already been removed
+							if (firstItemRemoved === currElement) break;
+							// Remove item of index i; put at the beginning
+							const removed = toOrderArray.splice(i, 1)[0];
+							toOrderArray.unshift(removed);
+							if (!firstItemRemoved) {
+								firstItemRemoved = removed;
+								i++;
+							} else {
+								i++;
+							}
+						}
+					}
+					// 3. Returning result
+					console.log(toOrderArray);
+				return toOrderArray;
+ 					},
+
     },
     created() {
         this.getApiProfile();
@@ -207,7 +251,7 @@ export default {
                 </div>
 
                 <div class="doctors-list" v-if="!filteredDoctorsByVotes.length">
-                    <div class="doctor-card" v-for="(doctor, index) in doctors" @click="goToShowPage(doctor, index)">
+                    <div class="doctor-card"  :class="{ 'card-sponsored': isSponsored(doctor.id) }" v-for="(doctor, index) in orderedDoctors" @click="goToShowPage(doctor, index)">
                         <img src="https://media.istockphoto.com/id/1340883379/photo/young-doctor-hospital-medical-medicine-health-care-clinic-office-portrait-glasses-man.jpg?s=612x612&w=0&k=20&c=_H4VUPBkS0gEj5ZdZzQo-Hw3lMuyofJpB-P9yS92Wyw="
                             class="doctor-photo" alt="doctor photo">
                         <section class="doctor-information">
@@ -320,6 +364,26 @@ img {
     color: var(--color-primary);
     font-weight: bold;
     border: 1px solid var(--color-primary);
+}
+
+/* Sponsored doctors */
+.sponsored-card-container {
+    display: flex;
+    gap: 30px;
+    justify-content: center;
+    flex-wrap: wrap;
+
+}
+
+.card-sponsored {
+    background-color: #D8F9FF;
+    border-radius: 40px;
+    flex-direction: column;
+    align-items: center;
+    border: 0;
+    text-align: center;
+    border: 2px solid #FFCC00;
+    transition: 0.8s;
 }
 
 /* Non più utile */
