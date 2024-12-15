@@ -87,6 +87,33 @@ export default {
 						// Check if it has sponsorships to return a boolean value
 						return !!searchedDoctor.sponsorships.length;
 				},
+				orderBySponsorship(objectsArray) {
+					// Define array to be ordered
+					const toOrderArray = [...objectsArray];
+					// Put with sponsorships doctors to top:
+					// 1. Set up useful variables and functions
+					const checkFn = this.isSponsored;
+					let firstItemRemoved = undefined;
+					// 2. Processing data
+					for (let i = toOrderArray.length - 1; i >= 0; i--) {
+						const currElement = toOrderArray[i];
+						if (checkFn(currElement.id)) {
+							// Check if the removed item has already been removed
+							if (firstItemRemoved === currElement) break;
+							// Remove item of index i; put at the beginning
+							const removed = toOrderArray.splice(i, 1)[0];
+							toOrderArray.unshift(removed);
+							if (!firstItemRemoved) {
+								firstItemRemoved = removed;
+								i++;
+							} else {
+								i++;
+							}
+						}
+					}
+					// 3. Returning result
+					return toOrderArray;
+				},
 
         // Non più utile
         // removeShowDoctor() {
@@ -134,7 +161,7 @@ export default {
                 console.log('singleDoctor', singleDoctor)
             }
             console.log('Array Dottori filtrati nel metodo:', filteredDoctors)
-            this.filteredDoctorsByVotes = filteredDoctors;
+            this.filteredDoctorsByVotes = this.orderBySponsorship(filteredDoctors);
         },
 
         emptyFilteredDoctors() {
@@ -148,35 +175,8 @@ export default {
             }, 2000)
         },
 				orderedDoctors() {
-					console.log('--this.doctors--', this.doctors);
-					// Define array to be ordered
-					const toOrderArray = [...this.doctors];
-					console.log('--toOrderArray--', toOrderArray);
-					// Put with sponsorships doctors to top:
-					// 1. Set up useful variables and functions
-					const checkFn = this.isSponsored;
-					let firstItemRemoved = undefined;
-					// 2. Processing data
-					for (let i = toOrderArray.length - 1; i >= 0; i--) {
-						const currElement = toOrderArray[i];
-						if (checkFn(currElement.id)) {
-							// Check if the removed item has already been removed
-							if (firstItemRemoved === currElement) break;
-							// Remove item of index i; put at the beginning
-							const removed = toOrderArray.splice(i, 1)[0];
-							toOrderArray.unshift(removed);
-							if (!firstItemRemoved) {
-								firstItemRemoved = removed;
-								i++;
-							} else {
-								i++;
-							}
-						}
-					}
-					// 3. Returning result
-					console.log(toOrderArray);
-				return toOrderArray;
- 					},
+					return this.orderBySponsorship(this.doctors);
+				},
 
     },
     created() {
