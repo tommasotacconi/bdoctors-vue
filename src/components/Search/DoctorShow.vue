@@ -235,15 +235,14 @@ export default {
                             <h1 class="card-title py-3">
                                 Dott.{{ store.doctorProfile.first_name }} {{ store.doctorProfile.last_name
                                 }}
-                                <!-- {{ profileData.doctor.first_name }} {{ profileData.doctor.last_name }} -->
                             </h1>
                             <h4 class="text-start">
                                 Specialista in:
-                                <!-- <ul class="specializations-list">
+                                <ul class="specializations-list">
                                     <li class="specializations-list-item"
-                                        v-for="specialization in store.doctorProfile.user.specializations">{{
+                                        v-for="specialization in store.doctorProfile.specializations_name">{{
                                             specialization.name }}</li>
-                                </ul> -->
+                                </ul>
                             </h4>
                             <p class="address">{{ store.doctorProfile.office_address }}</p>
                         </div>
@@ -259,11 +258,11 @@ export default {
                             <li id="specialization-border" class="card-list-item">
                                 <h3>Specializzazione</h3>
                                 <div class="data-element specializations-element">
-                                    <!-- <ul>
-                                        <li v-for="specialization in store.doctorProfile.user.specializations">
+                                    <ul>
+                                        <li v-for="specialization in store.doctorProfile.specializations_name">
                                             {{
                                                 specialization.name }}</li>
-                                    </ul> -->
+                                    </ul>
                                 </div>
                                 <!-- {{ profileData.doctor.specializations[0].name }} -->
                             </li>
