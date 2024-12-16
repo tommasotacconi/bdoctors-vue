@@ -3,6 +3,7 @@ import axios from "axios";
 import Multiselect from "../Generics/Multiselect.vue";
 import PhotoUpload from "../Generics/PhotoUpload.vue";
 import CvUpload from "../Generics/CvUpload.vue";
+import AppAlert from "../Generics/AppAlert.vue";
 
 
 export default {
@@ -45,7 +46,8 @@ export default {
     components: {
         Multiselect,
         PhotoUpload,
-        CvUpload
+        CvUpload,
+				AppAlert
     },
     methods: {
 
@@ -197,7 +199,7 @@ export default {
             //     backdrop.remove();
             // }
             // redirect to user profile
-            this.$router.push({ name: 'dashboard', params: { id: response.data.user.id } });
+            this.$router.push({ name: 'dashboard', params: { id: this.formData.user_id } });
         }
     },
     computed: {
@@ -263,12 +265,11 @@ export default {
                     <p> {{ errors.services }} </p>
                 </div>
             </div>
-            <div class="mb-3 d-flex flex-column col-6">
-							<div class="file-input">
-                <label for="photo" class="form-label mb-3">
-									Foto profilo <span class="badge text-bg-secondary">{{'file presenti:' + (oldPhoto ? '1' : '0') }}</span>
-								</label>
-								<div></div>
+            <div class="mb-3 col-6">
+							<label for="photo" class="form-label mb-3">
+								Foto profilo <span class="badge text-bg-secondary">{{'file presenti:' + (oldPhoto ? '1' : '0') }}</span>
+							</label>
+							<div class="file-input d-flex flex-column align-items-center">
                 <PhotoUpload v-model="formData.photo" @file-selected="handlePhoto"></PhotoUpload>
                 <!-- <input type="text" class="form-control" :class="{ 'invalid-input': errors.photo }" id="photo"
                     placeholder="Inserisci un file valido" @change="formData.photo" required> -->
@@ -277,11 +278,11 @@ export default {
                 </div>
 							</div>
             </div>
-            <div class="mb-3 d-flex flex-column col-6">
-							<div class="file-input">
-                <label for="curriculum" class="form-label mb-3">
-									Curriculum Vitae <span class="badge text-bg-secondary">{{'file presenti:' + (oldPhoto ? '1' : '0') }}</span>
-								</label>
+            <div class="mb-3 col-6">
+							<label for="curriculum" class="form-label mb-3">
+								Curriculum Vitae <span class="badge text-bg-secondary">{{'file presenti:' + (oldPhoto ? '1' : '0') }}</span>
+							</label>
+							<div class="file-input d-flex flex-column align-items-center">
                 <CvUpload v-model="formData.curriculum" @cv-selected="handleCurriculum"></CvUpload>
                 <!-- <input type="text" class="form-control" :class="{ 'invalid-input': errors.curriculum }" id="curriculum"
                     placeholder="Inserisci un file valido" @change="formData.curriculum" required> -->
@@ -298,25 +299,19 @@ export default {
                 <button type="reset" class="btn btn-reset mt-4">Reset</button>
             </div>
 
-            <!-- Modal -->
-            <div class="modal fade" id="myModal" tabindex="-1" aria-hidden="false" v-if="validated === true">
-                <div class="modal-dialog modal-d    ialog-centered">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="btn-close" data-bs-dismiss="myModal"
-                                aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            I tuoi dati sono stati aggiornati.
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-primary" @click="openProfile">
-                                Torna al profilo
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <!-- Alert -->
+						<div class="col-6" v-if="validated">
+							<AppAlert class="alert-success d-flex">
+								<div class="col alert-body">
+									I tuoi dati sono stati aggiornati.
+								</div>
+								<div class="alert-footer">
+									<button type="button" class="btn btn-primary" @click="openProfile">
+										Torna al profilo
+									</button>
+								</div>
+							</AppAlert>
+						</div>
 
         </form>
     </div>
