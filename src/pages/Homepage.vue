@@ -15,8 +15,14 @@ export default {
 </script>
 
 <template>
-    <AppHeader />
+    <AppHeader class="app-header" />
     <AppMainHome />
 </template>
 
-<style scoped></style>
+<style scoped>
+.app-header {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+</style>

@@ -13,7 +13,7 @@ export default {
             usersSponsoredId: [],
             profilesId: [],
             filteredProfile: [],
-            loaded: false,
+            loaded: true,
         }
     },
     methods: {
@@ -66,17 +66,17 @@ export default {
         },
     },
     mounted() {
-        this.showLoader
+        // this.showLoader
         this.getApiSponsorships()
         this.getApiProfiles()
     },
     computed: {
-        showLoader() {
-            setTimeout(() => {
-                this.loaded = true
-            }, 2000)
+        // showLoader() {
+        //     setTimeout(() => {
+        //         this.loaded = true
+        //     }, 2000)
 
-        }
+        // }
     },
 }
 </script>
@@ -84,8 +84,8 @@ export default {
 <template>
     <main class="mt-4">
         <div class="container sponsored-doctor-container">
-            <h2>Dottori in evidenza</h2>
-            <div class="loader" v-if="!loaded"></div>
+            <h3>Dottori in evidenza</h3>
+            <!-- <div class="loader" v-if="!loaded"></div> -->
             <div class="sponsored-card-container">
                 <div class="card card-sponsored d-flex" style="width: 18rem;" v-for="(doctor, index) in filteredProfile"
                     @click="goToShowPage(doctor, index)">
@@ -109,6 +109,12 @@ export default {
 </template>
 
 <style scoped>
+h3 {
+    text-align: center;
+    margin-bottom: 20px;
+
+}
+
 ul {
     text-align: start;
     padding-left: 20px;
