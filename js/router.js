@@ -7,7 +7,8 @@ import ProfileEdit from '../src/pages/ProfileEdit.vue'
 import Createpage from '../src/pages/Createpage.vue'
 import AdvancedSearch from '../src/pages/AdvancedSearch.vue'
 import DoctorShow from '../src/components/Search/DoctorShow.vue'
-import PaymentForm from '../src/pages/PaymentForm.vue'
+import PaymentSuccess from '../src/pages/PaymentSuccess.vue'
+import { store } from './store.js';
 
 const routes = [
   { path: '/', component: Homepage, name: 'homepage' },
@@ -24,6 +25,7 @@ const routes = [
   // Path to doctor, within specialization id, of doctord id selected (first id for specialization
   // second for doctor)
   { path: '/search/:searchId/:id', component: DoctorShow, name: 'search.show' },
+  { path: '/payment-success', component: PaymentSuccess, name: 'payment-success', params: { id: store.userId } },
 ]
 
 const router = createRouter({

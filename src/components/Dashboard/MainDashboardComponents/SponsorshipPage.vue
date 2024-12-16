@@ -1,49 +1,98 @@
 <script>
 import axios from 'axios';
 import { store } from '../../../../js/store.js';
+import dropin from 'braintree-web-drop-in';
 
 export default {
     data() {
         return {
             store,
             price: null,
-            profilesApiUrl: 'http://localhost:8000/api/profiles',
+            profilesApiUrl: 'http://127.0.0.1:8000/api/profiles',
             sponsorships: [],
             sponsorship: false,
             cardBronze: false,
             cardSilver: false,
             cardGold: false,
             loaded: false,
+            showPaymentForm: false,
+            instance: null,
+            loading: false,
+            error: null
         }
     },
     methods: {
-        getPriceBronze() {
-            this.price = 2.99
-            console.log(this.price)
-            this.$router.push('/payment-form')
+        async getPriceBronze() {
+            this.price = 2.99;
+            store.price = this.price;
+            this.showPaymentForm = true;
+            await this.initializePayment();
         },
-        getPriceSilver() {
-            this.price = 5.99
-            console.log(this.price)
-            this.$router.push('/payment-form')
+        async getPriceSilver() {
+            this.price = 5.99;
+            store.price = this.price;
+            this.showPaymentForm = true;
+            await this.initializePayment();
         },
-        getPriceGold() {
-            this.price = 9.99
-            console.log(this.price)
-            this.$router.push('/payment-form')
+        async getPriceGold() {
+            this.price = 9.99;
+            store.price = this.price;
+            this.showPaymentForm = true;
+            await this.initializePayment();
+        },
+        async initializePayment() {
+            try {
+                const response = await axios.get('http://127.0.0.1:8000/api/braintree/token');
+                const clientToken = response.data.token;
+
+                const dropinInstance = await dropin.create({
+                    authorization: clientToken,
+                    container: '#dropin-container',
+                    locale: 'it_IT',
+                    paypal: {
+                        flow: 'checkout',
+                        amount: this.price,
+                        currency: 'EUR'
+                    }
+                });
+
+                this.instance = dropinInstance;
+            } catch (error) {
+                this.error = 'Errore durante l\'inizializzazione del modulo di pagamento';
+                console.error(error);
+            }
+        },
+        async submitPayment() {
+            if (!this.instance) {
+                return;
+            }
+
+            this.loading = true;
+            this.error = null;
+
+            try {
+                const { nonce } = await this.instance.requestPaymentMethod();
+                const fakePayPalNonce = 'fake-paypal-one-time-nonce';
+
+                await axios.post('http://127.0.0.1:8000/api/braintree/process-payment', {
+                    payment_method_nonce: fakePayPalNonce,
+                    amount: this.price
+                });
+
+                this.$router.push('/payment-success');
+            } catch (error) {
+                this.error = 'Pagamento fallito. Per favore riprova.';
+                console.error(error);
+            } finally {
+                this.loading = false;
+            }
         },
         getApiProfiles() {
             axios.get(this.profilesApiUrl)
                 .then(response => {
-                    // Controllo per verificare se l'utente ha la sponsorizzazione o meno
-                    // Al momento non tiene conto del fatto che sia attiva o meno visto nessuna lo è
-                    // In caso sarebbe sufficiente usare l'api e cercare ...doctor.has_active_sponsorship
-
                     let profileDataGeneral = store.profileDataGeneral
-
                     let sponsorships = response.data.profiles[profileDataGeneral.id].sponsorships
                     this.sponsorships = sponsorships
-                    console.log(this.sponsorships)
 
                     if (sponsorships.length) {
                         this.sponsorship = true
@@ -51,11 +100,7 @@ export default {
                         this.sponsorship = false
                     }
 
-                    console.log(this.sponsorship)
-
-
                     if (this.sponsorships[0].id === 1) {
-                        console.log('test')
                         this.cardBronze = true
                     } else if (this.sponsorships[0].id === 2) {
                         this.cardSilver = true
@@ -64,25 +109,17 @@ export default {
                     }
                 })
                 .catch(function (error) {
-                    // handle error
                     console.log(error);
                 })
         },
-        // Metodo non adoperato, inglobato nella chiamata api
         getTypeSponsorship() {
             if (this.sponsorships[0].id === 1) {
-                console.log('test')
                 return 'card-bronze'
             } else if (this.sponsorships[0].id === 2) {
-                console.log('test')
-
                 return 'card-silver'
             } else if (this.sponsorships[0].id === 3) {
-                console.log('test')
-
                 return 'card-gold'
             }
-
         }
     },
     computed: {
@@ -90,7 +127,6 @@ export default {
             setTimeout(() => {
                 this.loaded = true
             }, 2000)
-
         }
     },
     created() {
@@ -116,9 +152,6 @@ export default {
                         di
                         ricerca.
                     </p>
-                    <p>
-
-                    </p>
                 </div>
                 <h3>Scegli la tua sponsorizzazione:</h3>
                 <section class="sponsor-cards">
@@ -130,13 +163,11 @@ export default {
                         <div class="premium-star"><i class="fa-solid fa-star"></i></div>
                     </button>
                     <button class="sponsor-card card-silver" @click="getPriceSilver()">
-
                         <div class="card-description">
                             <p class="hour-sponsorship">Garantito per 72 ore</p>
                             <p class="price">5,99€</p>
                         </div>
                         <div class="premium-star"><i class="fa-solid fa-star"></i></div>
-
                     </button>
                     <button class="sponsor-card card-gold" @click="getPriceGold()">
                         <div class="card-description">
@@ -146,6 +177,20 @@ export default {
                         <div class="premium-star"><i class="fa-solid fa-star"></i></div>
                     </button>
                 </section>
+
+                <!-- Payment Form -->
+                <div v-if="showPaymentForm" class="payment-container">
+                    <h2>Completa il tuo pagamento</h2>
+                    <p class="amount">Importo da pagare: €{{ price }}</p>
+
+                    <div id="dropin-container"></div>
+
+                    <div class="error" v-if="error">{{ error }}</div>
+
+                    <button class="payment-button" @click="submitPayment" :disabled="loading">
+                        {{ loading ? 'Elaborazione in corso...' : 'Paga ora' }}
+                    </button>
+                </div>
             </div>
             <div class="is-sponsored" v-else>
                 <div class="sponsor-card card-bronze" v-if="cardBronze">
@@ -203,7 +248,6 @@ button {
     font-size: 1.2rem;
 }
 
-
 /* Cards */
 .sponsor-cards {
     display: flex;
@@ -217,7 +261,6 @@ button {
     border-radius: 25px;
     color: white;
     font-weight: bold;
-    /* box-shadow: 5px 5px 15px 1px black; */
     position: relative;
     flex-basis: 30%;
     cursor: pointer;
@@ -265,32 +308,56 @@ button {
     font-size: 0.9rem;
 }
 
-.button-pay-now-general {
-    display: flex;
-    justify-content: center;
-    margin-top: 25px;
-}
-
-.button-pay-now {
-    background-color: var(--color-complementary);
-    border-radius: 20px;
-    padding: 8px 15px;
-    text-decoration: none;
-    color: var(--color-primary);
-    font-weight: bold;
-    border: 1px solid var(--color-primary);
-}
-
-.button-pay-now:hover {
-    scale: 1.1;
-}
-
 .is-sponsored {
     width: 50%;
 }
 
+/* Payment Form Styles */
+.payment-container {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 20px;
+}
 
-/* Loader progressive */
+.amount {
+    text-align: center;
+    font-size: 1.2em;
+    margin-bottom: 30px;
+}
+
+#dropin-container {
+    min-height: 300px;
+}
+
+.error {
+    color: red;
+    margin: 10px 0;
+    text-align: center;
+}
+
+.payment-button {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    margin-top: 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.payment-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.payment-button:hover:not(:disabled) {
+    background-color: #0056b3;
+}
+
+/* Loader */
 .loader {
     --r1: 154%;
     --r2: 68.5%;
