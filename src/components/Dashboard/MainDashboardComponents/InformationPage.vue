@@ -53,7 +53,7 @@ export default {
                 <div class="card mb-3" v-if="Object.keys(profileData).length">
                     <div class="card-flex">
                         <div class="img-doctor">
-                            <!-- <img :src="{ profileData.photo }" class="img-flui" alt="doctor photo"> -->
+                            <!-- <img :src="profileData.photo" class="img-flui" alt="doctor photo"> -->
                             <img src="https://st4.depositphotos.com/4329009/19956/v/450/depositphotos_199564354-stock-illustration-creative-vector-illustration-default-avatar.jpg"
                                 class="img-flui" alt="doctor photo">
                         </div>
