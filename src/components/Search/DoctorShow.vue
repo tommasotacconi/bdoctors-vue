@@ -233,15 +233,20 @@ export default {
                         </div>
                         <div class="card-body-title-section">
                             <h1 class="card-title py-3">
-                                Dott.{{ store.doctorProfile.first_name }} {{ store.doctorProfile.last_name
+                                Dott.{{ store.doctorProfile.first_name ? store.doctorProfile.first_name :
+                                    store.doctorProfile.user.first_name }}
+                                {{ store.doctorProfile.last_name ? store.doctorProfile.last_name :
+                                    store.doctorProfile.user.last_name
                                 }}
                             </h1>
                             <h4 class="text-start">
                                 Specialista in:
                                 <ul class="specializations-list">
-                                    <li class="specializations-list-item"
-                                        v-for="specialization in store.doctorProfile.specializations_name">{{
+                                    <li class="specializations-list-item" v-if="store.doctorProfile.user"
+                                        v-for="specialization in (store.doctorProfile.user.specializations)">{{
                                             specialization.name }}</li>
+
+                                    <li v-else>{{ store.doctorProfile.specializations_name }}</li>
                                 </ul>
                             </h4>
                             <p class="address">{{ store.doctorProfile.office_address }}</p>
@@ -258,10 +263,12 @@ export default {
                             <li id="specialization-border" class="card-list-item">
                                 <h3>Specializzazione</h3>
                                 <div class="data-element specializations-element">
-                                    <ul>
-                                        <li v-for="specialization in store.doctorProfile.specializations_name">
-                                            {{
+                                    <ul class="specializations-list">
+                                        <li class="specializations-list-item" v-if="store.doctorProfile.user"
+                                            v-for="specialization in (store.doctorProfile.user.specializations)">{{
                                                 specialization.name }}</li>
+
+                                        <li v-else>{{ store.doctorProfile.specializations_name }}</li>
                                     </ul>
                                 </div>
                                 <!-- {{ profileData.doctor.specializations[0].name }} -->

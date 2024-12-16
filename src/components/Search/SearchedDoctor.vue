@@ -77,16 +77,6 @@ export default {
                 })
         },
 
-        // Non più utile
-        // removeShowDoctor() {
-        //     if (this.showDoctor) {
-        //         this.showDoctor = false
-        //     } else if (!this.showDoctor) {
-        //         this.showDoctor = true
-        //     }
-
-        // },
-
         goToShowPage(doctor) {
             let completeName = "";
             completeName = doctor.first_name + '-' + doctor.last_name
@@ -105,6 +95,7 @@ export default {
                     // handle success
                     console.log('RECENSIONI FILTRATEEEE', response.data);
                     this.filteredDoctors = response.data;
+                    this.filteredDoctors.id = store.informationPageId;
                     console.log('filtered doctors:', this.filteredDoctors)
 
                     this.$router.push({
