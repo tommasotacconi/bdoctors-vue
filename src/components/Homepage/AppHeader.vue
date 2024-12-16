@@ -59,7 +59,7 @@ export default {
 
 <template>
     <header class="general-header">
-        <div class="container container-header d-flex">
+        <div class="container container-header d-flex gap-3">
             <section class="left-header d-flex">
                 <routerLink style="text-decoration: none; color: inherit;" :to="{ name: 'homepage' }">
                     <div class="left-header-title-logo d-flex">
@@ -257,5 +257,21 @@ h1 {
     text-decoration: none;
     color: white;
     font-weight: bold;
+}
+
+
+/* Responsive */
+@media screen and (max-width: 1230px) {
+    .title {
+        display: none;
+    }
+
+    .button-login {
+        padding: 11px 16px;
+    }
+
+    .fa-user-doctor {
+        display: none;
+    }
 }
 </style>

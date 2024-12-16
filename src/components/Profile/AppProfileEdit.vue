@@ -16,23 +16,23 @@ export default {
                 password: "",
                 phone: "",
                 office_address: "",
-                oldSpecializations: [],
-                specializations: [],
+                specializations: "",
                 services: "",
                 photo: null,
                 // photoUrl: "",
                 curriculum: null,
-                // curriculumUrl: '',
-            },
+                // curriculumUrl: "",
+						},
+						oldSpecializations: [],
             apiUrl: 'http://127.0.0.1:8000/api/profiles/edit/',
             errors: {
-                first_name: '',
+                first_name: "",
                 last_name: "",
                 email: "",
                 password: "",
                 phone: "",
                 office_address: "",
-                specializations: '',
+                specializations: "",
                 services: "",
                 photo: "",
                 curriculum: ""
@@ -58,10 +58,10 @@ export default {
         updateForm() {
 
             axios.post('http://localhost:8000/api/profiles/edit/' + this.formData.user_id, this.formData, {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                },
-            })
+										headers: {
+												"Content-Type": "multipart/form-data",
+										},
+            		})
                 .then(response => {
                     console.log('Profile updated', response.data)
                 })
@@ -108,12 +108,12 @@ export default {
             if (!this.formData.password) { this.errors.password = "La password è obbligatoria." }
             else if (!this.validPassword(this.formData.password)) { this.errors.password = "La password deve contenere almeno una maiuscola, una minuscola ed un numero" };
             if (!this.formData.phone) { this.errors.phone = "Il numero di telefono è obbligatorio." }
-            else if (isNaN(this.formData.phone)) { this.errors.phone = "Il numero di telefono può contenere solo numeri" };
+            // else if (isNaN(this.formData.phone)) { this.errors.phone = "Il numero di telefono può contenere solo numeri" };
             if (!this.formData.office_address) this.errors.office_address = "L'indirizzo è obbligatorio.";
-            if (!this.formData.oldSpecializations.length && !this.formData.specializations.length) this.errors.specializations = "Inserire almeno una specializzazione.";
+            if (!this.formData.specializations.length) this.errors.specializations = "Inserire almeno una specializzazione.";
             if (!this.formData.services) this.errors.services = "Inserire almeno una prestazione.";
-            if (!this.formData.photo) this.errors.photo = "La foto è obbligatoria";
-            if (!this.formData.curriculum) this.errors.curriculum = "Il curriculum è obbligatorio.";
+            // if (!this.formData.photo) this.errors.photo = "La foto è obbligatoria";
+            // if (!this.formData.curriculum) this.errors.curriculum = "Il curriculum è obbligatorio.";
 
             if (!this.errors.first_name &&
                 !this.errors.last_name &&
@@ -169,24 +169,17 @@ export default {
         getProfileData() {
             axios.get('http://localhost:8000/api/profiles/edit/' + this.formData.user_id, this.formData)
                 .then(response => {
-										console.log(response)
-                    this.formData = response.data.data;
+										// console.log(response);
                     this.formData.user_id = response.data.data.doctor.id;
                     this.formData.first_name = response.data.data.doctor.first_name;
                     this.formData.last_name = response.data.data.doctor.last_name;
                     this.formData.email = response.data.data.doctor.email;
-                    this.formData.password = response.data.data.doctor.password;
-										// Construct an array of ids in oldSpecializations
-										const oldSpecializations = response.data.data.doctor.specializations;
-										let result = [];
-										for (let i = 0; i < oldSpecializations.length; i++) {
-											const currentOldSpecialization = oldSpecializations[i].id;
-											result.push(currentOldSpecialization);
-										}
-										this.formData.oldSpecializations = result;
-										console.log(this.formData.oldSpecializations);
-										// console.log of formData filled after get
-                    console.log('formData after call', this.formData);
+                    this.formData.phone = response.data.data.phone;
+                    this.formData.office_address = response.data.data.office_address;
+										// Insert only ids of specializations in formData.specializations
+										this.formData.specializations = response.data.data.doctor.specializations.map(e => e.id);
+										this.oldSpecializations = response.data.data.doctor.specializations;
+                    this.formData.services = response.data.data.services;
                 })
                 .catch(function (error) {
                     // handle error
@@ -213,11 +206,10 @@ export default {
         this.getProfileData();
     },
 }
-
 </script>
 
 <template>
-    <div class="container py-3">
+    <div class="container py-3" v-if="formData.first_name">
         <h1 class="text-center">Modifica le tue informazioni</h1>
 
         <form action="" method="POST" class="row py-4 my-4" id="edit-form" @submit.prevent="validateForm" novalidate>
@@ -282,7 +274,7 @@ export default {
                 </div> -->
             <div class="mb-3 col-6">
                 <label for="specializations" class="form-label">Specializzazioni</label>
-                <Multiselect @send-values="updateSpecs" :specializations="formData.oldSpecializations" />
+                <Multiselect @send-values="updateSpecs" :specializations="oldSpecializations" />
                 <div class="invalid" v-if="errors.specializations">
                     <p> {{ errors.specializations }} </p>
                 </div>

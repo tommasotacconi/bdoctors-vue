@@ -11,14 +11,14 @@ export default {
             loaded: true,
             store,
             messageForm: {
-                profile_id: store.doctorProfile.user.id,
+                profile_id: store.doctorProfile.user_id,
                 first_name: '',
                 last_name: '',
                 email: '',
                 content: '',
             },
             reviewForm: {
-                profile_id: store.doctorProfile.user.id,
+                profile_id: store.doctorProfile.user_id,
                 first_name: '',
                 last_name: '',
                 email: '',
@@ -233,18 +233,22 @@ export default {
                         </div>
                         <div class="card-body-title-section">
                             <h1 class="card-title py-3">
-                                Dott.{{ store.doctorProfile.user.first_name }} {{ store.doctorProfile.user.last_name
+                                Dott.{{ store.doctorProfile.first_name ? store.doctorProfile.first_name :
+                                    store.doctorProfile.user.first_name }}
+                                {{ store.doctorProfile.last_name ? store.doctorProfile.last_name :
+                                    store.doctorProfile.user.last_name
                                 }}
-                                <!-- {{ profileData.doctor.first_name }} {{ profileData.doctor.last_name }} -->
                             </h1>
                             <h4 class="text-start">
                                 Specialista in:
-                                <ul class="specializations-list">
-                                    <li class="specializations-list-item"
-                                        v-for="specialization in store.doctorProfile.user.specializations">{{
-                                            specialization.name }}</li>
-                                </ul>
                             </h4>
+                            <ul class="specializations-list">
+                                <li class="specializations-list-item" v-if="store.doctorProfile.user"
+                                    v-for="specialization in (store.doctorProfile.user.specializations)">{{
+                                        specialization.name }}</li>
+
+                                <li v-else>{{ store.doctorProfile.specializations_name }}</li>
+                            </ul>
                             <p class="address">{{ store.doctorProfile.office_address }}</p>
                         </div>
                     </div>
@@ -259,10 +263,12 @@ export default {
                             <li id="specialization-border" class="card-list-item">
                                 <h3>Specializzazione</h3>
                                 <div class="data-element specializations-element">
-                                    <ul>
-                                        <li v-for="specialization in store.doctorProfile.user.specializations">
-                                            {{
+                                    <ul class="specializations-list">
+                                        <li class="specializations-list-item" v-if="store.doctorProfile.user"
+                                            v-for="specialization in (store.doctorProfile.user.specializations)">{{
                                                 specialization.name }}</li>
+
+                                        <li v-else>{{ store.doctorProfile.specializations_name }}</li>
                                     </ul>
                                 </div>
                                 <!-- {{ profileData.doctor.specializations[0].name }} -->
@@ -356,7 +362,7 @@ export default {
 
                                         <div class="mb-3 col-12">
                                             <label for="first_name" class="form-label">Nome</label>
-                                            <input type="text" class="form-control"
+                                            <input type="text" class="form-control" placeholder="Inserisci il tuo nome"
                                                 :class="{ 'invalid-input': errors.reviewForm.first_name }"
                                                 id="first_name" v-model.trim="reviewForm.first_name" required>
                                             <div class="invalid" v-if="errors.reviewForm.first_name">
@@ -366,6 +372,7 @@ export default {
                                         <div class="mb-3 col-12">
                                             <label for="last_name" class="form-label">Cognome</label>
                                             <input type="text" class="form-control"
+                                                placeholder="Inserisci il tuo cognome"
                                                 :class="{ 'invalid-input': errors.reviewForm.last_name }" id="last_name"
                                                 v-model.trim="reviewForm.last_name" required>
                                             <div class="invalid" v-if="errors.reviewForm.last_name">
@@ -384,7 +391,7 @@ export default {
                                         </div>
                                         <div class="mb-3 col-12">
                                             <label for="content" class="form-label align-start">Messaggio</label>
-                                            <textarea class="form-control"
+                                            <textarea class="form-control" placeholder="Scrivi qui il tuo messaggio"
                                                 :class="{ 'invalid-input': errors.reviewForm.content }" id="content"
                                                 rows="3" v-model="reviewForm.content"></textarea>
                                             <div class="invalid" v-if="errors.reviewForm.content">
@@ -487,6 +494,7 @@ p {
 }
 
 .img-doctor {
+    max-width: 50%;
     flex-basis: 40%;
     display: flex;
     align-items: center;
@@ -508,16 +516,16 @@ p {
     padding-top: 50px;
 
     & .address {
-        font-size: 1.1rem;
+        font-size: 1.1em;
+        color: var(--color-secondary);
+    }
+
+    & .specializations-list {
+        font-size: 1.3rem;
         color: var(--color-secondary);
     }
 }
 
-// .card-title {
-//     position: relative;
-//     top: 50%;
-//     translate: 0 -50%
-// }
 
 .card-body-text-section {
     flex-grow: 1;
