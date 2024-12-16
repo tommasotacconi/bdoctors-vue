@@ -60,6 +60,7 @@ export default {
         goToShowPage(doctor, index) {
             store.doctorProfile = doctor
             let completeName = doctor.user.first_name + '-' + doctor.user.last_name
+            console.log("doctor", doctor)
             this.$router.push({ name: 'search.show', params: { searchId: 'doctor', id: completeName.toLowerCase() } })
             console.log(index)
             console.log(store.searchedSpecialization)

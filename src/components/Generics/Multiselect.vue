@@ -24,9 +24,7 @@ export default {
         getSpecializations() {
             axios.get(this.apiUrl)
                 .then(response => {
-                    this.value = this.specializations;
-                    this.options = response.data.specializations;
-                    console.log(response);
+									this.options = response.data.specializations;
                 })
                 .catch(function (error) {
                     // handle error
@@ -36,11 +34,9 @@ export default {
 
         //send specializations to AppProfileEdit specializations's Array 
         sendValues() {
-            if (this.value.length > 0) {
                 console.log("sendValues works");
                 console.log(this.value);
                 this.$emit('send-values', this.value)
-            }
         },
         // method to show only the specialization name as options (multiselect)
         nameOnly({ name }) {
