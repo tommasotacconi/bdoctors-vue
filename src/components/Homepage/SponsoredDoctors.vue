@@ -89,7 +89,7 @@ export default {
             <div class="sponsored-card-container">
                 <div class="card card-sponsored d-flex" style="width: 18rem;" v-for="(doctor, index) in filteredProfile"
                     @click="goToShowPage(doctor, index)">
-                    <img src="https://media.istockphoto.com/id/1340883379/photo/young-doctor-hospital-medical-medicine-health-care-clinic-office-portrait-glasses-man.jpg?s=612x612&w=0&k=20&c=_H4VUPBkS0gEj5ZdZzQo-Hw3lMuyofJpB-P9yS92Wyw="
+                    <img src="https://st4.depositphotos.com/4329009/19956/v/450/depositphotos_199564354-stock-illustration-creative-vector-illustration-default-avatar.jpg"
                         class="card-img-top" alt="...">
                     <div class="card-body">
                         <h5 class="card-title">{{ doctor.user.first_name }} {{ doctor.user.last_name }}</h5>
