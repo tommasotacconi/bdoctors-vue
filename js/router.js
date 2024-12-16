@@ -1,4 +1,5 @@
 import { createWebHistory, createRouter } from 'vue-router'
+import { store } from './store.js';
 import Homepage from '../src/pages/Homepage.vue'
 import LoginPage from '../src/pages/LoginPage.vue'
 import RegisterPage from '../src/pages/RegisterPage.vue'
@@ -8,7 +9,6 @@ import Createpage from '../src/pages/Createpage.vue'
 import AdvancedSearch from '../src/pages/AdvancedSearch.vue'
 import DoctorShow from '../src/components/Search/DoctorShow.vue'
 import PaymentSuccess from '../src/pages/PaymentSuccess.vue'
-import { store } from './store.js';
 
 const routes = [
   { path: '/', component: Homepage, name: 'homepage' },
@@ -25,7 +25,7 @@ const routes = [
   // Path to doctor, within specialization id, of doctord id selected (first id for specialization
   // second for doctor)
   { path: '/search/:searchId/:id', component: DoctorShow, name: 'search.show' },
-  { path: '/payment-success', component: PaymentSuccess, name: 'payment-success', params: { id: store.userId } },
+  { path: '/payment-success', component: PaymentSuccess, name: 'payment-success' },
 ]
 
 const router = createRouter({
