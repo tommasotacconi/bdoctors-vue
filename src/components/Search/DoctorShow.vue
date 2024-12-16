@@ -11,14 +11,14 @@ export default {
             loaded: true,
             store,
             messageForm: {
-                profile_id: store.doctorProfile.user.id,
+                profile_id: store.doctorProfile.user_id,
                 first_name: '',
                 last_name: '',
                 email: '',
                 content: '',
             },
             reviewForm: {
-                profile_id: store.doctorProfile.user.id,
+                profile_id: store.doctorProfile.user_id,
                 first_name: '',
                 last_name: '',
                 email: '',
@@ -233,17 +233,17 @@ export default {
                         </div>
                         <div class="card-body-title-section">
                             <h1 class="card-title py-3">
-                                Dott.{{ store.doctorProfile.user.first_name }} {{ store.doctorProfile.user.last_name
+                                Dott.{{ store.doctorProfile.first_name }} {{ store.doctorProfile.last_name
                                 }}
                                 <!-- {{ profileData.doctor.first_name }} {{ profileData.doctor.last_name }} -->
                             </h1>
                             <h4 class="text-start">
                                 Specialista in:
-                                <ul class="specializations-list">
+                                <!-- <ul class="specializations-list">
                                     <li class="specializations-list-item"
                                         v-for="specialization in store.doctorProfile.user.specializations">{{
                                             specialization.name }}</li>
-                                </ul>
+                                </ul> -->
                             </h4>
                             <p class="address">{{ store.doctorProfile.office_address }}</p>
                         </div>
@@ -259,11 +259,11 @@ export default {
                             <li id="specialization-border" class="card-list-item">
                                 <h3>Specializzazione</h3>
                                 <div class="data-element specializations-element">
-                                    <ul>
+                                    <!-- <ul>
                                         <li v-for="specialization in store.doctorProfile.user.specializations">
                                             {{
                                                 specialization.name }}</li>
-                                    </ul>
+                                    </ul> -->
                                 </div>
                                 <!-- {{ profileData.doctor.specializations[0].name }} -->
                             </li>
