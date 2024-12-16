@@ -182,17 +182,36 @@ export default {
                 </section>
 
                 <!-- Payment Form -->
-                <div v-if="showPaymentForm" class="payment-container">
-                    <h2>Completa il tuo pagamento</h2>
-                    <p class="amount">Importo da pagare: €{{ price }}</p>
+                <div v-if="showPaymentForm" class="checkout">
+                    <div class="checkout-container">
+                        <h3 class="heading-3">Pagamento</h3>
+                        <div class="checkout-form">
+                            <div class="input-group">
+                                <div class="input-box">
+                                    <div id="dropin-container"></div>
+                                </div>
+                            </div>
 
-                    <div id="dropin-container"></div>
+                            <div class="input-group">
+                                <div class="input-box">
+                                    <h4>Totale da pagare: €{{ price }}</h4>
+                                </div>
+                            </div>
 
-                    <div class="error" v-if="error">{{ error }}</div>
+                            <div class="error-message" v-if="error">
+                                <i class="fa-solid fa-circle-exclamation"></i>
+                                {{ error }}
+                            </div>
 
-                    <button class="payment-button" @click="submitPayment" :disabled="loading">
-                        {{ loading ? 'Elaborazione in corso...' : 'Paga ora' }}
-                    </button>
+                            <div class="input-group">
+                                <div class="input-box">
+                                    <button class="btn-pay" @click="submitPayment" :disabled="loading">
+                                        {{ loading ? 'Elaborazione in corso...' : 'Procedi al pagamento' }}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Success Message -->
@@ -279,22 +298,24 @@ button {
     position: relative;
     flex-basis: 30%;
     cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
 
 .sponsor-card:hover {
-    scale: 1.1;
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
 }
 
 .card-bronze {
-    background-color: #A56C41;
+    background: linear-gradient(135deg, #A56C41 0%, #CD7F32 100%);
 }
 
 .card-silver {
-    background-color: #C4C4C4;
+    background: linear-gradient(135deg, #C4C4C4 0%, #E8E8E8 100%);
 }
 
 .card-gold {
-    background-color: #FFCC00;
+    background: linear-gradient(135deg, #FFCC00 0%, #FFD700 100%);
 }
 
 .fa-star {
@@ -308,6 +329,7 @@ button {
     position: absolute;
     top: 0px;
     right: 0px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .card-description {
@@ -316,11 +338,13 @@ button {
 
 .hour-sponsorship {
     font-size: 1.2rem;
+    margin-bottom: 8px;
 }
 
 .price {
     font-style: italic;
-    font-size: 0.9rem;
+    font-size: 1.1rem;
+    opacity: 0.9;
 }
 
 .is-sponsored {
@@ -328,48 +352,111 @@ button {
 }
 
 /* Payment Form Styles */
-.payment-container {
+.checkout {
+    margin: 50px auto;
+    width: 100%;
+    max-width: 800px;
+    padding: 20px;
+}
+
+.checkout-container {
+    background-color: white;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+}
+
+.heading-3 {
+    text-align: center;
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 30px;
+}
+
+.checkout-form {
+    padding: 20px;
+}
+
+.input-group {
+    margin-bottom: 25px;
+}
+
+.input-box {
+    width: 100%;
+}
+
+.btn-pay {
+    width: 100%;
+    height: 50px;
+    border: none;
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+    color: white;
+    border-radius: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-pay:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(79, 70, 229, 0.4);
+}
+
+.btn-pay:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+/* Success Message Styles */
+.success-container {
     max-width: 600px;
     margin: 40px auto;
     padding: 20px;
 }
 
-.amount {
+.success-message {
+    background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+    border-radius: 16px;
+    padding: 40px;
     text-align: center;
-    font-size: 1.2em;
-    margin-bottom: 30px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
 
-#dropin-container {
-    min-height: 300px;
+.success-message i {
+    color: #22c55e;
+    font-size: 54px;
+    margin-bottom: 20px;
 }
 
-.error {
-    color: red;
-    margin: 10px 0;
-    text-align: center;
+.success-message h3 {
+    color: #15803d;
+    font-size: 1.8rem;
+    margin-bottom: 15px;
 }
 
-.payment-button {
-    display: block;
-    width: 100%;
-    padding: 12px;
-    margin-top: 20px;
-    background-color: #007bff;
+.success-message p {
+    color: #374151;
+    font-size: 1.1rem;
+    margin-bottom: 25px;
+}
+
+.dashboard-button {
+    display: inline-block;
+    padding: 14px 28px;
+    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
     color: white;
-    border: none;
-    border-radius: 4px;
-    font-size: 16px;
-    cursor: pointer;
+    text-decoration: none;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
 }
 
-.payment-button:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-}
-
-.payment-button:hover:not(:disabled) {
-    background-color: #0056b3;
+.dashboard-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(79, 70, 229, 0.4);
+    background: linear-gradient(135deg, #4338ca 0%, #7c3aed 100%);
+    color: white;
 }
 
 /* Loader */
@@ -405,51 +492,5 @@ button {
     100% {
         background-position: 0% 100%, 100% 100%, 200% 100%
     }
-}
-
-/* Success Message Styles */
-.success-container {
-    max-width: 600px;
-    margin: 40px auto;
-    padding: 20px;
-    text-align: center;
-}
-
-.success-message {
-    background-color: #f8f9fa;
-    border-radius: 8px;
-    padding: 30px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.success-message i {
-    color: #28a745;
-    font-size: 48px;
-    margin-bottom: 20px;
-}
-
-.success-message h3 {
-    color: #28a745;
-    margin-bottom: 10px;
-}
-
-.success-message p {
-    color: #6c757d;
-    margin-bottom: 20px;
-}
-
-.dashboard-button {
-    display: inline-block;
-    padding: 12px 24px;
-    background-color: var(--color-secondary);
-    color: white;
-    text-decoration: none;
-    border-radius: 4px;
-    font-weight: bold;
-    transition: background-color 0.3s ease;
-}
-
-.dashboard-button:hover {
-    background-color: #0056b3;
 }
 </style>
