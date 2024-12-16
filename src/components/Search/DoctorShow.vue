@@ -241,14 +241,14 @@ export default {
                             </h1>
                             <h4 class="text-start">
                                 Specialista in:
-                                <ul class="specializations-list">
-                                    <li class="specializations-list-item" v-if="store.doctorProfile.user"
-                                        v-for="specialization in (store.doctorProfile.user.specializations)">{{
-                                            specialization.name }}</li>
-
-                                    <li v-else>{{ store.doctorProfile.specializations_name }}</li>
-                                </ul>
                             </h4>
+                            <ul class="specializations-list">
+                                <li class="specializations-list-item" v-if="store.doctorProfile.user"
+                                    v-for="specialization in (store.doctorProfile.user.specializations)">{{
+                                        specialization.name }}</li>
+
+                                <li v-else>{{ store.doctorProfile.specializations_name }}</li>
+                            </ul>
                             <p class="address">{{ store.doctorProfile.office_address }}</p>
                         </div>
                     </div>
@@ -362,7 +362,7 @@ export default {
 
                                         <div class="mb-3 col-12">
                                             <label for="first_name" class="form-label">Nome</label>
-                                            <input type="text" class="form-control"
+                                            <input type="text" class="form-control" placeholder="Inserisci il tuo nome"
                                                 :class="{ 'invalid-input': errors.reviewForm.first_name }"
                                                 id="first_name" v-model.trim="reviewForm.first_name" required>
                                             <div class="invalid" v-if="errors.reviewForm.first_name">
@@ -372,6 +372,7 @@ export default {
                                         <div class="mb-3 col-12">
                                             <label for="last_name" class="form-label">Cognome</label>
                                             <input type="text" class="form-control"
+                                                placeholder="Inserisci il tuo cognome"
                                                 :class="{ 'invalid-input': errors.reviewForm.last_name }" id="last_name"
                                                 v-model.trim="reviewForm.last_name" required>
                                             <div class="invalid" v-if="errors.reviewForm.last_name">
@@ -390,7 +391,7 @@ export default {
                                         </div>
                                         <div class="mb-3 col-12">
                                             <label for="content" class="form-label align-start">Messaggio</label>
-                                            <textarea class="form-control"
+                                            <textarea class="form-control" placeholder="Scrivi qui il tuo messaggio"
                                                 :class="{ 'invalid-input': errors.reviewForm.content }" id="content"
                                                 rows="3" v-model="reviewForm.content"></textarea>
                                             <div class="invalid" v-if="errors.reviewForm.content">
@@ -493,6 +494,7 @@ p {
 }
 
 .img-doctor {
+    max-width: 50%;
     flex-basis: 40%;
     display: flex;
     align-items: center;
@@ -514,16 +516,16 @@ p {
     padding-top: 50px;
 
     & .address {
-        font-size: 1.1rem;
+        font-size: 1.1em;
+        color: var(--color-secondary);
+    }
+
+    & .specializations-list {
+        font-size: 1.3rem;
         color: var(--color-secondary);
     }
 }
 
-// .card-title {
-//     position: relative;
-//     top: 50%;
-//     translate: 0 -50%
-// }
 
 .card-body-text-section {
     flex-grow: 1;

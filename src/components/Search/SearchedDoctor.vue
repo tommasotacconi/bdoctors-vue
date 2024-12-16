@@ -161,10 +161,9 @@ export default {
                     <!-- Average Votes Filter Input -->
                     <div class="average-votes">
                         <div class="votes d-flex align-items-center">
-                            <p>Filtra per media voti: </p>
+                            <p class="me-2">Filtra per media voti: </p>
                             <div class="rating">
-                                <form method="get" class="form-control rating mx-3"
-                                    @submit.prevent="getFilteredReviews">
+                                <form method="get" class="form-control rating" @submit.prevent="getFilteredReviews">
                                     <button type="submit" class="btn btn-sm btn-secondary ms-2"
                                         :class="{ 'disabled': rating === null }">Filtra</button>
                                     <input type="radio" id="vote5" name="rating" value="5" v-model="rating">
@@ -388,30 +387,24 @@ img {
 
 /* Media Queries */
 
-/* Tablet and Mobile (below 768px) */
+/* Mobile */
 @media (max-width: 768px) {
 
     .advanced-filter {
         flex-direction: column;
-        /* Cambia la direzione in colonna */
         align-items: flex-start;
-        /* Allinea i filtri a sinistra */
     }
 
     .average-votes,
     .reviews-number {
         width: 100%;
-        /* Fai in modo che i filtri occupino tutta la larghezza */
         margin-bottom: 15px;
-        /* Spazio tra i filtri */
     }
 
-    /* Allineamento del bottone di reset (si sposterà sotto i filtri in mobile) */
     .advanced-filter button {
         width: 100%;
         margin-top: 15px;
     }
-
 
     .doctors-list {
         gap: 20px;
@@ -421,7 +414,6 @@ img {
     .doctor-card {
         width: calc(100% - 40px);
         margin: 5px;
-        /* 1 card per row */
     }
 
     .title h2 {
@@ -441,13 +433,13 @@ img {
         text-align: start;
     }
 
-
     .average-votes {
         width: 100%;
     }
 }
 
 /* Large Mobile Screens */
+
 @media (max-width: 480px) {
     .doctors-list {
         gap: 15px;
@@ -470,6 +462,24 @@ img {
 
     .rating {
         font-size: 20px;
+        flex-grow: 1;
+        align-items: center;
+        flex-wrap: no-wrap;
+        gap: 5px;
+    }
+
+    .votes {
+        flex-wrap: wrap;
+    }
+
+    .average-votes,
+    .reviews-number {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    button {
+        width: 100%;
     }
 
     .title h2 {
