@@ -12,6 +12,7 @@ export default {
             reviewsProfile: [],
             reviewSelected: [],
             averageVote: 0,
+            reviewSelectedFlag: false,
         }
     },
     methods: {
@@ -51,7 +52,25 @@ export default {
         },
         selectReview(index) {
             this.reviewSelected = this.reviewsProfile[index]
+            this.reviewSelectedFlag = true
+
             console.log(this.reviewsProfile[index])
+        },
+        getNormalFormatHourDate(index) {
+            // Fixed date
+            let hourDate = this.reviewsProfile[index].updated_at
+            console.log(hourDate)
+            const date = new Date(hourDate)
+
+            // Così posso togliere i secondi
+            const options = {
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+                timeZone: "Europe/Rome"
+            };
+
+            return date.toLocaleString("it-IT", options)
         },
         // showAverageVote() {
         //     let totalNumberVote = 0
@@ -99,6 +118,7 @@ export default {
                         <div class="card-body-list">
                             <ul class="list-general" v-for="(review, index) in reviewsProfile"
                                 @click="selectReview(index)">
+                                <li class="list-date">{{ getNormalFormatHourDate(index) }}</li>
                                 <li class="list-vote"><i class="fa-solid fa-stethoscope"
                                         v-for="star in review.votes"></i>
                                 </li>
@@ -109,7 +129,7 @@ export default {
                         </div>
                     </div>
                 </div>
-                <div class="card-general card-review">
+                <div class="card-general card-review" v-if="reviewSelectedFlag">
                     <div class="card-selected-review">
                         <div class="title-star">
                             <h5 class="title">Recensione selezionata</h5>
@@ -220,6 +240,11 @@ ul:hover {
 .list-general {
     display: flex;
     gap: 10px;
+}
+
+.list-date {
+    flex-basis: 15%;
+    border-right: 3px dashed var(--color-secondary);
 }
 
 .list-vote {
