@@ -87,17 +87,13 @@ export default {
 
         // },
 
-        goToShowPage(doctor, index) {
+        goToShowPage(doctor) {
             let completeName = "";
-            if (this.filteredDoctors.length) {
-                completeName = doctor.first_name + '-' + doctor.last_name
-            } else {
-                store.doctorProfile = doctor
-                completeName = doctor.user.first_name + '-' + doctor.user.last_name
-            }
-            this.$router.push({ name: 'search.show', params: { searchId: store.selectedSpecializationName.trim().replace(/ /g, "-").toLowerCase(), id: completeName.toLowerCase() } })
-            console.log(index)
-            console.log(store.searchedSpecialization)
+            completeName = doctor.first_name + '-' + doctor.last_name
+            store.doctorProfile = doctor;
+            this.$router.push({
+                name: 'search.show', params: { searchId: store.selectedSpecializationName.trim().replace(/ /g, "-").toLowerCase(), id: completeName.toLowerCase() }
+            })
         },
 
         getFilteredReviews() {
@@ -219,33 +215,8 @@ export default {
                         Filtri</button>
                 </div>
 
-
-                <!-- <div class="doctors-list" v-if="!filteredDoctors.length">
-                    <div class="doctor-card" v-for="(doctor, index) in doctors" @click="goToShowPage(doctor, index)">
-                        <img src="https://media.istockphoto.com/id/1340883379/photo/young-doctor-hospital-medical-medicine-health-care-clinic-office-portrait-glasses-man.jpg?s=612x612&w=0&k=20&c=_H4VUPBkS0gEj5ZdZzQo-Hw3lMuyofJpB-P9yS92Wyw="
-                            class="doctor-photo" alt="doctor photo">
-                        <section class="doctor-information">
-                            <h5 class="doctor-name">
-                                {{ doctor.user.first_name }} {{ doctor.user.last_name }}
-                            </h5>
-                            <div class="doctor-address">
-                                <strong>Ufficio:</strong> {{ doctor.office_address }}
-                            </div>
-                            <div class="doctor-specialization">
-                                <strong>Specializzazioni:</strong>
-                                <ul>
-                                    <li v-for="doctorSpecialization in doctor.user.specializations">
-                                        {{ doctorSpecialization.name }}
-                                    </li>
-                                </ul>
-
-                            </div>
-                        </section>
-                    </div>
-                </div> -->
                 <div class="doctors-list" v-if="filteredDoctors.length">
-                    <div class="doctor-card" v-for="(doctor, index) in filteredDoctors"
-                        @click="goToShowPage(doctor, index)">
+                    <div class="doctor-card" v-for="(doctor) in filteredDoctors" @click="goToShowPage(doctor)">
                         <img src="https://media.istockphoto.com/id/1340883379/photo/young-doctor-hospital-medical-medicine-health-care-clinic-office-portrait-glasses-man.jpg?s=612x612&w=0&k=20&c=_H4VUPBkS0gEj5ZdZzQo-Hw3lMuyofJpB-P9yS92Wyw="
                             class="doctor-photo" alt="doctor photo">
                         <section class="doctor-information">

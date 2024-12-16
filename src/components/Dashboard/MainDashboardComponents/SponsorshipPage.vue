@@ -127,13 +127,11 @@ export default {
                         <div class="premium-star"><i class="fa-solid fa-star"></i></div>
                     </button>
                     <button class="sponsor-card card-silver" @click="getPriceSilver()">
-
                         <div class="card-description">
                             <p class="hour-sponsorship">Garantito per 72 ore</p>
                             <p class="price">5,99€</p>
                         </div>
                         <div class="premium-star"><i class="fa-solid fa-star"></i></div>
-
                     </button>
                     <button class="sponsor-card card-gold" @click="getPriceGold()">
                         <div class="card-description">
