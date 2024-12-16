@@ -42,7 +42,9 @@ export default {
 
             // Nuova pagina nella quale usiamo i nomi. Piccola concatenazione di metodi per togliere gli spazi e rendere tutto minuscolo
             this.$router.push({
-                name: 'search', params: { searchId: store.selectedSpecializationName.trim().replace(/ /g, "-").toLowerCase() },
+                name: 'search', params: {
+                    searchId: store.selectedSpecializationName.trim().replace(/ /g, "-").toLowerCase(),
+                },
             })
         },
 
