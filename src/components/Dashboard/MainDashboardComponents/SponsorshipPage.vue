@@ -18,7 +18,8 @@ export default {
             showPaymentForm: false,
             instance: null,
             loading: false,
-            error: null
+            error: null,
+            paymentSuccess: false
         }
     },
     methods: {
@@ -79,7 +80,9 @@ export default {
                     amount: this.price
                 });
 
-                this.$router.push('/payment-success');
+                this.paymentSuccess = true;
+                this.showPaymentForm = false;
+                this.getApiProfiles();
             } catch (error) {
                 this.error = 'Pagamento fallito. Per favore riprova.';
                 console.error(error);
@@ -190,6 +193,18 @@ export default {
                     <button class="payment-button" @click="submitPayment" :disabled="loading">
                         {{ loading ? 'Elaborazione in corso...' : 'Paga ora' }}
                     </button>
+                </div>
+
+                <!-- Success Message -->
+                <div v-if="paymentSuccess" class="success-container">
+                    <div class="success-message">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <h3>Pagamento completato con successo!</h3>
+                        <p>La tua sponsorizzazione è stata attivata.</p>
+                        <router-link to="/" class="dashboard-button">
+                            Torna alla Homepage
+                        </router-link>
+                    </div>
                 </div>
             </div>
             <div class="is-sponsored" v-else>
@@ -390,5 +405,51 @@ button {
     100% {
         background-position: 0% 100%, 100% 100%, 200% 100%
     }
+}
+
+/* Success Message Styles */
+.success-container {
+    max-width: 600px;
+    margin: 40px auto;
+    padding: 20px;
+    text-align: center;
+}
+
+.success-message {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 30px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.success-message i {
+    color: #28a745;
+    font-size: 48px;
+    margin-bottom: 20px;
+}
+
+.success-message h3 {
+    color: #28a745;
+    margin-bottom: 10px;
+}
+
+.success-message p {
+    color: #6c757d;
+    margin-bottom: 20px;
+}
+
+.dashboard-button {
+    display: inline-block;
+    padding: 12px 24px;
+    background-color: var(--color-secondary);
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.dashboard-button:hover {
+    background-color: #0056b3;
 }
 </style>
