@@ -147,7 +147,7 @@ export default {
         <div v-if="loaded">
             <div>
                 <div class="title">
-                    <h2>Ricerca per: <span class="specialization-title">{{ specializationName }} </span><span
+                    <h2>Risultati per: <span class="specialization-title">{{ specializationName }} </span><span
                             v-if="!filteredDoctors.length" class="total-specialization-doctor"> (Totale esperti:
                             {{
                                 doctors.length
@@ -157,15 +157,15 @@ export default {
                     </h2>
                 </div>
 
-                <div class="advanced-filter d-flex">
+                <div class="advanced-filter">
                     <!-- Average Votes Filter Input -->
-                    <div class="average-votes col-4">
-                        <div class="votes d-flex">
+                    <div class="average-votes">
+                        <div class="votes d-flex align-items-center">
                             <p>Filtra per media voti: </p>
-                            <div class="rating mx-3">
+                            <div class="rating">
                                 <form method="get" class="form-control rating mx-3"
                                     @submit.prevent="getFilteredReviews">
-                                    <button type="submit" class="btn btn-sm btn-secondary"
+                                    <button type="submit" class="btn btn-sm btn-secondary ms-2"
                                         :class="{ 'disabled': rating === null }">Filtra</button>
                                     <input type="radio" id="vote5" name="rating" value="5" v-model="rating">
                                     <label for="vote5"><i class="fa-solid fa-stethoscope"></i>
@@ -189,14 +189,13 @@ export default {
                     </div>
 
                     <!-- Reviews Number Filter Input-->
-                    <div class="reviews-number d-flex gap-3 col-4">
+                    <div class="reviews-number">
                         <p>Filtra per numero di recensioni:</p>
-                        <form action="" method="GET" class="form-control mx-3 d-flex"
-                            @submit.prevent="getFilteredReviews">
+                        <form method="GET" class="form-control d-flex" @submit.prevent="getFilteredReviews">
                             <input type="number" class="form-control" id="reviews" name="reviews" min="0"
                                 v-model="inputReviews">
                             <button type="submit" :class="{ 'disabled': inputReviews === null }"
-                                class="btn btn-sm btn-secondary">Filtra</button>
+                                class="btn btn-sm btn-secondary ms-2">Filtra</button>
                         </form>
                     </div>
 
@@ -240,6 +239,7 @@ export default {
 <style scoped>
 h5 {
     margin-bottom: 15px;
+    text-align: center;
 }
 
 .title {
@@ -252,6 +252,46 @@ h5 {
     font-weight: 400;
 }
 
+.advanced-filter {
+    border: #65B0FF 2px solid;
+    border-radius: 20px;
+    margin: 20px 0;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+/*Rating */
+.rating {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+
+    & input {
+        display: none;
+    }
+
+    & label {
+        font-size: 24px;
+        cursor: pointer;
+    }
+
+    & label:hover,
+    & label:hover~label {
+        color: var(--color-complementary)
+    }
+
+    & input:checked~label {
+        color: var(--color-complementary)
+    }
+}
+
+.reviews-number {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+}
 
 /* Doctor list */
 .doctors-list {
@@ -260,12 +300,22 @@ h5 {
     justify-content: start;
     flex-wrap: wrap;
     align-content: stretch;
+    margin-top: 30px;
+
 }
+
+.doctors-list> :hover {
+    scale: 1.1;
+    cursor: pointer;
+    transition: 0.8s;
+}
+
+
 
 .total-specialization-doctor {
     font-style: oblique;
     font-weight: normal;
-    font-size: 1.8rem;
+    font-size: 1.2rem;
 }
 
 .doctor-card {
@@ -278,6 +328,7 @@ h5 {
     align-items: center;
     width: calc((100% / 3) - 80px);
     border-radius: 30px;
+
     /* height: 400px; */
 }
 
@@ -296,20 +347,6 @@ img {
     font-weight: bold;
     border: 1px solid var(--color-primary);
 }
-
-/* Non più utile */
-/* Show Doctor */
-/* .general-show-doctor {
-    position: fixed;
-    top: 80px;
-    left: 25%;
-    z-index: 1;
-    width: 50%;
-}
-
-.show-doctor-active {
-    opacity: 0.3;
-} */
 
 
 /* Loader progressive */
@@ -347,29 +384,113 @@ img {
     }
 }
 
-/*Rating */
-.rating {
-    margin-bottom: 20px;
-    display: flex;
-    flex-direction: row-reverse;
-    justify-content: flex-end;
 
-    & input {
-        display: none;
+
+/* Media Queries */
+
+/* Tablet and Mobile (below 768px) */
+@media (max-width: 768px) {
+
+    .advanced-filter {
+        flex-direction: column;
+        /* Cambia la direzione in colonna */
+        align-items: flex-start;
+        /* Allinea i filtri a sinistra */
     }
 
-    & label {
-        font-size: 24px;
-        cursor: pointer;
+    .average-votes,
+    .reviews-number {
+        width: 100%;
+        /* Fai in modo che i filtri occupino tutta la larghezza */
+        margin-bottom: 15px;
+        /* Spazio tra i filtri */
     }
 
-    & label:hover,
-    & label:hover~label {
-        color: var(--color-complementary)
+    /* Allineamento del bottone di reset (si sposterà sotto i filtri in mobile) */
+    .advanced-filter button {
+        width: 100%;
+        margin-top: 15px;
     }
 
-    & input:checked~label {
-        color: var(--color-complementary)
+
+    .doctors-list {
+        gap: 20px;
+        justify-content: center;
+    }
+
+    .doctor-card {
+        width: calc(100% - 40px);
+        margin: 5px;
+        /* 1 card per row */
+    }
+
+    .title h2 {
+        font-size: 1.4rem;
+    }
+
+    .doctor-card img {
+        height: 150px;
+        width: 150px;
+    }
+
+    .doctor-name h5 {
+        font-size: 1rem;
+    }
+
+    .doctor-information {
+        text-align: start;
+    }
+
+
+    .average-votes {
+        width: 100%;
+    }
+}
+
+/* Large Mobile Screens */
+@media (max-width: 480px) {
+    .doctors-list {
+        gap: 15px;
+    }
+
+    .doctor-card {
+        width: calc(100% - 20px);
+        /* Ensure 1 card per row on very small screens */
+    }
+
+    .doctor-name {
+        font-size: 0.9rem;
+    }
+
+    .doctor-address,
+    .doctor-average,
+    .doctor-reviews {
+        font-size: 0.8rem;
+    }
+
+    .rating {
+        font-size: 20px;
+    }
+
+    .title h2 {
+        font-size: 1.2rem;
+    }
+
+    .doctor-card img {
+        height: 120px;
+        width: 120px;
+    }
+}
+
+/* Desktop (above 1024px) */
+@media (min-width: 1024px) {
+    .doctors-list {
+        gap: 50px 110px;
+    }
+
+    .doctor-card {
+        width: calc((100% / 3) - 80px);
+        /* 3 cards per row */
     }
 }
 </style>
