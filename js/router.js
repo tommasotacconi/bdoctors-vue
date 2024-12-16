@@ -16,9 +16,11 @@ const routes = [
   { path: '/user/:id', component: Dashboard, name: 'dashboard' },
   { path: '/user/:id/edit', component: ProfileEdit, name: 'edit' },
   { path: '/user/:id/create', component: Createpage, name: 'create' },
-  { path: '/payment-form', component: PaymentForm, name: 'payment' },
   // Path to all doctors with selected specialization id  
-  { path: '/search/:searchId', component: AdvancedSearch, name: 'search' },
+  // { path: '/search/:searchId', component: AdvancedSearch, name: 'search' },
+  // // Path to doctor, within specialization id, of doctord id selected (first id for specialization
+  // // second for doctor)
+  { path: '/search/:searchId/:inputRating?/:inputReviews?', component: AdvancedSearch, name: 'search' },
   // Path to doctor, within specialization id, of doctord id selected (first id for specialization
   // second for doctor)
   { path: '/search/:searchId/:id', component: DoctorShow, name: 'search.show' },
