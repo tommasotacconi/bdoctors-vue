@@ -13,7 +13,7 @@ export default {
             usersSponsoredId: [],
             profilesId: [],
             filteredProfile: [],
-            loaded: false,
+            loaded: true,
         }
     },
     methods: {
@@ -60,32 +60,33 @@ export default {
         goToShowPage(doctor, index) {
             store.doctorProfile = doctor
             let completeName = doctor.user.first_name + '-' + doctor.user.last_name
+            console.log("doctor", doctor)
             this.$router.push({ name: 'search.show', params: { searchId: 'doctor', id: completeName.toLowerCase() } })
             console.log(index)
             console.log(store.searchedSpecialization)
         },
     },
     mounted() {
-        this.showLoader
+        // this.showLoader
         this.getApiSponsorships()
         this.getApiProfiles()
     },
     computed: {
-        showLoader() {
-            setTimeout(() => {
-                this.loaded = true
-            }, 2000)
+        // showLoader() {
+        //     setTimeout(() => {
+        //         this.loaded = true
+        //     }, 2000)
 
-        }
+        // }
     },
 }
 </script>
 
 <template>
-    <main class="mt-4">
+    <main class="mt-1">
         <div class="container sponsored-doctor-container">
-            <h2>Dottori in evidenza</h2>
-            <div class="loader" v-if="!loaded"></div>
+            <h3>Dottori in evidenza</h3>
+            <!-- <div class="loader" v-if="!loaded"></div> -->
             <div class="sponsored-card-container">
                 <div class="card card-sponsored d-flex" style="width: 18rem;" v-for="(doctor, index) in filteredProfile"
                     @click="goToShowPage(doctor, index)">
@@ -109,6 +110,12 @@ export default {
 </template>
 
 <style scoped>
+h3 {
+    text-align: center;
+    margin-bottom: 20px;
+
+}
+
 ul {
     text-align: start;
     padding-left: 20px;

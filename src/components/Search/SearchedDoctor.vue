@@ -3,6 +3,7 @@ import axios from 'axios';
 import { store } from '../../../js/store';
 import DoctorShow from './DoctorShow.vue';
 import { RouterLink } from 'vue-router';
+import { finiteOrDefault } from 'chart.js/helpers';
 
 export default {
     data() {
@@ -13,12 +14,13 @@ export default {
             specializationApiUrl: 'http://127.0.0.1:8000/api/specializations',
             reviewsApiURl: 'http://localhost:8000/api/reviews',
             specializationId: store.searchedSpecialization,
-            doctors: [],
             specializationName: '',
+            doctors: [],
             rating: null,
+            inputReviews: null,
             loaded: false,
             showDoctor: false,
-            filteredDoctorsByVotes: [],
+            filteredDoctors: [],
         }
     },
     components: {
@@ -75,58 +77,48 @@ export default {
                 })
         },
 
-        // Non più utile
-        // removeShowDoctor() {
-        //     if (this.showDoctor) {
-        //         this.showDoctor = false
-        //     } else if (!this.showDoctor) {
-        //         this.showDoctor = true
-        //     }
-
-        // },
-
-        goToShowPage(doctor, index) {
-            store.doctorProfile = doctor
-            let completeName = doctor.user.first_name + '-' + doctor.user.last_name
-            this.$router.push({ name: 'search.show', params: { searchId: store.selectedSpecializationName.trim().replace(/ /g, "-").toLowerCase(), id: completeName.toLowerCase() } })
-            console.log(index)
-            console.log(store.searchedSpecialization)
+        goToShowPage(doctor) {
+            let completeName = "";
+            completeName = doctor.first_name + '-' + doctor.last_name
+            store.doctorProfile = doctor;
+            this.$router.push({
+                name: 'search.show', params: { searchId: store.selectedSpecializationName.trim().replace(/ /g, "-").toLowerCase(), id: completeName.toLowerCase() }
+            })
         },
 
-        getFilteredVotesProfiles() {
-            this.getApiProfile();
+        getFilteredReviews() {
+            let url = `http://localhost:8000/api/reviews/filter/${this.specializationId}/${this.rating}/${this.inputReviews}`;
 
-            const filteredDoctors = [];
+            axios.get(url, {
+            })
+                .then(response => {
+                    // handle success
+                    console.log('RECENSIONI FILTRATEEEE', response.data);
+                    this.filteredDoctors = response.data;
+                    this.filteredDoctors.id = store.informationPageId;
+                    console.log('filtered doctors:', this.filteredDoctors)
 
-            for (let i = 0; i < this.doctors.length; i++) {
-                let singleDoctor = { doctor: [], averageVotes: null }
-                let doctor = this.doctors[i];
-                singleDoctor.doctor = doctor;
-                console.log('singolo medico', doctor)
-                let reviews = doctor.reviews;
-                console.log('Recensioni:', reviews);
-                let votesSum = null;
-                for (let j = 0; j < reviews.length; j++) {
-                    let review = reviews[j];
-                    // console.log("Singola recensione:", review);
-                    votesSum += parseInt(review.votes);
-                }
-                // console.log("Somma voti per ogni medico:", votesSum)
-                let averageVotes = null;
-                averageVotes = Math.round(votesSum / reviews.length)
-                console.log('La media dei voti del medico è:', averageVotes)
-                singleDoctor.averageVotes = averageVotes;
-                if (singleDoctor.averageVotes >= this.rating)
-                    filteredDoctors.push(singleDoctor);
-                console.log('singleDoctor', singleDoctor)
-            }
-            console.log('Array Dottori filtrati nel metodo:', filteredDoctors)
-            this.filteredDoctorsByVotes = filteredDoctors;
+                    this.$router.push({
+                        name: 'search',
+                        params: {
+                            searchId: store.selectedSpecializationName.trim().replace(/ /g, "-").toLowerCase(),
+                            ...(this.rating !== null && this.rating !== undefined ? { inputRating: `input-rating:${this.rating}` } : {}),
+                            ...(this.inputReviews !== null && this.inputReviews !== undefined ? { inputReviews: `input-reviews:${this.inputReviews}` } : {})
+                        }
+                    });
+                })
+                .catch(function (error) {
+                    // handle error
+                    console.log(error)
+                    console.log(error.response.data.message);
+                })
         },
 
-        emptyFilteredDoctors() {
-            return this.filteredDoctorsByVotes = [];
-        }
+        resetInputs() {
+            this.rating = null;
+            this.inputReviews = null;
+            this.getFilteredReviews();
+        },
     },
     computed: {
         showLoader() {
@@ -136,9 +128,9 @@ export default {
         }
     },
     created() {
-        this.getApiProfile();
+        // this.getApiProfile();
+        this.getFilteredReviews();
         this.getSpecializationName();
-        this.getFilteredVotesProfiles();
     },
     mounted() {
         this.showLoader
@@ -155,26 +147,25 @@ export default {
         <div v-if="loaded">
             <div>
                 <div class="title">
-                    <h2>Ricerca per: <span class="specialization-title">{{ specializationName }} </span><span
-                            v-if="!filteredDoctorsByVotes.length" class="total-specialization-doctor"> (Totale esperti:
+                    <h2>Risultati per: <span class="specialization-title">{{ specializationName }} </span><span
+                            v-if="!filteredDoctors.length" class="total-specialization-doctor"> (Totale esperti:
                             {{
                                 doctors.length
                             }})</span>
                         <span v-else class="total-specialization-doctor"> (Totale esperti: {{
-                            filteredDoctorsByVotes.length }})</span>
+                            filteredDoctors.length }})</span>
                     </h2>
                 </div>
 
                 <div class="advanced-filter">
+                    <!-- Average Votes Filter Input -->
                     <div class="average-votes">
-                        <div class="votes d-flex">
-                            <p>Filtra per media voti: </p>
-                            <div class="rating mx-3">
-                                <form action="" method="get" class="form-control rating mx-3"
-                                    @submit.prevent="getFilteredVotesProfiles">
-                                    <button type="reset" class="btn btn-sm btn-primary"
-                                        @click="emptyFilteredDoctors">Reset</button>
-                                    <button type="submit" class="btn btn-sm btn-secondary">Filtra</button>
+                        <div class="votes d-flex align-items-center">
+                            <p class="me-2">Filtra per media voti: </p>
+                            <div class="rating">
+                                <form method="get" class="form-control rating" @submit.prevent="getFilteredReviews">
+                                    <button type="submit" class="btn btn-sm btn-secondary ms-2"
+                                        :class="{ 'disabled': rating === null }">Filtra</button>
                                     <input type="radio" id="vote5" name="rating" value="5" v-model="rating">
                                     <label for="vote5"><i class="fa-solid fa-stethoscope"></i>
                                     </label>
@@ -192,79 +183,62 @@ export default {
                                     </label>
                                 </form>
                             </div>
-
                         </div>
-                        <div class="reviews-number d-flex gap-3">
-                            <p>Filtra per numero di recensioni:</p>
-                            <form action="">
-                                <input type="number">
-                            </form>
-                        </div>
-                    </div>
-                    <div class="number-reviews">
 
                     </div>
+
+                    <!-- Reviews Number Filter Input-->
+                    <div class="reviews-number">
+                        <p>Filtra per numero di recensioni:</p>
+                        <form method="GET" class="form-control d-flex" @submit.prevent="getFilteredReviews">
+                            <input type="number" class="form-control" id="reviews" name="reviews" min="0"
+                                v-model="inputReviews">
+                            <button type="submit" :class="{ 'disabled': inputReviews === null }"
+                                class="btn btn-sm btn-secondary ms-2">Filtra</button>
+                        </form>
+                    </div>
+
+                    <!-- Reset Input Fields Button -->
+                    <button type="reset" class="btn btn-sm btn-primary"
+                        :class="{ 'disabled': rating === null && inputReviews === null }" @click="resetInputs">Cancella
+                        Filtri</button>
                 </div>
 
-                <div class="doctors-list" v-if="!filteredDoctorsByVotes.length">
-                    <div class="doctor-card" v-for="(doctor, index) in doctors" @click="goToShowPage(doctor, index)">
+                <div class="doctors-list" v-if="filteredDoctors.length">
+                    <div class="doctor-card" v-for="(doctor) in filteredDoctors" @click="goToShowPage(doctor)">
                         <img src="https://media.istockphoto.com/id/1340883379/photo/young-doctor-hospital-medical-medicine-health-care-clinic-office-portrait-glasses-man.jpg?s=612x612&w=0&k=20&c=_H4VUPBkS0gEj5ZdZzQo-Hw3lMuyofJpB-P9yS92Wyw="
                             class="doctor-photo" alt="doctor photo">
                         <section class="doctor-information">
                             <h5 class="doctor-name">
-                                {{ doctor.user.first_name }} {{ doctor.user.last_name }}
+                                {{ doctor.first_name }} {{ doctor.last_name }}
                             </h5>
                             <div class="doctor-address">
                                 <strong>Ufficio:</strong> {{ doctor.office_address }}
                             </div>
-                            <div class="doctor-specialization">
-                                <strong>Specializzazioni:</strong>
-                                <ul>
-                                    <li v-for="doctorSpecialization in doctor.user.specializations">
-                                        {{ doctorSpecialization.name }}
-                                    </li>
-                                </ul>
-
+                            <div class="doctor-average">
+                                <strong>Media voti:</strong> {{ doctor.media_voti ? doctor.media_voti : "-" }}
+                            </div>
+                            <div class="doctor-reviews">
+                                <strong>Recensioni ricevute:</strong> {{ doctor.totalReviews ? doctor.totalReviews : "-"
+                                }}
                             </div>
                         </section>
                     </div>
                 </div>
-                <div class="doctors-list" v-else>
-                    <div class="doctor-card" v-for="(doctor, index) in filteredDoctorsByVotes"
-                        @click="goToShowPage(doctor, index)">
-                        <img src="https://media.istockphoto.com/id/1340883379/photo/young-doctor-hospital-medical-medicine-health-care-clinic-office-portrait-glasses-man.jpg?s=612x612&w=0&k=20&c=_H4VUPBkS0gEj5ZdZzQo-Hw3lMuyofJpB-P9yS92Wyw="
-                            class="doctor-photo" alt="doctor photo">
-                        <section class="doctor-information">
-                            <h5 class="doctor-name">
-                                {{ doctor.doctor.user.first_name }} {{ doctor.doctor.user.last_name }}
-                            </h5>
-                            <div class="doctor-address">
-                                <strong>Ufficio:</strong> {{ doctor.office_address }}
-                            </div>
-                            <div class="doctor-specialization">
-                                <strong>Specializzazioni:</strong>
-                                <ul>
-                                    <li v-for="doctorSpecialization in doctor.doctor.user.specializations">
-                                        {{ doctorSpecialization.name }}
-                                    </li>
-                                </ul>
-                            </div>
-                            <div class="doctor-address">
-                                <strong>Media recensioni:</strong> {{ doctor.averageVotes }}
-                            </div>
-                        </section>
-                    </div>
+                <div v-else>
+                    <p>Nessun risultato trovato</p>
                 </div>
 
             </div>
         </div>
-        <div v-else-if="filteredDoctorsByVotes.length"></div>
+        <div v-else-if="filteredDoctors.length"></div>
     </main>
 </template>
 
 <style scoped>
 h5 {
     margin-bottom: 15px;
+    text-align: center;
 }
 
 .title {
@@ -277,6 +251,46 @@ h5 {
     font-weight: 400;
 }
 
+.advanced-filter {
+    border: #65B0FF 2px solid;
+    border-radius: 20px;
+    margin: 20px 0;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+/*Rating */
+.rating {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: flex-end;
+
+    & input {
+        display: none;
+    }
+
+    & label {
+        font-size: 24px;
+        cursor: pointer;
+    }
+
+    & label:hover,
+    & label:hover~label {
+        color: var(--color-complementary)
+    }
+
+    & input:checked~label {
+        color: var(--color-complementary)
+    }
+}
+
+.reviews-number {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+}
 
 /* Doctor list */
 .doctors-list {
@@ -285,12 +299,22 @@ h5 {
     justify-content: start;
     flex-wrap: wrap;
     align-content: stretch;
+    margin-top: 30px;
+
 }
+
+.doctors-list> :hover {
+    scale: 1.1;
+    cursor: pointer;
+    transition: 0.8s;
+}
+
+
 
 .total-specialization-doctor {
     font-style: oblique;
     font-weight: normal;
-    font-size: 1.8rem;
+    font-size: 1.2rem;
 }
 
 .doctor-card {
@@ -303,6 +327,7 @@ h5 {
     align-items: center;
     width: calc((100% / 3) - 80px);
     border-radius: 30px;
+
     /* height: 400px; */
 }
 
@@ -321,20 +346,6 @@ img {
     font-weight: bold;
     border: 1px solid var(--color-primary);
 }
-
-/* Non più utile */
-/* Show Doctor */
-/* .general-show-doctor {
-    position: fixed;
-    top: 80px;
-    left: 25%;
-    z-index: 1;
-    width: 50%;
-}
-
-.show-doctor-active {
-    opacity: 0.3;
-} */
 
 
 /* Loader progressive */
@@ -372,29 +383,124 @@ img {
     }
 }
 
-/*Rating */
-.rating {
-    margin-bottom: 20px;
-    display: flex;
-    flex-direction: row-reverse;
-    justify-content: flex-end;
 
-    & input {
-        display: none;
+
+/* Media Queries */
+
+/* Mobile */
+@media (max-width: 768px) {
+
+    .advanced-filter {
+        flex-direction: column;
+        align-items: flex-start;
     }
 
-    & label {
-        font-size: 24px;
-        cursor: pointer;
+    .average-votes,
+    .reviews-number {
+        width: 100%;
+        margin-bottom: 15px;
     }
 
-    & label:hover,
-    & label:hover~label {
-        color: var(--color-complementary)
+    .advanced-filter button {
+        width: 100%;
+        margin-top: 15px;
     }
 
-    & input:checked~label {
-        color: var(--color-complementary)
+    .doctors-list {
+        gap: 20px;
+        justify-content: center;
+    }
+
+    .doctor-card {
+        width: calc(100% - 40px);
+        margin: 5px;
+    }
+
+    .title h2 {
+        font-size: 1.4rem;
+    }
+
+    .doctor-card img {
+        height: 150px;
+        width: 150px;
+    }
+
+    .doctor-name h5 {
+        font-size: 1rem;
+    }
+
+    .doctor-information {
+        text-align: start;
+    }
+
+    .average-votes {
+        width: 100%;
+    }
+}
+
+/* Large Mobile Screens */
+
+@media (max-width: 480px) {
+    .doctors-list {
+        gap: 15px;
+    }
+
+    .doctor-card {
+        width: calc(100% - 20px);
+        /* Ensure 1 card per row on very small screens */
+    }
+
+    .doctor-name {
+        font-size: 0.9rem;
+    }
+
+    .doctor-address,
+    .doctor-average,
+    .doctor-reviews {
+        font-size: 0.8rem;
+    }
+
+    .rating {
+        font-size: 20px;
+        flex-grow: 1;
+        align-items: center;
+        flex-wrap: no-wrap;
+        gap: 5px;
+    }
+
+    .votes {
+        flex-wrap: wrap;
+    }
+
+    .average-votes,
+    .reviews-number {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    button {
+        width: 100%;
+    }
+
+    .title h2 {
+        font-size: 1.2rem;
+    }
+
+    .doctor-card img {
+        height: 120px;
+        width: 120px;
+    }
+}
+
+/* Desktop (above 1024px) */
+@media (min-width: 1024px) {
+    .doctors-list {
+        gap: 50px 110px;
+    }
+
+    .doctor-card {
+        width: calc((100% / 3) - 80px);
+        /* 3 cards per row */
     }
 }
 </style>

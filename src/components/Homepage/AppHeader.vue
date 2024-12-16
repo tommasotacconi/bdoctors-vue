@@ -42,7 +42,9 @@ export default {
 
             // Nuova pagina nella quale usiamo i nomi. Piccola concatenazione di metodi per togliere gli spazi e rendere tutto minuscolo
             this.$router.push({
-                name: 'search', params: { searchId: store.selectedSpecializationName.trim().replace(/ /g, "-").toLowerCase() },
+                name: 'search', params: {
+                    searchId: store.selectedSpecializationName.trim().replace(/ /g, "-").toLowerCase(),
+                },
             })
         },
 
@@ -57,7 +59,7 @@ export default {
 
 <template>
     <header class="general-header">
-        <div class="container container-header d-flex">
+        <div class="container container-header d-flex gap-3">
             <section class="left-header d-flex">
                 <routerLink style="text-decoration: none; color: inherit;" :to="{ name: 'homepage' }">
                     <div class="left-header-title-logo d-flex">
@@ -87,7 +89,7 @@ export default {
                         <option value="" disabled selected>Ricerca il medico per specializzazione!</option>
                         <option v-for="(specialization, index) in specializations" :key="index" :value=specialization>{{
                             specialization.name
-                        }}
+                            }}
                         </option>
                     </select>
                 </div>
@@ -255,5 +257,21 @@ h1 {
     text-decoration: none;
     color: white;
     font-weight: bold;
+}
+
+
+/* Responsive */
+@media screen and (max-width: 1230px) {
+    .title {
+        display: none;
+    }
+
+    .button-login {
+        padding: 11px 16px;
+    }
+
+    .fa-user-doctor {
+        display: none;
+    }
 }
 </style>

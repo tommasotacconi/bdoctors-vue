@@ -16,23 +16,23 @@ export default {
                 password: "",
                 phone: "",
                 office_address: "",
-                oldSpecializations: [],
-                specializations: [],
+                specializations: "",
                 services: "",
                 photo: null,
                 // photoUrl: "",
                 curriculum: null,
-                // curriculumUrl: '',
-            },
+                // curriculumUrl: "",
+						},
+						oldSpecializations: [],
             apiUrl: 'http://127.0.0.1:8000/api/profiles/edit/',
             errors: {
-                first_name: '',
+                first_name: "",
                 last_name: "",
                 email: "",
                 password: "",
                 phone: "",
                 office_address: "",
-                specializations: '',
+                specializations: "",
                 services: "",
                 photo: "",
                 curriculum: ""
@@ -55,18 +55,13 @@ export default {
             this.formData.curriculum = curriculum;
         },
 
-        //Method to use a photo frontend side
-        // getImagePath: function (imgPath) {
-        //     return new URL(imgPath, 'http://localhost:8000/').href;
-        // },
-
         updateForm() {
 
             axios.post('http://localhost:8000/api/profiles/edit/' + this.formData.user_id, this.formData, {
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                },
-            })
+										headers: {
+												"Content-Type": "multipart/form-data",
+										},
+            		})
                 .then(response => {
                     console.log('Profile updated', response.data)
                 })
@@ -80,8 +75,21 @@ export default {
                 });
         },
 
+        resetErrorsFields() {
+            this.errors.first_name = '';
+            this.errors.last_name = '';
+            this.errors.email = '';
+            this.errors.password = '';
+            this.errors.phone = '';
+            this.errors.office_address = '';
+            this.errors.specializations = '';
+            this.errors.services = '';
+            this.errors.photo = '';
+            this.errors.curriculum = '';
+        },
+
         validateForm() {
-            this.errors = [];
+            this.resetErrorsFields();
             if (!this.formData.first_name) {
                 this.errors.first_name = 'Il nome è obbligatorio.';
             } else if (this.formData.first_name.length <= 2) {
@@ -100,19 +108,26 @@ export default {
             if (!this.formData.password) { this.errors.password = "La password è obbligatoria." }
             else if (!this.validPassword(this.formData.password)) { this.errors.password = "La password deve contenere almeno una maiuscola, una minuscola ed un numero" };
             if (!this.formData.phone) { this.errors.phone = "Il numero di telefono è obbligatorio." }
-            else if (isNaN(this.formData.phone)) { this.errors.phone = "Il numero di telefono può contenere solo numeri" };
+            // else if (isNaN(this.formData.phone)) { this.errors.phone = "Il numero di telefono può contenere solo numeri" };
             if (!this.formData.office_address) this.errors.office_address = "L'indirizzo è obbligatorio.";
-            if (!this.formData.oldSpecializations && !this.formData.specializations) this.errors.specializations = "Inserire almeno una specializzazione.";
+            if (!this.formData.specializations.length) this.errors.specializations = "Inserire almeno una specializzazione.";
             if (!this.formData.services) this.errors.services = "Inserire almeno una prestazione.";
-            if (!this.formData.photo) this.errors.photo = "La foto è obbligatoria";
-            if (!this.formData.curriculum) this.errors.curriculum = "Il curriculum è obbligatorio.";
+            // if (!this.formData.photo) this.errors.photo = "La foto è obbligatoria";
+            // if (!this.formData.curriculum) this.errors.curriculum = "Il curriculum è obbligatorio.";
 
-            if (!this.errors.length) {
+            if (!this.errors.first_name &&
+                !this.errors.last_name &&
+                !this.errors.email &&
+                !this.errors.password &&
+                !this.errors.phone &&
+                !this.errors.office_address &&
+                !this.errors.specializations &&
+                !this.errors.services &&
+                !this.errors.photo &&
+                !this.errors.curriculum
+            ) {
                 this.validated = true;
-
-                if (this.validated = true) {
-                    this.updateForm();
-                }
+                this.updateForm();
             }
             console.log(this.formData);
             console.log(this.errors);
@@ -141,30 +156,30 @@ export default {
         },
 
         updateSpecs(specializations) {
-			// Prepare a constant array result to insert ids value
-			const result = [];
-			// Insert ids taken from specializations parameter in reactive variable specializations, property of errors 
-			for (let i = 0; i < specializations.length; i++) {
-				result.push(specializations[i].id);
-			}
-			this.specializations = result;
-			console.log('---current specializations---', this.specializations);
-		},
+            // Prepare a constant array result to insert ids value
+            const result = [];
+            // Insert ids taken from specializations parameter in reactive variable specializations, property of errors --CHECK THIS COMMENT-- 
+            for (let i = 0; i < specializations.length; i++) {
+                result.push(specializations[i].id);
+            }
+            this.formData.specializations = result;
+            console.log('---current specializations---', this.formData.specializations);
+        },
 
         getProfileData() {
             axios.get('http://localhost:8000/api/profiles/edit/' + this.formData.user_id, this.formData)
                 .then(response => {
-
-                    this.formData = response.data.data;
+										// console.log(response);
                     this.formData.user_id = response.data.data.doctor.id;
                     this.formData.first_name = response.data.data.doctor.first_name;
                     this.formData.last_name = response.data.data.doctor.last_name;
                     this.formData.email = response.data.data.doctor.email;
-                    this.formData.password = response.data.data.doctor.password;
-                    this.formData.oldSpecializations = response.data.data.doctor.specializations;
-
-                    console.log(response)
-                    console.log('formData after call', this.formData);
+                    this.formData.phone = response.data.data.phone;
+                    this.formData.office_address = response.data.data.office_address;
+										// Insert only ids of specializations in formData.specializations
+										this.formData.specializations = response.data.data.doctor.specializations.map(e => e.id);
+										this.oldSpecializations = response.data.data.doctor.specializations;
+                    this.formData.services = response.data.data.services;
                 })
                 .catch(function (error) {
                     // handle error
@@ -173,28 +188,28 @@ export default {
                 .finally(function () {
                     // always executed
                 });
-        }
-    },
-    computed: {
-        openProfile() {
+        },
+
+				openProfile() {
             // Once the user's been redirected to his profile, the modal's backdrop disappears
             // const backdrop = document.querySelector('.modal-backdrop');
             // if (backdrop) {
             //     backdrop.remove();
             // }
             // redirect to user profile
-            this.$router.push('/user/:id');
+            this.$router.push({ name: 'dashboard', params: { id: response.data.user.id } });
         }
+    },
+    computed: {
     },
     created: function () {
         this.getProfileData();
     },
 }
-
 </script>
 
 <template>
-    <div class="container py-3">
+    <div class="container py-3" v-if="formData.first_name">
         <h1 class="text-center">Modifica le tue informazioni</h1>
 
         <form action="" method="POST" class="row py-4 my-4" id="edit-form" @submit.prevent="validateForm" novalidate>
@@ -259,7 +274,10 @@ export default {
                 </div> -->
             <div class="mb-3 col-6">
                 <label for="specializations" class="form-label">Specializzazioni</label>
-                <Multiselect @send-values="updateSpecs" :specializations="formData.oldSpecializations" />
+                <Multiselect @send-values="updateSpecs" :specializations="oldSpecializations" />
+                <div class="invalid" v-if="errors.specializations">
+                    <p> {{ errors.specializations }} </p>
+                </div>
             </div>
             <div class="mb-3">
                 <label for="services" class="form-label">Prestazioni</label>
