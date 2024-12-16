@@ -82,7 +82,7 @@ export default {
 </script>
 
 <template>
-    <main class="mt-4">
+    <main class="mt-1">
         <div class="container sponsored-doctor-container">
             <h3>Dottori in evidenza</h3>
             <!-- <div class="loader" v-if="!loaded"></div> -->
