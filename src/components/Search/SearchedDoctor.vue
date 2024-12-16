@@ -259,7 +259,8 @@ export default {
                                 <strong>Media voti:</strong> {{ doctor.media_voti ? doctor.media_voti : "-" }}
                             </div>
                             <div class="doctor-reviews">
-                                <strong>Recensioni ricevute:</strong> {{ doctor.media_voti ? doctor.media_voti : "-" }}
+                                <strong>Recensioni ricevute:</strong> {{ doctor.totalReviews ? doctor.totalReviews : "-"
+                                }}
                             </div>
                         </section>
                     </div>
