@@ -87,7 +87,7 @@ export default {
                         <option value="" disabled selected>Ricerca il medico per specializzazione!</option>
                         <option v-for="(specialization, index) in specializations" :key="index" :value=specialization>{{
                             specialization.name
-                        }}
+                            }}
                         </option>
                     </select>
                 </div>

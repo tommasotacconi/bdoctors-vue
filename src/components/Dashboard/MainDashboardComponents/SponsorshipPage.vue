@@ -20,14 +20,17 @@ export default {
         getPriceBronze() {
             this.price = 2.99
             console.log(this.price)
+            this.$router.push('/payment-form')
         },
         getPriceSilver() {
             this.price = 5.99
             console.log(this.price)
+            this.$router.push('/payment-form')
         },
         getPriceGold() {
             this.price = 9.99
             console.log(this.price)
+            this.$router.push('/payment-form')
         },
         getApiProfiles() {
             axios.get(this.profilesApiUrl)
