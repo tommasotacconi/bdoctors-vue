@@ -95,7 +95,8 @@ export default {
                     <div class="card-body">
                         <h5 class="card-title">{{ doctor.user.first_name }} {{ doctor.user.last_name }}</h5>
                         <div class="card-text">
-                            <ul>
+                            <h6>Specializzazioni:</h6>
+                            <ul class="list-unstyled">
                                 <li v-for="doctorSpecialization in doctor.user.specializations">
                                     {{ doctorSpecialization.name }}
                                 </li>
@@ -118,7 +119,14 @@ h3 {
 
 ul {
     text-align: start;
-    padding-left: 20px;
+    padding-left: 0;
+}
+
+li {
+    border: 2px solid white;
+    margin-bottom: 5px;
+    padding: 10px;
+    border-radius: 20px
 }
 
 main {
