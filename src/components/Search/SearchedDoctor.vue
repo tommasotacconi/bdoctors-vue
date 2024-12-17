@@ -104,17 +104,23 @@ export default {
                 .catch(function (error) {
                     // handle error
                     console.log(error)
-                    console.log(error.response.data.message);
                 })
+        },
+
+        getProfilePhotoPath(doctor) {
+            // Calculate profile photo :src attribute depending on the presence of the 'photos' string in the db data photo profiles table
+            const photoPath = doctor.photo;
+            return photoPath.includes('photos') ? this.getFilePath(`storage/${photoPath}`) : new URL(this.placeholderImg).href;
+        },
+
+        getFilePath: function (filePath) {
+            return new URL(filePath, 'http://localhost:8000/').href;
         },
 
         resetInputs() {
             this.rating = null;
             this.inputReviews = null;
             this.getFilteredReviews();
-        },
-        getFilePath: function (filePath) {
-            return new URL(filePath, 'http://localhost:8000/').href;
         },
     },
     computed: {
@@ -125,11 +131,6 @@ export default {
         },
         orderedDoctors() {
             return this.orderBySponsorship(this.doctors);
-        },
-        profilePhotoPath() {
-            // Calculate profile photo :src attribute depending on the presence of the 'photos' string in the db data photo profiles table
-            const photoPath = this.profileData.photo;
-            return photoPath.includes('photos') ? this.getFilePath(`storage/${this.profileData.photo}`) : new URL(this.placeholderImg).href;
         },
     },
     created() {
@@ -213,7 +214,7 @@ export default {
 
                     <div class="doctors-list" v-if="filteredDoctors.length">
                         <div class="doctor-card" v-for="(doctor) in filteredDoctors" @click="goToShowPage(doctor)">
-                            <img :src="profilePhotoPath" alt="doctor photo">
+                            <img class="doctor-photo" :src="getProfilePhotoPath(doctor)" alt="doctor photo">
                             <section class="doctor-information">
                                 <h5 class="doctor-name">
                                     {{ doctor.first_name }} {{ doctor.last_name }}
@@ -319,12 +320,18 @@ h5 {
 
 }
 
+.doctor-photo {
+    height: 200px;
+    aspect-ratio: 1;
+    object-fit: cover;
+    object-position: center;
+}
+
 .doctors-list> :hover {
     scale: 1.1;
     cursor: pointer;
     transition: 0.8s;
 }
-
 
 
 .total-specialization-doctor {
@@ -351,6 +358,7 @@ img {
     border-radius: 50%;
     border: 3px solid #65B0FF;
     height: 200px;
+
 }
 
 .button-profile-show {

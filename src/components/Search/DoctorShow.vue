@@ -43,6 +43,7 @@ export default {
             },
             messageFormValidated: false,
             reviewFormValidated: false,
+            placeholderImg: 'https://st4.depositphotos.com/4329009/19956/v/450/depositphotos_199564354-stock-illustration-creative-vector-illustration-default-avatar.jpg'
         }
     },
     components: {
@@ -60,6 +61,18 @@ export default {
                     console.log(error);
                 });
         },
+
+        getProfilePhotoPath(doctor) {
+            // Calculate profile photo :src attribute depending on the presence of the 'photos' string in the db data photo profiles table
+            const photoPath = doctor.photo;
+            console.log(doctor.photo)
+            return photoPath.includes('photos') ? this.getFilePath(`storage/${photoPath}`) : new URL(this.placeholderImg).href;
+        },
+
+        getFilePath: function (filePath) {
+            return new URL(filePath, 'http://localhost:8000/').href;
+        },
+
 
         // Method to send patients messages
 
@@ -228,8 +241,8 @@ export default {
                 <div class="card mb-3">
                     <div class="card-flex">
                         <div class="img-doctor">
-                            <img src="https://media.istockphoto.com/id/1340883379/photo/young-doctor-hospital-medical-medicine-health-care-clinic-office-portrait-glasses-man.jpg?s=612x612&w=0&k=20&c=_H4VUPBkS0gEj5ZdZzQo-Hw3lMuyofJpB-P9yS92Wyw="
-                                class="img-fluid" alt="doctor photo">
+                            <img :src="getProfilePhotoPath(store.doctorProfile)" class="doctor-photo"
+                                alt="doctor photo">
                         </div>
                         <div class="card-body-title-section">
                             <h1 class="card-title py-3">
@@ -510,6 +523,12 @@ p {
     align-items: center;
     justify-content: center;
     padding-left: 20px;
+}
+
+.doctor-photo {
+    aspect-ratio: 1;
+    object-fit: cover;
+    object-position: center;
 }
 
 .card img {
