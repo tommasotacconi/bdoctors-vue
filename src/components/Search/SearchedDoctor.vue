@@ -206,7 +206,7 @@ export default {
 
                 <div class="doctors-list" v-if="filteredDoctors.length">
                     <div class="doctor-card" v-for="(doctor) in filteredDoctors" @click="goToShowPage(doctor)">
-                        <img src="https://media.istockphoto.com/id/1340883379/photo/young-doctor-hospital-medical-medicine-health-care-clinic-office-portrait-glasses-man.jpg?s=612x612&w=0&k=20&c=_H4VUPBkS0gEj5ZdZzQo-Hw3lMuyofJpB-P9yS92Wyw="
+                        <img src="https://st4.depositphotos.com/4329009/19956/v/450/depositphotos_199564354-stock-illustration-creative-vector-illustration-default-avatar.jpg"
                             class="doctor-photo" alt="doctor photo">
                         <section class="doctor-information">
                             <h5 class="doctor-name">
