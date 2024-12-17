@@ -16,7 +16,9 @@ export default {
 
 <template>
     <AppHeader class="app-header" />
-    <AppMainHome />
+    <div class="bg">
+        <AppMainHome />
+    </div>
 </template>
 
 <style scoped>
@@ -24,5 +26,9 @@ export default {
     position: sticky;
     top: 0;
     z-index: 1;
+}
+
+.bg {
+    background-image: url(../../public/tile_background.png);
 }
 </style>
