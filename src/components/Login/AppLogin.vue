@@ -7,6 +7,7 @@ export default {
 		  inputEmail: '',
 			inputPassword: '',
 			responseStatus: false,
+			isAnimationActive: false,
 		}
 	},
 	methods: {
@@ -19,7 +20,10 @@ export default {
 					console.log(response);
 					this.responseStatus = true;
 				})
-				.catch(function (error) {
+				.catch(error => {
+					// Trigger animation
+					this.isAnimationActive = true;
+					setTimeout(() => {this.isAnimationActive = false}, 500);
 					console.log(error);
 				});
 			},
@@ -41,8 +45,8 @@ export default {
 				<input type="text" id="password-input" class="form-control mb-3" v-model="inputPassword">
 			</div>
 			<!-- Button wrappers -->
-			<div class="buttons-wrapper col-12">
-				<button type="submit" class="btn btn-primary mt-4 mb-3" id="login-button">Login</button>
+			<div class="buttons-wrapper col-12 d-flex justify-content-center">
+				<button type="submit" id="login-button" class="btn btn-primary mt-4 mb-3" :class="{ 'shaking-animation': isAnimationActive }">Login</button>
 				<div class="mt-3" v-if="responseStatus">Accesso effettuato</div>
 			</div>
 		</div>
@@ -82,12 +86,32 @@ input {
 	border: 2px solid #65B0FF;
 }
 
+.buttons-wrapper {
+	padding: 0;
+}
+
 #login-button {
-	width: 100%;
+	width: calc(100% - 24px);
 	background-color: #65B0FF;
 
 	&:hover {
 		background-color: #0E395D;
 	}
+}
+
+.shaking-animation {
+	animation-name: horizontal-shaking;
+	animation-duration: 0.5s;	
+}
+
+/* Shake animation (credits, https://unused-css.com/blog/css-shake-animation/) */
+@keyframes horizontal-shaking {
+	0% { transform: translateX(0) }
+	20% { transform: translateX(4px) }
+	40% { transform: translateX(-4px) }
+	60% { transform: translateX(4px) }
+	80% { transform: translateX(-4px) }
+	75% { transform: translateX(4px) }
+	100% { transform: translateX(0) }
 }
 </style>
