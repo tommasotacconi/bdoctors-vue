@@ -4,21 +4,22 @@ import axios from 'axios';
 export default {
 	data() {
 		return {
-		  inputEmail: '',
+			inputEmail: '',
 			inputPassword: '',
 			responseStatus: false,
 			isAnimationActive: false,
 		}
 	},
 	methods: {
-			sendLoginData() {
-				axios.post('http://127.0.0.1:8000/api/login', {
-					email: this.inputEmail,
-					password: this.inputPassword
-				})
+		sendLoginData() {
+			axios.post('http://127.0.0.1:8000/api/login', {
+				email: this.inputEmail,
+				password: this.inputPassword
+			})
 				.then(response => {
 					console.log(response);
 					this.responseStatus = true;
+					this.$router.push({ name: 'dashboard', params: { id: response.data.user.id } })
 				})
 				.catch(error => {
 					// Trigger animation
@@ -26,7 +27,7 @@ export default {
 					setTimeout(() => {this.isAnimationActive = false}, 500);
 					console.log(error);
 				});
-			},
+		},
 	}
 }
 </script>
@@ -42,7 +43,7 @@ export default {
 			<div class="col-12">
 				<!-- Password input -->
 				<label for="password-input" class="badge rounded-pill">Password</label>
-				<input type="text" id="password-input" class="form-control mb-3" v-model="inputPassword">
+				<input type="password" id="password-input" class="form-control mb-3" v-model="inputPassword">
 			</div>
 			<!-- Button wrappers -->
 			<div class="buttons-wrapper col-12 d-flex justify-content-center">
@@ -77,12 +78,12 @@ label {
 	color: white;
 
 	position: relative;
-	left: 15px; 
+	left: 15px;
 	top: 12px;
 }
 
 input {
-	height: 3rem;
+	height: 3.2rem;
 	border: 2px solid #65B0FF;
 }
 

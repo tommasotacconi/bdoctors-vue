@@ -1,25 +1,39 @@
 <script>
 import axios from "axios";
+import { store } from "../../../js/store";
 import Multiselect from "../Generics/Multiselect.vue";
+import PhotoUpload from "../Generics/PhotoUpload.vue";
+import CvUpload from "../Generics/CvUpload.vue";
+import AppAlert from "../Generics/AppAlert.vue";
 
 export default {
     data() {
         return {
             formData: {
+                //user_id: localStorage.getItem('user_id'),
+                photo: null,
+                curriculum: null,
+                user_id: store.informationPageId
             },
-            apiUrl: "http://127.0.0.1:8000/api/profiles",
+            apiUrl: 'http://127.0.0.1:8000/api/profiles',
             errors: {
                 phone: "",
-                officeAddress: "",
+                office_address: "",
                 services: "",
                 photo: "",
                 curriculum: ""
             },
             validated: false,
+						isResponseStatusSuccess: false,
+            store,
+            profileData: {},
         }
     },
     components: {
         Multiselect,
+        PhotoUpload,
+        CvUpload,
+				AppAlert
     },
 
     methods: {
@@ -27,62 +41,77 @@ export default {
             this.errors = [];
             if (!this.formData.phone) { this.errors.phone = "Il numero di telefono è obbligatorio." }
             else if (isNaN(this.formData.phone)) { this.errors.phone = "Il numero di telefono può contenere solo numeri" };
-            if (!this.formData.officeAddress) this.errors.officeAddress = "L'indirizzo è obbligatorio.";
+            if (!this.formData.office_address) this.errors.office_address = "L'indirizzo è obbligatorio.";
             if (!this.formData.services) this.errors.services = "Inserire almeno una prestazione.";
             if (!this.formData.photo) this.errors.photo = "La foto è obbligatoria";
             if (!this.formData.curriculum) this.errors.curriculum = "Il curriculum è obbligatorio.";
             if (!this.errors.length) {
                 this.validated = true;
                 if (this.validated = true) {
-                    axios.post(this.apiUrl, this.formData)
-                        .then(response => {
-                            this.formData = response.data;
-                            console.log(response);
-                        })
-                        .catch(function (error) {
-                            // handle error
-                            console.error(error);
-                        })
-                        .finally(function () {
-                            // always executed
-                        });
+                    this.createProfile();
                 }
             }
             console.log(this.formData);
             console.log(this.errors);
         },
 
-
-        onPickFile() {
-            this.$refs.fileInput.click()
+        handlePhoto(photo) {
+            this.formData.photo = photo;
         },
-        onFilePicked(event) {
-            const files = event.target.files
-            let filename = files[0].name
-            const fileReader = new FileReader()
-            fileReader.addEventListener('load', () => {
-                this.imageUrl = fileReader.result
+
+        handleCurriculum(curriculum) {
+            this.formData.curriculum = curriculum;
+        },
+        //commento per commit 2
+        createProfile() {
+            axios.post('http://localhost:8000/api/profiles/' + this.store.informationPageId, this.formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
             })
-            fileReader.readAsDataURL(files[0])
-            this.photo = files[0]
-        },
-
-
-        mounted() {
-            axios.get(this.apiUrl)
                 .then(response => {
-                    this.formData;
-                    console.log(response);
+                    console.log('Response', response.data);
+                    this.profileData = response.data.profile;
+										this.isResponseStatusSuccess = true;
+                    // Data da condividere all'interno degli altri componenti
+                    //store.profileDataGeneral = response.data.data
+                    //localStorage.setItem('user_id', response.data.data.doctor.id)
                 })
                 .catch(function (error) {
                     // handle error
-                    console.error(error);
+                    console.error(error)
                 })
                 .finally(function () {
                     // always executed
                 });
-        }
+        },
+				openProfile() {
+            // Once the user's been redirected to his profile, the modal's backdrop disappears
+            // const backdrop = document.querySelector('.modal-backdrop');
+            // if (backdrop) {
+            //     backdrop.remove();
+            // }
+            // redirect to user profile
+            this.$router.push({ name: 'dashboard', params: { id: this.profileData.id } });
+				}
+        // onPickFile() {
+        //     this.$refs.fileInput.click()
+        // },
+        // onFilePicked(event) {
+        //     const files = event.target.files
+        //     let filename = files[0].name
+        //     const fileReader = new FileReader()
+        //     fileReader.addEventListener('load', () => {
+        //         this.imageUrl = fileReader.result
+        //     })
+        //     fileReader.readAsDataURL(files[0])
+        //     this.photo = files[0]
+        // },
     },
+    created() {
+        this.store.informationPageId = this.$route.params.id;
+        console.log(store.informationPageId);
+    }
 }
 </script>
 
@@ -90,79 +119,67 @@ export default {
     <div class="container py-3">
         <h1 class="text-center">Crea il tuo profilo</h1>
 
-        <button class="btn btn-info" @click="onPickFile">Upload profile picture</button>
-        <input type="file" style="display: none" ref="fileInput" accept="image/*" @change="onFilePicked" />
-
-        <form action="" method="PUT" class="row py-4 my-4" id="edit-form" @submit.prevent="validateForm" novalidate>
+        <form action="" method="POST" class="row py-4 my-4" id="edit-form" @submit.prevent="validateForm" novalidate>
 
             <div class="mb-3 col-6">
                 <label for="phone" class="form-label">Telefono</label>
-                <input type="tel" class="form-control" :class="errors.phone && 'invalid-input'" id="phone"
+                <input type="tel" class="form-control" :class="{ 'invalid-input': errors.phone }" id="phone"
                     v-model="formData.phone" required>
                 <div class="invalid" v-if="errors.phone">
                     <p> {{ errors.phone }} </p>
                 </div>
             </div>
             <div class="mb-3 col-6">
-                <label for="officeAddress" class="form-label">Indirizzo</label>
-                <input type="text" class="form-control" :class="errors.officeAddress && 'invalid-input'"
-                    id="officeAddress" v-model='formData.officeAddress' required>
-                <div class="invalid" v-if="errors.officeAddress">
-                    <p> {{ errors.officeAddress }} </p>
+                <label for="office_address" class="form-label">Indirizzo</label>
+                <input type="text" class="form-control" :class="errors.office_address && 'invalid-input'"
+                    id="office_address" v-model='formData.office_address' required>
+                <div class="invalid" v-if="errors.office_address">
+                    <p> {{ errors.office_address }} </p>
                 </div>
             </div>
-            <div class="mb-3 col-6">
+            <div class="mb-3">
                 <label for="services" class="form-label">Prestazioni</label>
-                <textarea class="form-control" :class="errors.services && 'invalid-input'" id="services"
+                <textarea class="form-control" :class="{ 'invalid-input': errors.services }" id="services"
                     v-model="formData.services" required></textarea>
                 <div class="invalid" v-if="errors.services">
                     <p> {{ errors.services }} </p>
                 </div>
             </div>
-            <div class="mb-3">
+            <div class="mb-3 d-flex flex-column col-6">
                 <label for="photo" class="form-label">Foto profilo</label>
-                <input type="file" class="form-control" :class="errors.photo && 'invalid-input'" id="photo"
-                    placeholder="Inserisci un file valido" @change="formData.photo" required>
-                <div class="invalid" v-if="errors.photo">
+                <PhotoUpload v-model="formData.photo" @file-selected="handlePhoto"></PhotoUpload>
+                <div>
                     <p> {{ errors.photo }} </p>
                 </div>
             </div>
-            <div class="mb-3">
+            <div class="mb-3 d-flex flex-column col-6">
                 <label for="curriculum" class="form-label">Curriculum
                     Vitae</label>
-                <input type="file" class="form-control" :class="errors.curriculum && 'invalid-input'" id="curriculum"
-                    placeholder="Inserisci un file valido" @change="formData.curriculum" required>
+                <CvUpload v-model="formData.curriculum" @cv-selected="handleCurriculum"></CvUpload>
                 <div class="invalid" v-if="errors.curriculum">
                     <p> {{ errors.curriculum }} </p>
                 </div>
             </div>
+
             <div class="mb-3">
-                <!-- <button type="submit" class="btn me-2 btn-submit">Modifica</button>
-                    <button type="reset" class="btn btn-reset">Reset</button> -->
-                <button type="submit" class="btn me-2 btn-submit" data-bs-toggle="myModal" data-bs-target="myModal">Crea
-                    Profilo</button>
-                <button type="reset" class="btn btn-reset">Reset</button>
+                    <button type="submit" class="btn me-2 btn-submit" data-bs-toggle="myModal :"
+                        data-bs-target="myModal" :disabled="isResponseStatusSuccess">Crea profilo</button>
+                    <button type="reset" class="btn btn-reset" :disabled="isResponseStatusSuccess">Reset</button>
             </div>
 
-            <!-- Modal -->
-            <div class="modal fade" id="myModal" tabindex="-1" aria-hidden="true" v-if="validated">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="btn-close" data-bs-dismiss="myModal"
-                                aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            I tuoi dati sono stati aggiornati.
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-primary" @click="openProfile">
-                                Torna al profilo
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <!-- Alert -->
+						<div class="col-6" v-if="isResponseStatusSuccess">
+							<AppAlert class="alert-success d-flex">
+								<div class="col alert-body">
+									I tuoi dati sono stati aggiornati.
+								</div>
+								<div class="alert-footer">
+									<button type="button" class="btn btn-primary" @click="openProfile">
+										Torna al profilo
+									</button>
+								</div>
+							</AppAlert>
+						</div>
 
         </form>
     </div>
@@ -195,5 +212,10 @@ export default {
 
 .invalid-input {
     border-color: red;
+}
+
+.alert-footer button{
+	background-color: var(--color-complementary);
+	border-color: var(--color-complementary);
 }
 </style>

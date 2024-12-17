@@ -9,7 +9,7 @@ export default {
 </script>
 
 <template>
-	<div class="alert">
+	<div class="alert mb-0">
 		<slot></slot> <!-- slot outlet -->
 	</div>
 </template>
