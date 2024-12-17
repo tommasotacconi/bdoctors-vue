@@ -79,7 +79,7 @@ a {
     background: linear-gradient(90deg, rgba(101, 176, 255, 1) 0%, rgba(255, 255, 255, 1) 38%);
     text-align: center;
     justify-content: center;
-    gap: 30px;
+    gap: 20px;
     position: relative;
     top: -20px;
     left: 0;
