@@ -11,6 +11,7 @@ export default {
         return {
             formData: {
                 user_id: localStorage.getItem('user_id'),
+								profile_id: localStorage.getItem('profile_id'),
                 first_name: "",
                 last_name: "",
                 email: "",
@@ -40,7 +41,7 @@ export default {
                 photo: "",
                 curriculum: ""
             },
-            validated: false,
+            isResponseStatusSuccess: false,
         }
     },
     components: {
@@ -61,13 +62,14 @@ export default {
 
         updateForm() {
 
-            axios.post('http://localhost:8000/api/profiles/edit/' + this.formData.user_id, this.formData, {
+            axios.post('http://localhost:8000/api/profiles/edit/' + this.formData.profile_id, this.formData, {
 										headers: {
 												"Content-Type": "multipart/form-data",
 										},
             		})
                 .then(response => {
-                    console.log('Profile updated', response.data)
+                    console.log('Profile updated', response.data);
+										this.isResponseStatusSuccess = true;
                 })
                 .catch(function (error) {
                     // handle error
@@ -93,6 +95,7 @@ export default {
         },
 
         validateForm() {
+						this.isResponseStatusSuccess = false;
             this.resetErrorsFields();
             // if (!this.formData.first_name) {
             //     this.errors.first_name = 'Il nome è obbligatorio.';
@@ -167,7 +170,7 @@ export default {
         },
 
         getProfileData() {
-            axios.get('http://localhost:8000/api/profiles/edit/' + this.formData.user_id, this.formData)
+            axios.get('http://localhost:8000/api/profiles/edit/' + this.formData.profile_id, this.formData)
                 .then(response => {
 										// console.log(response);
                     this.formData.user_id = response.data.data.doctor.id;
@@ -199,7 +202,7 @@ export default {
             //     backdrop.remove();
             // }
             // redirect to user profile
-            this.$router.push({ name: 'dashboard', params: { id: this.formData.user_id } });
+            this.$router.push({ name: 'dashboard', params: { id: this.formData.profile_id } });
         }
     },
     computed: {
@@ -267,7 +270,7 @@ export default {
             </div>
             <div class="mb-3 col-6">
 							<label for="photo" class="form-label mb-3">
-								Foto profilo <span class="badge text-bg-secondary">{{'file presenti:' + (oldPhoto ? '1' : '0') }}</span>
+								Foto profilo <span class="badge text-bg-secondary">{{ 'file presenti:' + (oldPhoto ? '1' : '0') }}</span>
 							</label>
 							<div class="file-input d-flex flex-column align-items-center">
                 <PhotoUpload v-model="formData.photo" @file-selected="handlePhoto"></PhotoUpload>
@@ -280,7 +283,7 @@ export default {
             </div>
             <div class="mb-3 col-6">
 							<label for="curriculum" class="form-label mb-3">
-								Curriculum Vitae <span class="badge text-bg-secondary">{{'file presenti:' + (oldPhoto ? '1' : '0') }}</span>
+								Curriculum Vitae <span class="badge text-bg-secondary">{{ 'file presenti:' + (oldPhoto ? '1' : '0') }}</span>
 							</label>
 							<div class="file-input d-flex flex-column align-items-center">
                 <CvUpload v-model="formData.curriculum" @cv-selected="handleCurriculum"></CvUpload>
@@ -295,12 +298,12 @@ export default {
                 <!-- <button type="submit" class="btn me-2 btn-submit">Modifica</button>
                     <button type="reset" class="btn btn-reset">Reset</button> -->
                 <button type="submit" class="btn btn-submit me-2 mt-4" data-bs-toggle="myModal"
-                    data-bs-target="myModal">Modifica</button>
-                <button type="reset" class="btn btn-reset mt-4">Reset</button>
+                    data-bs-target="myModal" :disabled="isResponseStatusSuccess">Modifica</button>
+                <button type="reset" class="btn btn-reset mt-4" :disabled="isResponseStatusSuccess">Reset</button>
             </div>
 
             <!-- Alert -->
-						<div class="col-6" v-if="validated">
+						<div class="col-6" v-if="isResponseStatusSuccess">
 							<AppAlert class="alert-success d-flex">
 								<div class="col alert-body">
 									I tuoi dati sono stati aggiornati.
@@ -350,5 +353,10 @@ export default {
 
 .invalid-input {
     border-color: red;
+}
+
+.alert-footer button{
+	background-color: var(--color-complementary);
+	border-color: var(--color-complementary);
 }
 </style>
