@@ -22,7 +22,7 @@ export default {
                     store.profileDataGeneral = response.data.data
                     console.log('data general nello store:', store.profileDataGeneral)
                     localStorage.setItem('user_id', response.data.data.doctor.id)
-                    localStorage.setItem('profile_id', response.data.data.id)
+										localStorage.setItem('profile_id', response.data.data.id)
                 })
                 .catch(function (error) {
                     console.log(error);

@@ -29,7 +29,7 @@ export default {
     <div class="loader" v-if="!loaded"></div>
 
     <main v-else>
-        <div class="">
+        <div class="introduction-position">
             <div class="container-introduction">
                 <div class="introduction">
                     <div class="container container-text-introduction">
@@ -63,12 +63,17 @@ export default {
 h2 {
     text-align: center;
     margin-bottom: 20px;
-
 }
 
 a {
     color: var(--color-primary);
     text-decoration: none;
+}
+
+.introduction-position {
+    position: relative;
+    top: -20px;
+    left: 0;
 }
 
 .introduction {
@@ -79,15 +84,18 @@ a {
     background: linear-gradient(90deg, rgba(101, 176, 255, 1) 0%, rgba(255, 255, 255, 1) 38%);
     text-align: center;
     justify-content: center;
-    gap: 30px;
-    position: relative;
-    top: -20px;
-    left: 0;
+    gap: 20px;
 }
 
 .introduction p {
     font-weight: 500;
     font-style: italic;
+}
+
+#sponsored-doctors {
+    position: relative;
+    top: -20px;
+    left: 0;
 }
 
 .sponsored-doctor-button {
