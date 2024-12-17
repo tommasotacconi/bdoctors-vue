@@ -3,6 +3,7 @@ import axios from "axios";
 import Multiselect from "../Generics/Multiselect.vue";
 import PhotoUpload from "../Generics/PhotoUpload.vue";
 import CvUpload from "../Generics/CvUpload.vue";
+import AppAlert from "../Generics/AppAlert.vue";
 
 
 export default {
@@ -24,6 +25,8 @@ export default {
                 // curriculumUrl: "",
 						},
 						oldSpecializations: [],
+						oldPhoto: '',
+						oldCurriculum: '',
             apiUrl: 'http://127.0.0.1:8000/api/profiles/edit/',
             errors: {
                 first_name: "",
@@ -43,7 +46,8 @@ export default {
     components: {
         Multiselect,
         PhotoUpload,
-        CvUpload
+        CvUpload,
+				AppAlert
     },
     methods: {
 
@@ -90,23 +94,23 @@ export default {
 
         validateForm() {
             this.resetErrorsFields();
-            if (!this.formData.first_name) {
-                this.errors.first_name = 'Il nome è obbligatorio.';
-            } else if (this.formData.first_name.length <= 2) {
-                this.errors.first_name = 'Il nome deve contenere almeno 3 caratteri.';
-            };
-            if (!this.formData.last_name) {
-                this.errors.last_name = "Il cognome è obbligatorio."
-            } else if (this.formData.last_name.length <= 2) {
-                this.errors.last_name = "Il cognome deve contenere almeno 3 caratteri."
-            };
+            // if (!this.formData.first_name) {
+            //     this.errors.first_name = 'Il nome è obbligatorio.';
+            // } else if (this.formData.first_name.length <= 2) {
+            //     this.errors.first_name = 'Il nome deve contenere almeno 3 caratteri.';
+            // };
+            // if (!this.formData.last_name) {
+            //     this.errors.last_name = "Il cognome è obbligatorio."
+            // } else if (this.formData.last_name.length <= 2) {
+            //     this.errors.last_name = "Il cognome deve contenere almeno 3 caratteri."
+            // };
             if (!this.formData.email) {
                 this.errors.email = "L'email è obbligatoria.";
             } else if (!this.validEmail(this.formData.email)) {
                 this.errors.email = "L'email inserita non è valida.";
             }
-            if (!this.formData.password) { this.errors.password = "La password è obbligatoria." }
-            else if (!this.validPassword(this.formData.password)) { this.errors.password = "La password deve contenere almeno una maiuscola, una minuscola ed un numero" };
+            // if (!this.formData.password) { this.errors.password = "La password è obbligatoria." }
+            // else if (!this.validPassword(this.formData.password)) { this.errors.password = "La password deve contenere almeno una maiuscola, una minuscola ed un numero" };
             if (!this.formData.phone) { this.errors.phone = "Il numero di telefono è obbligatorio." }
             // else if (isNaN(this.formData.phone)) { this.errors.phone = "Il numero di telefono può contenere solo numeri" };
             if (!this.formData.office_address) this.errors.office_address = "L'indirizzo è obbligatorio.";
@@ -115,11 +119,7 @@ export default {
             // if (!this.formData.photo) this.errors.photo = "La foto è obbligatoria";
             // if (!this.formData.curriculum) this.errors.curriculum = "Il curriculum è obbligatorio.";
 
-            if (!this.errors.first_name &&
-                !this.errors.last_name &&
-                !this.errors.email &&
-                !this.errors.password &&
-                !this.errors.phone &&
+            if (!this.errors.phone &&
                 !this.errors.office_address &&
                 !this.errors.specializations &&
                 !this.errors.services &&
@@ -180,6 +180,8 @@ export default {
 										this.formData.specializations = response.data.data.doctor.specializations.map(e => e.id);
 										this.oldSpecializations = response.data.data.doctor.specializations;
                     this.formData.services = response.data.data.services;
+										this.oldPhoto = response.data.data.photo;
+										this.oldCurriculum = response.data.data.curriculum;
                 })
                 .catch(function (error) {
                     // handle error
@@ -197,7 +199,7 @@ export default {
             //     backdrop.remove();
             // }
             // redirect to user profile
-            this.$router.push({ name: 'dashboard', params: { id: response.data.user.id } });
+            this.$router.push({ name: 'dashboard', params: { id: this.formData.user_id } });
         }
     },
     computed: {
@@ -214,39 +216,15 @@ export default {
 
         <form action="" method="POST" class="row py-4 my-4" id="edit-form" @submit.prevent="validateForm" novalidate>
 
-            <div class="mb-3 col-4">
-                <label for="first_name" class="form-label">Nome</label>
-                <input type="text" class="form-control" :class="{ 'invalid-input': errors.first_name }" id="first_name"
-                    v-model.trim="formData.first_name" required>
-                <div class="invalid" v-if="errors.first_name">
-                    <p> {{ errors.first_name }} </p>
-                </div>
+            <div class="mb-3 col-3">
+                <label for="first_name" class="form-label me-3">Nome</label>
+								<div class="fw-bold" v-html="formData.first_name"></div>
+							</div>
+							<div class="mb-3 col-3">
+								<label for="last_name" class="form-label">Cognome </label>
+								<div class="fw-bold" v-html="formData.last_name"></div>
             </div>
-            <div class="mb-3 col-4">
-                <label for="last_name" class="form-label">Cognome</label>
-                <input type="text" class="form-control" :class="{ 'invalid-input': errors.last_name }" id="last_name"
-                    v-model.trim="formData.last_name" required>
-                <div class="invalid" v-if="errors.last_name">
-                    <p> {{ errors.last_name }} </p>
-                </div>
-            </div>
-            <div class="mb-3 col-4">
-                <label for="email" class="form-label">Email</label>
-                <input type="email" class="form-control" :class="{ 'invalid-input': errors.email }" id="email"
-                    v-model.trim="formData.email" required>
-                <div class="invalid" v-if="errors.email">
-                    <p> {{ errors.email }} </p>
-                </div>
-            </div>
-            <div class="mb-3 col-6">
-                <label for="password" class="form-label">Password</label>
-                <input type="password" class="form-control" :class="{ 'invalid-input': errors.password }" id="password"
-                    v-model.trim="formData.password" required>
-                <div class="invalid" v-if="errors.password">
-                    <p> {{ errors.password }} </p>
-                </div>
-            </div>
-            <div class="mb-3 col-6">
+            <div class="mb-3 col">
                 <label for="phone" class="form-label">Telefono</label>
                 <input type="tel" class="form-control" :class="{ 'invalid-input': errors.phone }" id="phone"
                     v-model.trim="formData.phone" required>
@@ -287,52 +265,53 @@ export default {
                     <p> {{ errors.services }} </p>
                 </div>
             </div>
-            <div class="mb-3 d-flex flex-column col-6">
-                <label for="photo" class="form-label">Foto profilo</label>
+            <div class="mb-3 col-6">
+							<label for="photo" class="form-label mb-3">
+								Foto profilo <span class="badge text-bg-secondary">{{'file presenti:' + (oldPhoto ? '1' : '0') }}</span>
+							</label>
+							<div class="file-input d-flex flex-column align-items-center">
                 <PhotoUpload v-model="formData.photo" @file-selected="handlePhoto"></PhotoUpload>
                 <!-- <input type="text" class="form-control" :class="{ 'invalid-input': errors.photo }" id="photo"
                     placeholder="Inserisci un file valido" @change="formData.photo" required> -->
                 <div class="invalid" v-if="errors.photo">
                     <p> {{ errors.photo }} </p>
                 </div>
+							</div>
             </div>
-            <div class="mb-3 d-flex flex-column col-6">
-                <label for="curriculum" class="form-label">Curriculum
-                    Vitae</label>
+            <div class="mb-3 col-6">
+							<label for="curriculum" class="form-label mb-3">
+								Curriculum Vitae <span class="badge text-bg-secondary">{{'file presenti:' + (oldPhoto ? '1' : '0') }}</span>
+							</label>
+							<div class="file-input d-flex flex-column align-items-center">
                 <CvUpload v-model="formData.curriculum" @cv-selected="handleCurriculum"></CvUpload>
                 <!-- <input type="text" class="form-control" :class="{ 'invalid-input': errors.curriculum }" id="curriculum"
                     placeholder="Inserisci un file valido" @change="formData.curriculum" required> -->
                 <div class="invalid" v-if="errors.curriculum">
                     <p> {{ errors.curriculum }} </p>
                 </div>
+							</div>
             </div>
             <div class="mb-3">
                 <!-- <button type="submit" class="btn me-2 btn-submit">Modifica</button>
                     <button type="reset" class="btn btn-reset">Reset</button> -->
-                <button type="submit" class="btn me-2 btn-submit" data-bs-toggle="myModal"
+                <button type="submit" class="btn btn-submit me-2 mt-4" data-bs-toggle="myModal"
                     data-bs-target="myModal">Modifica</button>
-                <button type="reset" class="btn btn-reset">Reset</button>
+                <button type="reset" class="btn btn-reset mt-4">Reset</button>
             </div>
 
-            <!-- Modal -->
-            <div class="modal fade" id="myModal" tabindex="-1" aria-hidden="false" v-if="validated === true">
-                <div class="modal-dialog modal-d    ialog-centered">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="btn-close" data-bs-dismiss="myModal"
-                                aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            I tuoi dati sono stati aggiornati.
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-primary" @click="openProfile">
-                                Torna al profilo
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <!-- Alert -->
+						<div class="col-6" v-if="validated">
+							<AppAlert class="alert-success d-flex">
+								<div class="col alert-body">
+									I tuoi dati sono stati aggiornati.
+								</div>
+								<div class="alert-footer">
+									<button type="button" class="btn btn-primary" @click="openProfile">
+										Torna al profilo
+									</button>
+								</div>
+							</AppAlert>
+						</div>
 
         </form>
     </div>
@@ -344,6 +323,12 @@ export default {
 #errors {
     border: 1px solid;
     border-radius: 20px;
+}
+
+.file-input {
+	padding: 10px;
+	border: 1px solid #ccc;
+	border-radius: 5px;
 }
 
 .btn-submit {
