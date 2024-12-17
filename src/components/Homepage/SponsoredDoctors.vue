@@ -83,7 +83,7 @@ export default {
 </script>
 
 <template>
-    <main class="mt-1">
+    <main>
         <div class="container sponsored-doctor-container">
             <h3>Dottori in evidenza</h3>
             <!-- <div class="loader" v-if="!loaded"></div> -->
@@ -121,6 +121,10 @@ ul {
     padding-left: 20px;
 }
 
+main {
+    background-image: url(../../public/tile_background.png);
+}
+
 /* Sponsored Doctor */
 .sponsored-doctor-container h2 {
     text-align: center;
@@ -129,6 +133,7 @@ ul {
 
 .sponsored-doctor-container {
     /* background-color: var(--color-complementary); */
+    background-color: white;
     border-radius: 25px;
     padding: 20px;
     margin-bottom: 50px;
