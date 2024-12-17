@@ -27,36 +27,36 @@ export default {
         DoctorShow,
     },
     methods: {
-        getApiProfile() {
-            axios.get(this.apiUrl)
-                .then(response => {
-                    let profiles = response.data.profiles
+        // getApiProfile() {
+        //     axios.get(this.apiUrl)
+        //         .then(response => {
+        //             let profiles = response.data.profiles
 
-                    // Not the best solution but it works
-                    // It filter every profiles we have and push it in an empty array that includes only the profiles with the correct specialization
-                    let filteredProfiles = []
-                    for (let i = 0; i < profiles.length; i++) {
-                        let profile = profiles[i]
-                        if (profile.user.specializations[0].id == store.searchedSpecialization) {
-                            filteredProfiles.push(profile)
+        //             // Not the best solution but it works
+        //             // It filter every profiles we have and push it in an empty array that includes only the profiles with the correct specialization
+        //             let filteredProfiles = []
+        //             for (let i = 0; i < profiles.length; i++) {
+        //                 let profile = profiles[i]
+        //                 if (profile.user.specializations[0].id == store.searchedSpecialization) {
+        //                     filteredProfiles.push(profile)
 
-                        }
-                        let specializationsProfile = profile.user.specializations
-                        if (specializationsProfile.length === 2) {
-                            if (profile.user.specializations[1].id == store.searchedSpecialization) {
-                                filteredProfiles.push(profile)
-                            }
-                        }
-                    }
-                    this.doctors = filteredProfiles
-                    console.log('Dottori nei data', this.doctors)
+        //                 }
+        //                 let specializationsProfile = profile.user.specializations
+        //                 if (specializationsProfile.length === 2) {
+        //                     if (profile.user.specializations[1].id == store.searchedSpecialization) {
+        //                         filteredProfiles.push(profile)
+        //                     }
+        //                 }
+        //             }
+        //             this.doctors = filteredProfiles
+        //             console.log('Dottori nei data', this.doctors)
 
-                    this.specializations = response.data.specializations;
-                })
-                .catch(function (error) {
-                    console.log(error);
-                })
-        },
+        //             this.specializations = response.data.specializations;
+        //         })
+        //         .catch(function (error) {
+        //             console.log(error);
+        //         })
+        // },
         getSpecializationName() {
             axios.get(this.specializationApiUrl)
                 .then(response => {
