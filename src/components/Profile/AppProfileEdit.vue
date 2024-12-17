@@ -1,89 +1,136 @@
 <script>
 import axios from "axios";
 import Multiselect from "../Generics/Multiselect.vue";
+import PhotoUpload from "../Generics/PhotoUpload.vue";
+import CvUpload from "../Generics/CvUpload.vue";
+import AppAlert from "../Generics/AppAlert.vue";
 
 
 export default {
     data() {
         return {
             formData: {
-                firstname: "",
-                lastname: "",
+                user_id: localStorage.getItem('user_id'),
+								profile_id: localStorage.getItem('profile_id'),
+                first_name: "",
+                last_name: "",
                 email: "",
                 password: "",
                 phone: "",
-                officeAddress: "",
-                specialization: [],
+                office_address: "",
+                specializations: "",
                 services: "",
-                photo: "",
-                curriculum: ""
-            },
-            apiUrl: "",
+                photo: null,
+                // photoUrl: "",
+                curriculum: null,
+                // curriculumUrl: "",
+						},
+						oldSpecializations: [],
+						oldPhoto: '',
+						oldCurriculum: '',
+            apiUrl: 'http://127.0.0.1:8000/api/profiles/edit/',
             errors: {
-                firstname: '',
-                lastname: "",
+                first_name: "",
+                last_name: "",
                 email: "",
                 password: "",
                 phone: "",
-                officeAddress: "",
-                specialization: '',
+                office_address: "",
+                specializations: "",
                 services: "",
                 photo: "",
                 curriculum: ""
             },
-            validated: false,
+            isResponseStatusSuccess: false,
         }
     },
     components: {
-        Multiselect
+        Multiselect,
+        PhotoUpload,
+        CvUpload,
+				AppAlert
     },
     methods: {
-        // updateForm() {
 
-        //     axios.post('/user', this.formData)
-        //         .then((response) => {
-        //             console.log(response);
-        //             console.log("Updated form");
-        //         })
-        //         .catch((error) => {
-        //             this.errors = response.result.errors;
-        //             console.log(response.result.errors);
-        //         });
+        handlePhoto(photo) {
+            this.formData.photo = photo;
+        },
 
-        // redirect
-        // this.$router.push({ name: 'routename' })
-        // },
+        handleCurriculum(curriculum) {
+            this.formData.curriculum = curriculum;
+        },
+
+        updateForm() {
+
+            axios.post('http://localhost:8000/api/profiles/edit/' + this.formData.profile_id, this.formData, {
+										headers: {
+												"Content-Type": "multipart/form-data",
+										},
+            		})
+                .then(response => {
+                    console.log('Profile updated', response.data);
+										this.isResponseStatusSuccess = true;
+                })
+                .catch(function (error) {
+                    // handle error
+                    console.error(error)
+                    console.log(error.response.data.errors);
+                })
+                .finally(function () {
+                    // always executed
+                });
+        },
+
+        resetErrorsFields() {
+            this.errors.first_name = '';
+            this.errors.last_name = '';
+            this.errors.email = '';
+            this.errors.password = '';
+            this.errors.phone = '';
+            this.errors.office_address = '';
+            this.errors.specializations = '';
+            this.errors.services = '';
+            this.errors.photo = '';
+            this.errors.curriculum = '';
+        },
 
         validateForm() {
-            this.errors = [];
-            if (!this.formData.firstname) {
-                this.errors.firstname = 'Il nome è obbligatorio.';
-            } else if (this.formData.firstname.length <= 2) {
-                this.errors.firstname = 'Il nome deve contenere almeno 3 caratteri.';
-            };
-            if (!this.formData.lastname) {
-                this.errors.lastname = "Il cognome è obbligatorio."
-            } else if (this.formData.lastname.length <= 2) {
-                this.errors.lastname = "Il cognome deve contenere almeno 3 caratteri."
-            };
+						this.isResponseStatusSuccess = false;
+            this.resetErrorsFields();
+            // if (!this.formData.first_name) {
+            //     this.errors.first_name = 'Il nome è obbligatorio.';
+            // } else if (this.formData.first_name.length <= 2) {
+            //     this.errors.first_name = 'Il nome deve contenere almeno 3 caratteri.';
+            // };
+            // if (!this.formData.last_name) {
+            //     this.errors.last_name = "Il cognome è obbligatorio."
+            // } else if (this.formData.last_name.length <= 2) {
+            //     this.errors.last_name = "Il cognome deve contenere almeno 3 caratteri."
+            // };
             if (!this.formData.email) {
                 this.errors.email = "L'email è obbligatoria.";
             } else if (!this.validEmail(this.formData.email)) {
                 this.errors.email = "L'email inserita non è valida.";
             }
-            if (!this.formData.password) { this.errors.password = "La password è obbligatoria." }
-            else if (!this.validPassword(this.formData.password)) { this.errors.password = "La password deve contenere almeno una maiuscola, una minuscola ed un numero" };
+            // if (!this.formData.password) { this.errors.password = "La password è obbligatoria." }
+            // else if (!this.validPassword(this.formData.password)) { this.errors.password = "La password deve contenere almeno una maiuscola, una minuscola ed un numero" };
             if (!this.formData.phone) { this.errors.phone = "Il numero di telefono è obbligatorio." }
-            else if (isNaN(this.formData.phone)) { this.errors.phone = "Il numero di telefono può contenere solo numeri" };
-            if (!this.formData.officeAddress) this.errors.officeAddress = "L'indirizzo è obbligatorio.";
-            if (!this.formData.specialization) this.errors.specialization = "Inserire almeno una specializzazione.";
+            // else if (isNaN(this.formData.phone)) { this.errors.phone = "Il numero di telefono può contenere solo numeri" };
+            if (!this.formData.office_address) this.errors.office_address = "L'indirizzo è obbligatorio.";
+            if (!this.formData.specializations.length) this.errors.specializations = "Inserire almeno una specializzazione.";
             if (!this.formData.services) this.errors.services = "Inserire almeno una prestazione.";
-            if (!this.formData.photo) this.errors.photo = "La foto è obbligatoria";
-            if (!this.formData.curriculum) this.errors.curriculum = "Il curriculum è obbligatorio.";
+            // if (!this.formData.photo) this.errors.photo = "La foto è obbligatoria";
+            // if (!this.formData.curriculum) this.errors.curriculum = "Il curriculum è obbligatorio.";
 
-            if (!this.errors.length) {
+            if (!this.errors.phone &&
+                !this.errors.office_address &&
+                !this.errors.specializations &&
+                !this.errors.services &&
+                !this.errors.photo &&
+                !this.errors.curriculum
+            ) {
                 this.validated = true;
-                return true;
+                this.updateForm();
             }
             console.log(this.formData);
             console.log(this.errors);
@@ -112,98 +159,106 @@ export default {
         },
 
         updateSpecs(specializations) {
-            this.formData.specialization = specializations;
-            console.log(this.formData.specialization);
+            // Prepare a constant array result to insert ids value
+            const result = [];
+            // Insert ids taken from specializations parameter in reactive variable specializations, property of errors --CHECK THIS COMMENT-- 
+            for (let i = 0; i < specializations.length; i++) {
+                result.push(specializations[i].id);
+            }
+            this.formData.specializations = result;
+            console.log('---current specializations---', this.formData.specializations);
         },
-    },
-    computed: {
-        openProfile() {
+
+        getProfileData() {
+            axios.get('http://localhost:8000/api/profiles/edit/' + this.formData.profile_id, this.formData)
+                .then(response => {
+										// console.log(response);
+                    this.formData.user_id = response.data.data.doctor.id;
+                    this.formData.first_name = response.data.data.doctor.first_name;
+                    this.formData.last_name = response.data.data.doctor.last_name;
+                    this.formData.email = response.data.data.doctor.email;
+                    this.formData.phone = response.data.data.phone;
+                    this.formData.office_address = response.data.data.office_address;
+										// Insert only ids of specializations in formData.specializations
+										this.formData.specializations = response.data.data.doctor.specializations.map(e => e.id);
+										this.oldSpecializations = response.data.data.doctor.specializations;
+                    this.formData.services = response.data.data.services;
+										this.oldPhoto = response.data.data.photo;
+										this.oldCurriculum = response.data.data.curriculum;
+                })
+                .catch(function (error) {
+                    // handle error
+                    console.error("failed", error)
+                })
+                .finally(function () {
+                    // always executed
+                });
+        },
+
+				openProfile() {
             // Once the user's been redirected to his profile, the modal's backdrop disappears
             // const backdrop = document.querySelector('.modal-backdrop');
             // if (backdrop) {
             //     backdrop.remove();
             // }
             // redirect to user profile
-            this.$router.push('/user/:id');
+            this.$router.push({ name: 'dashboard', params: { id: this.formData.profile_id } });
         }
     },
+    computed: {
+    },
+    created: function () {
+        this.getProfileData();
+    },
 }
-
-// mounted() {
-//     axios.get(this.apiUrl)
-//         .then(function (response) {
-//             // handle success
-//             console.log(response);
-//         })
-//         .catch(function (error) {
-//             // handle error
-//             console.error(error);
-//         })
-//         .finally(function () {
-//             // always executed
-//         });
-// }
-// }
-
 </script>
 
 <template>
-    <div class="container py-3">
+    <div class="container py-3" v-if="formData.first_name">
         <h1 class="text-center">Modifica le tue informazioni</h1>
 
-        <form action="" method="PUT" class="row py-4 my-4" id="edit-form" @submit.prevent="validateForm" novalidate>
+        <form action="" method="POST" class="row py-4 my-4" id="edit-form" @submit.prevent="validateForm" novalidate>
 
-            <div class="mb-3 col-4">
-                <label for="firstname" class="form-label">Nome</label>
-                <input type="text" class="form-control" :class="{ 'invalid-input': errors.firstname }" id="firstname"
-                    v-model="formData.firstname" required>
-                <div class="invalid" v-if="errors.firstname">
-                    <p> {{ errors.firstname }} </p>
-                </div>
+            <div class="mb-3 col-3">
+                <label for="first_name" class="form-label me-3">Nome</label>
+								<div class="fw-bold" v-html="formData.first_name"></div>
+							</div>
+							<div class="mb-3 col-3">
+								<label for="last_name" class="form-label">Cognome </label>
+								<div class="fw-bold" v-html="formData.last_name"></div>
             </div>
-            <div class="mb-3 col-4">
-                <label for="lastname" class="form-label">Cognome</label>
-                <input type="text" class="form-control" :class="{ 'invalid-input': errors.lastname }" id="lastname"
-                    v-model="formData.lastname" required>
-                <div class="invalid" v-if="errors.lastname">
-                    <p> {{ errors.lastname }} </p>
-                </div>
-            </div>
-            <div class="mb-3 col-4">
-                <label for="email" class="form-label">Email</label>
-                <input type="email" class="form-control" :class="{ 'invalid-input': errors.email }" id="email"
-                    v-model="formData.email" required>
-                <div class="invalid" v-if="errors.email">
-                    <p> {{ errors.email }} </p>
-                </div>
-            </div>
-            <div class="mb-3 col-6">
-                <label for="password" class="form-label">Password</label>
-                <input type="password" class="form-control" :class="{ 'invalid-input': errors.password }" id="password"
-                    v-model="formData.password" required>
-                <div class="invalid" v-if="errors.password">
-                    <p> {{ errors.password }} </p>
-                </div>
-            </div>
-            <div class="mb-3 col-6">
+            <div class="mb-3 col">
                 <label for="phone" class="form-label">Telefono</label>
                 <input type="tel" class="form-control" :class="{ 'invalid-input': errors.phone }" id="phone"
-                    v-model="formData.phone" required>
+                    v-model.trim="formData.phone" required>
                 <div class="invalid" v-if="errors.phone">
                     <p> {{ errors.phone }} </p>
                 </div>
             </div>
             <div class="mb-3 col-6">
-                <label for="officeAddress" class="form-label">Indirizzo</label>
-                <input type="text" class="form-control" :class="{ 'invalid-input': errors.officeAddress }"
-                    id="officeAddress" v-model='formData.officeAddress' required>
-                <div class="invalid" v-if="errors.officeAddress">
-                    <p> {{ errors.officeAddress }} </p>
+                <label for="office_address" class="form-label">Indirizzo</label>
+                <input type="text" class="form-control" :class="{ 'invalid-input': errors.office_address }"
+                    id="office_address" v-model='formData.office_address' required>
+                <div class="invalid" v-if="errors.office_address">
+                    <p> {{ errors.office_address }} </p>
                 </div>
             </div>
+            <!-- <div class="mb-3 col-6">
+                    <label for="specializations" class="form-label">Specializzazioni</label>
+                    <select class="form-select" aria-label="Default select example" id="specializations"
+                        v-model="formData.specializations" >
+                        <option disabled selected>Seleziona la/e tua/e specializzazione/i</option>
+                        <option value="surgery">Chirurgia</option>
+                        <option value="cardiology">Cardiologia</option>
+                        <option value="ophthalmology">Oculistica</option>
+                    </select>
+                </div> -->
             <div class="mb-3 col-6">
-                <label for="specialization" class="form-label">Specializzazioni</label>
-                <Multiselect @send-values="updateSpecs" />
+                <label for="specializations" class="form-label">Specializzazioni</label>
+                <Multiselect @send-values="updateSpecs" :specializations="oldSpecializations" />
+                <div class="invalid" v-if="errors.specializations">
+                    <p> {{ errors.specializations }} </p>
+                </div>
             </div>
             <div class="mb-3">
                 <label for="services" class="form-label">Prestazioni</label>
@@ -213,50 +268,53 @@ export default {
                     <p> {{ errors.services }} </p>
                 </div>
             </div>
-            <div class="mb-3">
-                <label for="photo" class="form-label">Foto profilo</label>
-                <input type="file" class="form-control" :class="{ 'invalid-input': errors.photo }" id="photo"
-                    placeholder="Inserisci un file valido" @change="formData.photo" required>
+            <div class="mb-3 col-6">
+							<label for="photo" class="form-label mb-3">
+								Foto profilo <span class="badge text-bg-secondary">{{ 'file presenti:' + (oldPhoto ? '1' : '0') }}</span>
+							</label>
+							<div class="file-input d-flex flex-column align-items-center">
+                <PhotoUpload v-model="formData.photo" @file-selected="handlePhoto"></PhotoUpload>
+                <!-- <input type="text" class="form-control" :class="{ 'invalid-input': errors.photo }" id="photo"
+                    placeholder="Inserisci un file valido" @change="formData.photo" required> -->
                 <div class="invalid" v-if="errors.photo">
                     <p> {{ errors.photo }} </p>
                 </div>
+							</div>
             </div>
-            <div class="mb-3">
-                <label for="curriculum" class="form-label">Curriculum
-                    Vitae</label>
-                <input type="file" class="form-control" :class="{ 'invalid-input': errors.curriculum }" id="curriculum"
-                    placeholder="Inserisci un file valido" @change="formData.curriculum" required>
+            <div class="mb-3 col-6">
+							<label for="curriculum" class="form-label mb-3">
+								Curriculum Vitae <span class="badge text-bg-secondary">{{ 'file presenti:' + (oldPhoto ? '1' : '0') }}</span>
+							</label>
+							<div class="file-input d-flex flex-column align-items-center">
+                <CvUpload v-model="formData.curriculum" @cv-selected="handleCurriculum"></CvUpload>
+                <!-- <input type="text" class="form-control" :class="{ 'invalid-input': errors.curriculum }" id="curriculum"
+                    placeholder="Inserisci un file valido" @change="formData.curriculum" required> -->
                 <div class="invalid" v-if="errors.curriculum">
                     <p> {{ errors.curriculum }} </p>
                 </div>
+							</div>
             </div>
             <div class="mb-3">
                 <!-- <button type="submit" class="btn me-2 btn-submit">Modifica</button>
                     <button type="reset" class="btn btn-reset">Reset</button> -->
-                <button type="submit" class="btn me-2 btn-submit" data-bs-toggle="myModal"
-                    data-bs-target="myModal">Modifica</button>
-                <button type="reset" class="btn btn-reset">Reset</button>
+                <button type="submit" class="btn btn-submit me-2 mt-4" data-bs-toggle="myModal"
+                    data-bs-target="myModal" :disabled="isResponseStatusSuccess">Modifica</button>
+                <button type="reset" class="btn btn-reset mt-4" :disabled="isResponseStatusSuccess">Reset</button>
             </div>
 
-            <!-- Modal -->
-            <div class="modal fade" id="myModal" tabindex="-1" aria-hidden="true" v-if="validated">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="btn-close" data-bs-dismiss="myModal"
-                                aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            I tuoi dati sono stati aggiornati.
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-primary" @click="openProfile">
-                                Torna al profilo
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <!-- Alert -->
+						<div class="col-6" v-if="isResponseStatusSuccess">
+							<AppAlert class="alert-success d-flex">
+								<div class="col alert-body">
+									I tuoi dati sono stati aggiornati.
+								</div>
+								<div class="alert-footer">
+									<button type="button" class="btn btn-primary" @click="openProfile">
+										Torna al profilo
+									</button>
+								</div>
+							</AppAlert>
+						</div>
 
         </form>
     </div>
@@ -268,6 +326,12 @@ export default {
 #errors {
     border: 1px solid;
     border-radius: 20px;
+}
+
+.file-input {
+	padding: 10px;
+	border: 1px solid #ccc;
+	border-radius: 5px;
 }
 
 .btn-submit {
@@ -289,5 +353,10 @@ export default {
 
 .invalid-input {
     border-color: red;
+}
+
+.alert-footer button{
+	background-color: var(--color-complementary);
+	border-color: var(--color-complementary);
 }
 </style>

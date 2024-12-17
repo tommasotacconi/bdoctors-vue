@@ -1,30 +1,36 @@
 <script>
 import axios from "axios";
+import { store } from "../../../js/store";
 import Multiselect from "../Generics/Multiselect.vue";
+import PhotoUpload from "../Generics/PhotoUpload.vue";
+import CvUpload from "../Generics/CvUpload.vue";
 
 export default {
     data() {
         return {
             formData: {
-                phone: "",
-                officeAddress: "",
-                services: "",
+                //user_id: localStorage.getItem('user_id'),
                 photo: null,
                 curriculum: null,
+                user_id: store.informationPageId
             },
-            apiUrl: "http://127.0.0.1:8000/api/profiles",
+            apiUrl: 'http://127.0.0.1:8000/api/profiles',
             errors: {
                 phone: "",
-                officeAddress: "",
+                office_address: "",
                 services: "",
                 photo: "",
                 curriculum: ""
             },
             validated: false,
+            store,
+            profileData: {},
         }
     },
     components: {
         Multiselect,
+        PhotoUpload,
+        CvUpload
     },
 
     methods: {
@@ -32,69 +38,74 @@ export default {
             this.errors = [];
             if (!this.formData.phone) { this.errors.phone = "Il numero di telefono è obbligatorio." }
             else if (isNaN(this.formData.phone)) { this.errors.phone = "Il numero di telefono può contenere solo numeri" };
-            if (!this.formData.officeAddress) this.errors.officeAddress = "L'indirizzo è obbligatorio.";
+            if (!this.formData.office_address) this.errors.office_address = "L'indirizzo è obbligatorio.";
             if (!this.formData.services) this.errors.services = "Inserire almeno una prestazione.";
             if (!this.formData.photo) this.errors.photo = "La foto è obbligatoria";
             if (!this.formData.curriculum) this.errors.curriculum = "Il curriculum è obbligatorio.";
             if (!this.errors.length) {
                 this.validated = true;
                 if (this.validated = true) {
-
-                    axios.post(this.apiUrl, this.formData)
-                        .then(response => {
-                            this.formData = response.data;
-                            console.log(response);
-                        })
-                        .catch(function (error) {
-                            // handle error
-                            console.error(error);
-                        })
-                        .finally(function () {
-                            // always executed
-                        });
+                    this.createProfile();
                 }
             }
             console.log(this.formData);
             console.log(this.errors);
         },
 
-        onPhotoPicked(event) {
-            const files = event.target.files
-            this.photo = files[0];
+        handlePhoto(photo) {
+            this.formData.photo = photo;
         },
 
-        onCvPicked(event) {
-            const files = event.target.files
-            this.curriculum = files[0];
+        handleCurriculum(curriculum) {
+            this.formData.curriculum = curriculum;
         },
-        // onFilePicked(event) {
-        //     const files = event.target.files
-        //     let filename = files[0].name
-        //     const fileReader = new FileReader()
-        //     fileReader.onload = () => {
-        //         this.imageUrl = fileReader.result;
-        //     };
-        //     fileReader.readAsDataURL(filename)
-        //     this.image = filename;
-        //     console.log(this.image);
-        // },
-
-
-        mounted() {
-            axios.get(this.apiUrl)
+        //commento per commit 2
+        createProfile() {
+            axios.post('http://localhost:8000/api/profiles/' + this.store.informationPageId, this.formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            })
                 .then(response => {
-                    this.formData;
-                    console.log('Success', response.data);
+                    console.log('Profile created', response.data);
+                    this.profileData = response.data.data;
+
+                    // Data da condividere all'interno degli altri componenti
+                    //store.profileDataGeneral = response.data.data
+                    //localStorage.setItem('user_id', response.data.data.doctor.id)
                 })
                 .catch(function (error) {
                     // handle error
-                    console.error('Failed', error);
+                    console.error(error)
+                    console.log(error.response.data.errors);
                 })
                 .finally(function () {
                     // always executed
                 });
-        }
+        },
+
+
+        // onPickFile() {
+        //     this.$refs.fileInput.click()
+        // },
+        // onFilePicked(event) {
+        //     const files = event.target.files
+        //     let filename = files[0].name
+        //     const fileReader = new FileReader()
+        //     fileReader.addEventListener('load', () => {
+        //         this.imageUrl = fileReader.result
+        //     })
+        //     fileReader.readAsDataURL(files[0])
+        //     this.photo = files[0]
+        // },
+
+
+
     },
+    created() {
+        this.store.informationPageId = this.$route.params.id;
+        console.log(store.informationPageId);
+    }
 }
 </script>
 
@@ -102,7 +113,7 @@ export default {
     <div class="container py-3">
         <h1 class="text-center">Crea il tuo profilo</h1>
 
-        <form action="" method="PUT" class="row py-4 my-4" id="edit-form" @submit.prevent="validateForm" novalidate>
+        <form action="" method="POST" class="row py-4 my-4" id="edit-form" @submit.prevent="validateForm" novalidate>
 
             <div class="mb-3 col-6">
                 <label for="phone" class="form-label">Telefono</label>
@@ -113,11 +124,11 @@ export default {
                 </div>
             </div>
             <div class="mb-3 col-6">
-                <label for="officeAddress" class="form-label">Indirizzo</label>
-                <input type="text" class="form-control" :class="{ 'invalid-input': errors.officeAddress }"
-                    id="officeAddress" v-model='formData.officeAddress' required>
-                <div class="invalid" v-if="errors.officeAddress">
-                    <p> {{ errors.officeAddress }} </p>
+                <label for="office_address" class="form-label">Indirizzo</label>
+                <input type="text" class="form-control" :class="errors.office_address && 'invalid-input'"
+                    id="office_address" v-model='formData.office_address' required>
+                <div class="invalid" v-if="errors.office_address">
+                    <p> {{ errors.office_address }} </p>
                 </div>
             </div>
             <div class="mb-3">
@@ -128,28 +139,28 @@ export default {
                     <p> {{ errors.services }} </p>
                 </div>
             </div>
-            <div class="mb-3">
+            <div class="mb-3 d-flex flex-column col-6">
                 <label for="photo" class="form-label">Foto profilo</label>
-
-                <input type="file" accept="image/*" @change="onPhotoPicked" />
-                <div class="invalid" v-if="errors.photo">
+                <PhotoUpload v-model="formData.photo" @file-selected="handlePhoto"></PhotoUpload>
+                <div>
                     <p> {{ errors.photo }} </p>
                 </div>
             </div>
-            <div class="mb-3 col-6">
+            <div class="mb-3 d-flex flex-column col-6">
                 <label for="curriculum" class="form-label">Curriculum
                     Vitae</label>
-                <input type="file" accept="file_extension|image/*|.pdf" @change="onCvPicked" />
+                <CvUpload v-model="formData.curriculum" @cv-selected="handleCurriculum"></CvUpload>
                 <div class="invalid" v-if="errors.curriculum">
                     <p> {{ errors.curriculum }} </p>
                 </div>
-                <div class="mb-3">
-                    <!-- <button type="submit" class="btn me-2 btn-submit">Modifica</button>
+            </div>
+
+            <div class="mb-3">
+                <!-- <button type="submit" class="btn me-2 btn-submit">Modifica</button>
                     <button type="reset" class="btn btn-reset">Reset</button> -->
                     <button type="submit" class="btn me-2 btn-submit" data-bs-toggle="myModal"
                         data-bs-target="myModal">Crea profilo</button>
                     <button type="reset" class="btn btn-reset">Reset</button>
-                </div>
             </div>
 
             <!-- Modal -->

@@ -32,7 +32,8 @@ export default {
         </div>
         <div class="user">
             <div class="logout" v-if="logout">
-                <router-link to="/"><span class="logout-text">Logout</span></router-link>
+                <router-link style="text-decoration: none; color: inherit;" to="/"><span
+                        class="logout-text">Logout</span></router-link>
             </div>
             <i class="fa-solid fa-user" @click="showLogout"></i>
         </div>
