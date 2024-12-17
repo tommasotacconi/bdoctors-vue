@@ -8,6 +8,7 @@ export default {
             profileData: {},
             loaded: false,
             store,
+						placeholderImg: 'https://st4.depositphotos.com/4329009/19956/v/450/depositphotos_199564354-stock-illustration-creative-vector-illustration-default-avatar.jpg'
         }
     },
     methods: {
@@ -21,11 +22,15 @@ export default {
                     store.profileDataGeneral = response.data.data
                     console.log('data general nello store:', store.profileDataGeneral)
                     localStorage.setItem('user_id', response.data.data.doctor.id)
+										localStorage.setItem('profile_id', response.data.data.id)
                 })
                 .catch(function (error) {
                     console.log(error);
                 });
         },
+		getFilePath: function (filePath) {
+			return new URL(filePath, 'http://localhost:8000/').href;
+		},
     },
     computed: {
         showLoader() {
@@ -33,7 +38,22 @@ export default {
                 this.loaded = true
             }, 2000)
 
-        }
+        },
+				profilePhotoPath() {
+					// Calculate profile photo :src attribute depending on the presence of the 'photos' string in the db data photo profiles table
+					const photoPath = this.profileData.photo;
+					return photoPath.includes('photos') ? this.getFilePath(`storage/${this.profileData.photo}`) : new URL(this.placeholderImg).href;
+				},
+				curriculumFileName() {
+					// Truncate curriculum lenght to 30 string characters
+					// 1. Retrieve data to be computed
+					const curriculumFilePath = this.profileData.curriculum;
+					// 2. If it is too long, truncate it
+					if (curriculumFilePath.length >= 30) curriculumFilePath.slice(0, 30);
+					// 3. If is included the parent directories 'curricula/', remove it
+					if (curriculumFilePath.includes('curricula/')) return curriculumFilePath.slice(10);
+					
+				}
     },
     created: function () {
         this.getProfileData();
@@ -53,8 +73,7 @@ export default {
                 <div class="card mb-3" v-if="Object.keys(profileData).length">
                     <div class="card-flex">
                         <div class="img-doctor">
-                            <img src="https://media.istockphoto.com/id/1340883379/photo/young-doctor-hospital-medical-medicine-health-care-clinic-office-portrait-glasses-man.jpg?s=612x612&w=0&k=20&c=_H4VUPBkS0gEj5ZdZzQo-Hw3lMuyofJpB-P9yS92Wyw="
-                                class="img-flui" alt="doctor photo">
+														<img :src="profilePhotoPath" alt="doctor photo">
                         </div>
                         <div class="card-body-general">
                             <div class="card-body">
@@ -76,7 +95,8 @@ export default {
                                 <div class="card-text">
                                     <ul>
                                         <li>
-                                            <strong>Curriculum:</strong> Nome del file
+                                            <strong>Curriculum: </strong>
+																						<a :href="getFilePath(`storage/${profileData.curriculum}`)" target="_blank">{{ curriculumFileName }}</a>
                                         </li>
                                         <li>
                                             <strong>Specializzazione:</strong> {{
@@ -165,10 +185,12 @@ p {
 }
 
 .card img {
+		width: 90%;
+		aspect-ratio: 1;
     border-radius: 50%;
-    width: 90%;
     border: 3px solid #65B0FF;
     margin: 15px;
+		object-fit: cover;
 }
 
 .card-body {
