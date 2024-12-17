@@ -21,42 +21,13 @@ export default {
             loaded: false,
             showDoctor: false,
             filteredDoctors: [],
+            placeholderImg: 'https://st4.depositphotos.com/4329009/19956/v/450/depositphotos_199564354-stock-illustration-creative-vector-illustration-default-avatar.jpg'
         }
     },
     components: {
         DoctorShow,
     },
     methods: {
-        // getApiProfile() {
-        //     axios.get(this.apiUrl)
-        //         .then(response => {
-        //             let profiles = response.data.profiles
-
-        //             // Not the best solution but it works
-        //             // It filter every profiles we have and push it in an empty array that includes only the profiles with the correct specialization
-        //             let filteredProfiles = []
-        //             for (let i = 0; i < profiles.length; i++) {
-        //                 let profile = profiles[i]
-        //                 if (profile.user.specializations[0].id == store.searchedSpecialization) {
-        //                     filteredProfiles.push(profile)
-
-        //                 }
-        //                 let specializationsProfile = profile.user.specializations
-        //                 if (specializationsProfile.length === 2) {
-        //                     if (profile.user.specializations[1].id == store.searchedSpecialization) {
-        //                         filteredProfiles.push(profile)
-        //                     }
-        //                 }
-        //             }
-        //             this.doctors = filteredProfiles
-        //             console.log('Dottori nei data', this.doctors)
-
-        //             this.specializations = response.data.specializations;
-        //         })
-        //         .catch(function (error) {
-        //             console.log(error);
-        //         })
-        // },
         getSpecializationName() {
             axios.get(this.specializationApiUrl)
                 .then(response => {
@@ -76,17 +47,6 @@ export default {
                     console.log(error);
                 })
         },
-
-        // Non più utile
-        // removeShowDoctor() {
-        //     if (this.showDoctor) {
-        //         this.showDoctor = false
-        //     } else if (!this.showDoctor) {
-        //         this.showDoctor = true
-        //     }
-
-        // },
-
         goToShowPage(doctor, index) {
             let completeName = "";
             completeName = doctor.first_name + '-' + doctor.last_name
@@ -153,6 +113,9 @@ export default {
             this.inputReviews = null;
             this.getFilteredReviews();
         },
+        getFilePath: function (filePath) {
+            return new URL(filePath, 'http://localhost:8000/').href;
+        },
     },
     computed: {
         showLoader() {
@@ -163,7 +126,11 @@ export default {
         orderedDoctors() {
             return this.orderBySponsorship(this.doctors);
         },
-
+        profilePhotoPath() {
+            // Calculate profile photo :src attribute depending on the presence of the 'photos' string in the db data photo profiles table
+            const photoPath = this.profileData.photo;
+            return photoPath.includes('photos') ? this.getFilePath(`storage/${this.profileData.photo}`) : new URL(this.placeholderImg).href;
+        },
     },
     created() {
         // this.getApiProfile();
@@ -246,8 +213,7 @@ export default {
 
                     <div class="doctors-list" v-if="filteredDoctors.length">
                         <div class="doctor-card" v-for="(doctor) in filteredDoctors" @click="goToShowPage(doctor)">
-                            <img src="https://st4.depositphotos.com/4329009/19956/v/450/depositphotos_199564354-stock-illustration-creative-vector-illustration-default-avatar.jpg"
-                                class="doctor-photo" alt="doctor photo">
+                            <img :src="profilePhotoPath" alt="doctor photo">
                             <section class="doctor-information">
                                 <h5 class="doctor-name">
                                     {{ doctor.first_name }} {{ doctor.last_name }}
