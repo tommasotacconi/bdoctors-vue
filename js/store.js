@@ -33,5 +33,8 @@ export const store = reactive({
   charDataVotes: {},
   messagesProfile: [],
   reviewsProfile: [],
+
+  // User id, sponsorized profile id
+  userId: '',
 })
 
