@@ -47,7 +47,7 @@ export default {
 			</div>
 			<!-- Button wrappers -->
 			<div class="buttons-wrapper col-12 d-flex justify-content-center">
-				<button type="submit" id="login-button" class="btn btn-primary mt-4 mb-3" :class="{ 'shaking-animation': isAnimationActive }">Login</button>
+				<button type="submit" id="login-button" class="btn btn-primary mt-4 mb-3" :class="{ ['shaking-animation']: isAnimationActive }">Login</button>
 				<div class="mt-3" v-if="responseStatus">Accesso effettuato</div>
 			</div>
 		</div>
@@ -100,7 +100,11 @@ input {
 	}
 }
 
-.shaking-animation {
+#login-button.shaking-animation {
+	color: #ff0000;
+	background-color: currentColor;
+	border-color: currentColor;
+
 	animation-name: horizontal-shaking;
 	animation-duration: 0.5s;	
 }
