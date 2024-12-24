@@ -4,7 +4,7 @@ import InformationPage from './MainDashboardComponents/InformationPage.vue';
 import MessagePage from './MainDashboardComponents/MessagePage.vue';
 import ReviewPage from './MainDashboardComponents/ReviewPage.vue';
 import SponsorshipPage from './MainDashboardComponents/SponsorshipPage.vue';
-import StatisticPage from './MainDashboardComponents/StatisticPage.vue';
+import StatisticPage from './MainDashboardComponents/StatisticPage/StatisticPage.vue';
 
 export default {
     data() {

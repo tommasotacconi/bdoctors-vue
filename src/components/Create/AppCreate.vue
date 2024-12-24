@@ -1,16 +1,19 @@
 <script>
 import axios from "axios";
+import { store } from "../../../js/store";
 import Multiselect from "../Generics/Multiselect.vue";
 import PhotoUpload from "../Generics/PhotoUpload.vue";
 import CvUpload from "../Generics/CvUpload.vue";
+import AppAlert from "../Generics/AppAlert.vue";
 
 export default {
     data() {
         return {
             formData: {
-                user_id: localStorage.getItem('user_id'),
+                //user_id: localStorage.getItem('user_id'),
                 photo: null,
                 curriculum: null,
+                user_id: store.informationPageId
             },
             apiUrl: 'http://127.0.0.1:8000/api/profiles',
             errors: {
@@ -21,12 +24,16 @@ export default {
                 curriculum: ""
             },
             validated: false,
+						isResponseStatusSuccess: false,
+            store,
+            profileData: {},
         }
     },
     components: {
         Multiselect,
         PhotoUpload,
-        CvUpload
+        CvUpload,
+				AppAlert
     },
 
     methods: {
@@ -55,27 +62,38 @@ export default {
         handleCurriculum(curriculum) {
             this.formData.curriculum = curriculum;
         },
-         //commento per commit 2
+        //commento per commit 2
         createProfile() {
-            axios.post('http://localhost:8000/api/profiles/' + this.formData.user_id, this.formData, {
+            axios.post('http://localhost:8000/api/profiles/' + this.store.informationPageId, this.formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
                 },
             })
                 .then(response => {
-                    console.log('Profile created', response.data)
+                    console.log('Response', response.data);
+                    this.profileData = response.data.profile;
+										this.isResponseStatusSuccess = true;
+                    // Data da condividere all'interno degli altri componenti
+                    //store.profileDataGeneral = response.data.data
+                    //localStorage.setItem('user_id', response.data.data.doctor.id)
                 })
                 .catch(function (error) {
                     // handle error
                     console.error(error)
-                    console.log(error.response.data.errors);
                 })
                 .finally(function () {
                     // always executed
                 });
         },
-
-
+				openProfile() {
+            // Once the user's been redirected to his profile, the modal's backdrop disappears
+            // const backdrop = document.querySelector('.modal-backdrop');
+            // if (backdrop) {
+            //     backdrop.remove();
+            // }
+            // redirect to user profile
+            this.$router.push({ name: 'dashboard', params: { id: this.profileData.id } });
+				}
         // onPickFile() {
         //     this.$refs.fileInput.click()
         // },
@@ -89,11 +107,11 @@ export default {
         //     fileReader.readAsDataURL(files[0])
         //     this.photo = files[0]
         // },
-
-
-        mounted() {
-        }
     },
+    created() {
+        this.store.informationPageId = this.$route.params.id;
+        console.log(store.informationPageId);
+    }
 }
 </script>
 
@@ -105,7 +123,7 @@ export default {
 
             <div class="mb-3 col-6">
                 <label for="phone" class="form-label">Telefono</label>
-                <input type="tel" class="form-control" :class="errors.phone && 'invalid-input'" id="phone"
+                <input type="tel" class="form-control" :class="{ 'invalid-input': errors.phone }" id="phone"
                     v-model="formData.phone" required>
                 <div class="invalid" v-if="errors.phone">
                     <p> {{ errors.phone }} </p>
@@ -119,9 +137,9 @@ export default {
                     <p> {{ errors.office_address }} </p>
                 </div>
             </div>
-            <div class="mb-3 col-6">
+            <div class="mb-3">
                 <label for="services" class="form-label">Prestazioni</label>
-                <textarea class="form-control" :class="errors.services && 'invalid-input'" id="services"
+                <textarea class="form-control" :class="{ 'invalid-input': errors.services }" id="services"
                     v-model="formData.services" required></textarea>
                 <div class="invalid" v-if="errors.services">
                     <p> {{ errors.services }} </p>
@@ -144,32 +162,24 @@ export default {
             </div>
 
             <div class="mb-3">
-                <!-- <button type="submit" class="btn me-2 btn-submit">Modifica</button>
-                    <button type="reset" class="btn btn-reset">Reset</button> -->
-                <button type="submit" class="btn me-2 btn-submit" data-bs-toggle="myModal" data-bs-target="myModal">Crea
-                    Profilo</button>
-                <button type="reset" class="btn btn-reset">Reset</button>
+                    <button type="submit" class="btn me-2 btn-submit" data-bs-toggle="myModal :"
+                        data-bs-target="myModal" :disabled="isResponseStatusSuccess">Crea profilo</button>
+                    <button type="reset" class="btn btn-reset" :disabled="isResponseStatusSuccess">Reset</button>
             </div>
 
-            <!-- Modal -->
-            <div class="modal fade" id="myModal" tabindex="-1" aria-hidden="true" v-if="validated">
-                <div class="modal-dialog modal-dialog-centered">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <button type="button" class="btn-close" data-bs-dismiss="myModal"
-                                aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            I tuoi dati sono stati aggiornati.
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-primary" @click="openProfile">
-                                Torna al profilo
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <!-- Alert -->
+						<div class="col-6" v-if="isResponseStatusSuccess">
+							<AppAlert class="alert-success d-flex">
+								<div class="col alert-body">
+									I tuoi dati sono stati aggiornati.
+								</div>
+								<div class="alert-footer">
+									<button type="button" class="btn btn-primary" @click="openProfile">
+										Torna al profilo
+									</button>
+								</div>
+							</AppAlert>
+						</div>
 
         </form>
     </div>
@@ -202,5 +212,10 @@ export default {
 
 .invalid-input {
     border-color: red;
+}
+
+.alert-footer button{
+	background-color: var(--color-complementary);
+	border-color: var(--color-complementary);
 }
 </style>

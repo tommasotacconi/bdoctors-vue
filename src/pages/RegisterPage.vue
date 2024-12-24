@@ -1,11 +1,11 @@
 <script>
 import AppHeader from '../components/Homepage/AppHeader.vue';
-import AppRegister from '../components/Register/AppRegister.vue'; 
+import AppRegister from '../components/Register/AppRegister.vue';
 
 export default {
 	data() {
 		return {
-		  
+
 		}
 	},
 	components: {
@@ -17,8 +17,11 @@ export default {
 
 <template>
 	<AppHeader />
-	<AppRegister />
+	<AppRegister class="bg" />
 </template>
 
 <style lang="scss" scoped>
+.bg {
+	background-image: url(../../public/tile_background.png);
+}
 </style>

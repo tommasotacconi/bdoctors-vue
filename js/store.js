@@ -1,4 +1,5 @@
 import { reactive } from 'vue'
+import axios from 'axios';
 
 
 export const store = reactive({
@@ -14,6 +15,7 @@ export const store = reactive({
 
   // Variable needed for the advanced search
   searchedSpecialization: null,
+  selectedSpecializationName: null,
 
   // Variable for the show profile card in advanced search 
   doctorProfile: null,
@@ -27,4 +29,15 @@ export const store = reactive({
   informationPageId: '',
 
   profileDataGeneral: {},
+
+  // Dashboard Chart
+  charDataMessages: {},
+  charDataReviews: {},
+  charDataVotes: {},
+  messagesProfile: [],
+  reviewsProfile: [],
+
+  // User id, sponsorized profile id
+  userId: '',
 })
+

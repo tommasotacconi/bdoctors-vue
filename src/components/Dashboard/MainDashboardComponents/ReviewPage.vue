@@ -12,6 +12,7 @@ export default {
             reviewsProfile: [],
             reviewSelected: [],
             averageVote: 0,
+            reviewSelectedFlag: false,
         }
     },
     methods: {
@@ -30,15 +31,17 @@ export default {
                     console.log(reviewsProfile)
                     let totalNumberVote = 0
 
-                    // Calcola la media voti
-                    // for (let i = 0; i < reviewsProfile.length; i++) {
-                    //     let review = reviewsProfile[i]
-                    //     totalNumberVote += review.votes
-                    // }
-                    // this.averageVote = totalNumberVote / reviewsProfile.length
-                    // console.log(Math.round(this.averageVote))
-
                     this.reviewsProfile = reviewsProfile
+
+
+                    // Calcola la media voti
+                    for (let i = 0; i < reviewsProfile.length; i++) {
+                        let review = reviewsProfile[i]
+                        totalNumberVote += review.votes
+                    }
+                    console.log(reviewsProfile.length)
+                    this.averageVote = Math.round(totalNumberVote / reviewsProfile.length)
+                    console.log(this.averageVote)
 
 
                 })
@@ -49,7 +52,25 @@ export default {
         },
         selectReview(index) {
             this.reviewSelected = this.reviewsProfile[index]
+            this.reviewSelectedFlag = true
+
             console.log(this.reviewsProfile[index])
+        },
+        getNormalFormatHourDate(index) {
+            // Fixed date
+            let hourDate = this.reviewsProfile[index].updated_at
+            console.log(hourDate)
+            const date = new Date(hourDate)
+
+            // Così posso togliere i secondi
+            const options = {
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+                timeZone: "Europe/Rome"
+            };
+
+            return date.toLocaleString("it-IT", options)
         },
         // showAverageVote() {
         //     let totalNumberVote = 0
@@ -58,22 +79,17 @@ export default {
         //         let review = reviewsProfile[i]
         //         totalNumberVote += review.votes
         //     }
-        //     this.averageVote = totalNumberVote / reviewsProfile.length
-        //     console.log(Math.round(this.averageVote))
+        //     this.averageVote = Math.round(totalNumberVote / reviewsProfile.length)
+        //     console.log(this.averageVote)
         // }
 
     },
     mounted() {
         this.showLoader
-
     },
     created() {
         this.getApiReviews();
-
     },
-    // updated() {
-    //     this.showAverageVote();
-    // },
     computed: {
         showLoader() {
             setTimeout(() => {
@@ -87,39 +103,64 @@ export default {
 
 <template>
     <main class="container">
-        <div class="card-reviews-container">
-            <div class="card-general card-reviews">
-                <div class="card-header-title">
-                    <h5 class="title">Recensioni ricevute</h5>
-                    <div class="reviews-number"><strong>Totale:</strong> <span class="total-number">{{
-                        reviewsProfile.length }}</span></div>
-                </div>
-                <div class="card-body-list">
-                    <ul class="list-general" v-for="(review, index) in reviewsProfile" @click="selectReview(index)">
-                        <li class="list-email">{{ review.email }}</li>
-                        <li class="list-name">{{ review.first_name }} {{ review.last_name }}</li>
-                        <li class="list-content">{{ review.content }}</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <div class="card-general card-review">
-            <div class="card-selected-review">
-                <div class="title-star">
-                    <h5 class="title">Recensione selezionata</h5>
-                    <div class="star">
-                        <strong>Voto: </strong> <i class="fa-solid fa-stethoscope" v-for="star in 4"></i>
+        <h2>Recensioni</h2>
+
+        <div class="loader" v-if="!loaded"></div>
+        <div v-else>
+            <div v-if="reviewsProfile.length > 0">
+                <div class="card-reviews-container">
+                    <div class="card-general card-reviews">
+                        <div class="card-header-title">
+                            <h5 class="title">Recensioni ricevute</h5>
+                            <div class="reviews-number"><strong>Totale:</strong> <span class="total-number">{{
+                                reviewsProfile.length }}</span></div>
+                        </div>
+                        <div class="card-body-list">
+                            <ul class="list-general" v-for="(review, index) in reviewsProfile"
+                                @click="selectReview(index)">
+                                <li class="list-date">{{ getNormalFormatHourDate(index) }}</li>
+                                <li class="list-vote"><i class="fa-solid fa-stethoscope"
+                                        v-for="star in review.votes"></i>
+                                </li>
+                                <li class="list-email">{{ review.email }}</li>
+                                <li class="list-name">{{ review.first_name }} {{ review.last_name }}</li>
+                                <li class="list-content">{{ review.content }}</li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
+                <div class="card-general card-review" v-if="reviewSelectedFlag">
+                    <div class="card-selected-review">
+                        <div class="title-star">
+                            <h5 class="title">Recensione selezionata</h5>
+                            <div class="star">
+                                <strong>Voto: </strong>
+                                <span>
+                                    <i class="fa-solid fa-stethoscope" v-for="star in reviewSelected.votes"></i>
+                                </span>
+                            </div>
+                        </div>
 
-                <div class="review-name">
-                    <strong>Da:</strong> {{ reviewSelected.first_name }} {{ reviewSelected.last_name }}
+                        <div class="review-name">
+                            <strong>Da:</strong> {{ reviewSelected.first_name }} {{ reviewSelected.last_name }}
+                        </div>
+                        <div class="review-email">
+                            <strong>E-mail:</strong> {{ reviewSelected.email }}
+                        </div>
+                        <div class="review-content">
+                            <div><strong>Contenuto:</strong></div> <span>{{ reviewSelected.content }}</span>
+                        </div>
+                    </div>
                 </div>
-                <div class="review-email">
-                    <strong>E-mail:</strong> {{ reviewSelected.email }}
-                </div>
-                <div class="review-content">
-                    <div><strong>Contenuto:</strong></div> <span>{{ reviewSelected.content }}</span>
+            </div>
+            <div v-else class="empty-card-general mt-5">
+                <div class="card mb-3">
+                    <div class="card-create">
+                        <div class="create-profile-text">
+                            Al momento non è ancora presente nessuna recensione, <span class="eng-sentence">keep up the
+                                good work!</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -128,6 +169,11 @@ export default {
 
 <style scoped>
 /* General */
+h2 {
+    margin-bottom: 40px;
+    text-align: center;
+}
+
 li {
     text-decoration: none;
     list-style-type: none;
@@ -142,6 +188,14 @@ li {
 ul {
     border-bottom: 3px dashed var(--color-secondary);
     padding-left: 10px;
+    padding: 5px;
+
+}
+
+ul:hover {
+    background-color: var(--color-secondary);
+    color: white;
+    cursor: pointer;
 }
 
 
@@ -188,6 +242,16 @@ ul {
     gap: 10px;
 }
 
+.list-date {
+    flex-basis: 15%;
+    border-right: 3px dashed var(--color-secondary);
+}
+
+.list-vote {
+    flex-basis: 10%;
+    border-right: 3px dashed var(--color-secondary);
+}
+
 .list-email {
     flex-basis: 20%;
     border-right: 3px dashed var(--color-secondary);
@@ -200,7 +264,7 @@ ul {
 }
 
 .list-content {
-    flex-basis: 60%;
+    flex-basis: 50%;
 
 }
 
@@ -228,6 +292,7 @@ ul {
 .fa-stethoscope {
     color: red;
     font-size: 1.2rem;
+    padding-top: 5px;
 }
 
 .review-email,
@@ -240,5 +305,74 @@ ul {
 .review-email,
 .review-name {
     border-bottom: 2px dashed var(--color-secondary);
+}
+
+
+/* Se non è presente nessuna recensione */
+.empty-card-general {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.card {
+    border-radius: 40px;
+    background-color: #D8F9FF;
+    border: 0;
+    text-align: center;
+    width: 80%;
+}
+
+.card-create {
+    padding: 30px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+}
+
+.create-profile-text {
+    opacity: 0.5;
+}
+
+.eng-sentence {
+    font-style: italic;
+}
+
+
+/* Loader progressive */
+.loader {
+    --r1: 154%;
+    --r2: 68.5%;
+    width: 60px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background:
+        radial-gradient(var(--r1) var(--r2) at top, #0000 79.5%, var(--color-secondary) 80%),
+        radial-gradient(var(--r1) var(--r2) at bottom, var(--color-secondary) 79.5%, #0000 80%),
+        radial-gradient(var(--r1) var(--r2) at top, #0000 79.5%, var(--color-secondary) 80%),
+        #ccc;
+    background-size: 50.5% 220%;
+    background-position: -100% 0%, 0% 0%, 100% 0%;
+    background-repeat: no-repeat;
+    animation: l9 2s infinite linear;
+    position: absolute;
+    top: 50%;
+    left: 59%;
+}
+
+@keyframes l9 {
+    33% {
+        background-position: 0% 33%, 100% 33%, 200% 33%
+    }
+
+    66% {
+        background-position: -100% 66%, 0% 66%, 100% 66%
+    }
+
+    100% {
+        background-position: 0% 100%, 100% 100%, 200% 100%
+    }
 }
 </style>
