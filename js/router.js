@@ -18,10 +18,9 @@ const routes = [
   { path: '/user/:id/create', component: Createpage, name: 'create' },
   // Path to all doctors with selected specialization id  
   // { path: '/search/:searchId', component: AdvancedSearch, name: 'search' },
-  // // Path to doctor, within specialization id, of doctord id selected (first id for specialization
-  // // second for doctor)
+  // Path to all doctors with selected specialization id and satisfing filter parameters  
   { path: '/search/:searchId/:inputRating?/:inputReviews?', component: AdvancedSearch, name: 'search' },
-  // Path to doctor, within specialization id, of doctord id selected (first id for specialization
+  // Path to doctor, within specialization id, of doctord_id selected (first id for specialization
   // second for doctor)
   { path: '/search/:searchId/:id', component: DoctorShow, name: 'search.show' },
 ]
