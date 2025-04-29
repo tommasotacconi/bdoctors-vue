@@ -25,9 +25,9 @@
 						console.log(response);
 						this.responseStatus = true;
 						this.positiveAuthenticationSymbol = '✅';
-						/* setTimeout(() => {
+						setTimeout(() => {
 							this.$router.push({ name: 'dashboard', params: { id: response.data.user_id } })
-						}, 500); */
+						}, 200);
 					})
 					.catch(error => {
 						// Trigger animation
@@ -36,6 +36,18 @@
 						console.log(error);
 					});
 			},
+		},
+		created: function () {
+			axios.get(this.store.apiUri + 'login/check', {
+				withCredentials: true,
+			})
+				.then(({ data: { authentication: { userId } } }) => {
+					console.log('Current authenticated user id: ' + userId);
+					if (userId) this.$router.push({ name: 'dashboard', params: { id: userId } })
+				})
+				.catch(err => {
+					console.log(err);
+				});
 		}
 	}
 </script>
