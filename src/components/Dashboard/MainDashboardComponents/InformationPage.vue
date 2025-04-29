@@ -7,16 +7,20 @@
 			return {
 				profileData: {},
 				loaded: false,
+				isAuthorized: false,
 				store,
 				placeholderImg: 'https://st4.depositphotos.com/4329009/19956/v/450/depositphotos_199564354-stock-illustration-creative-vector-illustration-default-avatar.jpg'
 			}
 		},
 		methods: {
 			getProfileData() {
-				axios.get(this.store.apiUri + 'profiles/' + this.store.informationPageId,
-					{ withCredentials: true, }
+				axios.get(this.store.apiUri + 'profiles/' + this.store.informationPageId, {
+					withCredentials: true,
+				}
 				).then(response => {
 					console.log(response);
+					this.loaded = true;
+					this.isAuthorized = true;
 					this.profileData = response.data.data;
 
 					// Data da condividere all'interno degli altri componenti
@@ -25,8 +29,9 @@
 					localStorage.setItem('user_id', response.data.data.doctor.id)
 					localStorage.setItem('profile_id', response.data.data.id)
 				})
-					.catch(function (error) {
-						console.log(error);
+					.catch(err => {
+						console.log(err.response.data.message);
+						this.loaded = true;
 					});
 			},
 			getFilePath: function (filePath) {
@@ -34,12 +39,11 @@
 			},
 		},
 		computed: {
-			showLoader() {
+			/* showLoader() {
 				setTimeout(() => {
 					this.loaded = true
 				}, 2000)
-
-			},
+			}, */
 			profilePhotoPath() {
 				// Calculate profile photo :src attribute depending on the presence of the 'photos' string in the db data photo profiles table
 				const photoPath = this.profileData.photo;
@@ -60,7 +64,7 @@
 			this.getProfileData();
 		},
 		mounted() {
-			this.showLoader
+			// this.showLoader
 		}
 	}
 </script>
@@ -69,8 +73,13 @@
 	<main class="container d-flex justify-content-center">
 		<div class="general-main">
 			<h2>Profilo</h2>
+
+			<!-- Loader -->
 			<div class="loader" v-if="!loaded"></div>
-			<section class="card-general" v-if="loaded">
+
+			<!-- Section with doctor info -->
+			<section class="card-general" v-if="loaded && isAuthorized">
+				<!-- Card with info -->
 				<div class="card mb-3" v-if="Object.keys(profileData).length">
 					<div class="card-flex">
 						<div class="img-doctor">
@@ -121,6 +130,7 @@
 						</div>
 					</div>
 				</div>
+				<!-- Placeholder card when a profile needs to be created -->
 				<div class="card mb-3" v-else>
 					<div class="card-create">
 						<routerLink :to="{ name: 'create' }">
@@ -131,6 +141,16 @@
 						</div>
 					</div>
 				</div>
+			</section>
+
+			<!-- Section unauthorized content -->
+			<section class="card-general" v-if="loaded && !isAuthorized">
+				<div class="card mb-3">
+					<div class="card-body">
+						Contenuto non autorizzato
+					</div>
+				</div>
+
 			</section>
 		</div>
 	</main>
