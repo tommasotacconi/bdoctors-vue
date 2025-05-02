@@ -45,9 +45,7 @@
 					console.log('Current authenticated user id: ' + userId);
 					if (userId) this.$router.push({ name: 'dashboard', params: { id: userId } })
 				})
-				.catch(err => {
-					console.log(err);
-				});
+				.catch(err => { });
 		}
 	}
 </script>

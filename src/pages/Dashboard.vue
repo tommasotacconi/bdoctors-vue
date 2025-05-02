@@ -269,7 +269,6 @@
 
 		},
 		created: function () {
-			this.store.informationPageId = this.$route.params.id
 			this.getApiMessages()
 			this.getApiReviews()
 			this.getApiVotes()

@@ -14,21 +14,21 @@
 		},
 		methods: {
 			getProfileData() {
-				axios.get(this.store.apiUri + 'profiles/' + this.store.informationPageId, {
+				axios.get(this.store.apiUri + 'profiles/' + this.$route.params.id, {
 					withCredentials: true,
-				}
-				).then(response => {
-					console.log(response);
-					this.loaded = true;
-					this.isAuthorized = true;
-					this.profileData = response.data.data;
-
-					// Data da condividere all'interno degli altri componenti
-					store.profileDataGeneral = response.data.data
-					console.log('data general nello store:', store.profileDataGeneral)
-					localStorage.setItem('user_id', response.data.data.doctor.id)
-					localStorage.setItem('profile_id', response.data.data.id)
 				})
+					.then(response => {
+						console.log(response);
+						this.loaded = true;
+						this.isAuthorized = true;
+						this.profileData = response.data.data;
+
+						// Data da condividere all'interno degli altri componenti
+						store.profileDataGeneral = response.data.data
+						console.log('data general nello store:', store.profileDataGeneral)
+						localStorage.setItem('user_id', response.data.data.doctor.id)
+						localStorage.setItem('profile_id', response.data.data.id)
+					})
 					.catch(err => {
 						console.log(err.response.data.message);
 						this.loaded = true;
