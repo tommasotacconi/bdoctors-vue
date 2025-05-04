@@ -6,19 +6,25 @@ export default {
 
     data() {
         return {
-            value: [],
+            value: this.specializations,
             options: [],
             apiUrl: "http://127.0.0.1:8000/api/specializations"
         }
     },
+    props: {
+        specializations: {
+            type: Array,
+            required: true,
+        }
+    },
     components: { VueMultiselect },
     methods: {
+
         // Get Specializations through API call
         getSpecializations() {
             axios.get(this.apiUrl)
                 .then(response => {
-                    this.options = response.data.specializations;
-                    console.log(response);
+									this.options = response.data.specializations;
                 })
                 .catch(function (error) {
                     // handle error
@@ -28,11 +34,7 @@ export default {
 
         //send specializations to AppProfileEdit specializations's Array 
         sendValues() {
-            if (this.value.length > 0) {
-                console.log("sendValues works");
-                console.log(this.value);
                 this.$emit('send-values', this.value)
-            }
         },
         // method to show only the specialization name as options (multiselect)
         nameOnly({ name }) {
@@ -42,7 +44,7 @@ export default {
     },
     mounted() {
         this.getSpecializations();
-    }
+    },
 }
 
 </script>
