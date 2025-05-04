@@ -1,6 +1,7 @@
 <script>
 	import axios from 'axios';
 	import { store } from '../../../js/store';
+	import DoctorShow from './DoctorShow.vue';
 
 	export default {
 		data() {
