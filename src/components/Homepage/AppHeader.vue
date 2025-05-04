@@ -3,62 +3,14 @@
 	import { store } from '../../../js/store';
 	import { RouterLink } from 'vue-router';
 
-<<<<<<< HEAD
-export default {
-    data() {
-        return {
-            logout: false,
-            apiUrl: 'http://127.0.0.1:8000/api/specializations',
-            specializations: [],
-            selectedSpecialization: null,
-            store
-        }
-    },
-    methods: {
-        showLogout() {
-            this.logout = !this.logout;
-
-            // Se l'utente non interagisce farlo scomparire
-            if (this.logout === true) {
-                setTimeout(() => {
-                    this.logout = false
-                }, 5000)
-            }
-        },
-        getApi() {
-            axios.get(this.apiUrl)
-                .then(response => {
-                    // handle success
-                    console.log(response.data.specializations);
-                    this.specializations = response.data.specializations;
-                })
-                .catch(function (error) {
-                    // handle error
-                    console.log(error);
-                })
-        },
-        chooseSpecialization() {
-            console.log("Specializzazione selezionata:", this.selectedSpecialization);
-            let searchedSpecialization = this.selectedSpecialization
-            store.searchedSpecialization = searchedSpecialization
-            this.$router.push({ name: 'search', params: { id: this.selectedSpecialization } })
-        }
-    },
-    mounted() {
-        this.getApi()
-    },
-    props: {
-
-    }
-}
-=======
 	export default {
 		data() {
 			return {
 				logout: false,
+				apiUrl: 'http://127.0.0.1:8000/api/specializations',
 				specializations: [],
-				selectedSpecialization: '',
-				store,
+				selectedSpecialization: null,
+				store
 			}
 		},
 		methods: {
@@ -73,9 +25,10 @@ export default {
 				}
 			},
 			getApi() {
-				axios.get(this.store.apiUri + 'specializations')
+				axios.get(this.apiUrl)
 					.then(response => {
 						// handle success
+						console.log(response.data.specializations);
 						this.specializations = response.data.specializations;
 					})
 					.catch(function (error) {
@@ -85,25 +38,18 @@ export default {
 			},
 			chooseSpecialization() {
 				console.log("Specializzazione selezionata:", this.selectedSpecialization);
-				store.searchedSpecialization = this.selectedSpecialization.id
-				store.selectedSpecializationName = this.selectedSpecialization.name
-
-				// Nuova pagina nella quale usiamo i nomi. Piccola concatenazione di metodi per togliere gli spazi e rendere tutto minuscolo
-				this.$router.push({
-					name: 'search', params: {
-						searchId: store.selectedSpecializationName.trim().replace(/ /g, "-").toLowerCase(),
-					},
-				})
-			},
-
+				let searchedSpecialization = this.selectedSpecialization
+				store.searchedSpecialization = searchedSpecialization
+				this.$router.push({ name: 'search', params: { id: this.selectedSpecialization } })
+			}
 		},
-		computed: {
-		},
-		created() {
+		mounted() {
 			this.getApi()
+		},
+		props: {
+
 		}
 	}
->>>>>>> dashboard
 </script>
 
 <template>
