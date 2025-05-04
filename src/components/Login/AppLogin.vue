@@ -1,46 +1,15 @@
 <script>
-<<<<<<< HEAD
-import axios from 'axios';
-import { store } from '../../../js/store';
-
-export default {
-	data() {
-		return {
-			inputEmail: '',
-			inputPassword: '',
-			responseStatus: false,
-			store,
-		}
-	},
-	methods: {
-		sendLoginData() {
-			axios.post('http://127.0.0.1:8000/api/login', {
-				email: this.inputEmail,
-				password: this.inputPassword
-			})
-				.then(response => {
-					console.log(response);
-					this.responseStatus = true;
-					this.$router.push({ name: 'dashboard', params: { id: response.data.data.id } })
-				})
-				.catch(function (error) {
-					console.log(error);
-				});
-=======
 	import axios from 'axios';
-	import { store } from '../../../js/store.js';
+	import { store } from '../../../js/store';
 
 	export default {
 		data() {
 			return {
-				store,
 				inputEmail: '',
 				inputPassword: '',
 				responseStatus: false,
-				isAnimationActive: false,
-				positiveAuthenticationSymbol: '',
+				store,
 			}
->>>>>>> dashboard
 		},
 		methods: {
 			sendLoginData() {
