@@ -1,7 +1,7 @@
 <script>
 import axios from 'axios';
 import { store } from '../../../js/store.js';
-import HeaderDashboard from '../Dashboard/HeaderDashboard.vue'
+import AppHeader from '../Homepage/AppHeader.vue'
 
 export default {
     data() {
@@ -43,10 +43,11 @@ export default {
             },
             messageFormValidated: false,
             reviewFormValidated: false,
+            placeholderImg: 'https://st4.depositphotos.com/4329009/19956/v/450/depositphotos_199564354-stock-illustration-creative-vector-illustration-default-avatar.jpg'
         }
     },
     components: {
-        HeaderDashboard,
+        AppHeader,
     },
 
     methods: {
@@ -60,6 +61,18 @@ export default {
                     console.log(error);
                 });
         },
+
+        getProfilePhotoPath(doctor) {
+            // Calculate profile photo :src attribute depending on the presence of the 'photos' string in the db data photo profiles table
+            const photoPath = doctor.photo;
+            console.log(doctor.photo)
+            return photoPath.includes('photos') ? this.getFilePath(`storage/${photoPath}`) : new URL(this.placeholderImg).href;
+        },
+
+        getFilePath: function (filePath) {
+            return new URL(filePath, 'http://localhost:8000/').href;
+        },
+
 
         // Method to send patients messages
 
@@ -220,7 +233,7 @@ export default {
 </script>
 
 <template>
-    <HeaderDashboard />
+    <AppHeader />
     <main class="container d-flex justify-content-center">
         <div class="general-main">
             <div class="loader" v-if="!loaded"></div>
@@ -228,207 +241,225 @@ export default {
                 <div class="card mb-3">
                     <div class="card-flex">
                         <div class="img-doctor">
-                            <img src="https://media.istockphoto.com/id/1340883379/photo/young-doctor-hospital-medical-medicine-health-care-clinic-office-portrait-glasses-man.jpg?s=612x612&w=0&k=20&c=_H4VUPBkS0gEj5ZdZzQo-Hw3lMuyofJpB-P9yS92Wyw="
-                                class="img-fluid" alt="doctor photo">
+                            <img :src="getProfilePhotoPath(store.doctorProfile)" class="doctor-photo"
+                                alt="doctor photo">
                         </div>
                         <div class="card-body-title-section">
                             <h1 class="card-title py-3">
-                                Dott.{{ store.doctorProfile.first_name }} {{ store.doctorProfile.last_name
+                                Dott.{{ store.doctorProfile.first_name ? store.doctorProfile.first_name :
+                                    store.doctorProfile.user.first_name }}
+                                {{ store.doctorProfile.last_name ? store.doctorProfile.last_name :
+                                    store.doctorProfile.user.last_name
                                 }}
                             </h1>
-                            <h4 class="text-start">
-                                Specialista in:
+                            <div class="title-specializations d-flex">
+                                <h4 class="text-start">
+                                    Specialista in:
+                                </h4>
                                 <ul class="specializations-list">
-                                    <li class="specializations-list-item"
-                                        v-for="specialization in store.doctorProfile.specializations_name">{{
+                                    <li class="specializations-list-item" v-if="store.doctorProfile.user"
+                                        v-for="specialization in (store.doctorProfile.user.specializations)">{{
                                             specialization.name }}</li>
+
+                                    <li v-else>{{ store.doctorProfile.specializations_name }}</li>
                                 </ul>
-                            </h4>
+                            </div>
                             <p class="address">{{ store.doctorProfile.office_address }}</p>
                         </div>
                     </div>
                     <div class="card-body-text-section d-flex justify-content-between">
-                        <ul class="d-flex flex-wrap row-gap-3 ul-child-elements col-5 py-3">
-                            <li id="curriculum-border" class="card-list-item">
-                                <h3>Curriculum</h3>
-                                <div class="data-element curriculum-element">
-                                    Curriculum.pdf
-                                </div>
-                            </li>
-                            <li id="specialization-border" class="card-list-item">
-                                <h3>Specializzazione</h3>
-                                <div class="data-element specializations-element">
-                                    <ul>
-                                        <li v-for="specialization in store.doctorProfile.specializations_name">
-                                            {{
-                                                specialization.name }}</li>
-                                    </ul>
-                                </div>
-                                <!-- {{ profileData.doctor.specializations[0].name }} -->
-                            </li>
-                            <li id="address-border" class="card-list-item">
-                                <h3>Indirizzo</h3>
-                                <div class="data-element address-element">
-                                    {{ store.doctorProfile.office_address }}
-                                </div>
-                                <!-- {{ profileData.office_address }} -->
-                            </li>
-                            <li id="phone-border" class="card-list-item">
-                                <h3>Telefono</h3>
-                                <div class="data-element telephone-element">
-                                    {{ store.doctorProfile.phone }}
-                                </div>
-                                <!-- {{ profileData.phone }} -->
-                            </li>
-                            <li id="services-border" class="card-list-item">
-                                <h3>Prestazioni</h3>
-                                <div class="data-element services-element">
-                                    {{ store.doctorProfile.services }}
-                                </div>
-                                <!-- {{ profileData.services }} -->
-                            </li>
-                        </ul>
 
-                        <div class="forms col-6">
-                            <!-- Message Form -->
-                            <h5 class="my-3">Contatta lo specialista</h5>
-                            <div class="form-frame">
-                                <form method="POST" class="form-control py-3" id="messageForm"
-                                    @submit.prevent="validateMessageForm" novalidate
-                                    v-if="messageFormValidated === false">
-                                    <div class="mb-3 col-12">
-                                        <label for="first_name" class="form-label">Nome</label>
-                                        <input type="text" placeholder="Inserisci il tuo nome" class="form-control"
-                                            :class="{ 'invalid-input': errors.messageForm.first_name }" id="first_name"
-                                            v-model.trim="messageForm.first_name" required>
-                                        <div class="invalid" v-if="errors.messageForm.first_name">
-                                            <p> {{ errors.messageForm.first_name }} </p>
-                                        </div>
+                        <div class="left-content col-5 py-3">
+                            <h5>Informazioni aggiuntive</h5>
+                            <ul class="d-flex flex-wrap row-gap-3 ul-child-elements py-3">
+                                <li id="curriculum-border" class="card-list-item">
+                                    <h3>Curriculum</h3>
+                                    <div class="data-element curriculum-element">
+                                        Curriculum.pdf
                                     </div>
-                                    <div class="mb-3 col-12">
-                                        <label for="last_name" class="form-label">Cognome</label>
-                                        <input type="text" placeholder="Inserisci il tuo cognome" class="form-control"
-                                            :class="{ 'invalid-input': errors.messageForm.last_name }" id="last_name"
-                                            v-model.trim="messageForm.last_name" required>
-                                        <div class="invalid" v-if="errors.messageForm.last_name">
-                                            <p> {{ errors.messageForm.last_name }} </p>
-                                        </div>
-                                    </div>
-                                    <div class="mb-3 col-12">
-                                        <label for="email" class="form-label">Email</label>
-                                        <input type="email" class="form-control"
-                                            :class="{ 'invalid-input': errors.messageForm.email }" id="email"
-                                            placeholder="Inserisci il tuo indirizzo email"
-                                            v-model.trim="messageForm.email" required>
-                                        <div class="invalid" v-if="errors.messageForm.email">
-                                            <p> {{ errors.messageForm.email }} </p>
-                                        </div>
-                                    </div>
-                                    <div class="mb-3 col-12">
-                                        <label for="content" class="form-label align-start">Messaggio</label>
-                                        <textarea class="form-control" placeholder="Scrivi qui il tuo messaggio"
-                                            :class="{ 'invalid-input': errors.messageForm.content }" id="content"
-                                            rows="3" v-model="messageForm.content"></textarea>
-                                        <div class="invalid" v-if="errors.messageForm.content">
-                                            <p> {{ errors.messageForm.content }} </p>
-                                        </div>
-                                    </div>
-                                    <button type="submit" class="btn btn-primary btn-submit"
-                                        :class="{ 'disabled': messageFormValidated === true }">Invia
-                                        messaggio</button>
-                                </form>
+                                </li>
+                                <li id="specialization-border" class="card-list-item">
+                                    <h3>Specializzazione</h3>
+                                    <div class="data-element specializations-element">
+                                        <ul class="specializations-list">
+                                            <li class="specializations-list-item" v-if="store.doctorProfile.user"
+                                                v-for="specialization in (store.doctorProfile.user.specializations)">{{
+                                                    specialization.name }}</li>
 
-                                <div v-else class="my-3">
-                                    <p class="my-2">
-                                        Il tuo messaggio è stato inviato correttamente.
-                                    </p>
-                                    <button type="button" @click="resetMessageForm"
-                                        class="btn btn-sm btn-primary">Conferma</button>
-                                </div>
-                            </div>
-
-                            <div class="my-3 py-3">
-                                <h5 class="my-3">Lascia una recensione</h5>
+                                            <li v-else>{{ store.doctorProfile.specializations_name }}</li>
+                                        </ul>
+                                    </div>
+                                    <!-- {{ profileData.doctor.specializations[0].name }} -->
+                                </li>
+                                <li id="address-border" class="card-list-item">
+                                    <h3>Indirizzo</h3>
+                                    <div class="data-element address-element">
+                                        {{ store.doctorProfile.office_address }}
+                                    </div>
+                                    <!-- {{ profileData.office_address }} -->
+                                </li>
+                                <li id="phone-border" class="card-list-item">
+                                    <h3>Telefono</h3>
+                                    <div class="data-element telephone-element">
+                                        {{ store.doctorProfile.phone }}
+                                    </div>
+                                    <!-- {{ profileData.phone }} -->
+                                </li>
+                                <li id="services-border" class="card-list-item">
+                                    <h3>Prestazioni</h3>
+                                    <div class="data-element services-element">
+                                        {{ store.doctorProfile.services }}
+                                    </div>
+                                    <!-- {{ profileData.services }} -->
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="right-content col-5">
+                            <div class="forms">
+                                <!-- Message Form -->
+                                <h5 class="my-3">Contatta lo specialista</h5>
                                 <div class="form-frame">
-                                    <form method="POST" class="form-control py-3" @submit.prevent="validateReviewForm"
-                                        novalidate v-if="reviewFormValidated === false">
-
+                                    <form method="POST" class="form-control py-3" id="messageForm"
+                                        @submit.prevent="validateMessageForm" novalidate
+                                        v-if="messageFormValidated === false">
                                         <div class="mb-3 col-12">
                                             <label for="first_name" class="form-label">Nome</label>
-                                            <input type="text" class="form-control"
-                                                :class="{ 'invalid-input': errors.reviewForm.first_name }"
-                                                id="first_name" v-model.trim="reviewForm.first_name" required>
-                                            <div class="invalid" v-if="errors.reviewForm.first_name">
-                                                <p> {{ errors.reviewForm.first_name }} </p>
+                                            <input type="text" placeholder="Inserisci il tuo nome" class="form-control"
+                                                :class="{ 'invalid-input': errors.messageForm.first_name }"
+                                                id="first_name" v-model.trim="messageForm.first_name" required>
+                                            <div class="invalid" v-if="errors.messageForm.first_name">
+                                                <p> {{ errors.messageForm.first_name }} </p>
                                             </div>
                                         </div>
                                         <div class="mb-3 col-12">
                                             <label for="last_name" class="form-label">Cognome</label>
-                                            <input type="text" class="form-control"
-                                                :class="{ 'invalid-input': errors.reviewForm.last_name }" id="last_name"
-                                                v-model.trim="reviewForm.last_name" required>
-                                            <div class="invalid" v-if="errors.reviewForm.last_name">
-                                                <p> {{ errors.reviewForm.last_name }} </p>
+                                            <input type="text" placeholder="Inserisci il tuo cognome"
+                                                class="form-control"
+                                                :class="{ 'invalid-input': errors.messageForm.last_name }"
+                                                id="last_name" v-model.trim="messageForm.last_name" required>
+                                            <div class="invalid" v-if="errors.messageForm.last_name">
+                                                <p> {{ errors.messageForm.last_name }} </p>
                                             </div>
                                         </div>
                                         <div class="mb-3 col-12">
                                             <label for="email" class="form-label">Email</label>
                                             <input type="email" class="form-control"
-                                                :class="{ 'invalid-input': errors.reviewForm.email }" id="email"
+                                                :class="{ 'invalid-input': errors.messageForm.email }" id="email"
                                                 placeholder="Inserisci il tuo indirizzo email"
-                                                v-model.trim="reviewForm.email" required>
-                                            <div class="invalid" v-if="errors.reviewForm.email">
-                                                <p> {{ errors.reviewForm.email }} </p>
+                                                v-model.trim="messageForm.email" required>
+                                            <div class="invalid" v-if="errors.messageForm.email">
+                                                <p> {{ errors.messageForm.email }} </p>
                                             </div>
                                         </div>
                                         <div class="mb-3 col-12">
                                             <label for="content" class="form-label align-start">Messaggio</label>
-                                            <textarea class="form-control"
-                                                :class="{ 'invalid-input': errors.reviewForm.content }" id="content"
-                                                rows="3" v-model="reviewForm.content"></textarea>
-                                            <div class="invalid" v-if="errors.reviewForm.content">
-                                                <p> {{ errors.reviewForm.content }} </p>
+                                            <textarea class="form-control" placeholder="Scrivi qui il tuo messaggio"
+                                                :class="{ 'invalid-input': errors.messageForm.content }" id="content"
+                                                rows="3" v-model="messageForm.content"></textarea>
+                                            <div class="invalid" v-if="errors.messageForm.content">
+                                                <p> {{ errors.messageForm.content }} </p>
                                             </div>
                                         </div>
-                                        <div class="votes">
-                                            <input type="radio" id="vote5" name="votes" value="5"
-                                                v-model="reviewForm.votes">
-                                            <label for="vote5"><i class="fa-solid fa-stethoscope"></i>
-                                            </label>
-                                            <input type="radio" id="vote4" name="votes" value="4"
-                                                v-model="reviewForm.votes">
-                                            <label for="vote4"><i class="fa-solid fa-stethoscope"></i>
-                                            </label>
-                                            <input type="radio" id="vote3" name="votes" value="3"
-                                                v-model="reviewForm.votes">
-                                            <label for="vote3"><i class="fa-solid fa-stethoscope"></i>
-                                            </label>
-                                            <input type="radio" id="vote2" name="votes" value="2"
-                                                v-model="reviewForm.votes">
-                                            <label for="vote2"><i class="fa-solid fa-stethoscope"></i>
-                                            </label>
-                                            <input type="radio" id="vote1" name="votes" value="1"
-                                                v-model="reviewForm.votes">
-                                            <label for="vote1"><i class="fa-solid fa-stethoscope"></i>
-                                            </label>
-                                        </div>
-                                        <div class="invalid mb-3" v-if="errors.reviewForm.votes">
-                                            <p> {{ errors.reviewForm.votes }} </p>
-                                        </div>
                                         <button type="submit" class="btn btn-primary btn-submit"
-                                            :class="{ 'disabled': reviewFormValidated === true }">Invia
-                                            recensione</button>
+                                            :class="{ 'disabled': messageFormValidated === true }">Invia
+                                            messaggio</button>
                                     </form>
+
                                     <div v-else class="my-3">
                                         <p class="my-2">
-                                            La tua recensione è stata inviata correttamente.
+                                            Il tuo messaggio è stato inviato correttamente.
                                         </p>
-                                        <button type="button" @click="resetReviewForm"
+                                        <button type="button" @click="resetMessageForm"
                                             class="btn btn-sm btn-primary">Conferma</button>
                                     </div>
                                 </div>
-                            </div>
 
+                                <div class="my-3 py-3">
+                                    <h5 class="my-3">Lascia una recensione</h5>
+                                    <div class="form-frame">
+                                        <form method="POST" class="form-control py-3"
+                                            @submit.prevent="validateReviewForm" novalidate
+                                            v-if="reviewFormValidated === false">
+
+                                            <div class="mb-3 col-12">
+                                                <label for="first_name" class="form-label">Nome</label>
+                                                <input type="text" class="form-control"
+                                                    placeholder="Inserisci il tuo nome"
+                                                    :class="{ 'invalid-input': errors.reviewForm.first_name }"
+                                                    id="first_name" v-model.trim="reviewForm.first_name" required>
+                                                <div class="invalid" v-if="errors.reviewForm.first_name">
+                                                    <p> {{ errors.reviewForm.first_name }} </p>
+                                                </div>
+                                            </div>
+                                            <div class="mb-3 col-12">
+                                                <label for="last_name" class="form-label">Cognome</label>
+                                                <input type="text" class="form-control"
+                                                    placeholder="Inserisci il tuo cognome"
+                                                    :class="{ 'invalid-input': errors.reviewForm.last_name }"
+                                                    id="last_name" v-model.trim="reviewForm.last_name" required>
+                                                <div class="invalid" v-if="errors.reviewForm.last_name">
+                                                    <p> {{ errors.reviewForm.last_name }} </p>
+                                                </div>
+                                            </div>
+                                            <div class="mb-3 col-12">
+                                                <label for="email" class="form-label">Email</label>
+                                                <input type="email" class="form-control"
+                                                    :class="{ 'invalid-input': errors.reviewForm.email }" id="email"
+                                                    placeholder="Inserisci il tuo indirizzo email"
+                                                    v-model.trim="reviewForm.email" required>
+                                                <div class="invalid" v-if="errors.reviewForm.email">
+                                                    <p> {{ errors.reviewForm.email }} </p>
+                                                </div>
+                                            </div>
+                                            <div class="mb-3 col-12">
+                                                <label for="content" class="form-label align-start">Messaggio</label>
+                                                <textarea class="form-control" placeholder="Scrivi qui il tuo messaggio"
+                                                    :class="{ 'invalid-input': errors.reviewForm.content }" id="content"
+                                                    rows="3" v-model="reviewForm.content"></textarea>
+                                                <div class="invalid" v-if="errors.reviewForm.content">
+                                                    <p> {{ errors.reviewForm.content }} </p>
+                                                </div>
+                                            </div>
+                                            <div class="votes">
+                                                <input type="radio" id="vote5" name="votes" value="5"
+                                                    v-model="reviewForm.votes">
+                                                <label for="vote5"><i class="fa-solid fa-stethoscope"></i>
+                                                </label>
+                                                <input type="radio" id="vote4" name="votes" value="4"
+                                                    v-model="reviewForm.votes">
+                                                <label for="vote4"><i class="fa-solid fa-stethoscope"></i>
+                                                </label>
+                                                <input type="radio" id="vote3" name="votes" value="3"
+                                                    v-model="reviewForm.votes">
+                                                <label for="vote3"><i class="fa-solid fa-stethoscope"></i>
+                                                </label>
+                                                <input type="radio" id="vote2" name="votes" value="2"
+                                                    v-model="reviewForm.votes">
+                                                <label for="vote2"><i class="fa-solid fa-stethoscope"></i>
+                                                </label>
+                                                <input type="radio" id="vote1" name="votes" value="1"
+                                                    v-model="reviewForm.votes">
+                                                <label for="vote1"><i class="fa-solid fa-stethoscope"></i>
+                                                </label>
+                                            </div>
+                                            <div class="invalid mb-3" v-if="errors.reviewForm.votes">
+                                                <p> {{ errors.reviewForm.votes }} </p>
+                                            </div>
+                                            <button type="submit" class="btn btn-primary btn-submit"
+                                                :class="{ 'disabled': reviewFormValidated === true }">Invia
+                                                recensione</button>
+                                        </form>
+                                        <div v-else class="my-3">
+                                            <p class="my-2">
+                                                La tua recensione è stata inviata correttamente.
+                                            </p>
+                                            <button type="button" @click="resetReviewForm"
+                                                class="btn btn-sm btn-primary">Conferma</button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -443,7 +474,7 @@ h1 {
 }
 
 h4 {
-    color: var(--color-secondary);
+    color: var(--color-primary);
 }
 
 h3 {
@@ -486,10 +517,18 @@ p {
 }
 
 .img-doctor {
+    max-width: 30%;
     flex-basis: 40%;
     display: flex;
     align-items: center;
     justify-content: center;
+    padding-left: 20px;
+}
+
+.doctor-photo {
+    aspect-ratio: 1;
+    object-fit: cover;
+    object-position: center;
 }
 
 .card img {
@@ -501,40 +540,52 @@ p {
 
 .card-body-title-section {
     display: flex;
+    justify-content: center;
     flex-direction: column;
     flex-basis: 60%;
     align-items: start;
-    padding-top: 50px;
+    padding: 20px;
+
 
     & .address {
-        font-size: 1.1rem;
-        color: var(--color-secondary);
+        font-size: 1.1em;
+        color: var(--color-primary);
+    }
+
+    & .specializations-list {
+        font-size: 1.3rem;
+        color: var(--color-primary);
     }
 }
 
-// .card-title {
-//     position: relative;
-//     top: 50%;
-//     translate: 0 -50%
-// }
 
 .card-body-text-section {
-    flex-grow: 1;
     border-top: 2px solid var(--color-complementary);
     padding: 16px 50px;
 
     ul.ul-child-elements>* {
         flex-basis: 100%;
-        height: 100px;
+        min-height: 50px;
     }
 }
 
 .card-list-item {
     border: 1px grey;
     border-radius: 10px;
-    box-shadow: -2px 2px 3px 1px rgb(119, 118, 118);
+    box-shadow: -2px 2px 3px 1px var(--color-complementary);
     padding: 10px;
+}
 
+.card-list-item h3 {
+    color: var(--color-primary);
+}
+
+.title-specializations ul {
+    text-align: start;
+    padding-left: 0;
+    list-style-type: none;
+    padding: 0 20px;
+    color: var(--color-primary);
 }
 
 ul {
@@ -597,26 +648,6 @@ form {
     opacity: 0.5;
 }
 
-/* Old loader, classic */
-/* Loader */
-/* .loader {
-    width: 50px;
-    aspect-ratio: 1;
-    border-radius: 50%;
-    border: 8px solid;
-    border-color: #000 #0000;
-    animation: l1 1s infinite;
-    position: absolute;
-    top: 50%;
-    left: 59%;
-}
-
-@keyframes l1 {
-    to {
-        transform: rotate(.5turn)
-    }
-}
-*/
 
 /* Loader progressive */
 .loader {
@@ -653,30 +684,7 @@ form {
     }
 }
 
-/* Responsive */
-@media only screen and (max-width: 1300px) {
-    .card-flex {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-    }
 
-    .img-doctor {
-        width: 70%;
-    }
-
-    .card-title {
-        margin-top: 50px;
-        margin-bottom: 0;
-    }
-}
-
-@media only screen and (max-width: 780px) {
-    .card-body-text-section ul {
-        flex-direction: column;
-    }
-}
 
 /* Message form */
 .invalid {
@@ -710,6 +718,159 @@ form {
 
     & input:checked~label {
         color: var(--color-complementary)
+    }
+}
+
+/* Responsive */
+@media (max-width: 576px) {
+    .container {
+        padding: 0 15px;
+        /* Adjust the container padding */
+    }
+
+    .card-flex {
+        flex-direction: column;
+        /* Stack the content vertically */
+        align-items: center;
+        /* Center align elements */
+    }
+
+    .card-body-title-section {
+        text-align: center;
+        /* Center the title and text */
+    }
+
+    .img-doctor img {
+        width: 100%;
+        min-width: 250px;
+    }
+
+    .card-body-text-section {
+        flex-direction: column;
+        /* Stack content vertically */
+        padding-top: 20px;
+    }
+
+    .left-content,
+    .right-content {
+        width: 100%;
+        /* Full width for each section */
+        padding: 15px 0;
+    }
+
+    .form-frame {
+        padding: 10px;
+    }
+
+    .votes input {
+        width: 20px;
+        /* Smaller radio buttons */
+        height: 20px;
+    }
+
+    .votes label {
+        font-size: 14px;
+        /* Reduce font size */
+    }
+
+    .btn-submit {
+        width: 100%;
+        /* Full width button */
+    }
+
+    .specializations-list {
+        display: block;
+        margin-top: 10px;
+    }
+
+    .specializations-list-item {
+        margin-bottom: 5px;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+    .container {
+        padding: 0 30px;
+    }
+
+    .card-flex {
+        flex-direction: row;
+    }
+
+    .card-body-text-section {
+        flex-direction: row;
+    }
+
+    .left-content,
+    .right-content {
+        width: 48%;
+        padding-right: 15px;
+    }
+
+    .form-frame form .form-control {
+        width: 100%;
+    }
+
+    .votes input {
+        margin-right: 5px;
+    }
+}
+
+/* Desktop */
+@media (min-width: 992px) and (max-width: 1200px) {
+    .container {
+        padding: 0 50px;
+    }
+
+    .card-flex {
+        flex-direction: row;
+    }
+
+    .card-body-text-section {
+        flex-direction: row;
+    }
+
+    .left-content,
+    .right-content {
+        width: 48%;
+        padding-right: 15px;
+    }
+
+    .form-frame form .form-control {
+        width: 100%;
+    }
+
+    .votes input {
+        margin-right: 5px;
+    }
+}
+
+/* Large Desktop */
+@media (min-width: 1200px) {
+    .container {
+        padding: 0 100px;
+    }
+
+    .card-flex {
+        flex-direction: row;
+    }
+
+    .card-body-text-section {
+        flex-direction: row;
+    }
+
+    .left-content,
+    .right-content {
+        width: 48%;
+        padding-right: 30px;
+    }
+
+    .form-frame form .form-control {
+        width: 100%;
+    }
+
+    .votes input {
+        margin-right: 10px;
     }
 }
 </style>
