@@ -9,6 +9,7 @@
 				inputPassword: '',
 				responseStatus: false,
 				store,
+				isAnimationActive: false
 			}
 		},
 		methods: {
