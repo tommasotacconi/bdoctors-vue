@@ -13,6 +13,7 @@ import AppHeader from '../src/components/Homepage/AppHeader.vue';
 import AppMainHome from '../src/components/Homepage/AppMainHome.vue';
 import AppLogin from '../src/components/Login/AppLogin.vue';
 import AppRegister from '../src/components/Register/AppRegister.vue';
+import SearchedDoctor from '../src/components/Search/SearchedDoctor.vue';
 
 const routes = [
 	{ 
@@ -65,15 +66,16 @@ const routes = [
 			// Path to all doctors with selected specialization id  
 			// { path: '/search/:searchId', component: AdvancedSearch, name: 'search' },
 			// Path to all doctors with selected specialization id and satisfing filter parameters  
-			{ path: '/search/:searchId/:inputRating?/:inputReviews?',
+			{ path: '/search/:specialization/:inputRating?/:inputReviews?',
 				 name: 'search',
 				components: {
-					default: AdvancedSearch		
+					default: SearchedDoctor,
+					header: AppHeader		
 				} 
 			},
 			// Path to doctor, within specialization id, of doctord_id selected (first id for specialization
 			// second for doctor)
-			{ path: '/search/:searchId/:id',
+			{ path: '/search/:specialization/:id',
 				name: 'search.show',
 				components: {
 					default: DoctorShow 
