@@ -9,8 +9,8 @@
 				logout: false,
 				apiUrl: 'http://127.0.0.1:8000/api/specializations',
 				specializations: [],
-				selectedSpecialization: null,
-				store
+				selectedSpecialization: '',
+				store,
 			}
 		},
 		methods: {
@@ -28,7 +28,6 @@
 				axios.get(this.apiUrl)
 					.then(response => {
 						// handle success
-						console.log(response.data.specializations);
 						this.specializations = response.data.specializations;
 					})
 					.catch(function (error) {
@@ -38,16 +37,22 @@
 			},
 			chooseSpecialization() {
 				console.log("Specializzazione selezionata:", this.selectedSpecialization);
-				let searchedSpecialization = this.selectedSpecialization
-				store.searchedSpecialization = searchedSpecialization
-				this.$router.push({ name: 'search', params: { id: this.selectedSpecialization } })
-			}
+				store.searchedSpecialization = this.selectedSpecialization.id
+				store.selectedSpecializationName = this.selectedSpecialization.name
+
+				// Nuova pagina nella quale usiamo i nomi. Piccola concatenazione di metodi per togliere gli spazi e rendere tutto minuscolo
+				this.$router.push({
+					name: 'search', params: {
+						specialization: store.selectedSpecializationName.trim().replace(/ /g, "-").toLowerCase(),
+					},
+				})
+			},
+
+		},
+		computed: {
 		},
 		mounted() {
 			this.getApi()
-		},
-		props: {
-
 		}
 	}
 </script>
@@ -80,11 +85,12 @@
 
 					<!-- Updated search bar for specializations -->
 					<Transition>
-						<select @change="chooseSpecialization()" class="form-select" aria-label="Specialization Search"
-							v-model="selectedSpecialization" v-if="specializations.toString()">
-							<option disabled value="">Ricerca il medico per specializzazione!</option>
-							<option v-for="(specialization, index) in specializations" :key="index" :value=specialization>
-								{{ specialization.name }}
+						<select @change="chooseSpecialization()" v-model="selectedSpecialization" v-if="specializations.toString()"
+							class="form-select" aria-label="Specialization Search">
+							<option value="" disabled selected>Ricerca il medico per specializzazione!</option>
+							<option v-for="(specialization, index) in specializations" :key="index" :value=specialization>{{
+								specialization.name
+							}}
 							</option>
 						</select>
 					</Transition>
@@ -160,7 +166,6 @@
 		padding-right: 15px;
 	}
  */
-
 	.v-enter-active,
 	.v-leave-active {
 		transition: opacity 0.5s ease;

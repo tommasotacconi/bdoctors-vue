@@ -2,6 +2,8 @@
 	import axios from 'axios';
 	import { store } from '../../../js/store';
 	import DoctorShow from './DoctorShow.vue';
+	import { RouterLink } from 'vue-router';
+	import { finiteOrDefault } from 'chart.js/helpers';
 
 	export default {
 		data() {
@@ -9,33 +11,135 @@
 				store,
 				searchedDoctor: [],
 				apiUrl: 'http://localhost:8000/api/profiles',
-				specializationId: store.searchedSpecialization
+				specializationApiUrl: 'http://127.0.0.1:8000/api/specializations',
+				reviewsApiURl: 'http://localhost:8000/api/reviews',
+				specializationId: store.searchedSpecialization,
+				specializationName: '',
+				doctors: [],
+				rating: null,
+				inputReviews: null,
+				loaded: false,
+				showDoctor: false,
+				filteredDoctors: [],
+				placeholderImg: 'https://st4.depositphotos.com/4329009/19956/v/450/depositphotos_199564354-stock-illustration-creative-vector-illustration-default-avatar.jpg'
 			}
 		},
 		components: {
 			DoctorShow,
 		},
 		methods: {
-			getApiProfile() {
-				axios.get(this.apiUrl)
+			getSpecializationName() {
+				axios.get(this.specializationApiUrl)
 					.then(response => {
-						console.log(response.data);
-						let profiles = response.data.profiles
-						console.log(this.specializationId)
-						console.log(profiles[0].id)
-
-						// Qua non funziona, da capire come mai
-						const filteredProfiles = profiles.filter(profile => profile.id === this.specializationId)
-						console.log(filteredProfiles)
-						this.specializations = response.data.specializations;
+						// handle success
+						console.log(response.data.specializations);
+						let specializationArray = response.data.specializations
+						for (let i = 0; specializationArray.length; i++) {
+							let specialization = specializationArray[i]
+							if (store.searchedSpecialization === specialization.id) {
+								this.specializationName = specialization.name
+								return
+							}
+						}
 					})
 					.catch(function (error) {
+						// handle error
 						console.log(error);
 					})
 			},
+			goToShowPage(doctor, index) {
+				let completeName = "";
+				completeName = doctor.first_name + '-' + doctor.last_name
+				store.doctorProfile = doctor;
+				this.$router.push({
+					name: 'search.show', params: { searchId: store.selectedSpecializationName.trim().replace(/ /g, "-").toLowerCase(), id: completeName.toLowerCase() }
+				})
+			},
+
+			getFilteredReviews() {
+				let url = `http://localhost:8000/api/reviews/filter/${this.specializationId}/${this.rating}/${this.inputReviews}`;
+
+				axios.get(url, {
+				})
+					.then(response => {
+						// handle success
+						console.log('RECENSIONI FILTRATEEEE', response.data);
+						this.filteredDoctors = response.data;
+						this.filteredDoctors.id = store.informationPageId;
+						console.log('filtered doctors:', this.filteredDoctors)
+
+						for (let i = 0; i < this.doctors.length; i++) {
+							let singleDoctor = { doctor: [], averageVotes: null }
+							let doctor = this.doctors[i];
+							singleDoctor.doctor = doctor;
+							console.log('singolo medico', doctor)
+							let reviews = doctor.reviews;
+							// console.log('Recensioni:', reviews);
+							let votesSum = null;
+							for (let j = 0; j < reviews.length; j++) {
+								let review = reviews[j];
+								// console.log("Singola recensione:", review);
+								votesSum += parseInt(review.votes);
+							}
+							// console.log("Somma voti per ogni medico:", votesSum)
+							let averageVotes = null;
+							averageVotes = Math.round(votesSum / reviews.length)
+							console.log('La media dei voti del medico è:', averageVotes)
+							singleDoctor.averageVotes = averageVotes;
+							if (singleDoctor.averageVotes >= this.rating)
+								filteredDoctors.push(singleDoctor);
+							console.log('singleDoctor', singleDoctor)
+						}
+						console.log('Array Dottori filtrati nel metodo:', filteredDoctors)
+						this.filteredDoctorsByVotes = this.orderBySponsorship(filteredDoctors);
+						this.$router.push({
+							name: 'search',
+							params: {
+								searchId: store.selectedSpecializationName.trim().replace(/ /g, "-").toLowerCase(),
+								...(this.rating !== null && this.rating !== undefined ? { inputRating: `input-rating:${this.rating}` } : {}),
+								...(this.inputReviews !== null && this.inputReviews !== undefined ? { inputReviews: `input-reviews:${this.inputReviews}` } : {})
+							}
+						});
+					})
+					.catch(function (error) {
+						// handle error
+						console.log(error)
+					})
+			},
+
+			getProfilePhotoPath(doctor) {
+				// Calculate profile photo :src attribute depending on the presence of the 'photos' string in the db data photo profiles table
+				const photoPath = doctor.photo;
+				return photoPath.includes('photos') ? this.getFilePath(`storage/${photoPath}`) : new URL(this.placeholderImg).href;
+			},
+
+			getFilePath: function (filePath) {
+				return new URL(filePath, 'http://localhost:8000/').href;
+			},
+
+			resetInputs() {
+				this.rating = null;
+				this.inputReviews = null;
+				this.getFilteredReviews();
+			},
+		},
+		computed: {
+			showLoader() {
+				setTimeout(() => {
+					this.loaded = true
+				}, 2000)
+			},
+			orderedDoctors() {
+				return this.orderBySponsorship(this.doctors);
+			},
 		},
 		created() {
-			this.getApiProfile()
+			// this.getApiProfile();
+			this.getFilteredReviews();
+			this.getSpecializationName();
+		},
+		mounted() {
+			this.showLoader
 		}
 	}
 </script>
