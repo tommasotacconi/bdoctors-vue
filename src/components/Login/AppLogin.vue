@@ -9,7 +9,8 @@
 				inputPassword: '',
 				responseStatus: false,
 				store,
-				isAnimationActive: false
+				isAnimationActive: false,
+				positiveAuthenticationSymbol: ''
 			}
 		},
 		methods: {
@@ -26,12 +27,12 @@
 						this.positiveAuthenticationSymbol = '✅';
 						setTimeout(() => {
 							this.$router.push({ name: 'dashboard', params: { id: response.data.user_id } })
-						}, 200);
+						}, 100);
 					})
 					.catch(error => {
 						// Trigger animation
 						this.isAnimationActive = true;
-						setTimeout(() => { this.isAnimationActive = false }, 500);
+						setTimeout(() => { this.isAnimationActive = false }, 200);
 						console.log(error);
 					});
 			},
