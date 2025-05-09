@@ -29,6 +29,7 @@
 					.then(response => {
 						// handle success
 						this.specializations = response.data.specializations;
+						if (!store.searchedSpecialization) this.updateSelectByParam();
 					})
 					.catch(function (error) {
 						// handle error
@@ -36,20 +37,40 @@
 					})
 			},
 			chooseSpecialization() {
-				console.log("Specializzazione selezionata:", this.selectedSpecialization);
 				store.searchedSpecialization = this.selectedSpecialization.id
 				store.selectedSpecializationName = this.selectedSpecialization.name
 
 				// Nuova pagina nella quale usiamo i nomi. Piccola concatenazione di metodi per togliere gli spazi e rendere tutto minuscolo
 				this.$router.push({
 					name: 'search', params: {
-						specialization: store.selectedSpecializationName.trim().replace(/ /g, "-").toLowerCase(),
+						specialization: store.selectedSpecializationName.trim().replace(/-/g, '_').replace(/ /g, "-").toLowerCase(),
 					},
 				})
 			},
-
+			updateSelectByParam() {
+				console.log('-- Updating select by means of param')
+				this.selectedSpecialization = this.specializationParam || '';
+			}
 		},
 		computed: {
+			specializationParam() {
+				const targets = [/_/g, /-/g];
+				const replacements = ['-', ' '];
+				let specializationInParamValue = this.$route.params.specialization;
+				for (let i = 0; i < targets.length; i++) {
+					specializationInParamValue = specializationInParamValue.replace(targets[i], replacements[i]);
+				}
+				specializationInParamValue = specializationInParamValue[0].toUpperCase() + specializationInParamValue.slice(1);
+				for (let i = 0; i < this.specializations.length; i++) {
+					const specialization = this.specializations[i];
+					if (specializationInParamValue == specialization.name) {
+						console.log(specialization);
+						return specialization;
+					}
+				}
+			}
+		},
+		created() {
 		},
 		mounted() {
 			this.getApi()
@@ -87,7 +108,7 @@
 					<Transition>
 						<select @change="chooseSpecialization()" v-model="selectedSpecialization" v-if="specializations.toString()"
 							class="form-select" aria-label="Specialization Search">
-							<option value="" disabled selected>Ricerca il medico per specializzazione!</option>
+							<option value="" disabled>Ricerca il medico per specializzazione!</option>
 							<option v-for="(specialization, index) in specializations" :key="index" :value=specialization>{{
 								specialization.name
 							}}

@@ -65,8 +65,9 @@ const routes = [
 			},
 			// Path to all doctors with selected specialization id  
 			// { path: '/search/:searchId', component: AdvancedSearch, name: 'search' },
-			// Path to all doctors with selected specialization id and satisfing filter parameters  
-			{ path: '/search/:specialization/:inputRating?/:inputReviews?',
+			// Path to all doctors with selected specialization id and satisfing filter parameters
+			// `inputRating`, `:inputReviews`  
+			{ path: '/search/:specialization',
 				 name: 'search',
 				components: {
 					default: SearchedDoctor,

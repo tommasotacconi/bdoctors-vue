@@ -10,11 +10,6 @@
 			return {
 				store,
 				searchedDoctor: [],
-				apiUrl: 'http://localhost:8000/api/profiles',
-				specializationApiUrl: 'http://127.0.0.1:8000/api/specializations',
-				reviewsApiURl: 'http://localhost:8000/api/reviews',
-				specializationId: store.searchedSpecialization,
-				specializationName: '',
 				doctors: [],
 				rating: null,
 				inputReviews: null,
@@ -28,25 +23,6 @@
 			DoctorShow,
 		},
 		methods: {
-			getSpecializationName() {
-				axios.get(this.specializationApiUrl)
-					.then(response => {
-						// handle success
-						console.log(response.data.specializations);
-						let specializationArray = response.data.specializations
-						for (let i = 0; specializationArray.length; i++) {
-							let specialization = specializationArray[i]
-							if (store.searchedSpecialization === specialization.id) {
-								this.specializationName = specialization.name
-								return
-							}
-						}
-					})
-					.catch(function (error) {
-						// handle error
-						console.log(error);
-					})
-			},
 			goToShowPage(doctor, index) {
 				let completeName = "";
 				completeName = doctor.first_name + '-' + doctor.last_name
@@ -55,68 +31,29 @@
 					name: 'search.show', params: { searchId: store.selectedSpecializationName.trim().replace(/ /g, "-").toLowerCase(), id: completeName.toLowerCase() }
 				})
 			},
-
-			getFilteredReviews() {
-				let url = `http://localhost:8000/api/reviews/filter/${this.specializationId}/${this.rating}/${this.inputReviews}`;
-
-				axios.get(url, {
-				})
+			getFilteredReviewsData() {
+				axios.get(this.store.apiUri + `reviews/filter/${this.$route.params.specialization}/${this.rating}/${this.inputReviews}`)
 					.then(response => {
 						// handle success
-						console.log('RECENSIONI FILTRATEEEE', response.data);
 						this.filteredDoctors = response.data;
-						this.filteredDoctors.id = store.informationPageId;
-						console.log('filtered doctors:', this.filteredDoctors)
-
-						for (let i = 0; i < this.doctors.length; i++) {
-							let singleDoctor = { doctor: [], averageVotes: null }
-							let doctor = this.doctors[i];
-							singleDoctor.doctor = doctor;
-							console.log('singolo medico', doctor)
-							let reviews = doctor.reviews;
-							// console.log('Recensioni:', reviews);
-							let votesSum = null;
-							for (let j = 0; j < reviews.length; j++) {
-								let review = reviews[j];
-								// console.log("Singola recensione:", review);
-								votesSum += parseInt(review.votes);
-							}
-							// console.log("Somma voti per ogni medico:", votesSum)
-							let averageVotes = null;
-							averageVotes = Math.round(votesSum / reviews.length)
-							console.log('La media dei voti del medico è:', averageVotes)
-							singleDoctor.averageVotes = averageVotes;
-							if (singleDoctor.averageVotes >= this.rating)
-								filteredDoctors.push(singleDoctor);
-							console.log('singleDoctor', singleDoctor)
-						}
-						console.log('Array Dottori filtrati nel metodo:', filteredDoctors)
-						this.filteredDoctorsByVotes = this.orderBySponsorship(filteredDoctors);
-						this.$router.push({
-							name: 'search',
-							params: {
-								searchId: store.selectedSpecializationName.trim().replace(/ /g, "-").toLowerCase(),
-								...(this.rating !== null && this.rating !== undefined ? { inputRating: `input-rating:${this.rating}` } : {}),
-								...(this.inputReviews !== null && this.inputReviews !== undefined ? { inputReviews: `input-reviews:${this.inputReviews}` } : {})
-							}
-						});
+						console.log('filtered doctors:', this.filteredDoctors);
+						this.loaded = true;
 					})
 					.catch(function (error) {
 						// handle error
 						console.log(error)
-					})
-			},
+					});
 
+				this.loaded = false
+			},
 			getProfilePhotoPath(doctor) {
 				// Calculate profile photo :src attribute depending on the presence of the 'photos' string in the db data photo profiles table
 				const photoPath = doctor.photo;
 				return photoPath.includes('photos') ? this.getFilePath(`storage/${photoPath}`) : new URL(this.placeholderImg).href;
 			},
-
 			getFilePath: function (filePath) {
 				return new URL(filePath, 'http://localhost:8000/').href;
 			},
-
 			resetInputs() {
 				this.rating = null;
 				this.inputReviews = null;
@@ -124,23 +61,21 @@
 			},
 		},
 		computed: {
-			showLoader() {
-				setTimeout(() => {
-					this.loaded = true
-				}, 2000)
-			},
 			orderedDoctors() {
 				return this.orderBySponsorship(this.doctors);
 			},
+			specializationName() {
+				return this.$route.params.specialization.replace(/-/g, ' ').replace(/_/g, '-');
+			},
 		},
-		created() {
-			// this.getApiProfile();
-			this.getFilteredReviews();
-			this.getSpecializationName();
+		watch: {
+			'$route.params.specialization': {
+				handler(newValue) {
+					this.getFilteredReviewsData();
+				},
+				immediate: true
+			}
 		},
-		mounted() {
-			this.showLoader
-		}
 	}
 </script>
 
@@ -154,7 +89,7 @@
 			<div v-if="loaded">
 				<div>
 					<div class="title">
-						<h2>Risultati per: <span class="specialization-title">{{ specializationName }} </span><span
+						<h2>Risultati per <span class="specialization-title">{{ specializationName }} </span><span
 								v-if="!filteredDoctors.length" class="total-specialization-doctor"> (Totale esperti:
 								{{
 									doctors.length
@@ -259,11 +194,15 @@
 	.title {
 		text-align: center;
 		margin: 30px 0 20px 0;
+
+		h2 {
+			font-weight: 300;
+		}
 	}
 
 	.specialization-title {
 		text-transform: lowercase;
-		font-weight: 400;
+		font-weight: 500;
 	}
 
 	.advanced-filter {
