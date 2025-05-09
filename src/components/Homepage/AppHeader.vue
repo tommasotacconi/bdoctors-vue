@@ -29,7 +29,7 @@
 					.then(response => {
 						// handle success
 						this.specializations = response.data.specializations;
-						if (!store.searchedSpecialization) this.updateSelectByParam();
+						if (!store.searchedSpecialization && this.$route.params.specialization) this.updateSelectByParam();
 					})
 					.catch(function (error) {
 						// handle error
