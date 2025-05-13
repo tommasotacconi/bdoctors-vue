@@ -134,15 +134,6 @@
 					</div>
 				</routerLink>
 				<div class="search-bar">
-					<!-- Old search-bar -->
-					<!-- <div class="input-group search-form">
-                        <input type="text" class="form-control" placeholder="Ricerca il tuo medico!"
-                            aria-label="Ricerca il tuo medico!" aria-describedby="button-addon2">
-                        <button class="btn btn-outline-secondary" type="button" id="button-addon2"><i
-                                class="fa-solid fa-magnifying-glass"></i></button>
-                    </div> -->
-
-					<!-- Updated search bar for specializations -->
 					<Transition>
 						<select @change="chooseSpecialization()" v-model="selectedSpecialization" v-if="specializations.toString()"
 							class="form-select" aria-label="Specialization Search">
