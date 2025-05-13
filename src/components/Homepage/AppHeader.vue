@@ -6,7 +6,6 @@
 	export default {
 		data() {
 			return {
-				apiUrl: 'http://127.0.0.1:8000/api/specializations',
 				specializations: [],
 				selectedSpecialization: '',
 				store,
@@ -32,7 +31,7 @@
 				this.isProfileManagementShown = !this.isProfileManagementShown;
 			},
 			getApi() {
-				axios.get(this.apiUrl)
+				axios.get(this.store.apiUri + 'specializations')
 					.then(response => {
 						// handle success
 						this.specializations = response.data.specializations;
