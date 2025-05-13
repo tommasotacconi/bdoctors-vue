@@ -6,23 +6,30 @@
 	export default {
 		data() {
 			return {
-				logout: false,
 				apiUrl: 'http://127.0.0.1:8000/api/specializations',
 				specializations: [],
 				selectedSpecialization: '',
 				store,
+				checkedLogin: false,
+				isLogged: false,
+				isLogoutShown: false,
+				logoutBtnTimeout: undefined,
 			}
 		},
 		methods: {
 			showLogout() {
-				this.logout = !this.logout;
-
-				// Se l'utente non interagisce farlo scomparire
-				if (this.logout === true) {
-					setTimeout(() => {
-						this.logout = false
+				// Discard timeout if is already set, otherwise set a new one
+				if (this.logoutBtnTimeout) {
+					this.logoutBtnTimeout = clearTimeout(this.logoutBtnTimeout);
+				} else {
+					// Se l'utente non interagisce farlo scomparire
+					this.logoutBtnTimeout = setTimeout(() => {
+						this.isLogoutShown = false
+						this.logoutBtnTimeout = clearTimeout(this.logoutBtnTimeout);
 					}, 5000)
 				}
+
+				this.isLogoutShown = !this.isLogoutShown;
 			},
 			getApi() {
 				axios.get(this.apiUrl)
@@ -50,6 +57,18 @@
 			updateSelectByParam() {
 				console.log('-- Updating select by means of param')
 				this.selectedSpecialization = this.specializationParam || '';
+			},
+			logout() {
+				axios.post(store.apiUri + 'logout', '',
+					{
+						withCredentials: true
+					})
+					.then(response => {
+						this.isLogged = false;
+					})
+					.catch(err => {
+						console.log(err);
+					});
 			}
 		},
 		computed: {
@@ -68,9 +87,29 @@
 						return specialization;
 					}
 				}
+			},
+			rightHeaderClass() {
+				return this.isLogged ? {
+					'logged-user': true,
+					'not-logged-user': false,
+				} : {
+					'logged-user': false,
+					'not-logged-user': true,
+				};
 			}
 		},
 		created() {
+			axios.get(this.store.apiUri + 'login/check', {
+				withCredentials: true,
+			})
+				.then(({ data: { authentication: { userId } } }) => {
+					this.isLogged = true;
+					this.checkedLogin = true;
+					this.store.userId = userId;
+				})
+				.catch(err => {
+					this.checkedLogin = true;
+				});
 		},
 		mounted() {
 			this.getApi()
@@ -81,7 +120,7 @@
 <template>
 	<header class="general-header">
 		<div class="container container-header d-flex gap-3">
-			<section class="left-header d-flex">
+			<div class="left-header d-flex">
 				<routerLink style="text-decoration: none; color: inherit;" :to="{ name: 'homepage' }">
 					<div class="left-header-title-logo d-flex">
 						<div class="logo">
@@ -116,19 +155,25 @@
 						</select>
 					</Transition>
 				</div>
-			</section>
-			<div class="right-header d-flex" v-if="!$route.params.id">
-				<routerLink :to="{ name: 'register' }"><button class="button-logup"> Registrati</button></routerLink>
-				<routerLink :to="{ name: 'login' }"><button class="button-login"><i
-							class="fa-solid fa-user-doctor"></i>Login</button></routerLink>
 			</div>
-			<div class="right-header d-flex" v-if="$route.params.id">
+			<div class="right-header d-flex" :class="rightHeaderClass" v-if="checkedLogin">
+				<routerLink :to="{ name: 'register' }">
+					<button class="btn button-logup">Registrati</button>
+				</routerLink>
+				<routerLink :to="{ name: 'login' }">
+					<button class="btn button-login"><i class="fa-solid fa-user-doctor"></i></button>
+				</routerLink>
 				<div class="user">
-					<div class="logout" v-if="logout">
-						<router-link style="text-decoration: none; color: inherit;" to="/"><span
-								class="logout-text">Logout</span></router-link>
-					</div>
-					<i class="fa-solid fa-user" @click="showLogout"></i>
+					<Transition>
+						<div class="user-buttons-wrapper d-flex justify-content-between" v-if="isLogoutShown">
+							<router-link :to="{ name: 'dashboard', params: { id: store.userId } }" class="btn personal-area">Area
+								personale</router-link>
+							<button class="logout" @click="logout()">
+								<span class="logout-text">Esci</span>
+							</button>
+						</div>
+					</Transition>
+					<i class="fa-solid fa-user fa-user-doctor" @click="showLogout"></i>
 				</div>
 			</div>
 		</div>
@@ -157,6 +202,13 @@
 		margin: 0;
 		padding-right: 25px;
 		border-right: 4px solid white;
+	}
+
+	button {
+		padding: 0;
+		border: none;
+		background-color: transparent;
+		color: var(--color-secondary);
 	}
 
 
@@ -193,7 +245,7 @@
 	}
 
 	.v-enter-from,
-	.v-leave-from {
+	.v-leave-to {
 		opacity: 0;
 	}
 
@@ -227,6 +279,14 @@
 		background-color: #155489;
 	}
 
+	/* Left header */
+	.form-select {
+		max-width: 320px;
+
+		option {
+			width: 250px;
+		}
+	}
 
 	/* Right header */
 	.right-header {
@@ -235,24 +295,66 @@
 		gap: 20px;
 	}
 
-	.right-header .button-logup {
-		background-color: var(--color-secondary);
+	.user-buttons-wrapper {
+		margin-right: 10px;
+	}
+
+	.right-header .btn {
 		border-radius: 25px;
-		padding: 11px 16px;
+		padding: 10px 16px;
 		border: 0;
 		font-style: italic;
 		color: white;
 		font-weight: bold;
 	}
 
-	.button-login {
-		background-color: #FFB465;
-		border-radius: 25px;
-		padding: 8px 16px;
-		border: 0;
-		font-style: italic;
-		color: white;
-		font-weight: bold;
+	.right-header .btn.button-logup {
+		background-color: var(--color-secondary);
+	}
+
+	.right-header .btn.button-login {
+		background-color: var(--color-complementary);
+		padding-top: 8px;
+		padding-bottom: 8px;
+
+		&::after {
+			content: 'Login';
+		}
+	}
+
+	.right-header .btn.personal-area {
+		background-color: var(--color-complementary);
+		flex-shrink: 0;
+	}
+
+	.right-header.not-logged-user {
+		.user {
+			display: none;
+		}
+	}
+
+	.right-header.logged-user {
+		&>:not(.user) {
+			display: none;
+		}
+	}
+
+	.right-header {
+
+		/*	Transition credits: Vue official site (https://vuejs.org/guide/built-ins/transition)	*/
+		.slide-fade-enter-active {
+			transition: all 0.3s ease-out;
+		}
+
+		.slide-fade-leave-active {
+			transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
+		}
+
+		.slide-fade-enter-from,
+		.slide-fade-leave-to {
+			transform: translateX(20px);
+			opacity: 0;
+		}
 	}
 
 	.fa-user-doctor {
@@ -283,12 +385,11 @@
 	}
 
 	.logout {
-		padding: 10px 15px;
-		background-color: var(--color-complementary);
-		border-radius: 30px;
+		margin-left: 10px;
 	}
 
 	.logout-text {
+		font-style: italic;
 		text-decoration: none;
 		color: white;
 		font-weight: bold;
@@ -301,12 +402,20 @@
 			display: none;
 		}
 
-		.button-login {
-			padding: 11px 16px;
+		/* .fa-user-doctor {
+			display: none;
+		} */
+	}
+
+	@media screen and (max-width: 992px) {
+		.right-header .btn.button-login {
+			&::after {
+				content: '';
+			}
 		}
 
 		.fa-user-doctor {
-			display: none;
+			margin-right: 0px;
 		}
 	}
 </style>
