@@ -12,24 +12,24 @@
 				store,
 				checkedLogin: false,
 				isLogged: false,
-				isLogoutShown: false,
+				isProfileManagementShown: false,
 				logoutBtnTimeout: undefined,
 			}
 		},
 		methods: {
-			showLogout() {
+			showProfileManagementButtons() {
 				// Discard timeout if is already set, otherwise set a new one
 				if (this.logoutBtnTimeout) {
 					this.logoutBtnTimeout = clearTimeout(this.logoutBtnTimeout);
 				} else {
 					// Se l'utente non interagisce farlo scomparire
 					this.logoutBtnTimeout = setTimeout(() => {
-						this.isLogoutShown = false
+						this.isProfileManagementShown = false
 						this.logoutBtnTimeout = clearTimeout(this.logoutBtnTimeout);
 					}, 5000)
 				}
 
-				this.isLogoutShown = !this.isLogoutShown;
+				this.isProfileManagementShown = !this.isProfileManagementShown;
 			},
 			getApi() {
 				axios.get(this.apiUrl)
@@ -165,7 +165,7 @@
 				</routerLink>
 				<div class="user">
 					<Transition>
-						<div class="user-buttons-wrapper d-flex justify-content-between" v-if="isLogoutShown">
+						<div class="user-buttons-wrapper d-flex justify-content-between" v-if="isProfileManagementShown">
 							<router-link :to="{ name: 'dashboard', params: { id: store.userId } }" class="btn personal-area">Area
 								personale</router-link>
 							<button class="logout" @click="logout()">
@@ -173,7 +173,7 @@
 							</button>
 						</div>
 					</Transition>
-					<i class="fa-solid fa-user fa-user-doctor" @click="showLogout"></i>
+					<i class="fa-solid fa-user fa-user-doctor" @click="showProfileManagementButtons"></i>
 				</div>
 			</div>
 		</div>
@@ -342,16 +342,16 @@
 	.right-header {
 
 		/*	Transition credits: Vue official site (https://vuejs.org/guide/built-ins/transition)	*/
-		.slide-fade-enter-active {
+		.v-enter-active {
 			transition: all 0.3s ease-out;
 		}
 
-		.slide-fade-leave-active {
+		.v-leave-active {
 			transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
 		}
 
-		.slide-fade-enter-from,
-		.slide-fade-leave-to {
+		.v-enter-from,
+		.v-leave-to {
 			transform: translateX(20px);
 			opacity: 0;
 		}
