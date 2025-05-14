@@ -10,7 +10,8 @@
 				responseStatus: false,
 				store,
 				isAnimationActive: false,
-				positiveAuthenticationSymbol: ''
+				positiveAuthenticationSymbol: '',
+				isLoaderShown: false,
 			}
 		},
 		methods: {
@@ -22,7 +23,7 @@
 					withCredentials: true,
 				})
 					.then(response => {
-						console.log(response);
+						this.isLoaderShown = false;
 						this.responseStatus = true;
 						this.positiveAuthenticationSymbol = '✅';
 						setTimeout(() => {
@@ -30,11 +31,13 @@
 						}, 100);
 					})
 					.catch(error => {
+						this.isLoaderShown = false;
 						// Trigger animation
 						this.isAnimationActive = true;
 						setTimeout(() => { this.isAnimationActive = false }, 200);
 						console.log(error);
 					});
+				this.isLoaderShown = true;
 			},
 		},
 		created: function () {
@@ -65,9 +68,11 @@
 			</div>
 			<!-- Button wrappers -->
 			<div class="buttons-wrapper col-12 d-flex justify-content-center">
-				<button type="submit" id="login-button" class="btn btn-primary mt-4 mb-3"
-					:class="{ ['shaking-animation']: isAnimationActive }">Login <span>{{ positiveAuthenticationSymbol
-					}}</span></button>
+				<button type="submit" id="login-button" class="btn btn-primary d-flex justify-content-center mt-4 mb-3"
+					:class="{ ['shaking-animation']: isAnimationActive }">
+					Login<span>{{ positiveAuthenticationSymbol }}</span>
+					<Loader v-if="isLoaderShown" />
+				</button>
 			</div>
 		</div>
 	</form>
@@ -157,5 +162,13 @@
 		100% {
 			transform: translateX(0)
 		}
+	}
+
+	button .loader {
+		width: 25px;
+		position: static;
+		margin-left: 10px;
+
+		border: 2px solid #fff;
 	}
 </style>
