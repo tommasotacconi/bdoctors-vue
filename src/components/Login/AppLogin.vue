@@ -7,15 +7,16 @@
 			return {
 				inputEmail: '',
 				inputPassword: '',
-				responseStatus: false,
+				isRequestPending: false,
 				store,
 				isAnimationActive: false,
 				positiveAuthenticationSymbol: '',
-				isLoaderShown: false,
+				loginButtonText: 'Login'
 			}
 		},
 		methods: {
 			sendLoginData() {
+				this.isRequestPending = true;
 				axios.post(this.store.apiUri + 'login', {
 					email: this.inputEmail,
 					password: this.inputPassword
@@ -23,22 +24,26 @@
 					withCredentials: true,
 				})
 					.then(response => {
-						this.isLoaderShown = false;
-						this.responseStatus = true;
+						this.loginButtonText = '';
 						this.positiveAuthenticationSymbol = '✅';
+						this.isRequestPending = false;
 						setTimeout(() => {
 							this.$router.push({ name: 'dashboard', params: { id: response.data.user_id } })
 						}, 100);
 					})
 					.catch(error => {
-						this.isLoaderShown = false;
+						this.isRequestPending = false;
 						// Trigger animation
 						this.isAnimationActive = true;
-						setTimeout(() => { this.isAnimationActive = false }, 200);
+						setTimeout(() => { this.isAnimationActive = false }, 250);
 						console.log(error);
 					});
-				this.isLoaderShown = true;
 			},
+		},
+		computed: {
+			loginButtonContent() {
+				return !this.isRequestPending ? this.loginButtonText + this.positiveAuthenticationSymbol : null;
+			}
 		},
 		created: function () {
 			axios.get(this.store.apiUri + 'login/check', {
@@ -70,8 +75,8 @@
 			<div class="buttons-wrapper col-12 d-flex justify-content-center">
 				<button type="submit" id="login-button" class="btn btn-primary d-flex justify-content-center mt-4 mb-3"
 					:class="{ ['shaking-animation']: isAnimationActive }">
-					Login<span>{{ positiveAuthenticationSymbol }}</span>
-					<Loader v-if="isLoaderShown" />
+					{{ loginButtonContent }}
+					<Loader v-if="isRequestPending" />
 				</button>
 			</div>
 		</div>
@@ -118,6 +123,7 @@
 	#login-button {
 		width: calc(100% - 24px);
 		background-color: #65B0FF;
+		position: relative;
 
 		&:hover {
 			background-color: #0E395D;
@@ -167,7 +173,6 @@
 	button .loader {
 		width: 25px;
 		position: static;
-		margin-left: 10px;
 
 		border: 2px solid #fff;
 	}
