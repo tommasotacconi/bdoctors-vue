@@ -65,10 +65,13 @@
 					})
 					.then(response => {
 						this.isLogged = false;
+						this.checkedLogin = true;
 					})
 					.catch(err => {
+						this.checkedLogin = true;
 						console.log(err);
 					});
+				this.checkedLogin = false
 			}
 		},
 		computed: {
@@ -175,6 +178,9 @@
 					</Transition>
 					<i class="fa-solid fa-user fa-user-doctor" @click="showProfileManagementButtons"></i>
 				</div>
+			</div>
+			<div class="loader-container d-flex right-header" v-if="!checkedLogin">
+				<Loader />
 			</div>
 		</div>
 	</header>
@@ -355,6 +361,12 @@
 			transform: translateX(20px);
 			opacity: 0;
 		}
+	}
+
+	/* Loader sizing */
+	.right-header .loader {
+		width: 30px;
+		position: static;
 	}
 
 	.fa-user-doctor {
