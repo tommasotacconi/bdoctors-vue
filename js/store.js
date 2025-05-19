@@ -28,11 +28,11 @@ export const store = reactive({
   profileDataGeneral: {},
 
   // chart
-  charDataMessages: {},
-  charDataReviews: {},
-  charDataVotes: {},
-  messagesProfile: [],
-  reviewsProfile: [],
+  chartDataMessages: {},
+  chartDataReviews: {},
+  chartDataVotes: {},
+  profileMessages: [],
+  profileReviews: [],
 
   // user id, sponsorized profile id
   userId: '',
