@@ -1,16 +1,16 @@
 <script>
 	import axios from 'axios';
-	import { store } from '../../../js/store.js';
+	import { store } from '../../../js/store';
 
 	export default {
 		data() {
 			return {
-				store,
 				inputEmail: '',
 				inputPassword: '',
 				responseStatus: false,
+				store,
 				isAnimationActive: false,
-				positiveAuthenticationSymbol: '',
+				positiveAuthenticationSymbol: ''
 			}
 		},
 		methods: {
@@ -27,12 +27,12 @@
 						this.positiveAuthenticationSymbol = '✅';
 						setTimeout(() => {
 							this.$router.push({ name: 'dashboard', params: { id: response.data.user_id } })
-						}, 200);
+						}, 100);
 					})
 					.catch(error => {
 						// Trigger animation
 						this.isAnimationActive = true;
-						setTimeout(() => { this.isAnimationActive = false }, 500);
+						setTimeout(() => { this.isAnimationActive = false }, 200);
 						console.log(error);
 					});
 			},
