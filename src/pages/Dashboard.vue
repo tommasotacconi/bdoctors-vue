@@ -9,256 +9,105 @@
 		data() {
 			return {
 				store,
-				messagesApiUrl: 'http://localhost:8000/api/messages',
-				reviewsApiUrl: 'http://localhost:8000/api/reviews',
-
-				messagesProfile: [],
-				reviewsProfile: [],
-
+				profileMessages: [],
+				profileReviews: [],
 			}
 		},
 		methods: {
 			getApiMessages() {
-				axios.get(this.messagesApiUrl)
-					.then(response => {
-						// handle success
-						console.log(response.data);
-						let messagesProfiles = response.data.messages
-						console.log(messagesProfiles)
-						// let idProfile = store.profileDataGeneral.id
-						let idProfile = this.$route.params.id
-						console.log(idProfile)
-						console.log(this.$route.params.id)
-
-						const messagesProfile = messagesProfiles.filter(message => message.profile_id == idProfile)
-						console.log(messagesProfile)
-
-						// Trasformo il valore updated_at in una data leggibile facilmente in modo da riprenderla successivamente
-						messagesProfile.forEach(message => {
-							let hourDate = message.updated_at
-							// console.log(hourDate)
-							const date = new Date(hourDate)
-
-							const options = {
-								year: "numeric",
-								month: "2-digit",
-							};
-
-							message.updated_at = date.toLocaleString("it-IT", options)
-						})
-						console.log(messagesProfile)
-						store.messagesProfile = messagesProfile
-
-						// Parte relativa alla creazione della statistisca dinamica
-						const messagesProfileJanuary = messagesProfile.filter(message => message.updated_at.startsWith('01/'));
-						const messagesProfileFebruary = messagesProfile.filter(message => message.updated_at.startsWith('02/'));
-						const messagesProfileMarch = messagesProfile.filter(message => message.updated_at.startsWith('03/'));
-						const messagesProfileApril = messagesProfile.filter(message => message.updated_at.startsWith('04/'));
-						const messagesProfileMay = messagesProfile.filter(message => message.updated_at.startsWith('05/'));
-						const messagesProfileJune = messagesProfile.filter(message => message.updated_at.startsWith('06/'));
-						const messagesProfileJuly = messagesProfile.filter(message => message.updated_at.startsWith('07/'));
-						const messagesProfileAugust = messagesProfile.filter(message => message.updated_at.startsWith('08/'));
-						const messagesProfileSeptember = messagesProfile.filter(message => message.updated_at.startsWith('09/'));
-						const messagesProfileOctober = messagesProfile.filter(message => message.updated_at.startsWith('10/'));
-						const messagesProfileNovember = messagesProfile.filter(message => message.updated_at.startsWith('11/'));
-						const messagesProfileDecember = messagesProfile.filter(message => message.updated_at.startsWith('12/'));
-
-
-						store.charDataMessages = {
-							labels: [
-								'Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'
-							],
-							datasets: [
-								{
-									data: [
-										messagesProfileJanuary.length, messagesProfileFebruary.length, messagesProfileMarch.length, messagesProfileApril.length, messagesProfileMay.length, messagesProfileJune.length, messagesProfileJuly.length, messagesProfileAugust.length, messagesProfileSeptember.length, messagesProfileOctober.length, messagesProfileNovember.length, messagesProfileDecember.length
-									],
-									backgroundColor: '#65B0FF',
-									// qui si può inserire il label
-									// label: 'test'
-								}
-							]
-						}
-
+				axios.get(this.store.apiUri + 'messages', {
+					withCredentials: true
+				})
+					.then(({ data: { messages } }) => {
+						this.prepareChartWithProfileData(messages, 'profileMessages', 'chartDataMessages', 'messagesPerMonthNumbers');
 					})
-					.catch(function (error) {
+					.catch(function (err) {
 						// handle error
-						console.log(error);
+						console.log('ERROR in GET /api/messages: ' + err.response.data.message);
+
 					})
 			},
-
-			getApiReviews() {
-				axios.get(this.reviewsApiUrl)
-					.then(response => {
-						// handle success
-						console.log(response.data);
-						let reviewsProfiles = response.data.reviews
-						console.log(reviewsProfiles[0].profile_id)
-						// let idProfile = store.profileDataGeneral.id
-						let idProfile = this.$route.params.id
-						console.log(idProfile)
-						console.log(this.$route.params.id)
-
-						const reviewsProfile = reviewsProfiles.filter(review => review.profile_id == idProfile)
-						console.log(reviewsProfile)
-
-						// Trasformo il valore updated_at in una data leggibile facilmente in modo da riprenderla successivamente
-						reviewsProfile.forEach(message => {
-							let hourDate = message.updated_at
-							// console.log(hourDate)
-							const date = new Date(hourDate)
-
-							const options = {
-								year: "numeric",
-								month: "2-digit",
-							};
-
-							message.updated_at = date.toLocaleString("it-IT", options)
-						})
-						console.log(reviewsProfile)
-						store.reviewsProfile = reviewsProfile
-
-						// Parte relativa alla creazione della statistisca dinamica
-						const reviewsProfileJanuary = reviewsProfile.filter(message => message.updated_at.startsWith('01/'));
-						const reviewsProfileFebruary = reviewsProfile.filter(message => message.updated_at.startsWith('02/'));
-						const reviewsProfileMarch = reviewsProfile.filter(message => message.updated_at.startsWith('03/'));
-						const reviewsProfileApril = reviewsProfile.filter(message => message.updated_at.startsWith('04/'));
-						const reviewsProfileMay = reviewsProfile.filter(message => message.updated_at.startsWith('05/'));
-						const reviewsProfileJune = reviewsProfile.filter(message => message.updated_at.startsWith('06/'));
-						const reviewsProfileJuly = reviewsProfile.filter(message => message.updated_at.startsWith('07/'));
-						const reviewsProfileAugust = reviewsProfile.filter(message => message.updated_at.startsWith('08/'));
-						const reviewsProfileSeptember = reviewsProfile.filter(message => message.updated_at.startsWith('09/'));
-						const reviewsProfileOctober = reviewsProfile.filter(message => message.updated_at.startsWith('10/'));
-						const reviewsProfileNovember = reviewsProfile.filter(message => message.updated_at.startsWith('11/'));
-						const reviewsProfileDecember = reviewsProfile.filter(message => message.updated_at.startsWith('12/'));
-
-						console.log(reviewsProfileDecember[0].content)
-
-						store.charDataReviews = {
-							labels: [
-								'Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'
-							],
-							datasets: [
-								{
-									data: [
-										reviewsProfileJanuary.length, reviewsProfileFebruary.length, reviewsProfileMarch.length, reviewsProfileApril.length, reviewsProfileMay.length, reviewsProfileJune.length, reviewsProfileJuly.length, reviewsProfileAugust.length, reviewsProfileSeptember.length, reviewsProfileOctober.length, reviewsProfileNovember.length, reviewsProfileDecember.length
-									],
-									backgroundColor: '#65B0FF',
-									// qui si può inserire il label
-								}
-							]
-						}
-
+			getApiReviewsAndVotes() {
+				axios.get(this.store.apiUri + 'reviews', {
+					withCredentials: true,
+				})
+					.then(({ data: { reviews } }) => {
+						this.prepareChartWithProfileData(reviews, 'profileReviews', 'chartDataReviews', 'reviewsPerMonthNumbers');
+						this.getApiVotes();
 					})
-					.catch(function (error) {
+					.catch(function (err) {
 						// handle error
-						console.log(error);
+						if (err.response?.data?.message) console.log('ERROR IN GET /api/reviews: ' + err.response.data.message);
 					})
 			},
-
 			getApiVotes() {
-				axios.get(this.reviewsApiUrl)
-					.then(response => {
-						// handle success
-						console.log(response.data);
-						let reviewsProfiles = response.data.reviews
-						console.log(reviewsProfiles[0].profile_id)
-						// let idProfile = store.profileDataGeneral.id
-						let idProfile = this.$route.params.id
-						console.log(idProfile)
-						console.log(this.$route.params.id)
+				const profileReviews = this.store.profileReviews
+				// Funzione che calcola la media dei voti
+				this.prepareChartWithProfileData(profileReviews, 'profileVotes', 'chartDataVotes', 'meanVotePerMonthNumbers')
 
-						const reviewsProfile = reviewsProfiles.filter(review => review.profile_id == idProfile)
-						console.log(reviewsProfile)
-
-						// Trasformo il valore updated_at in una data leggibile facilmente in modo da riprenderla successivamente
-						reviewsProfile.forEach(message => {
-							let hourDate = message.updated_at
-							console.log(hourDate)
-							const date = new Date(hourDate)
-
-							const options = {
-								year: "numeric",
-								month: "2-digit",
-							};
-
-							message.updated_at = date.toLocaleString("it-IT", options)
-						})
-						console.log(reviewsProfile)
-						store.reviewsProfile = reviewsProfile
-
-						// Parte relativa alla creazione della statistisca dinamica
-						const reviewsProfileJanuary = reviewsProfile.filter(message => message.updated_at.startsWith('01/'));
-						const reviewsProfileFebruary = reviewsProfile.filter(message => message.updated_at.startsWith('02/'));
-						const reviewsProfileMarch = reviewsProfile.filter(message => message.updated_at.startsWith('03/'));
-						const reviewsProfileApril = reviewsProfile.filter(message => message.updated_at.startsWith('04/'));
-						const reviewsProfileMay = reviewsProfile.filter(message => message.updated_at.startsWith('05/'));
-						const reviewsProfileJune = reviewsProfile.filter(message => message.updated_at.startsWith('06/'));
-						const reviewsProfileJuly = reviewsProfile.filter(message => message.updated_at.startsWith('07/'));
-						const reviewsProfileAugust = reviewsProfile.filter(message => message.updated_at.startsWith('08/'));
-						const reviewsProfileSeptember = reviewsProfile.filter(message => message.updated_at.startsWith('09/'));
-						const reviewsProfileOctober = reviewsProfile.filter(message => message.updated_at.startsWith('10/'));
-						const reviewsProfileNovember = reviewsProfile.filter(message => message.updated_at.startsWith('11/'));
-						const reviewsProfileDecember = reviewsProfile.filter(message => message.updated_at.startsWith('12/'));
-
-						console.log(reviewsProfileDecember[0].votes)
-
-						// Funzione che calcola la media dei voti
-						this.showAverageVote(reviewsProfileDecember)
-						console.log(this.showAverageVote(reviewsProfileDecember))
-
-
-
-
-
-						store.charDataVotes = {
-							labels: [
-								'Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'
-							],
-							datasets: [
-								{
-									data: [
-										this.showAverageVote(reviewsProfileJanuary), this.showAverageVote(reviewsProfileFebruary), this.showAverageVote(reviewsProfileMarch), this.showAverageVote(reviewsProfileApril), this.showAverageVote(reviewsProfileMay), this.showAverageVote(reviewsProfileJune), this.showAverageVote(reviewsProfileJuly), this.showAverageVote(reviewsProfileAugust), this.showAverageVote(reviewsProfileSeptember), this.showAverageVote(reviewsProfileOctober), this.showAverageVote(reviewsProfileNovember), this.showAverageVote(reviewsProfileDecember)
-									],
-									backgroundColor: '#65B0FF',
-									// qui si può inserire il label
-								}
-							]
-						}
-
-					})
-					.catch(function (error) {
-						// handle error
-						console.log(error);
-					})
 			},
-
-			showAverageVote(reviewsProfile) {
+			calcAverageVote(profileReviews) {
+				if (profileReviews.length === 0) return undefined
 				let totalNumberVote = 0
 
-				for (let i = 0; i < reviewsProfile.length; i++) {
-					let review = reviewsProfile[i]
+				for (let i = 0; i < profileReviews.length; i++) {
+					let review = profileReviews[i]
 					totalNumberVote += review.votes
 				}
-				return Math.round(totalNumberVote / reviewsProfile.length)
+				return Math.round(totalNumberVote / profileReviews.length)
 			},
-
-			getNormalFormatDate() {
-				let hourDate = message.updated_at
-				console.log(hourDate)
-				const date = new Date(hourDate)
-
+			getFormattedDate(dateToFormat) {
+				const date = new Date(dateToFormat);
 				const options = {
 					year: "numeric",
 					month: "2-digit",
-					day: "2-digit",
-					hour: "2-digit",
-					minute: "2-digit",
-					timeZone: "Europe/Rome"
 				};
 
 				return date.toLocaleString("it-IT", options)
 			},
+			calcDataPerMonthArray(elementsArray, option) {
+				let result = [];
+				for (let i = 0; i < 12; i++) {
+					const month = i;
+					result[month] = 0;
+				}
+				if (!option) {
+					// Count reviews in each month by examining reviews array
+					elementsArray.forEach(element => {
+						const revMonth = Number(element.updated_at.slice(0, 2) - 1);
+						result[revMonth] += 1;
+					})
+					return result;
+				} else if (option === 'mean') {
+					for (let i = 0; i < 12; i++) {
+						const inMonthElements = elementsArray.filter(element => Number(element.updated_at.slice(0, 2) - 1) === i);
+						result[i] += this.calcAverageVote(inMonthElements) ?? 0;
+						console.log(result[i]);
+					}
+					return result;
+				}
+			},
+			prepareChartWithProfileData(dataArray, dataName, chartDataName, computedDataName) {
+				const data = dataArray;
+
+				// Trasformo il valore updated_at in una data leggibile facilmente in modo da riprenderla successivamente
+				data.forEach(element => {
+					const dateFormatRE = /\d{2}\/\d{4}/;
+					const elementDate = element.updated_at;
+					if (!dateFormatRE.test(elementDate)) element.updated_at = this.getFormattedDate(elementDate);
+				});
+				console.log(`${dataName}: `, data);
+				this.store[dataName] = data;
+				// Chart data object structure: {
+				// 	labels: [],
+				// 	datasets: [
+				// 		{ data: [], backgroundColor: '#65B0FF', /* qui si può inserire il label */ }
+				// 	]
+				// }
+				this.store[chartDataName] = this.chartDataStructure;
+				this.store[chartDataName].labels = this.monthsArray;
+				this.store[chartDataName].datasets[0].data = this[computedDataName];
+			}
 		},
 		components: {
 			SidebarDashboard,
@@ -266,12 +115,35 @@
 			MainDashboard,
 		},
 		mounted() {
-
 		},
 		created: function () {
-			this.getApiMessages()
-			this.getApiReviews()
-			this.getApiVotes()
+			this.getApiMessages();
+			this.getApiReviewsAndVotes();
+		},
+		computed: {
+			messagesPerMonthNumbers() {
+				return this.calcDataPerMonthArray(this.store.profileMessages);
+			},
+			reviewsPerMonthNumbers() {
+				return this.calcDataPerMonthArray(this.store.profileReviews);
+			},
+			meanVotePerMonthNumbers() {
+				return this.calcDataPerMonthArray(this.store.profileReviews, 'mean');
+			},
+			monthsArray() {
+				const months = Array.from({ length: 12 }, (item, i) => {
+					return new Date(0, i).toLocaleString('it-IT', { month: 'long' })
+				});
+				return months;
+			},
+			chartDataStructure() {
+				return {
+					labels: [],
+					datasets: [
+						{ data: [], backgroundColor: '#65B0FF', /* qui si può inserire il label */ }
+					]
+				}
+			}
 		}
 	}
 </script>

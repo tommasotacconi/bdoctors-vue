@@ -5,7 +5,6 @@
 	export default {
 		data() {
 			return {
-				profileData: {},
 				loaded: false,
 				isAuthorized: false,
 				store,
@@ -14,23 +13,21 @@
 		},
 		methods: {
 			getProfileData() {
-				axios.get(this.store.apiUri + 'profiles/' + this.$route.params.id, {
+				axios.get(this.store.apiUri + 'profiles/show', {
 					withCredentials: true,
 				})
-					.then(response => {
-						console.log(response);
+					.then(({ data: { data: profile } }) => {
+						console.log('Profile: ', profile);
 						this.loaded = true;
 						this.isAuthorized = true;
-						this.profileData = response.data.data;
 
 						// Data da condividere all'interno degli altri componenti
-						store.profileDataGeneral = response.data.data
-						console.log('data general nello store:', store.profileDataGeneral)
-						localStorage.setItem('user_id', response.data.data.doctor.id)
-						localStorage.setItem('profile_id', response.data.data.id)
+						store.profileDataGeneral = profile;
+						// localStorage.setItem('user_id', response.data.data.doctor.id)
+						// localStorage.setItem('profile_id', response.data.data.id)
 					})
 					.catch(err => {
-						console.log(err.response.data.message);
+						console.log('ERROR IN GET /api/profiles: ' + err.response.data.message);
 						this.loaded = true;
 					});
 			},
@@ -46,13 +43,13 @@
 			}, */
 			profilePhotoPath() {
 				// Calculate profile photo :src attribute depending on the presence of the 'photos' string in the db data photo profiles table
-				const photoPath = this.profileData.photo;
-				return photoPath.includes('photos') ? this.getFilePath(`storage/${this.profileData.photo}`) : new URL(this.placeholderImg).href;
+				const photoPath = this.store.profileDataGeneral.photo;
+				return photoPath.includes('photos') ? this.getFilePath(`storage/${this.store.profileDataGeneral.photo}`) : new URL(this.placeholderImg).href;
 			},
 			curriculumFileName() {
 				// Truncate curriculum lenght to 30 string characters
 				// 1. Retrieve data to be computed
-				const curriculumFilePath = this.profileData.curriculum;
+				const curriculumFilePath = this.store.profileDataGeneral.curriculum;
 				// 2. If it is too long, truncate it
 				if (curriculumFilePath.length >= 30) curriculumFilePath.slice(0, 30);
 				// 3. If is included the parent directories 'curricula/', remove it
@@ -80,7 +77,7 @@
 			<!-- Section with doctor info -->
 			<section class="card-general" v-if="loaded && isAuthorized">
 				<!-- Card with info -->
-				<div class="card mb-3" v-if="Object.keys(profileData).length">
+				<div class="card mb-3" v-if="Object.keys(store.profileDataGeneral).length">
 					<div class="card-flex">
 						<div class="img-doctor">
 							<img :src="profilePhotoPath" alt="doctor photo">
@@ -88,13 +85,13 @@
 						<div class="card-body-general">
 							<div class="card-body">
 								<div class="card-title-section">
-									<h4 class="card-title">{{ profileData.doctor.first_name }} {{
-										profileData.doctor.last_name }}
+									<h4 class="card-title">{{ store.profileDataGeneral.doctor.first_name }} {{
+										store.profileDataGeneral.doctor.last_name }}
 									</h4>
 									<div class="main-information-section">
 										<section class="email-section d-flex gap-1 align-items-center">
 											<h5>Email:</h5>
-											<p>{{ profileData.doctor.email }}</p>
+											<p>{{ store.profileDataGeneral.doctor.email }}</p>
 										</section>
 										<section class="password-section d-flex gap-1 align-items-center">
 											<h5>Password:</h5>
@@ -106,21 +103,22 @@
 									<ul>
 										<li>
 											<strong>Curriculum: </strong>
-											<a :href="getFilePath(`storage/${profileData.curriculum}`)" target="_blank">{{ curriculumFileName
-											}}</a>
+											<a :href="getFilePath(`storage/${store.profileDataGeneral.curriculum}`)" target="_blank">{{
+												curriculumFileName
+												}}</a>
 										</li>
 										<li>
 											<strong>Specializzazione:</strong> {{
-												profileData.doctor.specializations[0].name }}
+												store.profileDataGeneral.doctor.specializations[0].name }}
 										</li>
 										<li>
-											<strong>Indirizzo:</strong> {{ profileData.office_address }}
+											<strong>Indirizzo:</strong> {{ store.profileDataGeneral.office_address }}
 										</li>
 										<li>
-											<strong>Telefono:</strong> {{ profileData.phone }}
+											<strong>Telefono:</strong> {{ store.profileDataGeneral.phone }}
 										</li>
 										<li>
-											<strong>Prestazioni:</strong> {{ profileData.services }}
+											<strong>Prestazioni:</strong> {{ store.profileDataGeneral.services }}
 										</li>
 									</ul>
 								</div>
