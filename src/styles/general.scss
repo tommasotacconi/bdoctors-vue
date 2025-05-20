@@ -6,20 +6,6 @@
     --color-complementary: #FFB465;
 }
 
-.background {
-    background-image: url("../../public/photos/doctors-bg.jpg");
-    background-size: contain;
-    background-repeat: no-repeat;
-    position: relative;
-}
-
-main{
-    backdrop-filter: blur(5px) grayscale(0.5);
-    font-family: "Reddit Sans", sans-serif;
-    font-optical-sizing: auto;
-    font-style: normal;
-}
-
 ::-webkit-scrollbar {
     width: 14px;
 }
