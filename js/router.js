@@ -76,7 +76,7 @@ const routes = [
 			},
 			// Path to doctor, within specialization id, of doctord_id selected (first id for specialization
 			// second for doctor)
-			{ path: '/search/:searchId/:id',
+			{ path: '/search/:searchId/:nameId',
 				name: 'search.show',
 				components: {
 					default: DoctorShow 
