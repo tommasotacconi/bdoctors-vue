@@ -2,7 +2,6 @@
 	import axios from 'axios';
 	import { store } from '../../../js/store.js';
 	import AppHeader from '../Homepage/AppHeader.vue'
-	import AppLoader from '../Generics/AppLoader.vue';
 
 	export default {
 		data() {
@@ -224,7 +223,6 @@
 </script>
 
 <template>
-	<AppHeader />
 	<main class="container d-flex justify-content-center">
 		<div class="general-main">
 			<Loader v-if="!loaded" />

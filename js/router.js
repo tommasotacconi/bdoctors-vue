@@ -79,7 +79,8 @@ const routes = [
 			{ path: '/search/:searchId/:nameId',
 				name: 'search.show',
 				components: {
-					default: DoctorShow 
+					default: DoctorShow,
+					header: AppHeader 
 				}
 			},
 		]
