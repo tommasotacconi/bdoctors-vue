@@ -208,11 +208,15 @@
 				return this.$route.params.nameId;
 			},
 			retrievedProfileData() {
-				return this.store.profileData ? this.store.profileData : this.profileData;
+				return this.store.doctorProfile ? this.store.doctorProfile : this.profileData;
 			}
 		},
 		created: function () {
-			if (!this.store.doctorProfile) this.getProfileData();
+			if (!this.store.doctorProfile) {
+				this.getProfileData();
+			}
+			else this.loaded = true;
+
 		},
 		mounted() {
 		}
@@ -223,12 +227,12 @@
 	<AppHeader />
 	<main class="container d-flex justify-content-center">
 		<div class="general-main">
-			<AppLoader v-if="loaded" />
+			<Loader v-if="!loaded" />
 			<section class="card-general" v-else>
 				<div class="card mb-3">
 					<div class="card-flex">
 						<div class="img-doctor">
-							<img :src="getProfilePhotoPath(profileData)" class="doctor-photo" alt="doctor photo">
+							<img :src="getProfilePhotoPath(retrievedProfileData)" class="doctor-photo" alt="doctor photo">
 						</div>
 						<div class="card-body-title-section">
 							<h1 class="card-title py-3">
@@ -239,9 +243,8 @@
 									Specialista in:
 								</h4>
 								<ul class="specializations-list">
-									<li class="specializations-list-item" v-if="retrievedProfileData.user.specialization"
-										v-for="specialization in (retrievedProfileData.user.specialization)">{{
-											specialization.name }}</li>
+									<li class="specializations-list-item" v-if="retrievedProfileData.specialization_name">
+										{{ retrievedProfileData.specialization_name }}</li>
 									<li v-else>{{ 'Nessuna specializzazione indicata' }}</li>
 								</ul>
 							</div>
@@ -260,7 +263,7 @@
 									</div>
 								</li>
 								<li id="specialization-border" class="card-list-item">
-									<h3>Specializzazione</h3>
+									<h3>Altre specializzazioni</h3>
 									<div class="data-element specializations-element">
 										<ul class="specializations-list">
 											<li class="specializations-list-item" v-if="retrievedProfileData.user.specializations"

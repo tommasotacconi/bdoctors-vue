@@ -15,7 +15,7 @@
 				inputReviews: null,
 				loaded: false,
 				showDoctor: false,
-				filteredDoctors: [],
+				filteredDoctorsProfiles: [],
 				placeholderImg: 'https://st4.depositphotos.com/4329009/19956/v/450/depositphotos_199564354-stock-illustration-creative-vector-illustration-default-avatar.jpg'
 			}
 		},
@@ -23,20 +23,22 @@
 			DoctorShow,
 		},
 		methods: {
-			goToShowPage(doctor, index) {
-				let completeName = "";
-				completeName = doctor.first_name + '-' + doctor.last_name
-				store.doctorProfile = doctor;
+			goToShowPage(doctorProfile, index) {
+				let completeName = doctorProfile.user.first_name + '-' + doctorProfile.user.last_name;
+				if (doctorProfile.user.homonymous_id !== null) completeName += '-' + doctorProfile.user.homonymous_id;
+				store.doctorProfile = doctorProfile;
 				this.$router.push({
-					name: 'search.show', params: { searchId: store.selectedSpecializationName.trim().replace(/ /g, "-").toLowerCase(), id: completeName.toLowerCase() }
+					name: 'search.show', params: { searchId: this.$route.params.specialization, nameId: completeName }
 				})
+				console.log('Doctor position inside homepage ', index);
+				console.log(store.searchedSpecialization)
 			},
 			getFilteredReviewsData() {
 				axios.get(this.store.apiUri + `reviews/filter/${this.$route.params.specialization}/${this.rating}/${this.inputReviews}`)
 					.then(response => {
 						// handle success
-						this.filteredDoctors = response.data;
-						console.log('filtered doctors:', this.filteredDoctors);
+						this.filteredDoctorsProfiles = response.data;
+						console.log('filtered doctors:', this.filteredDoctorsProfiles);
 						this.loaded = true;
 					})
 					.catch(function (error) {
@@ -90,12 +92,12 @@
 				<div>
 					<div class="title">
 						<h2>Risultati per <span class="specialization-title">{{ specializationName }} </span><span
-								v-if="!filteredDoctors.length" class="total-specialization-doctor"> (Totale esperti:
+								v-if="!filteredDoctorsProfiles.length" class="total-specialization-doctor"> (Totale esperti:
 								{{
 									doctors.length
 								}})</span>
 							<span v-else class="total-specialization-doctor"> (Totale esperti: {{
-								filteredDoctors.length }})</span>
+								filteredDoctorsProfiles.length }})</span>
 						</h2>
 					</div>
 
@@ -145,21 +147,22 @@
 							Filtri</button>
 					</div>
 
-					<div class="doctors-list" v-if="filteredDoctors.length">
-						<div class="doctor-card" v-for="(doctor) in filteredDoctors" @click="goToShowPage(doctor)">
-							<img class="doctor-photo" :src="getProfilePhotoPath(doctor)" alt="doctor photo">
+					<div class="doctors-list" v-if="filteredDoctorsProfiles.length">
+						<div class="doctor-card" v-for="(doctorProfile, index) in filteredDoctorsProfiles"
+							@click="goToShowPage(doctorProfile, index)" :key="index">
+							<img class="doctor-photo" :src="getProfilePhotoPath(doctorProfile)" alt="doctor photo">
 							<section class="doctor-information">
 								<h5 class="doctor-name">
-									{{ doctor.first_name }} {{ doctor.last_name }}
+									{{ doctorProfile.user.first_name }} {{ doctorProfile.user.last_name }}
 								</h5>
 								<div class="doctor-address">
-									<strong>Ufficio:</strong> {{ doctor.office_address }}
+									<strong>Ufficio:</strong> {{ doctorProfile.office_address }}
 								</div>
 								<div class="doctor-average">
-									<strong>Media voti:</strong> {{ doctor.media_voti ? doctor.media_voti : "-" }}
+									<strong>Media voti:</strong> {{ doctorProfile.media_voti ? doctorProfile.media_voti : "-" }}
 								</div>
 								<div class="doctor-reviews">
-									<strong>Recensioni ricevute:</strong> {{ doctor.totalReviews ? doctor.totalReviews :
+									<strong>Recensioni ricevute:</strong> {{ doctorProfile.totalReviews ? doctorProfile.totalReviews :
 										"-"
 									}}
 								</div>
@@ -172,7 +175,7 @@
 
 				</div>
 			</div>
-			<div v-else-if="filteredDoctors.length"></div>
+			<div v-else-if="filteredDoctorsProfiles.length"></div>
 		</div>
 	</main>
 </template>

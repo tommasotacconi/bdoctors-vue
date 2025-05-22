@@ -58,12 +58,12 @@
 						console.log(error);
 					})
 			},
-			goToShowPage(doctor, index) {
-				store.doctorProfile = doctor
-				let completeName = doctor.user.first_name + '-' + doctor.user.last_name
-				console.log("doctor", doctor)
-				this.$router.push({ name: 'search.show', params: { searchId: 'doctor', id: completeName.toLowerCase() } })
-				console.log(index)
+			goToShowPage(doctorProfile, index) {
+				store.doctorProfile = doctorProfile;
+				let completeName = doctorProfile.user.first_name + '-' + doctorProfile.user.last_name;
+				if (doctorProfile.user.homonymous_id !== null) completeName += '-' + doctorProfile.user.homonymous_id;
+				this.$router.push({ name: 'search.show', params: { searchId: 'doctor', nameId: completeName } })
+				console.log('Doctor position inside homepage ', index);
 				console.log(store.searchedSpecialization)
 			},
 		},
