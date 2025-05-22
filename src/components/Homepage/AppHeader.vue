@@ -169,7 +169,7 @@
 				<div class="user">
 					<Transition>
 						<div class="user-buttons-wrapper d-flex justify-content-between" v-if="isProfileManagementShown">
-							<router-link :to="{ name: 'dashboard', params: { id: store.userId } }" class="btn personal-area">Area
+							<router-link :to="{ name: 'dashboard' }" class="btn personal-area">Area
 								personale</router-link>
 							<button class="logout" @click="logout()">
 								<span class="logout-text">Esci</span>
