@@ -89,17 +89,17 @@
 			<h3>Dottori in evidenza</h3>
 			<!-- <div class="loader" v-if="!loaded"></div> -->
 			<div class="sponsored-card-container">
-				<div class="card card-sponsored d-flex" style="width: 18rem;" v-for="(doctor, index) in filteredProfile"
-					@click="goToShowPage(doctor, index)">
+				<div class="card card-sponsored d-flex" style="width: 18rem;" v-for="(doctorProfile, index) in filteredProfile"
+					@click="goToShowPage(doctorProfile, index)">
 					<img
 						src="https://st4.depositphotos.com/4329009/19956/v/450/depositphotos_199564354-stock-illustration-creative-vector-illustration-default-avatar.jpg"
 						class="card-img-top" alt="...">
 					<div class="card-body">
-						<h5 class="card-title">{{ doctor.user.first_name }} {{ doctor.user.last_name }}</h5>
+						<h5 class="card-title">{{ doctorProfile.user.first_name }} {{ doctorProfile.user.last_name }}</h5>
 						<div class="card-text">
 							<h6>Specializzazioni:</h6>
 							<ul class="list-unstyled">
-								<li v-for="doctorSpecialization in doctor.user.specializations">
+								<li v-for="doctorSpecialization in doctorProfile.user.specializations">
 									{{ doctorSpecialization.name }}
 								</li>
 							</ul>
