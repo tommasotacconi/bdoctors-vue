@@ -50,8 +50,7 @@
 				withCredentials: true,
 			})
 				.then(({ data: { authentication: { userId } } }) => {
-					console.log('Current authenticated user id: ' + userId);
-					if (userId) this.$router.push({ name: 'dashboard', params: { id: userId } })
+					if (userId) this.$router.push({ name: 'dashboard' })
 				})
 				.catch(err => { });
 		}
