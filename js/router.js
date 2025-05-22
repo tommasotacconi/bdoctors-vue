@@ -45,19 +45,19 @@ const routes = [
 					header: AppHeader
 				}, 
 			},
-			{ path: 'user/:id',
+			{ path: 'user',
 				name: 'dashboard',
 				components: {
 					default: Dashboard,
 				}, 
 			},
-			{ path: '/user/:id/edit',
+			{ path: '/user/edit',
 				name: 'edit',
 				components: {
 					default: ProfileEdit
 				} 
 			},
-			{ path: '/user/:id/create',
+			{ path: '/user/create',
 				name: 'create',
 				components: {
 					default: Createpage 
