@@ -11,7 +11,6 @@
 				selectedSpecialization: '',
 				store,
 				checkedLogin: false,
-				isLogged: false,
 				isProfileManagementShown: false,
 				logoutBtnTimeout: undefined,
 			}
@@ -64,7 +63,7 @@
 						withCredentials: true
 					})
 					.then(response => {
-						this.isLogged = false;
+						this.store.isAuthenticated = false;
 						this.checkedLogin = true;
 					})
 					.catch(err => {
@@ -92,7 +91,7 @@
 				}
 			},
 			rightHeaderClass() {
-				return this.isLogged ? {
+				return this.store.isAuthenticated ? {
 					'logged-user': true,
 					'not-logged-user': false,
 				} : {
@@ -106,7 +105,7 @@
 				withCredentials: true,
 			})
 				.then(({ data: { authentication: { userId } } }) => {
-					this.isLogged = true;
+					this.store.isAuthenticated = true;
 					this.checkedLogin = true;
 					this.store.userId = userId;
 				})

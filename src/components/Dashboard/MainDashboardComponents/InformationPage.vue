@@ -6,7 +6,6 @@
 		data() {
 			return {
 				loaded: false,
-				isAuthorized: false,
 				store,
 				placeholderImg: 'https://st4.depositphotos.com/4329009/19956/v/450/depositphotos_199564354-stock-illustration-creative-vector-illustration-default-avatar.jpg'
 			}
@@ -19,7 +18,7 @@
 					.then(({ data: { data: profile } }) => {
 						console.log('Profile: ', profile);
 						this.loaded = true;
-						this.isAuthorized = true;
+						this.store.isAuthorized = true;
 
 						// Data da condividere all'interno degli altri componenti
 						store.profileDataGeneral = profile;
@@ -44,7 +43,7 @@
 			profilePhotoPath() {
 				// Calculate profile photo :src attribute depending on the presence of the 'photos' string in the db data photo profiles table
 				const photoPath = this.store.profileDataGeneral.photo;
-				return photoPath.includes('photos') ? this.getFilePath(`storage/${this.store.profileDataGeneral.photo}`) : new URL(this.placeholderImg).href;
+				return photoPath.includes('photos') ? this.getFilePath(`storage/${this.store.profileDataGeneral.photo}`) : photoPath ?? new URL(this.placeholderImg).href;
 			},
 			curriculumFileName() {
 				// Truncate curriculum lenght to 30 string characters
@@ -75,7 +74,7 @@
 			<div class="loader" v-if="!loaded"></div>
 
 			<!-- Section with doctor info -->
-			<section class="card-general" v-if="loaded && isAuthorized">
+			<section class="card-general" v-if="loaded && store.isAuthorized">
 				<!-- Card with info -->
 				<div class="card mb-3" v-if="Object.keys(store.profileDataGeneral).length">
 					<div class="card-flex">
@@ -105,7 +104,7 @@
 											<strong>Curriculum: </strong>
 											<a :href="getFilePath(`storage/${store.profileDataGeneral.curriculum}`)" target="_blank">{{
 												curriculumFileName
-												}}</a>
+											}}</a>
 										</li>
 										<li>
 											<strong>Specializzazione:</strong> {{
@@ -142,7 +141,7 @@
 			</section>
 
 			<!-- Section unauthorized content -->
-			<section class="card-general" v-if="loaded && !isAuthorized">
+			<section class="card-general" v-if="loaded && !store.isAuthorized">
 				<div class="card mb-3">
 					<div class="card-body">
 						Contenuto non autorizzato

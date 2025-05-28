@@ -43,7 +43,6 @@
 				},
 				messageFormValidated: false,
 				reviewFormValidated: false,
-				placeholderImg: 'https://st4.depositphotos.com/4329009/19956/v/450/depositphotos_199564354-stock-illustration-creative-vector-illustration-default-avatar.jpg'
 			}
 		},
 		components: {
@@ -65,7 +64,7 @@
 				// Calculate profile photo :src attribute depending on the presence of the 'photos' string in the db data photo profiles table
 				const photoPath = doctor.photo;
 				console.log(doctor.photo)
-				return photoPath.includes('photos') ? this.getFilePath(`storage/${photoPath}`) : new URL(this.placeholderImg).href;
+				return photoPath.includes('photos') ? this.getFilePath(`storage/${photoPath}`) : photoPath ?? new URL(this.store.placeholderImg).href;
 			},
 
 			getFilePath: function (filePath) {
