@@ -2,6 +2,7 @@
 	import axios from 'axios';
 	import { store } from '../../../js/store';
 	import { RouterLink } from 'vue-router';
+	import AppUserIcon from '../Generics/AppUserIcon.vue';
 
 	export default {
 		data() {
@@ -10,8 +11,9 @@
 				specializations: [],
 				selectedSpecialization: '',
 				store,
-				checkedLogin: false,
+				checkingLogin: true,
 				isProfileManagementShown: false,
+				isUserIconReady: false,
 				logoutBtnTimeout: undefined,
 			}
 		},
@@ -30,7 +32,7 @@
 
 				this.isProfileManagementShown = !this.isProfileManagementShown;
 			},
-			getApi() {
+			getSpecializations() {
 				axios.get(this.apiUrl)
 					.then(response => {
 						// handle success
@@ -64,13 +66,13 @@
 					})
 					.then(response => {
 						this.store.isAuthenticated = false;
-						this.checkedLogin = true;
+						this.checkingLogin = false;
 					})
 					.catch(err => {
-						this.checkedLogin = true;
+						this.checkingLogin = false;
 						console.log(err);
 					});
-				this.checkedLogin = false
+				this.checkingLogin = true;
 			}
 		},
 		computed: {
@@ -98,7 +100,23 @@
 					'logged-user': false,
 					'not-logged-user': true,
 				};
+			},
+			showLoader() {
+				if (this.checkingLogin) {
+					console.log('showLoader: <checkingLogin>')
+					return true;
+				}
+				else {
+					if (this.store.isAuthenticated) {
+						console.log('showLoader: <isUserIconReady>', 'value = ' + this.isUserIconReady);
+						return !this.isUserIconReady;
+					}
+					return false;
+				}
 			}
+		},
+		components: {
+			AppUserIcon
 		},
 		created() {
 			axios.get(this.store.apiUri + 'login/check', {
@@ -106,16 +124,15 @@
 			})
 				.then(({ data: { authentication: { userId } } }) => {
 					this.store.isAuthenticated = true;
-					this.checkedLogin = true;
-					this.store.userId = userId;
+					this.checkingLogin = false;
+					// this.store.userId = userId;
 				})
 				.catch(err => {
-					this.checkedLogin = true;
+					this.checkingLogin = false;
 				});
+
+			this.getSpecializations();
 		},
-		mounted() {
-			this.getApi()
-		}
 	}
 </script>
 
@@ -150,15 +167,14 @@
 						<select @change="chooseSpecialization()" v-model="selectedSpecialization" v-if="specializations.toString()"
 							class="form-select" aria-label="Specialization Search">
 							<option value="" disabled>Ricerca il medico per specializzazione!</option>
-							<option v-for="(specialization, index) in specializations" :key="index" :value=specialization>{{
-								specialization.name
-							}}
+							<option v-for="(specialization, index) in specializations" :key="index" :value=specialization>
+								{{ specialization.name }}
 							</option>
 						</select>
 					</Transition>
 				</div>
 			</div>
-			<div class="right-header d-flex" :class="rightHeaderClass" v-if="checkedLogin">
+			<div class="right-header" :class="rightHeaderClass" v-show="!showLoader">
 				<routerLink :to="{ name: 'register' }">
 					<button class="btn button-logup">Registrati</button>
 				</routerLink>
@@ -175,11 +191,11 @@
 							</button>
 						</div>
 					</Transition>
-					<i class="fa-solid fa-user fa-user-doctor" @click="showProfileManagementButtons"></i>
+					<AppUserIcon @click="showProfileManagementButtons" @user-icon-ready="isUserIconReady = true" />
 				</div>
 			</div>
-			<div class="loader-container d-flex right-header" v-if="!checkedLogin">
-				<Loader />
+			<div class=" loader-container right-header" v-show="showLoader">
+				<Loader id="loader" />
 			</div>
 		</div>
 	</header>
@@ -296,6 +312,8 @@
 	/* Right header */
 	.right-header {
 		height: 100%;
+
+		display: flex;
 		align-items: center;
 		gap: 20px;
 	}
@@ -319,8 +337,9 @@
 
 	.right-header .btn.button-login {
 		background-color: var(--color-complementary);
-		padding-top: 8px;
-		padding-bottom: 8px;
+		/* Padding calc is given by
+		(((factor * font-size) + 2 * y-pd) - content-height) / 2 */
+		padding: calc((((1.5 * 16px) + 2 * 10px) - 33.33px) / 2) 16px;
 
 		&::after {
 			content: 'Login';
@@ -364,16 +383,18 @@
 
 	/* Loader sizing */
 	.right-header .loader {
-		width: 30px;
+		width: 34px;
 		position: static;
 	}
 
 	.fa-user-doctor {
+		height: 100%;
+		padding: 8px;
 		border-radius: 50%;
 		border: 1px solid white;
-		padding: 6px;
 		background-color: white;
-		color: #65B0FF;
+		color: var(--color-complementary);
+		/* color: #65B0FF; */
 		margin-right: 7px;
 	}
 
@@ -383,16 +404,6 @@
 		display: flex;
 		gap: 15px;
 		align-items: center;
-	}
-
-	.fa-user {
-		border-radius: 50%;
-		border: 1px solid white;
-		padding: 8px;
-		background-color: white;
-		color: var(--color-complementary);
-		margin-right: 7px;
-		height: 100%
 	}
 
 	.logout {
@@ -406,6 +417,10 @@
 		font-weight: bold;
 	}
 
+	#loader {
+		margin-right: calc(34px / 2);
+		translate: 50% 0;
+	}
 
 	/* Responsive */
 	@media screen and (max-width: 1230px) {

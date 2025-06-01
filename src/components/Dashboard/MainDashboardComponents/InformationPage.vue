@@ -18,9 +18,9 @@
 					.then(({ data: { data: profile } }) => {
 						console.log('Profile: ', profile);
 						this.loaded = true;
-						this.store.isAuthorized = true;
+						this.store.isAuthenticated = true;
 
-						// Data da condividere all'interno degli altri componenti
+						// Data to share inside other components
 						store.profileDataGeneral = profile;
 						// localStorage.setItem('user_id', response.data.data.doctor.id)
 						// localStorage.setItem('profile_id', response.data.data.id)
@@ -74,7 +74,7 @@
 			<div class="loader" v-if="!loaded"></div>
 
 			<!-- Section with doctor info -->
-			<section class="card-general" v-if="loaded && store.isAuthorized">
+			<section class="card-general" v-if="loaded && store.isAuthenticated">
 				<!-- Card with info -->
 				<div class="card mb-3" v-if="Object.keys(store.profileDataGeneral).length">
 					<div class="card-flex">
@@ -141,7 +141,7 @@
 			</section>
 
 			<!-- Section unauthorized content -->
-			<section class="card-general" v-if="loaded && !store.isAuthorized">
+			<section class="card-general" v-if="loaded && !store.isAuthenticated">
 				<div class="card mb-3">
 					<div class="card-body">
 						Contenuto non autorizzato

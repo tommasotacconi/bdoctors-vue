@@ -1,6 +1,7 @@
 <script>
 	import { store } from '../../../js/store.js';
 	import axios from 'axios';
+	import AppUserIcon from '../Generics/AppUserIcon.vue';
 
 	export default {
 		data() {
@@ -29,6 +30,7 @@
 						withCredentials: true
 					})
 					.then(response => {
+						this.store.isAuthenticated = false;
 						this.$router.push({ path: '/' });
 					})
 					.catch(err => {
@@ -36,12 +38,8 @@
 					});
 			}
 		},
-		computed: {
-			profilePhotoPath() {
-				// Calculate profile photo :src attribute depending on the presence of the 'photos' string in the db data photo profiles table
-				const photoPath = this.store.profileDataGeneral.photo;
-				return photoPath?.includes('photos') ? this.getFilePath(`storage/${this.store.profileDataGeneral.photo}`) : photoPath ?? new URL(this.store.placeholderImg).href;
-			},
+		components: {
+			AppUserIcon
 		}
 	}
 </script>
@@ -59,9 +57,7 @@
 				<!-- </router-link> -->
 			</button>
 			<!-- User icon -->
-			<i class="button fa-solid fa-user" :class="{ ['user-img']: store.isAuthenticated }" @click="showLogout">
-				<img :src="profilePhotoPath" alt="">
-			</i>
+			<AppUserIcon @click="showLogout" />
 		</div>
 	</header>
 </template>
@@ -91,39 +87,6 @@
 	.right-header-section {
 		height: 45px;
 		line-height: 45px;
-	}
-
-	.fa-user {
-		border-radius: 50%;
-		background-color: white;
-		padding: 9px;
-		color: var(--color-complementary);
-		margin-right: 7px;
-
-		&::before {
-			margin: 0 calc((16px - 14px) / 2);
-		}
-
-		img {
-			display: none;
-		}
-	}
-
-	.fa-user.user-img {
-		padding: 7px;
-
-		img {
-			height: 20px;
-			display: inline;
-			vertical-align: middle;
-			aspect-ratio: 1;
-			border-radius: 50%;
-			object-fit: cover;
-		}
-	}
-
-	.user-img::before {
-		content: none;
 	}
 
 	.logout-btn {
