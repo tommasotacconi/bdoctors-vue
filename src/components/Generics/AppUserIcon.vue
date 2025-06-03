@@ -34,10 +34,12 @@
 				if (!photoPath && this.store.isAuthenticated) {
 					this.getProfilePhoto();
 					return photoPath;
+				} else if (photoPath && this.store.isAuthenticated) {
+					this.$emit('userIconReady');
+					return photoPath?.includes('photos') ?
+						this.getFilePath(`storage/${this.store.profileDataGeneral.photo}`) :
+						photoPath ?? new URL(this.store.placeholderImg).href;
 				}
-				return photoPath?.includes('photos') ?
-					this.getFilePath(`storage/${this.store.profileDataGeneral.photo}`) :
-					photoPath ?? new URL(this.store.placeholderImg).href;
 			},
 		},
 		created() {

@@ -183,7 +183,7 @@
 				</routerLink>
 				<div class="user">
 					<Transition>
-						<div class="user-buttons-wrapper d-flex justify-content-between" v-if="isProfileManagementShown">
+						<div class="user-buttons-wrapper" v-show="isProfileManagementShown">
 							<router-link :to="{ name: 'dashboard' }" class="btn personal-area">Area
 								personale</router-link>
 							<button class="logout" @click="logout()">
@@ -411,7 +411,7 @@
 	}
 
 	.logout-text {
-		font-style: italic;
+		/* font-style: italic; */
 		text-decoration: none;
 		color: white;
 		font-weight: bold;
