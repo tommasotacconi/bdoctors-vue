@@ -10,19 +10,24 @@
 
 <template>
 	<RouterView class="app-header" name="header" />
-	<div class="bg">
+	<div class="page-content bg">
 		<RouterView />
 	</div>
 </template>
 
 <style scoped>
 	.app-header {
-		position: sticky;
+		padding: 15px 5px;
+		position: fixed;
 		top: 0;
+		left: 0;
+		right: 0;
 		z-index: 1;
+		box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.6);
 	}
 
 	.bg {
+		height: 100vh;
 		background-image: url(../../public/tile_background.png);
 	}
 </style>

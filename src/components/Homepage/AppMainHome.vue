@@ -64,10 +64,10 @@
 		text-decoration: none;
 	}
 
-	.introduction-position {
-		position: relative;
-		top: -20px;
-		left: 0;
+	main {
+		height: 100%;
+		overflow: auto;
+		margin-top: 50px;
 	}
 
 	.introduction {
@@ -86,11 +86,11 @@
 		font-style: italic;
 	}
 
-	#sponsored-doctors {
+	/* #sponsored-doctors {
 		position: relative;
 		top: -20px;
 		left: 0;
-	}
+	} */
 
 	.sponsored-doctor-button {
 		background-color: var(--color-secondary);
