@@ -4,11 +4,13 @@
 	import SidebarDashboard from '../components/Dashboard/SidebarDashboard.vue';
 	import axios from 'axios';
 	import { store } from '../../js/store.js';
+	import { dashboardStore } from '../../js/dashboardStore.js';
 
 	export default {
 		data() {
 			return {
 				store,
+				dashboardStore,
 				profileMessages: [],
 				profileReviews: [],
 			}
@@ -149,11 +151,11 @@
 </script>
 
 <template>
-	<div :class="!store.sidebar ? 'general-structure-full' : 'general-structure'">
-		<section class="sidebar" v-if="store.sidebar">
+	<div :class="!dashboardStore.sidebar ? 'general-structure-full' : 'general-structure'">
+		<section class="sidebar" v-if="dashboardStore.sidebar">
 			<SidebarDashboard />
 		</section>
-		<section :class="!store.sidebar ? 'header-main-full' : 'header-main'">
+		<section :class="!dashboardStore.sidebar ? 'header-main-full' : 'header-main'">
 			<div class="header">
 				<HeaderDashboard />
 			</div>

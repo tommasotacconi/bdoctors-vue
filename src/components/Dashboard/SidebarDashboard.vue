@@ -1,49 +1,14 @@
 <script>
-	import { store } from '../../../js/store.js'
+	import { dashboardStore } from '../../../js/dashboardStore.js'
 
 	export default {
 		data() {
 			return {
-				store
+				dashboardStore,
 			}
 		},
-		methods: {
-			showMessages() {
-				store.informationPage = false;
-				store.reviewPage = false;
-				store.sponsorshipPage = false;
-				store.statisticPage = false;
-				store.messagePage = true;
-			},
-			showProfile() {
-				store.messagePage = false;
-				store.reviewPage = false;
-				store.sponsorshipPage = false;
-				store.statisticPage = false;
-				store.informationPage = true;
-			},
-			showReviews() {
-				store.messagePage = false;
-				store.informationPage = false;
-				store.sponsorshipPage = false;
-				store.statisticPage = false;
-				store.reviewPage = true;
-			},
-			showSponsorship() {
-				store.messagePage = false;
-				store.informationPage = false;
-				store.statisticPage = false;
-				store.reviewPage = false;
-				store.sponsorshipPage = true;
-			},
-			showStatistic() {
-				store.messagePage = false;
-				store.informationPage = false;
-				store.sponsorshipPage = false;
-				store.reviewPage = false;
-				store.statisticPage = true;
-			}
-		}
+		methods: {},
+		computed: {}
 	}
 </script>
 
@@ -63,11 +28,10 @@
 			</div>
 		</RouterLink>
 		<section class="link-pages">
-			<h2 :class="store.informationPage ? 'selected-text' : ''" @click="showProfile">Profilo</h2>
-			<h2 :class="store.messagePage ? 'selected-text' : ''" @click="showMessages">Messaggi</h2>
-			<h2 :class="store.reviewPage ? 'selected-text' : ''" @click="showReviews">Recensioni</h2>
-			<h2 :class="store.sponsorshipPage ? 'selected-text' : ''" @click="showSponsorship">Sponsorizzazione</h2>
-			<h2 :class="store.statisticPage ? 'selected-text' : ''" @click="showStatistic">Statistiche</h2>
+			<h2 :class="dashboardStore.currentComponentIndex === index ? 'selected-text' : null"
+				@click="dashboardStore.currentComponentIndex = index"
+				v-for="(label, index) in dashboardStore.labelsForComponents">{{ label }}
+			</h2>
 		</section>
 	</nav>
 </template>

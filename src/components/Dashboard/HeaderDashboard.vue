@@ -1,5 +1,6 @@
 <script>
 	import { store } from '../../../js/store.js';
+	import { dashboardStore } from '../../../js/dashboardStore.js';
 	import axios from 'axios';
 	import AppUserIcon from '../Generics/AppUserIcon.vue';
 
@@ -7,12 +8,13 @@
 		data() {
 			return {
 				isLogoutShown: false,
-				store
+				store,
+				dashboardStore
 			}
 		},
 		methods: {
 			toggleSidebar() {
-				store.sidebar = !store.sidebar
+				this.dashboardStore.sidebar = !this.dashboardStore.sidebar
 			},
 			showLogout() {
 				this.isLogoutShown = !this.isLogoutShown;

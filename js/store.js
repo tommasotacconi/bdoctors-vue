@@ -12,12 +12,6 @@ export const store = reactive({
 	// Authorization status
 	isAuthenticated: false,
 
-  // Variable for change content inside dashboard
-  informationPage: true,
-  messagePage: false,
-  reviewPage: false,
-  sponsorshipPage: false,
-  statisticPage: false,
   searchedSpecialization: null,
 
   // test route guard
@@ -30,18 +24,8 @@ export const store = reactive({
   // Variable for the show profile card in advanced search 
   doctorProfile: null,
 
-  // Variable for toggle sidebar inside dashboard
-  sidebar: true,
-
 	/* Dashboard state */
   profileDataGeneral: {},
-
-  // chart
-  chartDataMessages: {},
-  chartDataReviews: {},
-  chartDataVotes: {},
-  profileMessages: [],
-  profileReviews: [],
 
   // user id, sponsorized profile id
   userId: '',
