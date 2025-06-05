@@ -13,7 +13,8 @@
 				dashboardStore,
 				profileMessages: [],
 				profileReviews: [],
-			}
+				windowWidth: window.innerWidth
+			};
 		},
 		methods: {
 			getApiMessages() {
@@ -109,6 +110,9 @@
 				this.store[chartDataName] = this.chartDataStructure;
 				this.store[chartDataName].labels = this.monthsArray;
 				this.store[chartDataName].datasets[0].data = this[computedDataName];
+			},
+			updateWidth() {
+				this.windowWidth = window.innerWidth;
 			}
 		},
 		components: {
@@ -117,6 +121,7 @@
 			MainDashboard,
 		},
 		mounted() {
+			window.addEventListener('resize', this.updateWidth)
 		},
 		created: function () {
 			this.getApiMessages();
@@ -151,11 +156,13 @@
 </script>
 
 <template>
-	<div :class="!dashboardStore.sidebar ? 'general-structure-full' : 'general-structure'">
-		<section class="sidebar" v-if="dashboardStore.sidebar">
-			<SidebarDashboard />
-		</section>
-		<section :class="!dashboardStore.sidebar ? 'header-main-full' : 'header-main'">
+	<div class="general-structure">
+		<Transition>
+			<section class="sidebar" v-show="dashboardStore.sidebar">
+				<SidebarDashboard />
+			</section>
+		</Transition>
+		<section class="header-main">
 			<div class="header">
 				<HeaderDashboard />
 			</div>
@@ -174,12 +181,29 @@
 	}
 
 	.sidebar {
-		flex-basis: 20%;
+		flex-basis: 280px;
+		overflow: hidden;
+
+		&.compressed {
+			flex-basis: 200px;
+		}
+	}
+
+	/* Sidebar's transition */
+	.sidebar.v-enter-active,
+	.sidebar.v-leave-active {
+		transition: flex-basis 0.4s ease;
+	}
+
+	.sidebar.v-enter-from,
+	.sidebar.v-leave-to {
+		flex-basis: 0%;
 	}
 
 	.header-main {
+		flex: 1;
+
 		display: flex;
-		flex-basis: 80%;
 		flex-direction: column;
 	}
 
@@ -196,5 +220,12 @@
 	.main {
 		flex-basis: 90%;
 		margin: 20px 0 0 20px;
+	}
+
+	/* Media queries */
+	@media only screen and (max-width: 1024px) {
+		.sidebar {
+			flex-basis: 200px;
+		}
 	}
 </style>

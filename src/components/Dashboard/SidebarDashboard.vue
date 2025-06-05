@@ -89,7 +89,7 @@
 	}
 
 	.logo {
-		width: 30px;
+		flex: 0 0 30px;
 		height: 30px;
 		display: flex;
 		flex-wrap: wrap;
