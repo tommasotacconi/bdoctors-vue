@@ -60,16 +60,16 @@
 		padding: 12px 10px 12px 20px;
 	}
 
-	.selected-text {
-		background-color: var(--color-secondary);
-	}
-
 	h2:hover {
 		cursor: pointer;
 		border: solid lightgray;
 		padding: 10px 10px 10px 20px;
 		border-width: 2px 0;
 		background-color: #0E125D;
+	}
+
+	h2.selected-text {
+		background-color: var(--color-secondary);
 	}
 
 	/* Logo */
