@@ -1,13 +1,35 @@
 <script>
+	import { useRippleEffect } from '../../../js/composables/useRippleEffect.js';
 	import { dashboardStore } from '../../../js/dashboardStore.js'
 
 	export default {
 		data() {
 			return {
+				rippleStyles: [], // Array to store ripple styles for each button
+				isAnimating: [], // Array to track animation state for each button
 				dashboardStore,
 			}
 		},
-		methods: {},
+		methods: {
+			handleButtonClick(index, event) {
+				const buttonRef = this.$refs.buttonRefs[index]; // Get the button reference
+
+				if (!buttonRef) return;
+
+				// Trigger the ripple effect for the specific button
+				const { rippleStyle, isAnimating, triggerRipple } = useRippleEffect();
+				triggerRipple(event, buttonRef);
+
+				// Update the ripple styles and animation state for the button
+				this.rippleStyles[index] = { ...rippleStyle.value };
+				this.isAnimating[index] = isAnimating.value;
+
+				// Reset animation state after it completes
+				setTimeout(() => {
+					this.isAnimating[index] = false;
+				}, 1000);
+			},
+		},
 		computed: {}
 	}
 </script>
@@ -28,9 +50,13 @@
 			</div>
 		</RouterLink>
 		<section class="link-pages">
-			<h2 :class="dashboardStore.currentComponentIndex === index ? 'selected-text' : null"
-				@click="dashboardStore.currentComponentIndex = index"
-				v-for="(label, index) in dashboardStore.labelsForComponents">{{ label }}
+			<h2 ref="buttonRefs" :key="index" class="ripple-button"
+				:style="{ backgroundColor: !isAnimating[index] ? transparent : '' }"
+				:class="dashboardStore.currentComponentIndex === index ? { 'selected-text': !isAnimating[index] } : null"
+				@click="(e) => { dashboardStore.currentComponentIndex = index; handleButtonClick(index, e) }"
+				v-for="(label, index) in dashboardStore.labelsForComponents">
+				<span class="ripple" v-if="isAnimating[index]" :style="rippleStyles[index]">{{ label }}</span>
+				{{ label }}
 			</h2>
 		</section>
 	</nav>
@@ -55,17 +81,20 @@
 	}
 
 	h2 {
-		font-size: 1.25rem;
+		padding: 10px 10px 10px 20px;
 		margin: 10px 0 0 0;
-		padding: 12px 10px 12px 20px;
+		border: solid var(--color-primary);
+		border-width: 2px 0;
+		position: relative;
+		z-index: 1;
+
+		font-size: 1.3rem;
 	}
 
 	h2:hover {
 		cursor: pointer;
-		border: solid lightgray;
-		padding: 10px 10px 10px 20px;
-		border-width: 2px 0;
-		background-color: #0E125D;
+		/* border: solid lightgray;
+		background-color: var(--color-secondary); */
 	}
 
 	h2.selected-text {
@@ -114,6 +143,29 @@
 
 	.square4 {
 		background-color: #155489;
+	}
+
+	.ripple-button {
+		position: relative;
+		overflow: hidden;
+	}
+
+	.ripple-button .ripple {
+		position: absolute;
+		z-index: -1;
+		border-radius: 50%;
+		color: white;
+		/* Slightly darker color */
+		background-image: radial-gradient(circle closest-side, var(--color-secondary), var(--color-secondary));
+		transform: scale(0);
+		animation: ripple-animation 1s ease forwards;
+	}
+
+	@keyframes ripple-animation {
+		to {
+			/* Expand circle */
+			transform: scale(2);
+		}
 	}
 
 
