@@ -55,7 +55,7 @@
 				:class="dashboardStore.currentComponentIndex === index ? { 'selected-text': !isAnimating[index] } : null"
 				@click="(e) => { dashboardStore.currentComponentIndex = index; handleButtonClick(index, e) }"
 				v-for="(label, index) in dashboardStore.labelsForComponents">
-				<span class="ripple" v-if="isAnimating[index]" :style="rippleStyles[index]">{{ label }}</span>
+				<span class="ripple" v-if="isAnimating[index]" :style="rippleStyles[index]"></span>
 				{{ label }}
 			</h2>
 		</section>
@@ -157,7 +157,7 @@
 		color: white;
 		/* Slightly darker color */
 		background-image: radial-gradient(circle closest-side, var(--color-secondary), var(--color-secondary));
-		transform: scale(0);
+		transform: scale(0.1);
 		animation: ripple-animation 1s ease forwards;
 	}
 
