@@ -51,7 +51,6 @@
 		</RouterLink>
 		<section class="link-pages">
 			<h2 ref="buttonRefs" :key="index" class="ripple-button"
-				:style="{ backgroundColor: !isAnimating[index] ? transparent : '' }"
 				:class="dashboardStore.currentComponentIndex === index ? { 'selected-text': !isAnimating[index] } : null"
 				@click="(e) => { dashboardStore.currentComponentIndex = index; handleButtonClick(index, e) }"
 				v-for="(label, index) in dashboardStore.labelsForComponents">
@@ -152,6 +151,7 @@
 
 	.ripple-button .ripple {
 		position: absolute;
+		/* span.ripple is brought under h2 text, so that it acts as background for it */
 		z-index: -1;
 		border-radius: 50%;
 		color: white;
