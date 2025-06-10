@@ -16,9 +16,6 @@
 
 	export default {
 		name: 'App',
-		components: {
-			Bar
-		},
 		data() {
 			return {
 				store,
@@ -44,13 +41,22 @@
 		methods: {
 
 		},
+		components: {
+			Bar
+		},
+		props: {
+			chartContainerStyle: {
+				type: Object,
+				required: true
+			}
+		}
 	}
 </script>
 
 <template>
 	<h4>Recensioni ricevute <span class="total-year">(Totale anno: {{ store.profileReviews.length }})</span>
 	</h4>
-	<div class="char">
+	<div class="char" :style="chartContainerStyle">
 		<Bar :data="store.chartDataReviews" :options="options" />
 	</div>
 </template>

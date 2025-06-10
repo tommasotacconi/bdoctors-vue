@@ -15,10 +15,6 @@
 	ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
 	export default {
-		name: 'App',
-		components: {
-			Bar
-		},
 		data() {
 			return {
 				store,
@@ -44,13 +40,25 @@
 		methods: {
 
 		},
+		components: {
+			Bar
+		},
+		props: {
+			chartContainerStyle: {
+				type: Object,
+				required: true
+			}
+		},
+		created() {
+			console.log('Chart data: ', this.store.chartDataMessages);
+		}
 	}
 </script>
 
 <template>
 	<h4>Messaggi ricevuti <span class="total-year">(Totale anno: {{ store.profileMessages.length }})</span>
 	</h4>
-	<div class="char">
+	<div class="char" :style="chartContainerStyle">
 		<Bar :data="store.chartDataMessages" :options="options" />
 	</div>
 
@@ -66,4 +74,5 @@
 		opacity: 0.8;
 		font-style: italic;
 	}
+
 </style>

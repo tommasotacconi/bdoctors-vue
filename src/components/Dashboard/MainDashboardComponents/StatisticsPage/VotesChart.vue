@@ -16,9 +16,6 @@
 
 	export default {
 		name: 'App',
-		components: {
-			Bar
-		},
 		data() {
 			return {
 				store,
@@ -44,15 +41,23 @@
 			}
 		},
 		methods: {
-
 		},
+		components: {
+			Bar
+		},
+		props: {
+			chartContainerStyle: {
+				type: Object,
+				required: true
+			}
+		}
 	}
 </script>
 
 <template>
 	<h4>Media voti ricevuti <span class="total-year">(Totale voti annuali: {{ store.profileReviews.length }})</span>
 	</h4>
-	<div class="char">
+	<div class="char" :style="chartContainerStyle">
 		<Bar :data="store.chartDataVotes" :options="options" />
 	</div>
 </template>

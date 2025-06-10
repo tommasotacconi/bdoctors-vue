@@ -1,54 +1,36 @@
 <script>
 	import axios from 'axios';
-	import MessageChart from './StatisticsPage/MessageChart.vue';
+	import MessagesChart from './StatisticsPage/MessagesChart.vue';
 	import { store } from '../../../../js/store';
 	import ReviewsChart from './StatisticsPage/ReviewsChart.vue';
 	import VotesChart from './StatisticsPage/VotesChart.vue';
+	import { dashboardStore } from '../../../../js/dashboardStore';
 
 	export default {
 		data() {
 			return {
 				store,
+				dashboardStore,
 				messagesApiUrl: 'http://localhost:8000/api/messages',
 				messagesProfile: [],
-				messagesFlag: true,
-				reviewsFlag: false,
-				votesFlag: false,
-				charData: {
-					labels: [
-						'Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'
-					],
-					datasets: [
-						{
-							data: [
-								40, 20, 12, 15, 16, 10, 42, 34, 37, 25, 41, 5
-							],
-							backgroundColor: '#65B0FF',
-						}
-					]
+				chartContainerStyle: {
+					aspectRatio: 4 / 3,
 				}
 			}
 		},
+		methods: {
+		},
 		components: {
-			MessageChart,
+			MessagesChart,
 			ReviewsChart,
 			VotesChart,
 		},
-		methods: {
-			getMessagesChart() {
-				this.messagesFlag = true
-				this.reviewsFlag = false
-				this.votesFlag = false
+		computed: {
+			chartName() {
+				return this.dashboardStore.statisticsChartComponents;
 			},
-			getReviewsChart() {
-				this.messagesFlag = false
-				this.reviewsFlag = true
-				this.votesFlag = false
-			},
-			getVotesChart() {
-				this.messagesFlag = false
-				this.reviewsFlag = false
-				this.votesFlag = true
+			index() {
+				return this.dashboardStore.currentChartIndex;
 			}
 		},
 		created() {
@@ -61,14 +43,11 @@
 		<div class="container">
 			<h2>Statistiche</h2>
 			<div class="display-button">
-				<button class="button-char" @click="getMessagesChart">Messaggi</button>
-				<button class="button-char" @click="getReviewsChart">Recensioni</button>
-				<button class="button-char" @click="getVotesChart">Voti</button>
+				<button class="button-char" @click="dashboardStore.currentChartIndex = index"
+					v-for="(label, index) in dashboardStore.labelsForCharts">{{ label }}</button>
 			</div>
 			<div class="component-chart">
-				<MessageChart v-if="messagesFlag" />
-				<ReviewsChart v-if="reviewsFlag" />
-				<VotesChart v-if="votesFlag" />
+				<component :is="chartName[index]" :chartContainerStyle />
 			</div>
 		</div>
 
