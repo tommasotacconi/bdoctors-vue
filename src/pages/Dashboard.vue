@@ -13,7 +13,7 @@
 				dashboardStore,
 				profileMessages: [],
 				profileReviews: [],
-				windowWidth: window.innerWidth
+				windowWidth: window.innerWidth,
 			};
 		},
 		methods: {
@@ -150,7 +150,7 @@
 						{ data: [], backgroundColor: '#65B0FF', /* qui si può inserire il label */ }
 					]
 				}
-			}
+			},
 		}
 	}
 </script>
@@ -176,11 +176,12 @@
 <style scoped>
 	.general-structure {
 		display: flex;
-		min-height: 100vh;
-		overflow: auto;
+		height: 100%;
+		overflow: hidden;
 	}
 
 	.sidebar {
+		flex-shrink: 0;
 		flex-basis: 280px;
 		overflow: hidden;
 
@@ -201,6 +202,7 @@
 	}
 
 	.header-main {
+		overflow: auto;
 		flex: 1;
 
 		display: flex;
@@ -214,12 +216,14 @@
 	}
 
 	.header {
-		flex-basis: 10%;
+		flex: 0 0 var(--header-h);
 	}
 
 	.main {
-		flex-basis: 90%;
-		margin: 20px 0 0 20px;
+		padding: 30px 20px 0;
+		flex: 1;
+
+		overflow-y: auto;
 	}
 
 	/* Media queries */
@@ -227,5 +231,7 @@
 		.sidebar {
 			flex-basis: 200px;
 		}
+
 	}
+
 </style>

@@ -14,7 +14,11 @@
 				messagesApiUrl: 'http://localhost:8000/api/messages',
 				messagesProfile: [],
 				chartContainerStyle: {
-					aspectRatio: 4 / 3,
+					width: '100%',
+					aspectRatio: 5 / 3,
+					position: 'relative',
+					backgroundColor: '#fff',
+					overflow: 'hidden',
 				}
 			}
 		},
