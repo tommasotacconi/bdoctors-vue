@@ -23,6 +23,7 @@
 				},
 				options: {
 					responsive: true,
+					aspectRatio: 5 / 3,
 					plugins: {
 						legend: {
 							display: false
