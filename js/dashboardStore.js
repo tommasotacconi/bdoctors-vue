@@ -18,5 +18,5 @@ export const dashboardStore = reactive({
   chartDataReviews: {},
   chartDataVotes: {},
   profileMessages: [],
-  profileReviews: [],
+  profileReviewsWithVotes: [],
 })
