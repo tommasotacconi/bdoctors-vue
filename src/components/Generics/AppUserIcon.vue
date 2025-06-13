@@ -71,10 +71,10 @@
 	}
 
 	.fa-user.user-img {
-		padding: 7px;
+		padding: 2px;
 
 		img {
-			height: 20px;
+			height: 30px;
 			display: inline;
 			vertical-align: middle;
 			aspect-ratio: 1;
