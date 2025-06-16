@@ -30,8 +30,6 @@
 				this.$router.push({
 					name: 'search.show', params: { searchId: this.$route.params.specialization, nameId: completeName }
 				})
-				console.log('Doctor position inside homepage ', index);
-				console.log(store.searchedSpecialization)
 			},
 			getFilteredReviewsData() {
 				axios.get(this.store.apiUri + `reviews/filter/${this.$route.params.specialization}/${this.rating}/${this.inputReviews}`)
@@ -51,10 +49,10 @@
 			getProfilePhotoPath(doctor) {
 				// Calculate profile photo :src attribute depending on the presence of the 'photos' string in the db data photo profiles table
 				const photoPath = doctor.photo;
-				return photoPath.includes('photos') ? this.getFilePath(`storage/${photoPath}`) : new URL(this.placeholderImg).href;
+				return photoPath?.includes('photos') ? this.getFilePath(`storage/${photoPath}`) : photoPath ?? new URL(this.store.placeholderImg).href;
 			},
 			getFilePath: function (filePath) {
-				return new URL(filePath, 'http://localhost:8000/').href;
+				return new URL(filePath, this.store.apiUri.slice(-3)).href;
 			},
 			resetInputs() {
 				this.rating = null;
