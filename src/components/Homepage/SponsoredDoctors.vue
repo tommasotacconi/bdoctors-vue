@@ -50,7 +50,6 @@
 						this.filteredProfile = profiles.filter(element => usersSponsoredId.includes(element.user_id)
 						)
 
-						console.log(this.filteredProfile);
 						this.$emit('loadedSponsoredProfiles');
 					})
 					.catch(function (error) {
