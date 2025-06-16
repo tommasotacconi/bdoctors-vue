@@ -11,7 +11,6 @@
 		},
 		methods: {
 			getProfilePhoto() {
-				console.log('Making request for profile photo Path');
 				axios.get(this.store.apiUri + 'profiles/show', {
 					withCredentials: true,
 				})
@@ -30,7 +29,6 @@
 				// Calculate profile photo :src attribute depending on the presence of the 'photos'
 				// string in the db data photo profiles table
 				const photoPath = this.store.profileDataGeneral.photo ?? this.fetchedPhotoPath;
-				console.log('evaluating authentication');
 				if (!photoPath && this.store.isAuthenticated) {
 					this.getProfilePhoto();
 					return photoPath;

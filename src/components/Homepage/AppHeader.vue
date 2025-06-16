@@ -104,12 +104,10 @@
 			},
 			showLoader() {
 				if (this.checkingLogin) {
-					console.log('showLoader: <checkingLogin>')
 					return true;
 				}
 				else {
 					if (this.store.isAuthenticated) {
-						console.log('showLoader: <isUserIconReady>', 'value = ' + this.isUserIconReady);
 						return !this.isUserIconReady;
 					}
 					return false;
