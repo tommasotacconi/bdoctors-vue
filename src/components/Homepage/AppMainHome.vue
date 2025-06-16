@@ -67,7 +67,6 @@
 	main {
 		height: 100%;
 		overflow: auto;
-		margin-top: 50px;
 	}
 
 	.introduction {

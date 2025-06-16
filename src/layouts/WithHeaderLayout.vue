@@ -26,8 +26,15 @@
 		box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.6);
 	}
 
-	.bg {
+	.page-content {
 		height: 100vh;
+	}
+
+	.app-header+.page-content {
+		padding-top: calc(var(--header-h) - var(--header-border-r));
+	}
+
+	.bg {
 		background-image: url(../../public/tile_background.png);
 	}
 </style>

@@ -211,9 +211,9 @@
 	/* General */
 	.general-header {
 		background-color: #0E395D;
-		height: 80px;
-		border-bottom-left-radius: 25px;
-		border-bottom-right-radius: 25px;
+		height: var(--header-h);
+		border-bottom-left-radius: var(--header-border-r);
+		border-bottom-right-radius: var(--header-border-r);
 	}
 
 	.container-header {
