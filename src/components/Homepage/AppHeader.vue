@@ -3,6 +3,7 @@
 	import { store } from '../../../js/store';
 	import { RouterLink } from 'vue-router';
 	import AppUserIcon from '../Generics/AppUserIcon.vue';
+	import { useShowButtonsAnimation } from '../../../js/composables/useShowButtonsAnimation';
 
 	export default {
 		data() {
@@ -12,26 +13,26 @@
 				selectedSpecialization: '',
 				store,
 				checkingLogin: true,
-				isProfileManagementShown: false,
+				// isProfileManagementShown: false,
 				isUserIconReady: false,
-				logoutBtnTimeout: undefined,
+				// logoutBtnTimeout: undefined,
 			}
 		},
 		methods: {
-			showProfileManagementButtons() {
-				// Discard timeout if is already set, otherwise set a new one
-				if (this.logoutBtnTimeout) {
-					this.logoutBtnTimeout = clearTimeout(this.logoutBtnTimeout);
-				} else {
-					// Se l'utente non interagisce farlo scomparire
-					this.logoutBtnTimeout = setTimeout(() => {
-						this.isProfileManagementShown = false
-						this.logoutBtnTimeout = clearTimeout(this.logoutBtnTimeout);
-					}, 5000)
-				}
+			// showProfileManagementButtons() {
+			// 	// Discard timeout if is already set, otherwise set a new one
+			// 	if (this.logoutBtnTimeout) {
+			// 		this.logoutBtnTimeout = clearTimeout(this.logoutBtnTimeout);
+			// 	} else {
+			// 		// Se l'utente non interagisce farlo scomparire
+			// 		this.logoutBtnTimeout = setTimeout(() => {
+			// 			this.isProfileManagementShown = false
+			// 			this.logoutBtnTimeout = clearTimeout(this.logoutBtnTimeout);
+			// 		}, 5000)
+			// 	}
 
-				this.isProfileManagementShown = !this.isProfileManagementShown;
-			},
+			// 	this.isProfileManagementShown = !this.isProfileManagementShown;
+			// },
 			getSpecializations() {
 				axios.get(this.apiUrl)
 					.then(response => {
@@ -118,6 +119,11 @@
 		components: {
 			AppUserIcon
 		},
+		setup() {
+			const { buttonsStyle: profileButtonsStyle, areButtonsShown: areProfileButtonsShown, showButtonsTimeout: showProfileButtonsTimeout, showButtons: showProfileButtons, removeButtonsFromFlow: removeProfileButtonsFromFlow } = useShowButtonsAnimation();
+
+			return { profileButtonsStyle, areProfileButtonsShown, showProfileButtonsTimeout, showProfileButtons, removeProfileButtonsFromFlow };
+		},
 		created() {
 			axios.get(this.store.apiUri + 'login/check', {
 				withCredentials: true,
@@ -179,19 +185,20 @@
 					<button class="btn button-logup">Registrati</button>
 				</routerLink>
 				<routerLink :to="{ name: 'login' }">
-					<button class="btn button-login"><i class="fa-solid fa-user-doctor"></i></button>
+					<button class="btn button-with-icon"><i class="fa-solid fa-user-doctor"></i></button>
 				</routerLink>
 				<div class="user">
-					<Transition>
-						<div class="user-buttons-wrapper" v-show="isProfileManagementShown">
-							<router-link :to="{ name: 'dashboard' }" class="btn personal-area">Area
-								personale</router-link>
-							<button class="logout" @click="logout()">
-								<span class="logout-text">Esci</span>
-							</button>
-						</div>
-					</Transition>
-					<AppUserIcon @click="showProfileManagementButtons" @user-icon-ready="isUserIconReady = true" />
+					<div class="user-buttons-wrapper" :style="profileButtonsStyle" v-show="areProfileButtonsShown"
+						@transitionend="removeProfileButtonsFromFlow">
+						<router-link :to="{ name: 'dashboard' }" class="btn button-with-icon personal-area">
+							<span class="personal-area-link">Area Personale</span>
+							<i class="fa-solid fa-user-doctor"></i>
+						</router-link>
+						<button class="logout" @click="logout()">
+							<span class="logout-text">Esci</span>
+						</button>
+					</div>
+					<AppUserIcon @click="showProfileButtons" @user-icon-ready="isUserIconReady = true" />
 				</div>
 			</div>
 			<div class=" loader-container right-header" v-show="showLoader">
@@ -319,6 +326,7 @@
 	}
 
 	.user-buttons-wrapper {
+		width: max-content;
 		margin-right: 10px;
 	}
 
@@ -329,13 +337,18 @@
 		font-style: italic;
 		color: white;
 		font-weight: bold;
+
+		span {
+			margin-right: 5px;
+			display: none;
+		}
 	}
 
 	.right-header .btn.button-logup {
 		background-color: var(--color-secondary);
 	}
 
-	.right-header .btn.button-login {
+	.right-header .btn.button-with-icon {
 		background-color: var(--color-complementary);
 		/* Padding calc is given by
 		(((factor * font-size) + 2 * y-pd) - content-height) / 2 */
@@ -402,12 +415,12 @@
 	/* User logout */
 	.user {
 		display: flex;
-		gap: 15px;
 		align-items: center;
 	}
 
 	.logout {
 		margin-left: 10px;
+		margin-right: 15px;
 	}
 
 	.logout-text {
@@ -434,7 +447,7 @@
 	}
 
 	@media screen and (max-width: 992px) {
-		.right-header .btn.button-login {
+		.right-header .btn.button-with-icon {
 			&::after {
 				content: '';
 			}
@@ -442,6 +455,12 @@
 
 		.fa-user-doctor {
 			margin-right: 0px;
+		}
+	}
+
+	@media screen and (min-width: 768px) {
+		.right-header .btn span {
+			display: unset;
 		}
 	}
 </style>

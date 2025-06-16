@@ -3,11 +3,12 @@
 	import { dashboardStore } from '../../../js/dashboardStore.js';
 	import axios from 'axios';
 	import AppUserIcon from '../Generics/AppUserIcon.vue';
+	import { useShowButtonsAnimation } from '../../../js/composables/useShowButtonsAnimation.js';
 
 	export default {
 		data() {
 			return {
-				isLogoutShown: false,
+				// isLogoutShown: false,
 				store,
 				dashboardStore
 			}
@@ -16,16 +17,16 @@
 			toggleSidebar() {
 				this.dashboardStore.sidebar = !this.dashboardStore.sidebar
 			},
-			showLogout() {
-				this.isLogoutShown = !this.isLogoutShown;
+			// showLogout() {
+			// 	this.isLogoutShown = !this.isLogoutShown;
 
-				// Se l'utente non interagisce farlo scomparire
-				if (this.isLogoutShown === true) {
-					setTimeout(() => {
-						this.isLogoutShown = false
-					}, 5000)
-				}
-			},
+			// 	// Se l'utente non interagisce farlo scomparire
+			// 	if (this.isLogoutShown === true) {
+			// 		setTimeout(() => {
+			// 			this.isLogoutShown = false
+			// 		}, 5000)
+			// 	}
+			// },
 			logout() {
 				axios.post('https://127.0.0.1:5174/api/logout', '',
 					{
@@ -42,7 +43,12 @@
 		},
 		components: {
 			AppUserIcon
-		}
+		},
+		setup() {
+			const { buttonsStyle: profileButtonsStyle, areButtonsShown: areProfileButtonsShown, showButtonsTimeout: showProfileButtonsTimeout, showButtons: showProfileButtons, removeButtonsFromFlow: removeProfileButtonsFromFlow } = useShowButtonsAnimation();
+
+			return { profileButtonsStyle, areProfileButtonsShown, showProfileButtonsTimeout, showProfileButtons, removeProfileButtonsFromFlow };
+		},
 	}
 </script>
 
@@ -53,13 +59,14 @@
 		</div>
 		<div class="right-header-section user">
 			<!-- Logout button -->
-			<button class="button logout-btn" v-show="isLogoutShown" @click="logout">
+			<button :style="profileButtonsStyle" v-show="areProfileButtonsShown" class="button logout-btn" @click="logout"
+				@transitionend="removeProfileButtonsFromFlow">
 				<!-- <router-link style="text-decoration: none; color: inherit;" to="/" @click="logout()"> -->
-				<span class="btn-text">Logout</span>
+				<span class="btn-text">Esci</span>
 				<!-- </router-link> -->
 			</button>
 			<!-- User icon -->
-			<AppUserIcon @click="showLogout" />
+			<AppUserIcon @click="showProfileButtons" />
 		</div>
 	</header>
 </template>
@@ -92,11 +99,10 @@
 	}
 
 	.logout-btn {
-		padding: 10px 14px;
 		margin-right: 15px;
-		background-color: var(--color-complementary);
+		background-color: transparent;
 		border: none;
-		border-radius: 30px;
+		/* border-radius: 30px; */
 		line-height: 25px;
 	}
 
@@ -105,4 +111,14 @@
 		color: white;
 		font-weight: bold;
 	}
+
+	/* .v-enter-active,
+	.v-leave-active {
+		transition: opacity 0.5s ease;
+	}
+
+	.v-enter-from,
+	.v-leave-to {
+		opacity: 0;
+	} */
 </style>
