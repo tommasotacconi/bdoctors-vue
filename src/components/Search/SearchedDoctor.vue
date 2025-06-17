@@ -80,7 +80,7 @@
 </script>
 
 <template>
-	<main class="bg">
+	<main>
 		<div class="container">
 			<!-- Loader -->
 			<div class="loader" v-if="!loaded"></div>
@@ -179,8 +179,10 @@
 </template>
 
 <style scoped>
-	.bg {
-		background-image: url(../../public/tile_background.png);
+	main {
+		height: 100%;
+		overflow: auto;
+		padding-bottom: 20px;
 	}
 
 	.container {
@@ -249,26 +251,29 @@
 
 	/* Doctor list */
 	.doctors-list {
-		display: flex;
-		gap: 50px 110px;
-		justify-content: start;
-		flex-wrap: wrap;
-		align-content: stretch;
-		margin-top: 30px;
+		--col-gap: 30px;
+	}
 
+	.doctors-list {
+		display: flex;
+		gap: 50px var(--col-gap);
+		justify-content: space-between;
+		flex-wrap: wrap;
+		/* align-content: stretch; */
+		margin-top: 30px;
 	}
 
 	.doctor-photo {
-		height: 200px;
+		width: 100%;
+		max-width: 230px;
 		aspect-ratio: 1;
 		object-fit: cover;
 		object-position: center;
 	}
 
 	.doctors-list> :hover {
-		scale: 1.1;
+		scale: 1.3;
 		cursor: pointer;
-		transition: 0.8s;
 	}
 
 
@@ -279,23 +284,23 @@
 	}
 
 	.doctor-card {
+		min-height: 450px;
+		flex: 0 1 calc(100% / 3 - 2 / 3 * var(--col-gap));
 		background-color: #D8F9FF;
 		padding: 25px 30px;
 		display: flex;
 		flex-direction: column;
 		gap: 15px;
-		justify-content: center;
 		align-items: center;
-		width: calc((100% / 3) - 80px);
 		border-radius: 30px;
 
-		/* height: 400px; */
+		transition: scale 0.2s;
 	}
 
 	img {
 		border-radius: 50%;
 		border: 3px solid #65B0FF;
-		height: 200px;
+		/* height: 200px; */
 
 	}
 
@@ -424,12 +429,21 @@
 
 	@media (max-width: 480px) {
 		.doctors-list {
-			gap: 15px;
+			--col-gap: 15px;
+
+			&> :hover {
+				scale: 1.1;
+			}
 		}
 
 		.doctor-card {
-			width: calc(100% - 20px);
+			flex: 1;
 			/* Ensure 1 card per row on very small screens */
+			min-height: 300px;
+
+			&:last-child {
+				flex: 0 1 calc((100% - var(--col-gap)) / 2)
+			}
 		}
 
 		.doctor-name {
@@ -477,12 +491,12 @@
 	/* Desktop (above 1024px) */
 	@media (min-width: 1024px) {
 		.doctors-list {
-			gap: 50px 110px;
+			--col-gap: 50px;
 		}
 
+		/* 3 cards per row */
 		.doctor-card {
-			width: calc((100% / 3) - 80px);
-			/* 3 cards per row */
+			flex: 0 1 calc(100% / 3 - 2 / 3 * var(--col-gap));
 		}
 	}
 </style>
