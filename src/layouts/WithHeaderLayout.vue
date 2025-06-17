@@ -30,8 +30,9 @@
 		height: 100vh;
 	}
 
-	.app-header+.page-content {
-		padding-top: calc(var(--header-h) - var(--header-border-r));
+	.app-header~.page-content {
+		margin-top: calc(var(--header-h) - var(--header-border-r));
+		padding-top: var(--header-border-r);
 	}
 
 	.bg {
