@@ -181,8 +181,9 @@
 <style scoped>
 	main {
 		height: 100%;
-		overflow: auto;
 		padding-bottom: 20px;
+
+		overflow: hidden auto;
 	}
 
 	.container {
@@ -257,9 +258,7 @@
 	.doctors-list {
 		display: flex;
 		gap: 50px var(--col-gap);
-		justify-content: space-between;
 		flex-wrap: wrap;
-		/* align-content: stretch; */
 		margin-top: 30px;
 	}
 
@@ -272,8 +271,10 @@
 	}
 
 	.doctors-list> :hover {
-		scale: 1.3;
+		scale: 1.2;
 		cursor: pointer;
+		outline: thin solid var(--color-complementary);
+		outline-offset: 5px;
 	}
 
 
@@ -374,9 +375,21 @@
 
 	/* Media Queries */
 
-	/* Mobile */
-	@media (max-width: 768px) {
+	/* Desktop (above 1024px) */
+	@media (min-width: 1024px) {
+		.doctors-list {
+			--col-gap: 50px;
+		}
 
+		/* 3 cards per row */
+		.doctor-card {
+			flex: calc(100% / 3 - 2 / 3 * var(--col-gap));
+		}
+	}
+
+	/* Mobile */
+	/* Large mobile */
+	@media (max-width: 768px) {
 		.advanced-filter {
 			flex-direction: column;
 			align-items: flex-start;
@@ -394,13 +407,12 @@
 		}
 
 		.doctors-list {
-			gap: 20px;
+			--col-gap: 20px;
 			justify-content: center;
 		}
 
 		.doctor-card {
-			width: calc(100% - 40px);
-			margin: 5px;
+			flex: calc(100% / 2 - 1 / 2 * var(--col-gap));
 		}
 
 		.title h2 {
@@ -425,14 +437,13 @@
 		}
 	}
 
-	/* Large Mobile Screens */
-
+	/* Small Mobile Screens */
 	@media (max-width: 480px) {
 		.doctors-list {
 			--col-gap: 15px;
 
 			&> :hover {
-				scale: 1.1;
+				scale: none;
 			}
 		}
 
@@ -440,10 +451,6 @@
 			flex: 1;
 			/* Ensure 1 card per row on very small screens */
 			min-height: 300px;
-
-			&:last-child {
-				flex: 0 1 calc((100% - var(--col-gap)) / 2)
-			}
 		}
 
 		.doctor-name {
@@ -485,18 +492,6 @@
 		.doctor-card img {
 			height: 120px;
 			width: 120px;
-		}
-	}
-
-	/* Desktop (above 1024px) */
-	@media (min-width: 1024px) {
-		.doctors-list {
-			--col-gap: 50px;
-		}
-
-		/* 3 cards per row */
-		.doctor-card {
-			flex: 0 1 calc(100% / 3 - 2 / 3 * var(--col-gap));
 		}
 	}
 </style>
