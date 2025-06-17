@@ -21,7 +21,7 @@
 <template>
 	<div class="loader" v-show="!loaded"></div>
 
-	<main v-show="loaded">
+	<main id="home-main" v-show="loaded">
 		<div class="introduction-position">
 			<div class="container-introduction">
 				<div class="introduction">
@@ -64,9 +64,10 @@
 		text-decoration: none;
 	}
 
-	main {
+	main#home-main {
 		height: 100%;
 		overflow: auto;
+		padding-top: 0;
 	}
 
 	.introduction {
