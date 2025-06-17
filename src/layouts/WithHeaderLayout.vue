@@ -28,11 +28,15 @@
 
 	.page-content {
 		height: 100vh;
+
+		&> :not(.loader):nth-of-type(1) {
+			padding-top: var(--header-border-r);
+		}
 	}
 
+
 	.app-header~.page-content {
-		margin-top: calc(var(--header-h) - var(--header-border-r));
-		padding-top: var(--header-border-r);
+		padding-top: calc(var(--header-h) - var(--header-border-r));
 	}
 
 	.bg {
