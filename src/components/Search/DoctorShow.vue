@@ -1,7 +1,8 @@
 <script>
 	import axios from 'axios';
 	import { store } from '../../../js/store.js';
-	import AppHeader from '../Homepage/AppHeader.vue'
+	import AppHeader from '../Homepage/AppHeader.vue';
+	import { useGetPathFunctions } from '../../../js/composables/useGetPathFunctions.js';
 
 	export default {
 		data() {
@@ -59,16 +60,6 @@
 					.catch(function (error) {
 						console.log(error);
 					});
-			},
-			getProfilePhotoPath(doctor) {
-				// Calculate profile photo :src attribute depending on the presence of the 'photos' string in the db data photo profiles table
-				const photoPath = doctor.photo;
-				console.log(doctor.photo)
-				return photoPath.includes('photos') ? this.getFilePath(`storage/${photoPath}`) : photoPath ?? new URL(this.store.placeholderImg).href;
-			},
-
-			getFilePath: function (filePath) {
-				return new URL(filePath, 'http://localhost:8000/').href;
 			},
 			// Method to send patients messages
 			sendMessageForm() {
@@ -209,6 +200,11 @@
 				return this.store.doctorProfile ? this.store.doctorProfile : this.profileData;
 			}
 		},
+		setup() {
+			const { getFilePath, getProfilePhotoPath } = useGetPathFunctions();
+
+			return { getFilePath, getProfilePhotoPath }
+		},
 		created: function () {
 			if (!this.store.doctorProfile) {
 				this.getProfileData();
@@ -229,7 +225,8 @@
 				<div class="card mb-3">
 					<div class="card-flex">
 						<div class="img-doctor">
-							<img :src="getProfilePhotoPath(retrievedProfileData)" class="doctor-photo" alt="doctor photo">
+							<img :src="getProfilePhotoPath(this.store.placeholderImg, retrievedProfileData)" class="doctor-photo"
+								alt="doctor photo">
 						</div>
 						<div class="card-body-title-section">
 							<h1 class="card-title py-3">

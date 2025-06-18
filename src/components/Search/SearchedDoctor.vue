@@ -4,6 +4,7 @@
 	import DoctorShow from './DoctorShow.vue';
 	import { RouterLink } from 'vue-router';
 	import { finiteOrDefault } from 'chart.js/helpers';
+	import { useGetPathFunctions } from '../../../js/composables/useGetPathFunctions.js';
 
 	export default {
 		data() {
@@ -46,14 +47,14 @@
 
 				this.loaded = false
 			},
-			getProfilePhotoPath(doctor) {
-				// Calculate profile photo :src attribute depending on the presence of the 'photos' string in the db data photo profiles table
-				const photoPath = doctor.photo;
-				return photoPath?.includes('photos') ? this.getFilePath(`storage/${photoPath}`) : photoPath ?? new URL(this.store.placeholderImg).href;
-			},
-			getFilePath: function (filePath) {
-				return new URL(filePath, this.store.apiUri.slice(-3)).href;
-			},
+			// getProfilePhotoPath(doctor) {
+			// 	// Calculate profile photo :src attribute depending on the presence of the 'photos' string in the db data photo profiles table
+			// 	const photoPath = doctor.photo;
+			// 	return photoPath?.includes('photos') ? this.getFilePath(`storage/${photoPath}`) : photoPath ?? new URL(this.store.placeholderImg).href;
+			// },
+			// getFilePath: function (filePath) {
+			// 	return new URL(filePath, this.store.apiUri.slice(-3)).href;
+			// },
 			resetInputs() {
 				this.rating = null;
 				this.inputReviews = null;
@@ -75,6 +76,11 @@
 				},
 				immediate: true
 			}
+		},
+		setup() {
+			const { getFilePath, getProfilePhotoPath } = useGetPathFunctions();
+
+			return { getFilePath, getProfilePhotoPath }
 		},
 	}
 </script>
@@ -148,7 +154,8 @@
 					<div class="doctors-list" v-if="filteredDoctorsProfiles.length">
 						<div class="doctor-card" v-for="(doctorProfile, index) in filteredDoctorsProfiles"
 							@click="goToShowPage(doctorProfile, index)" :key="index">
-							<img class="doctor-photo" :src="getProfilePhotoPath(doctorProfile)" alt="doctor photo">
+							<img class="doctor-photo" :src="getProfilePhotoPath(this.store.placeholderImg, doctorProfile)"
+								alt="doctor photo">
 							<section class="doctor-information">
 								<h5 class="doctor-name">
 									{{ doctorProfile.user.first_name }} {{ doctorProfile.user.last_name }}

@@ -1,6 +1,7 @@
 <script>
 	import axios from 'axios';
 	import { store } from '../../../js/store';
+	import { useGetPathFunctions } from '../../../js/composables/useGetPathFunctions.js';
 
 	export default {
 		data() {
@@ -39,6 +40,11 @@
 						photoPath ?? new URL(this.store.placeholderImg).href;
 				}
 			},
+		},
+		setup() {
+			const { getFilePath, getProfilePhotoPath } = useGetPathFunctions();
+
+			return { getFilePath, getProfilePhotoPath }
 		},
 		created() {
 		}
