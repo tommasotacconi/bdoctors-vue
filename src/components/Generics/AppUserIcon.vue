@@ -35,9 +35,7 @@
 					return photoPath;
 				} else if (photoPath && this.store.isAuthenticated) {
 					this.$emit('userIconReady');
-					return photoPath?.includes('photos') ?
-						this.getFilePath(`storage/${this.store.profileDataGeneral.photo}`) :
-						photoPath ?? new URL(this.store.placeholderImg).href;
+					return this.getProfilePhotoPath(this.store.placeholderImg, photoPath);
 				}
 			},
 		},

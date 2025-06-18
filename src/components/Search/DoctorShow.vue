@@ -225,8 +225,8 @@
 				<div class="card mb-3">
 					<div class="card-flex">
 						<div class="img-doctor">
-							<img :src="getProfilePhotoPath(this.store.placeholderImg, retrievedProfileData)" class="doctor-photo"
-								alt="doctor photo">
+							<img :src="getProfilePhotoPath(this.store.placeholderImg, retrievedProfileData.photo)"
+								class="doctor-photo" alt="doctor photo">
 						</div>
 						<div class="card-body-title-section">
 							<h1 class="card-title py-3">
