@@ -43,7 +43,7 @@
 </script>
 
 <template>
-	<div class="general-structure">
+	<div id="dashboard" class="general-structure">
 		<Transition>
 			<section class="sidebar" v-show="dashboardStore.sidebar">
 				<SidebarDashboard />
@@ -61,7 +61,8 @@
 </template>
 
 <style scoped>
-	.general-structure {
+	#dashboard.general-structure {
+		padding-top: 0;
 		display: flex;
 		height: 100%;
 		overflow: hidden;
@@ -110,6 +111,7 @@
 		padding: 30px 20px 0;
 		flex: 1;
 
+		position: relative;
 		overflow-y: auto;
 	}
 
