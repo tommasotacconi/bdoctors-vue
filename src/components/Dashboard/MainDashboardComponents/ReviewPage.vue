@@ -1,7 +1,6 @@
 <script>
 	import { store } from '../../../../js/store.js'
 	import axios from 'axios';
-	import Loader from '../../Generics/AppLoader.vue';
 
 	export default {
 		data() {

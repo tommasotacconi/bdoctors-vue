@@ -1,6 +1,5 @@
 <script>
 	import SponsoredDoctors from './SponsoredDoctors.vue';
-	import Loader from '../Generics/AppLoader.vue';
 
 	export default {
 		data() {
@@ -22,7 +21,7 @@
 <template>
 	<Loader v-show="!loaded" />
 
-	<main id="home-main" v-if="loaded">
+	<main id="home-main" v-show="loaded">
 		<div class="introduction-position">
 			<div class="container-introduction">
 				<div class="introduction">

@@ -5,7 +5,6 @@
 	import { RouterLink } from 'vue-router';
 	import { finiteOrDefault } from 'chart.js/helpers';
 	import { useGetPathFunctions } from '../../../js/composables/useGetPathFunctions.js';
-	import Loader from '../Generics/AppLoader.vue';
 
 	export default {
 		data() {

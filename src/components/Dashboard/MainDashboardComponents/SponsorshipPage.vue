@@ -2,7 +2,6 @@
 	import axios from 'axios';
 	import { store } from '../../../../js/store.js';
 	import dropin from 'braintree-web-drop-in';
-	import Loader from '../../Generics/AppLoader.vue';
 
 	export default {
 		data() {

@@ -13,7 +13,6 @@
 				usersSponsoredId: [],
 				profilesId: [],
 				filteredProfile: [],
-				loaded: true,
 			}
 		},
 		methods: {
@@ -72,12 +71,6 @@
 			this.getApiProfiles()
 		},
 		computed: {
-			// showLoader() {
-			//     setTimeout(() => {
-			//         this.loaded = true
-			//     }, 2000)
-
-			// }
 		},
 	}
 </script>
@@ -85,7 +78,6 @@
 <template>
 	<div class="container sponsored-doctor-container">
 		<h3>Dottori in evidenza</h3>
-		<!-- <div class="loader" v-if="!loaded"></div> -->
 		<div class="sponsored-card-container">
 			<div class="card card-sponsored d-flex" style="width: 18rem;" v-for="(doctorProfile, index) in filteredProfile"
 				@click="goToShowPage(doctorProfile, index)">
