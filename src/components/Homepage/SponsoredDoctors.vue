@@ -8,46 +8,25 @@
 		data() {
 			return {
 				store,
-				sponsorshipsApiUrl: 'http://localhost:8000/api/sponsorships',
-				profilesApiUrl: 'http://localhost:8000/api/profiles',
-				usersSponsoredId: [],
-				profilesId: [],
-				filteredProfile: [],
+				sponsoredProfiles: [],
+				// profilesId: [],
+				// filteredProfile: [],
 			}
 		},
 		methods: {
 			getApiSponsorships() {
-				axios.get(this.sponsorshipsApiUrl)
+				axios.get(this.store.apiUri + 'sponsorships')
 					.then(response => {
 						// handle success
-						// console.log(response.data.sponsorships);
-						let sponsorships = response.data.sponsorships
+						let sponsorships = response.data.sponsorships;
 						for (let i = 0; i < sponsorships.length; i++) {
-							let sponsorshipProfiles = sponsorships[i].profiles
+							let sponsorshipProfiles = sponsorships[i].profiles;
 
 							for (let j = 0; j < sponsorshipProfiles.length; j++) {
-								let sponsored = sponsorshipProfiles[j]
-								this.usersSponsoredId.push(sponsored.user_id)
+								let sponsored = sponsorshipProfiles[j];
+								this.sponsoredProfiles.push(sponsored);
 							}
 						}
-						// console.log(this.userId)
-
-					})
-					.catch(function (error) {
-						// handle error
-						console.log(error);
-					})
-			},
-			getApiProfiles() {
-				axios.get(this.profilesApiUrl)
-					.then(response => {
-						// handle success
-
-						let profiles = response.data.profiles
-						let usersSponsoredId = this.usersSponsoredId
-
-						this.filteredProfile = profiles.filter(element => usersSponsoredId.includes(element.user_id)
-						)
 
 						this.$emit('loadedSponsoredProfiles');
 					})
@@ -66,9 +45,7 @@
 			},
 		},
 		mounted() {
-			// this.showLoader
-			this.getApiSponsorships()
-			this.getApiProfiles()
+			this.getApiSponsorships();
 		},
 		computed: {
 		},
@@ -79,20 +56,20 @@
 	<div class="container sponsored-doctor-container">
 		<h3>Dottori in evidenza</h3>
 		<div class="sponsored-card-container">
-			<div class="card card-sponsored d-flex" style="width: 18rem;" v-for="(doctorProfile, index) in filteredProfile"
-				@click="goToShowPage(doctorProfile, index)">
+			<div class="card card-sponsored d-flex" style="width: 18rem;" v-for="(sponsored, index) in sponsoredProfiles"
+				@click="goToShowPage(sponsored, index)">
 				<!-- <img
 					src="https://st4.depositphotos.com/4329009/19956/v/450/depositphotos_199564354-stock-illustration-creative-vector-illustration-default-avatar.jpg"
 					class="card-img-top" alt="..."> -->
 				<img
-					:src="doctorProfile.photo ?? 'https://st4.depositphotos.com/4329009/19956/v/450/depositphotos_199564354-stock-illustration-creative-vector-illustration-default-avatar.jpg'"
-					:alt="'foto profilo di' + doctorProfile.user.first_name + doctorProfile.user.last_name">
+					:src="sponsored.photo ?? 'https://st4.depositphotos.com/4329009/19956/v/450/depositphotos_199564354-stock-illustration-creative-vector-illustration-default-avatar.jpg'"
+					:alt="'foto profilo di' + sponsored.user.first_name + sponsored.user.last_name">
 				<div class="card-body">
-					<h5 class="card-title">{{ doctorProfile.user.first_name }} {{ doctorProfile.user.last_name }}</h5>
+					<h5 class="card-title">{{ sponsored.user.first_name }} {{ sponsored.user.last_name }}</h5>
 					<div class="card-text">
 						<h6>Specializzazioni:</h6>
 						<ul class="list-unstyled">
-							<li v-for="doctorSpecialization in doctorProfile.user.specializations">
+							<li v-for="doctorSpecialization in sponsored.user.specializations">
 								{{ doctorSpecialization.name }}
 							</li>
 						</ul>
