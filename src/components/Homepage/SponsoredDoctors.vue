@@ -9,24 +9,26 @@
 			return {
 				store,
 				sponsoredProfiles: [],
+				requestedPage: 1,
+				elementsPerPage: 20,
+				totalSponsoredProfiles: null,
 				// profilesId: [],
 				// filteredProfile: [],
 			}
 		},
 		methods: {
-			getApiSponsorships() {
-				axios.get(this.store.apiUri + 'sponsorships')
+			getSponsoredProfiles(perPage = this.elementsPerPage, page = this.requestedPage) {
+				axios.get(this.store.apiUri + 'sponsorships/sponsored', {
+					params: {
+						page,
+						per_page: perPage
+					}
+				})
 					.then(response => {
-						// handle success
-						let sponsorships = response.data.sponsorships;
-						for (let i = 0; i < sponsorships.length; i++) {
-							let sponsorshipProfiles = sponsorships[i].profiles;
-
-							for (let j = 0; j < sponsorshipProfiles.length; j++) {
-								let sponsored = sponsorshipProfiles[j];
-								this.sponsoredProfiles.push(sponsored);
-							}
-						}
+						const sponsored = response.data.paginated_profiles.data;
+						console.log(sponsored);
+						this.sponsoredProfiles.push(...sponsored);
+						this.totalSponsoredProfiles = response.data.paginated_profiles.total;
 
 						this.$emit('loadedSponsoredProfiles');
 					})
@@ -34,6 +36,9 @@
 						// handle error
 						console.log(error);
 					})
+
+				// Update next requested page
+				this.requestedPage += 1;
 			},
 			goToShowPage(doctorProfile, index) {
 				store.doctorProfile = doctorProfile;
@@ -45,7 +50,7 @@
 			},
 		},
 		mounted() {
-			this.getApiSponsorships();
+			this.getSponsoredProfiles();
 		},
 		computed: {
 		},
@@ -53,7 +58,7 @@
 </script>
 
 <template>
-	<div class="container sponsored-doctor-container">
+	<div class="container component-container">
 		<h3>Dottori in evidenza</h3>
 		<div class="sponsored-card-container">
 			<div class="card card-sponsored d-flex" style="width: 18rem;" v-for="(sponsored, index) in sponsoredProfiles"
@@ -76,6 +81,14 @@
 					</div>
 				</div>
 			</div>
+			<p class="info-box">
+				Visualizzati {{ sponsoredProfiles.length }} profili di {{ totalSponsoredProfiles }}
+			</p>
+		</div>
+		<div class="buttons-wrapper mx-auto">
+			<button v-if="!(sponsoredProfiles.length === totalSponsoredProfiles)" class="btn mt-4 mb-2"
+				@click="requestedPage === 2 ? getSponsoredProfiles(elementsPerPage = 5, requestedPage = 5) : getSponsoredProfiles()"><i
+					class="fa-regular fa-circle-down fa-2xl"></i></button>
 		</div>
 	</div>
 </template>
@@ -104,20 +117,21 @@
 	}
 
 	/* Sponsored Doctor */
-	.sponsored-doctor-container h2 {
+	.component-container h2 {
 		text-align: center;
 		margin-bottom: 20px;
 	}
 
-	.sponsored-doctor-container {
+	.component-container {
 		/* background-color: var(--color-complementary); */
-		background-color: white;
 		border-radius: 25px;
 		padding: 20px;
 		margin-bottom: 50px;
 	}
 
 	.sponsored-card-container {
+		padding: 10px 5px;
+		background-color: white;
 		display: flex;
 		gap: 30px;
 		justify-content: center;
@@ -158,6 +172,27 @@
 
 	.card-text {
 		text-align: start;
+	}
+
+	p.info-box {
+		padding: 15px 25px;
+		flex: 1 0 100%;
+		text-align: right;
+	}
+
+	.buttons-wrapper {
+		width: fit-content;
+
+		.fa-circle-down {
+			color: var(--color-secondary);
+
+			transition: color 0.6s ease-out;
+			;
+
+			&:hover {
+				color: var(--color-primary);
+			}
+		}
 	}
 
 
