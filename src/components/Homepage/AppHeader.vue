@@ -189,7 +189,7 @@
 					<div class="user-buttons-wrapper" :style="profileButtonsStyle" v-show="areProfileButtonsShown"
 						@transitionend="removeProfileButtonsFromFlow">
 						<router-link :to="{ name: 'dashboard' }" class="btn button-with-icon personal-area">
-							<span class="personal-area-link">Area Personale</span>
+							<!-- <span class="personal-area-link">Area Personale</span> -->
 							<i class="fa-solid fa-user-doctor"></i>
 						</router-link>
 						<button class="logout" @click="logout()">
@@ -353,7 +353,7 @@
 		padding: calc((((1.5 * 16px) + 2 * 10px) - 33.33px) / 2) 16px;
 
 		&::after {
-			content: 'Login';
+			content: 'Area Personale';
 		}
 	}
 
