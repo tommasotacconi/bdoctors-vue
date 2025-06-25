@@ -14,6 +14,7 @@
 		},
 		methods: {
 			getProfilePhoto() {
+				// console.log('Calling api for profilePhoto');
 				axios.get(this.store.apiUri + 'profiles/show', {
 					withCredentials: true,
 				})
@@ -27,21 +28,28 @@
 				// });
 			},
 			setProfilePhotoPath() {
-				// console.log('Evaluating whether to compute profilePhotoPath');
+				// console.log('Evaluating whether to compute profilePhotoPath', '--- Parent:', this.parent);
 				if (!this.store.isAuthenticated) {
 					this.profilePhotoPath = '';
 					return;
 				}
-				// console.log('Computing <profilePhotPath>');
+				// console.log('Computing <profilePhotPath>', '--- Parent: ', this.parent);
 				// Calculate profile photo :src attribute depending on the presence of the 'photos'
 				// string in the db data photo profiles table
 				const photoPath = this.dashboardStore.profileDataGeneral.photo ?? this.profilePhotoPath;
+				// console.log('Photo path: ' + photoPath, '--- Parent: ' + this.parent);
 				if (!photoPath) {
 					this.getProfilePhoto();
 				} else {
 					this.$emit('userIconReady');
 					this.profilePhotoPath = this.getProfilePhotoPath(this.store.placeholderImg, photoPath);
 				}
+			}
+		},
+		props: {
+			parent: {
+				type: [Object, String],
+				required: false
 			}
 		},
 		watch: {
@@ -55,6 +63,7 @@
 			return { getFilePath, getProfilePhotoPath }
 		},
 		mounted() {
+			// console.log('Mounted AppUserIcon');
 			this.setProfilePhotoPath();
 		}
 	}

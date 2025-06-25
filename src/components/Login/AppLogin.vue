@@ -25,7 +25,7 @@
 					withCredentials: true,
 				})
 					.then(response => {
-						this.store.isAuthenticated = true;
+						// this.store.isAuthenticated = true;
 						this.loginButtonText = '';
 						this.positiveAuthenticationSymbol = '✅';
 						this.isRequestPending = false;

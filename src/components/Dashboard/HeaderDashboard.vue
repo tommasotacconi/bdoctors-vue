@@ -67,7 +67,7 @@
 				<!-- </router-link> -->
 			</button>
 			<!-- User icon -->
-			<AppUserIcon @click="showProfileButtons" />
+			<AppUserIcon :parent="'HeaderDashboard'" @click="showProfileButtons" />
 		</div>
 	</header>
 </template>

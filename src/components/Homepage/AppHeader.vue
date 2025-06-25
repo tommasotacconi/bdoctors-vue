@@ -203,7 +203,7 @@
 							<span class="logout-text">Esci</span>
 						</button>
 					</div>
-					<AppUserIcon @click="showProfileButtons" @user-icon-ready="isUserIconReady = true" />
+					<AppUserIcon :parent="'AppHeader'" @click="showProfileButtons" @user-icon-ready="isUserIconReady = true" />
 				</div>
 			</div>
 			<div class=" loader-container right-header" v-show="showLoader">
