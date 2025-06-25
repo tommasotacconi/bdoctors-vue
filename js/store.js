@@ -24,9 +24,6 @@ export const store = reactive({
   // Variable for the show profile card in advanced search 
   doctorProfile: null,
 
-	/* Dashboard state */
-  profileDataGeneral: {},
-
   // user id, sponsorized profile id
   userId: '',
 })

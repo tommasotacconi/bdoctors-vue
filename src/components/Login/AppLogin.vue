@@ -1,6 +1,7 @@
 <script>
 	import axios from 'axios';
 	import { store } from '../../../js/store';
+	import { emitter } from '../../../js/eventBus';
 
 	export default {
 		data() {
@@ -24,9 +25,11 @@
 					withCredentials: true,
 				})
 					.then(response => {
+						this.store.isAuthenticated = true;
 						this.loginButtonText = '';
 						this.positiveAuthenticationSymbol = '✅';
 						this.isRequestPending = false;
+						emitter.emit('reset-dashboard');
 						setTimeout(() => {
 							this.$router.push({ name: 'dashboard', params: { id: response.data.user_id } })
 						}, 100);

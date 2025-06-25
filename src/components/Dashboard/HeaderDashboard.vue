@@ -34,6 +34,7 @@
 					})
 					.then(response => {
 						this.store.isAuthenticated = false;
+						this.dashboardStore.profileDataGeneral = {};
 						this.$router.push({ path: '/' });
 					})
 					.catch(err => {

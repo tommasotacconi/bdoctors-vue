@@ -1,6 +1,7 @@
 <script>
 	import axios from 'axios';
-	import { store } from '../../../js/store';
+	import { store } from '../../../js/store.js';
+	import { dashboardStore } from '../../../js/dashboardStore.js';
 	import { RouterLink } from 'vue-router';
 	import AppUserIcon from '../Generics/AppUserIcon.vue';
 	import { useShowButtonsAnimation } from '../../../js/composables/useShowButtonsAnimation';
@@ -12,6 +13,7 @@
 				specializations: [],
 				selectedSpecialization: '',
 				store,
+				dashboardStore,
 				checkingLogin: true,
 				// isProfileManagementShown: false,
 				isUserIconReady: false,
@@ -66,14 +68,18 @@
 						withCredentials: true
 					})
 					.then(response => {
-						this.store.isAuthenticated = false;
 						this.checkingLogin = false;
+						this.store.isAuthenticated = false;
+						this.dashboardStore.profileDataGeneral = {};
 					})
 					.catch(err => {
 						this.checkingLogin = false;
 						console.log(err);
 					});
+
 				this.checkingLogin = true;
+				// Handle style for buttons' transition since the transitionend event never occur due to the 'display: none' set on the containing block after call to logout()
+				this.areProfileButtonsShown = false;
 			}
 		},
 		computed: {
@@ -137,6 +143,11 @@
 
 			this.getSpecializations();
 		},
+		deactivated() {
+			// Handle style for buttons' transition since the transitionend event never occur when broswing to another page
+			this.areProfileButtonsShown = false;
+			this.showProfileButtonsTimeout = clearTimeout(this.showProfileButtonsTimeout);
+		}
 	}
 </script>
 
@@ -144,6 +155,7 @@
 	<header class="general-header">
 		<div class="container container-header d-flex gap-3">
 			<div class="left-header d-flex">
+				<!-- Logo section -->
 				<routerLink style="text-decoration: none; color: inherit;" :to="{ name: 'homepage' }">
 					<div class="left-header-title-logo d-flex">
 						<div class="logo">
@@ -157,15 +169,8 @@
 						</div>
 					</div>
 				</routerLink>
+				<!-- Searchbar section -->
 				<div class="search-bar">
-					<!-- Old search-bar -->
-					<!-- <div class="input-group search-form">
-                        <input type="text" class="form-control" placeholder="Ricerca il tuo medico!"
-                            aria-label="Ricerca il tuo medico!" aria-describedby="button-addon2">
-                        <button class="btn btn-outline-secondary" type="button" id="button-addon2"><i
-                                class="fa-solid fa-magnifying-glass"></i></button>
-                    </div> -->
-
 					<!-- Updated search bar for specializations -->
 					<Transition>
 						<select @change="chooseSpecialization()" v-model="selectedSpecialization" v-if="specializations.toString()"
@@ -179,12 +184,14 @@
 				</div>
 			</div>
 			<div class="right-header" :class="rightHeaderClass" v-show="!showLoader">
+				<!-- Buttons when isAuthenticated = false -->
 				<routerLink :to="{ name: 'register' }">
 					<button class="btn button-logup">Registrati</button>
 				</routerLink>
 				<routerLink :to="{ name: 'login' }">
 					<button class="btn button-with-icon"><i class="fa-solid fa-user-doctor"></i></button>
 				</routerLink>
+				<!-- Buttons when isAuthenticated = true -->
 				<div class="user">
 					<div class="user-buttons-wrapper" :style="profileButtonsStyle" v-show="areProfileButtonsShown"
 						@transitionend="removeProfileButtonsFromFlow">

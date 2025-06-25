@@ -13,6 +13,9 @@ export const dashboardStore = reactive({
 	currentChartIndex: 0,
 	statisticsChartComponents: ['MessagesChart', 'ReviewsChart', 'VotesChart'],
 	labelsForCharts: ['Messaggi', 'Recensioni', 'Voti'],
+
+	profileDataGeneral: {},
+
   // Chart data 
   chartDataMessages: {},
   chartDataReviews: {},
