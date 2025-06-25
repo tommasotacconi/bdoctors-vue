@@ -5,26 +5,33 @@
 	import axios from 'axios';
 	import { store } from '../../js/store.js';
 	import { dashboardStore } from '../../js/dashboardStore.js';
+	import { emitter } from '../../js/eventBus.js';
 
 	export default {
+		name: 'DashboardPage',
 		data() {
 			return {
+				dashboardCycle: 0,
+				mainDashboardKey: 0,
+				headerDashboardKey: 0,
 				store,
 				dashboardStore,
 				windowWidth: window.innerWidth,
 			};
 		},
 		methods: {
+			resetDashboard() {
+				if (this.dashboardCycle >= 1) {
+					// console.log('Another user has just logged in');
+					this.headerDashboardKey++;
+					this.mainDashboardKey++;
+				}
+			}
 		},
 		components: {
 			SidebarDashboard,
 			HeaderDashboard,
 			MainDashboard,
-		},
-		mounted() {
-			window.addEventListener('resize', this.updateWidth)
-		},
-		created: function () {
 		},
 		computed: {
 			// meanVotePerMonthNumbers() {
@@ -38,6 +45,16 @@
 					]
 				}
 			},
+		},
+		created: function () {
+		},
+		mounted() {
+			this.dashboardCycle++;
+			window.addEventListener('resize', this.updateWidth);
+			emitter.on('reset-dashboard', this.resetDashboard);
+		},
+		unmounted() {
+			emitter.off('reset-dashboard', this.resetDashboard);
 		}
 	}
 </script>
@@ -51,10 +68,10 @@
 		</Transition>
 		<section class="header-main">
 			<div class="header">
-				<HeaderDashboard />
+				<HeaderDashboard :key="headerDashboardKey" />
 			</div>
 			<div class="main">
-				<MainDashboard />
+				<MainDashboard :key="mainDashboardKey" />
 			</div>
 		</section>
 	</div>

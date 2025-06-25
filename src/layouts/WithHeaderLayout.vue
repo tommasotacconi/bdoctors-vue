@@ -9,9 +9,17 @@
 </script>
 
 <template>
-	<RouterView class="app-header" name="header" />
+	<RouterView class="app-header" name="header" v-slot="{ Component }">
+		<KeepAlive>
+			<component :is="Component"></component>
+		</KeepAlive>
+	</RouterView>
 	<div class="page-content bg">
-		<RouterView />
+		<RouterView v-slot="{ Component }">
+			<KeepAlive include="HomeMain,DashboardPage,AppRegister">
+				<component :is="Component"></component>
+			</KeepAlive>
+		</RouterView>
 	</div>
 </template>
 
