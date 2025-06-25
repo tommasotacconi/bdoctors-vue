@@ -1,13 +1,15 @@
 <script>
 	import axios from 'axios';
 	import { store } from '../../../js/store';
+	import { dashboardStore } from '../../../js/dashboardStore.js';
 	import { useGetPathFunctions } from '../../../js/composables/useGetPathFunctions.js';
 
 	export default {
 		data() {
 			return {
 				store,
-				fetchedPhotoPath: ''
+				dashboardStore,
+				profilePhotoPath: '',
 			}
 		},
 		methods: {
@@ -16,41 +18,50 @@
 					withCredentials: true,
 				})
 					.then(({ data: { data: { photo } } }) => {
-						this.fetchedPhotoPath = photo;
+						this.profilePhotoPath = photo;
 						this.$emit('userIconReady');
 					})
 				// .catch(err => {
 				// 	console.log('ERROR IN GET /api/profiles: ' + err.response.data.message);
 				// 	this.loaded = true;
 				// });
-			}
-		},
-		computed: {
-			profilePhotoPath() {
+			},
+			setProfilePhotoPath() {
+				// console.log('Evaluating whether to compute profilePhotoPath');
+				if (!this.store.isAuthenticated) {
+					this.profilePhotoPath = '';
+					return;
+				}
+				// console.log('Computing <profilePhotPath>');
 				// Calculate profile photo :src attribute depending on the presence of the 'photos'
 				// string in the db data photo profiles table
-				const photoPath = this.store.profileDataGeneral.photo ?? this.fetchedPhotoPath;
-				if (!photoPath && this.store.isAuthenticated) {
+				const photoPath = this.dashboardStore.profileDataGeneral.photo ?? this.profilePhotoPath;
+				if (!photoPath) {
 					this.getProfilePhoto();
-					return photoPath;
-				} else if (photoPath && this.store.isAuthenticated) {
+				} else {
 					this.$emit('userIconReady');
-					return this.getProfilePhotoPath(this.store.placeholderImg, photoPath);
+					this.profilePhotoPath = this.getProfilePhotoPath(this.store.placeholderImg, photoPath);
 				}
-			},
+			}
+		},
+		watch: {
+			'store.isAuthenticated'() {
+				this.setProfilePhotoPath();
+			}
 		},
 		setup() {
 			const { getFilePath, getProfilePhotoPath } = useGetPathFunctions();
 
 			return { getFilePath, getProfilePhotoPath }
 		},
-		created() {
+		mounted() {
+			this.setProfilePhotoPath();
 		}
 	}
 </script>
 
 <template>
-	<i class="button fa-solid fa-user" :class="{ ['user-img']: store.isAuthenticated }">
+	<i class="button fa-solid fa-user" :class="{ ['user-img']: profilePhotoPath }">
 		<img :src="profilePhotoPath" alt="foto profilo">
 	</i>
 
