@@ -1,20 +1,13 @@
 import { createWebHistory, createRouter } from 'vue-router';
-import { store } from './store.js';
-import Homepage from '../src/pages/Homepage.vue';
-import LoginPage from '../src/pages/LoginPage.vue';
-import RegisterPage from '../src/pages/RegisterPage.vue';
-import Dashboard from '../src/pages/Dashboard.vue';
-import ProfileEdit from '../src/pages/ProfileEdit.vue';
-import Createpage from '../src/pages/Createpage.vue';
-import AdvancedSearch from '../src/pages/AdvancedSearch.vue';
-import DoctorShow from '../src/components/Search/DoctorShow.vue';
-import WithHeaderLayout from '../src/layouts/WithHeaderLayout.vue';
-import AppHeader from '../src/components/Homepage/AppHeader.vue';
-import AppMainHome from '../src/components/Homepage/AppMainHome.vue';
-import AppLogin from '../src/components/Login/AppLogin.vue';
-import AppRegister from '../src/components/Register/AppRegister.vue';
-import SearchedDoctor from '../src/components/Search/SearchedDoctor.vue';
 import OneComponentLayout from '../src/layouts/OneComponentLayout.vue';
+import WithHeaderLayout from '../src/layouts/WithHeaderLayout.vue';
+import HomepagePage from '../src/pages/HomepagePage.vue';
+import RegisterPage from '../src/pages/RegisterPage.vue';
+import LoginPage from '../src/pages/LoginPage.vue';
+import AdvancedSearchPage from '../src/pages/AdvancedSearchPage.vue';
+import SearchedDoctor from '../src/components/Search/SearchedDoctor.vue';
+import DoctorShow from '../src/components/Search/DoctorShow.vue';
+import DashboardPage from '../src/pages/DashboardPage.vue';
 
 const routes = [
 	{ 
@@ -27,23 +20,34 @@ const routes = [
 			{
 				path: '',
 				name: 'homepage',
-				component: AppMainHome,
+				component: HomepagePage,
 			},
 			{ path: 'user/login',
 				name: 'login',
-				component: AppLogin,
+				component: LoginPage,
 			},
 			{ path: 'user/register',
 				name: 'register',
-				component: AppRegister,
+				component: RegisterPage,
 			},
 			// Path to all doctors with selected specialization id  
 			// { path: '/search/:searchId', component: AdvancedSearch, name: 'search' },
 			// Path to all doctors with selected specialization id and satisfing filter parameters
 			// `inputRating`, `:inputReviews`  
-			{ path: '/search/:specialization',
-				name: 'search',
-				component: SearchedDoctor,
+			{ path: '',
+				component: AdvancedSearchPage,
+				children: [
+					{
+						path: '/:specialization',
+						name: 'search',
+						component: SearchedDoctor
+					},
+					{
+						path: '/:specialization/:searchId/:nameId/testroute',
+						name: 'search.show',
+						component: DoctorShow
+					}
+				]
 			},
 			// Path to doctor, within specialization id, of doctord_id selected (first id for specialization
 			// second for doctor)
@@ -59,15 +63,7 @@ const routes = [
 		children: [
 			{ path: 'user',
 				name: 'dashboard',
-				component: Dashboard,
-			},
-			{ path: '/user/edit',
-				name: 'edit',
-				component: ProfileEdit,
-			},
-			{ path: '/user/create',
-				name: 'create',
-				components: Createpage 
+				component: DashboardPage,
 			},
 		]
 	}

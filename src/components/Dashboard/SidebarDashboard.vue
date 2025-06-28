@@ -51,8 +51,8 @@
 		</RouterLink>
 		<section class="link-pages">
 			<h2 ref="buttonRefs" :key="index" class="ripple-button"
-				:class="dashboardStore.currentComponentIndex === index ? { 'selected-text': !isAnimating[index] } : null"
-				@click="(e) => { dashboardStore.currentComponentIndex = index; handleButtonClick(index, e) }"
+				:class="dashboardStore.currentPageIndex === index ? { 'selected-text': !isAnimating[index] } : null"
+				@click="(e) => { dashboardStore.currentPageIndex = index; handleButtonClick(index, e) }"
 				v-for="(label, index) in dashboardStore.labelsForComponents">
 				<span class="ripple" v-if="isAnimating[index]" :style="rippleStyles[index]"></span>
 				{{ label }}

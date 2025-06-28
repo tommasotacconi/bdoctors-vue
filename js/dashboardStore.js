@@ -5,11 +5,15 @@ export const dashboardStore = reactive({
   sidebar: true,
 	
 	// Variable for changing content inside dashboard
-	currentComponentIndex: 0, 
-  componentsNameChangingPart: ['Information', 'Message', 'Review', 'Sponsorship', 'Statistics'],
+	currentPageIndex: 0, 
+  noSuffixPagesName: ['Information', 'Messages', 'Reviews', 'Sponsorships', 'Statistics'],
   labelsForComponents: ['Profilo', 'Messaggi', 'Recensioni', 'Sponsorizzazioni', 'Statistiche'],
 
-	// Variabel for changing statistics sight
+	// Variable for changing profile section page content
+	currentProfileSectionComponentIndex: 0,
+	noPrefixComponentsName: ['Info', 'Creation', 'Edit'],
+
+	// Variable for changing statistics sight
 	currentChartIndex: 0,
 	statisticsChartComponents: ['MessagesChart', 'ReviewsChart', 'VotesChart'],
 	labelsForCharts: ['Messaggi', 'Recensioni', 'Voti'],

@@ -1,19 +1,20 @@
 <script>
-	import AppMainHome from '../components/Homepage/AppMainHome.vue';
+	import ProfileMessages from '../components/Dashboard/MainDashboardComponents/ProfileMessages.vue';
 
 	export default {
 		data() {
 			return {
+
 			}
 		},
 		components: {
-			AppMainHome,
+			ProfileMessages
 		}
 	}
 </script>
 
 <template>
-	<AppMainHome />
+	<ProfileMessages />
 </template>
 
 <style scoped></style>

@@ -2,11 +2,11 @@
 	import axios from 'axios';
 	import { store } from '../../../js/store'
 	import { dashboardStore } from '../../../js/dashboardStore'
-	import InformationPage from './MainDashboardComponents/InformationPage.vue';
-	import MessagePage from './MainDashboardComponents/MessagePage.vue';
-	import ReviewPage from './MainDashboardComponents/ReviewPage.vue';
-	import SponsorshipPage from './MainDashboardComponents/SponsorshipPage.vue';
-	import StatisticsPage from './MainDashboardComponents/StatisticsPage.vue';
+	import InformationPage from '../../pages/InformationPage.vue';
+	import MessagesPage from '../../pages/MessagesPage.vue';
+	import ReviewsPage from '../../pages/ReviewsPage.vue';
+	import SponsorshipsPage from '../../pages/SponsorshipsPage.vue';
+	import StatisticsPage from '../../pages/StatisticsPage.vue';
 
 	export default {
 		data() {
@@ -17,9 +17,9 @@
 		},
 		components: {
 			InformationPage,
-			MessagePage,
-			ReviewPage,
-			SponsorshipPage,
+			MessagesPage,
+			ReviewsPage,
+			SponsorshipsPage,
 			StatisticsPage,
 		},
 		methods: {
@@ -51,12 +51,12 @@
 			},
 		},
 		computed: {
-			componentsName() {
+			pagesName() {
 				const namesSuffix = 'Page';
-				return this.dashboardStore.componentsNameChangingPart.map((changingPart) => changingPart + namesSuffix);
+				return this.dashboardStore.noSuffixPagesName.map(partialName => partialName + namesSuffix);
 			},
 			index() {
-				return this.dashboardStore.currentComponentIndex
+				return this.dashboardStore.currentPageIndex
 			}
 		},
 		created() {
@@ -67,7 +67,7 @@
 </script>
 
 <template>
-	<component :is="componentsName[index]" />
+	<component :is="pagesName[index]" />
 </template>
 
 <style scoped></style>

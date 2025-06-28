@@ -76,7 +76,8 @@
 			<Loader v-if="!loaded" />
 
 			<!-- Section with doctor info -->
-			<section class="card-general" v-if="loaded && store.isAuthenticated">
+			<section class="card-general">
+				<!-- <section class="card-general" v-if="loaded && store.isAuthenticated"> -->
 				<!-- Card with info -->
 				<div class="card mb-3" v-if="Object.keys(dashboardStore.profileDataGeneral).length">
 					<div class="card-flex">
@@ -124,18 +125,19 @@
 										</li>
 									</ul>
 								</div>
-								<routerLink :to="{ name: 'edit' }"><button href="#" class="edit-profile">Modifica il tuo
-										profilo</button></routerLink>
+								<button href="#" class="edit-profile"
+									@click="dashboardStore.currentProfileSectionComponentIndex = 2">Modifica il tuo profilo</button>
 							</div>
 						</div>
 					</div>
 				</div>
 				<!-- Placeholder card when a profile needs to be created -->
-				<div class="card mb-3" v-else>
+				<div class="card mb-3">
+					<!-- <div class="card mb-3" v-else> -->
 					<div class="card-create">
-						<routerLink :to="{ name: 'create' }">
-							<div class="plus"><i class="fa-solid fa-plus"></i></div>
-						</routerLink>
+						<button class="plus" @click="dashboardStore.currentProfileSectionComponentIndex = 1">
+							<div><i class="fa-solid fa-plus"></i></div>
+						</button>
 						<div class="create-profile-text">
 							Il tuo profilo sembra essere un po' vuoto... che ne dici di aggiungerci qualcosa?
 						</div>
