@@ -15,12 +15,13 @@
 		methods: {
 			getProfilePhoto() {
 				// console.log('Calling api for profilePhoto');
-				axios.get(this.store.apiUri + 'profiles/show', {
+				axios.get(this.store.apiUri + 'profiles', {
 					withCredentials: true,
 				})
 					.then(({ data: { data: { photo } } }) => {
 						this.profilePhotoPath = photo;
-						this.$emit('userIconReady');
+						// this.$emit('userIconReady');
+						this.setProfilePhotoPath();
 					})
 				// .catch(err => {
 				// 	console.log('ERROR IN GET /api/profiles: ' + err.response.data.message);
@@ -41,8 +42,8 @@
 				if (!photoPath) {
 					this.getProfilePhoto();
 				} else {
+					this.profilePhotoPath = this.getProfilePhotoPath(this.store.placeholderImg, photoPath, this.store.apiUri.slice(0, -4));
 					this.$emit('userIconReady');
-					this.profilePhotoPath = this.getProfilePhotoPath(this.store.placeholderImg, photoPath);
 				}
 			}
 		},

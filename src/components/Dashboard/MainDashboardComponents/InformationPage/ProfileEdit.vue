@@ -6,18 +6,19 @@
 	import AppAlert from "../../../Generics/AppAlert.vue";
 	import { store } from "../../../../../js/store";
 	import { dashboardStore } from "../../../../../js/dashboardStore";
+	import { emitter } from "../../../../../js/eventBus";
 
 
 	export default {
 		data() {
 			return {
 				formData: {
-					user_id: localStorage.getItem('user_id'),
-					profile_id: localStorage.getItem('profile_id'),
+					// user_id: localStorage.getItem('user_id'),
+					// profile_id: localStorage.getItem('profile_id'),
 					first_name: "",
 					last_name: "",
-					email: "",
-					password: "",
+					// email: "",
+					// password: "",
 					phone: "",
 					office_address: "",
 					specializations: "",
@@ -26,16 +27,18 @@
 					// photoUrl: "",
 					curriculum: null,
 					// curriculumUrl: "",
+					// Set method to enable a content-type header with form-data 
+					_method: 'PATCH'
 				},
 				oldSpecializations: [],
 				oldPhoto: '',
 				oldCurriculum: '',
 				apiUrl: 'http://127.0.0.1:8000/api/profiles/edit/',
 				errors: {
-					first_name: "",
-					last_name: "",
-					email: "",
-					password: "",
+					// first_name: "",
+					// last_name: "",
+					// email: "",
+					// password: "",
 					phone: "",
 					office_address: "",
 					specializations: "",
@@ -45,7 +48,7 @@
 				},
 				isResponseStatusSuccess: false,
 				store,
-				dashboardStore
+				dashboardStore,
 			}
 		},
 		components: {
@@ -64,21 +67,22 @@
 				this.formData.curriculum = curriculum;
 			},
 
-			updateForm() {
-
-				axios.post('http://localhost:8000/api/profiles/edit/' + this.formData.profile_id, this.formData, {
+			updateProfile() {
+				axios.post(this.store.apiUri + 'profiles', this.formData, {
 					headers: {
 						"Content-Type": "multipart/form-data",
 					},
+					withCredentials: true
 				})
 					.then(response => {
-						console.log('Profile updated', response.data);
+						// console.log('Profile updated', response.data);
 						this.isResponseStatusSuccess = true;
+						emitter.emit('reset-dashboard-header');
 					})
 					.catch(function (error) {
 						// handle error
 						console.error(error)
-						console.log(error.response.data.errors);
+						// console.log(error.response.data.errors);
 					})
 					.finally(function () {
 						// always executed
@@ -134,10 +138,10 @@
 					!this.errors.curriculum
 				) {
 					this.validated = true;
-					this.updateForm();
+					this.updateProfile();
 				}
-				console.log(this.formData);
-				console.log(this.errors);
+				// console.log(this.formData);
+				// console.log(this.errors);
 			},
 			validEmail(email) {
 				const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -319,7 +323,8 @@
 						I tuoi dati sono stati aggiornati.
 					</div>
 					<div class="alert-footer">
-						<button type="button" class="btn btn-primary" @click="openProfile">
+						<button type="button" class="btn btn-primary"
+							@click="dashboardStore.currentProfileSectionComponentIndex = 0">
 							Torna al profilo
 						</button>
 					</div>

@@ -6,12 +6,17 @@
 	import CvUpload from "../../../Generics/CvUpload.vue";
 	import AppAlert from "../../../Generics/AppAlert.vue";
 	import { dashboardStore } from "../../../../../js/dashboardStore.js";
+	import { emitter } from "../../../../../js/eventBus.js";
 
 	export default {
 		data() {
 			return {
 				formData: {
 					//user_id: localStorage.getItem('user_id'),
+					phone: "",
+					office_address: "",
+					specializations: "",
+					services: "",
 					photo: null,
 					curriculum: null,
 					user_id: store.informationPageId
@@ -66,15 +71,17 @@
 			},
 			//commento per commit 2
 			createProfile() {
-				axios.post('http://localhost:8000/api/profiles/' + this.store.informationPageId, this.formData, {
+				axios.post(this.store.apiUri + 'profiles', this.formData, {
 					headers: {
 						"Content-Type": "multipart/form-data",
 					},
+					withCredentials: true
 				})
 					.then(response => {
 						console.log('Response', response.data);
 						this.profileData = response.data.profile;
 						this.isResponseStatusSuccess = true;
+						emitter.emit('reset-dashboard-header');
 						// Data da condividere all'interno degli altri componenti
 						//store.profileDataGeneral = response.data.data
 						//localStorage.setItem('user_id', response.data.data.doctor.id)
@@ -180,7 +187,8 @@
 						I tuoi dati sono stati aggiornati.
 					</div>
 					<div class="alert-footer">
-						<button type="button" class="btn btn-primary" @click="openProfile">
+						<button type="button" class="btn btn-primary"
+							@click="dashboardStore.currentProfileSectionComponentIndex = 0">
 							Torna al profilo
 						</button>
 					</div>

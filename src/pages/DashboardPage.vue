@@ -26,6 +26,10 @@
 					this.headerDashboardKey++;
 					this.mainDashboardKey++;
 				}
+			},
+			resetDashboardHeader() {
+				this.dashboardStore.profileDataGeneral.photo = null;
+				this.headerDashboardKey++;
 			}
 		},
 		components: {
@@ -52,9 +56,11 @@
 			this.dashboardCycle++;
 			window.addEventListener('resize', this.updateWidth);
 			emitter.on('reset-dashboard', this.resetDashboard);
+			emitter.on('reset-dashboard-header', this.resetDashboardHeader);
 		},
 		unmounted() {
 			emitter.off('reset-dashboard', this.resetDashboard);
+			emitter.off('reset-dashboard-header', this.resetDashboardHeader);
 		}
 	}
 </script>

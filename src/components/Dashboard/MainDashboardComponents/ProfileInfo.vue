@@ -2,6 +2,7 @@
 	import axios from 'axios';
 	import { store } from '../../../../js/store.js';
 	import { dashboardStore } from '../../../../js/dashboardStore.js';
+	import { useGetPathFunctions } from '../../../../js/composables/useGetPathFunctions.js';
 
 	export default {
 		data() {
@@ -14,13 +15,12 @@
 		},
 		methods: {
 			getProfileData() {
-				axios.get(this.store.apiUri + 'profiles/show', {
+				axios.get(this.store.apiUri + 'profiles', {
 					withCredentials: true,
 				})
 					.then(({ data: { data: profile } }) => {
-						console.log('Profile: ', profile);
+						// console.log('Profile: ', profile);
 						this.loaded = true;
-						this.store.isAuthenticated = true;
 
 						// Data to share inside other components
 						this.dashboardStore.profileDataGeneral = profile;
@@ -28,13 +28,16 @@
 						// localStorage.setItem('profile_id', response.data.data.id)
 					})
 					.catch(err => {
-						console.log('ERROR IN GET /api/profiles: ' + err.response.data.message);
+						console.error('ERROR IN GET /api/profiles: ' + err.response.data.message);
 						this.loaded = true;
+					})
+					.finally(() => {
+						this.store.isAuthenticated = true;
 					});
 			},
-			getFilePath: function (filePath) {
-				return new URL(filePath, 'http://localhost:8000/').href;
-			},
+			// getFilePath: function (filePath) {
+			// 	return new URL(filePath, 'http://localhost:8000/').href;
+			// },
 		},
 		computed: {
 			/* showLoader() {
@@ -45,7 +48,8 @@
 			profilePhotoPath() {
 				// Calculate profile photo :src attribute depending on the presence of the 'photos' string in the db data photo profiles table
 				const photoPath = this.dashboardStore.profileDataGeneral.photo;
-				return photoPath.includes('photos') ? this.getFilePath(`storage/${this.dashboardStore.profileDataGeneral.photo}`) : photoPath ?? new URL(this.placeholderImg).href;
+				return this.getProfilePhotoPath(this.store.placeholderImg, photoPath, this.store.apiUri.slice(0, -4));
+				// return photoPath.includes('photos') ? this.getFilePath(`storage/${this.dashboardStore.profileDataGeneral.photo}`) : photoPath ?? new URL(this.placeholderImg).href;
 			},
 			curriculumFileName() {
 				// Truncate curriculum lenght to 30 string characters
@@ -58,7 +62,12 @@
 
 			}
 		},
-		created: function () {
+		setup() {
+			const { getFilePath, getProfilePhotoPath } = useGetPathFunctions();
+
+			return { getFilePath, getProfilePhotoPath }
+		},
+		created() {
 			this.getProfileData();
 		},
 		mounted() {
@@ -76,8 +85,7 @@
 			<Loader v-if="!loaded" />
 
 			<!-- Section with doctor info -->
-			<section class="card-general">
-				<!-- <section class="card-general" v-if="loaded && store.isAuthenticated"> -->
+			<section class="card-general" v-if="loaded && store.isAuthenticated">
 				<!-- Card with info -->
 				<div class="card mb-3" v-if="Object.keys(dashboardStore.profileDataGeneral).length">
 					<div class="card-flex">
@@ -105,7 +113,7 @@
 									<ul>
 										<li>
 											<strong>Curriculum: </strong>
-											<a :href="getFilePath(`storage/${dashboardStore.profileDataGeneral.curriculum}`)"
+											<a :href="getFilePath(`storage/${dashboardStore.profileDataGeneral.curriculum}`, this.store.apiUri.slice(0, -4))"
 												target="_blank">{{
 													curriculumFileName
 												}}</a>
@@ -132,8 +140,7 @@
 					</div>
 				</div>
 				<!-- Placeholder card when a profile needs to be created -->
-				<div class="card mb-3">
-					<!-- <div class="card mb-3" v-else> -->
+				<div class="card mb-3" v-else>
 					<div class="card-create">
 						<button class="plus" @click="dashboardStore.currentProfileSectionComponentIndex = 1">
 							<div><i class="fa-solid fa-plus"></i></div>
