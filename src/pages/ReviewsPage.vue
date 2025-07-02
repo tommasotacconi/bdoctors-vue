@@ -1,5 +1,5 @@
 <script>
-	import ProfileMessages from '../components/Dashboard/MainDashboardComponents/ProfileMessages.vue';
+	import ProfileReviews from '../components/Dashboard/MainDashboardComponents/ProfileReviews.vue';
 
 	export default {
 		data() {
@@ -8,13 +8,13 @@
 			}
 		},
 		components: {
-			ProfileMessages
+			ProfileReviews
 		}
 	}
 </script>
 
 <template>
-	<ProfileMessages />
+	<ProfileReviews />
 </template>
 
 <style scoped></style>
