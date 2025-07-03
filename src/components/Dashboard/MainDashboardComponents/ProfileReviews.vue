@@ -17,33 +17,23 @@
 		},
 		methods: {
 			getApiReviews() {
-				axios.get(this.reviewsApiUrl)
+				axios.get(this.store.apiUri + 'reviews', {
+					withCredentials: true
+				})
 					.then(response => {
 						// handle success
-						console.log(response.data);
-						let reviewsProfiles = response.data.reviews
-						console.log(reviewsProfiles)
-						let idProfile = store.profileDataGeneral.id
-						console.log(idProfile)
-						console.log(reviewsProfiles[0].profile_id)
-
-						const reviewsProfile = reviewsProfiles.filter(review => review.profile_id === idProfile)
-						console.log(reviewsProfile)
-						let totalNumberVote = 0
-
-						this.reviewsProfile = reviewsProfile
-
+						// console.log(response.data);
+						const { data: { reviews: profileReviews } } = response;
+						console.log(profileReviews);
+						this.reviewsProfile = profileReviews;
 
 						// Calcola la media voti
-						for (let i = 0; i < reviewsProfile.length; i++) {
-							let review = reviewsProfile[i]
+						let totalNumberVote = 0
+						for (let i = 0; i < this.reviewsProfile.length; i++) {
+							let review = this.reviewsProfile[i]
 							totalNumberVote += review.votes
 						}
-						console.log(reviewsProfile.length)
-						this.averageVote = Math.round(totalNumberVote / reviewsProfile.length)
-						console.log(this.averageVote)
-
-
+						this.averageVote = Math.round(totalNumberVote / this.reviewsProfile.length)
 					})
 					.catch(function (error) {
 						// handle error
@@ -53,13 +43,10 @@
 			selectReview(index) {
 				this.reviewSelected = this.reviewsProfile[index]
 				this.reviewSelectedFlag = true
-
-				console.log(this.reviewsProfile[index])
 			},
 			getNormalFormatHourDate(index) {
 				// Fixed date
 				let hourDate = this.reviewsProfile[index].updated_at
-				console.log(hourDate)
 				const date = new Date(hourDate)
 
 				// Così posso togliere i secondi
@@ -112,8 +99,16 @@
 					<div class="card-general card-reviews">
 						<div class="card-header-title">
 							<h5 class="title">Recensioni ricevute</h5>
-							<div class="reviews-number"><strong>Totale:</strong> <span class="total-number">{{
-								reviewsProfile.length }}</span></div>
+							<div class="profile-data d-flex">
+								<div class="reviews-number">
+									<strong>Totale: </strong>
+									<span class="total-number">{{ reviewsProfile.length }}</span>
+								</div>
+								<div class="avg-vote-number">
+									<strong>Gradimento medio: </strong>
+									<span class="total-number">{{ averageVote }}</span>
+								</div>
+							</div>
 						</div>
 						<div class="card-body-list">
 							<ul class="list-general" v-for="(review, index) in reviewsProfile" @click="selectReview(index)">
@@ -218,12 +213,17 @@
 		background-color: white;
 	}
 
-	.reviews-number {
+	.reviews-number,
+	.avg-vote-number {
 		border-radius: 20px;
 		border: 3px dashed var(--color-secondary);
 		padding: 8px 15px;
 		background-color: var(--color-secondary);
 		color: white;
+	}
+
+	.reviews-number {
+		margin-right: 10px;
 	}
 
 	.total-number {
