@@ -23,7 +23,6 @@
 						// handle success
 						// console.log(response.data);
 						const { data: { reviews: profileReviews } } = response;
-						console.log(profileReviews);
 						this.reviewsProfile = profileReviews;
 
 						// Calcola la media voti
@@ -33,10 +32,14 @@
 							totalNumberVote += review.votes
 						}
 						this.averageVote = Math.round(totalNumberVote / this.reviewsProfile.length)
+
 					})
 					.catch(function (error) {
 						// handle error
 						console.log(error);
+					})
+					.finally(() => {
+						this.loaded = true;
 					})
 			},
 			selectReview(index) {
@@ -57,18 +60,7 @@
 				};
 
 				return date.toLocaleString("it-IT", options)
-			},
-			// showAverageVote() {
-			//     let totalNumberVote = 0
-			//     let reviewsProfile = this.reviewsProfile
-			//     for (let i = 0; i < reviewsProfile.length; i++) {
-			//         let review = reviewsProfile[i]
-			//         totalNumberVote += review.votes
-			//     }
-			//     this.averageVote = Math.round(totalNumberVote / reviewsProfile.length)
-			//     console.log(this.averageVote)
-			// }
-
+			}
 		},
 		mounted() {
 			this.showLoader
@@ -77,12 +69,6 @@
 			this.getApiReviews();
 		},
 		computed: {
-			showLoader() {
-				setTimeout(() => {
-					this.loaded = true
-				}, 2000)
-
-			}
 		},
 	}
 </script>

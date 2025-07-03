@@ -22,31 +22,19 @@
 						// handle success
 						// console.log(response.data);
 						const { data: { messages: profileMessages } } = response;
-						console.log(profileMessages);
 						this.messagesProfile = profileMessages;
-
-						// Fixed date
-						// let hourDate = this.messagesProfile[index].updated_at
-						// console.log(hourDate)
-						// const date = new Date(hourDate)
-						// this.normalHourDate = date.toLocaleString()
-						// console.log(this.normalHourDate)
 					})
 					.catch(function (error) {
 						// handle error
 						console.log(error);
 					})
+					.finally(() => {
+						this.loaded = true;
+					})
 			},
 			selectMessage(index) {
 				this.messageSelected = this.messagesProfile[index]
 				this.messageSelectedFlag = true
-
-				// Fixed date
-				// let hourDate = this.messagesProfile[index].updated_at
-				// console.log(hourDate)
-				// const date = new Date(hourDate)
-				// this.normalHourDate = date.toLocaleString()
-				// console.log(this.normalHourDate)
 			},
 			getNormalFormatHourDate(index) {
 				// Fixed date
@@ -74,12 +62,6 @@
 			this.getApiMessages()
 		},
 		computed: {
-			showLoader() {
-				setTimeout(() => {
-					this.loaded = true
-				}, 2000)
-
-			}
 		},
 	}
 </script>
