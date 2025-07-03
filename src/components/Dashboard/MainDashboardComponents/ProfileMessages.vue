@@ -85,11 +85,13 @@
 </script>
 
 <template>
-	<main class="container">
-		<h2>Messaggi</h2>
-		<Loader v-if="!loaded" />
-		<div v-else class="general-cards-container">
-			<div class="all-messages">
+	<h2>Messaggi</h2>
+
+	<Loader v-if="!loaded" />
+
+	<main class="container" v-else>
+		<div class="general-cards-container">
+			<div class="messages-list-card">
 				<div class="card-inbox">
 					<div class="card-header-title">
 						<h5 class="title">Messaggi arrivati</h5>
@@ -101,7 +103,7 @@
 					<div class="card-body-list">
 						<ul class="list-general" v-for="(message, index) in messagesProfile" @click="selectMessage(index)">
 							<li class="list-date-hour">{{ getNormalFormatHourDate(index) }}</li>
-							<li class="list-email">{{ message.email }}</li>
+							<!-- <li class="list-email">{{ message.email }}</li> -->
 							<li class="list-name">{{ message.first_name }} {{ message.last_name }}</li>
 							<li class="list-content">{{ message.content }}</li>
 						</ul>
@@ -146,7 +148,6 @@
 	li {
 		text-decoration: none;
 		list-style-type: none;
-		display: flex;
 		align-items: center;
 		max-height: 25px;
 		overflow: hidden;
@@ -175,10 +176,17 @@
 		right: 10px;
 	}
 
-	.card-inbox {
+	.messages-list-card {
 		border: 3px solid var(--color-complementary);
-		border-radius: 20px;
+		border-radius: 15px;
+
+		overflow: hidden;
+	}
+
+	.card-inbox {
 		height: 300px;
+		margin: 5px 0;
+
 		overflow: auto;
 	}
 
@@ -218,7 +226,8 @@
 	}
 
 	.list-date-hour {
-		flex-basis: 15%;
+		flex: 0 0 fit-content;
+		padding-right: 10px;
 		border-right: 3px dashed var(--color-secondary);
 	}
 
@@ -228,13 +237,14 @@
 	}
 
 	.list-name {
-		flex-basis: 15%;
+		flex-basis: 130px;
+		padding-right: 5px;
 		border-right: 3px dashed var(--color-secondary);
 
 	}
 
 	.list-content {
-		flex-basis: 50%;
+		flex: 2 1;
 
 	}
 

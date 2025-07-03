@@ -8,7 +8,6 @@
 				store,
 				reviewsApiUrl: 'http://localhost:8000/api/reviews',
 				loaded: false,
-				reviewsProfiles: [],
 				reviewsProfile: [],
 				reviewSelected: [],
 				averageVote: 0,
@@ -89,70 +88,73 @@
 </script>
 
 <template>
-	<main class="container">
-		<h2>Recensioni</h2>
+	<h2>Recensioni</h2>
 
-		<Loader v-if="!loaded" />
-		<div v-else>
-			<div v-if="reviewsProfile.length > 0">
-				<div class="card-reviews-container">
-					<div class="card-general card-reviews">
-						<div class="card-header-title">
-							<h5 class="title">Recensioni ricevute</h5>
-							<div class="profile-data d-flex">
-								<div class="reviews-number">
-									<strong>Totale: </strong>
-									<span class="total-number">{{ reviewsProfile.length }}</span>
-								</div>
-								<div class="avg-vote-number">
-									<strong>Gradimento medio: </strong>
-									<span class="total-number">{{ averageVote }}</span>
-								</div>
+	<Loader v-if="!loaded" />
+
+	<main class="container" v-else>
+		<!-- Reviews dashboard with list and single review cards -->
+		<div class="general-cards-container" v-if="reviewsProfile.length > 0">
+			<div class="reviews-list-card">
+				<div class="card-inbox">
+					<div class="card-header-title">
+						<h5 class="title">Recensioni ricevute</h5>
+						<div class="profile-data d-flex">
+							<div class="reviews-number">
+								<strong>Totale: </strong>
+								<span class="total-number">{{ reviewsProfile.length }}</span>
 							</div>
-						</div>
-						<div class="card-body-list">
-							<ul class="list-general" v-for="(review, index) in reviewsProfile" @click="selectReview(index)">
-								<li class="list-date">{{ getNormalFormatHourDate(index) }}</li>
-								<li class="list-vote"><i class="fa-solid fa-stethoscope" v-for="star in review.votes"></i>
-								</li>
-								<li class="list-email">{{ review.email }}</li>
-								<li class="list-name">{{ review.first_name }} {{ review.last_name }}</li>
-								<li class="list-content">{{ review.content }}</li>
-							</ul>
+							<div class="avg-vote-number">
+								<strong>Gradimento medio: </strong>
+								<span class="total-number">{{ averageVote }}</span>
+							</div>
 						</div>
 					</div>
-				</div>
-				<div class="card-general card-review" v-if="reviewSelectedFlag">
-					<div class="card-selected-review">
-						<div class="title-star">
-							<h5 class="title">Recensione selezionata</h5>
-							<div class="star">
-								<strong>Voto: </strong>
-								<span>
-									<i class="fa-solid fa-stethoscope" v-for="star in reviewSelected.votes"></i>
-								</span>
-							</div>
-						</div>
-
-						<div class="review-name">
-							<strong>Da:</strong> {{ reviewSelected.first_name }} {{ reviewSelected.last_name }}
-						</div>
-						<div class="review-email">
-							<strong>E-mail:</strong> {{ reviewSelected.email }}
-						</div>
-						<div class="review-content">
-							<div><strong>Contenuto:</strong></div> <span>{{ reviewSelected.content }}</span>
-						</div>
+					<div class="card-body-list">
+						<ul class="list-general" v-for="(review, index) in reviewsProfile" @click="selectReview(index)">
+							<li class="list-date">{{ getNormalFormatHourDate(index) }}</li>
+							<li class="list-vote"><i class="fa-solid fa-stethoscope" v-for="star in review.votes"></i>
+							</li>
+							<!-- <li class="list-email">{{ review.email }}</li> -->
+							<li class="list-name">{{ review.first_name }} {{ review.last_name }}</li>
+							<li class="list-content">{{ review.content }}</li>
+						</ul>
 					</div>
 				</div>
 			</div>
-			<div v-else class="empty-card-general mt-5">
-				<div class="card mb-3">
-					<div class="card-create">
-						<div class="create-profile-text">
-							Al momento non è ancora presente nessuna recensione, <span class="eng-sentence">keep up the
-								good work!</span>
+			<div class="card-general card-review" v-if="reviewSelectedFlag">
+				<div class="card-selected-review">
+					<div class="card-header">
+						<h5 class="title">Recensione selezionata</h5>
+						<div class="star">
+							<strong>Voto: </strong>
+							<span>
+								<i class="fa-solid fa-stethoscope" v-for="star in reviewSelected.votes"></i>
+							</span>
 						</div>
+					</div>
+
+					<div class="review-name">
+						<strong>Da:</strong> {{ reviewSelected.first_name }} {{ reviewSelected.last_name }}
+					</div>
+					<div class="review-email">
+						<strong>E-mail:</strong> {{ reviewSelected.email }}
+					</div>
+					<div class="review-content">
+						<div><strong>Contenuto:</strong>
+						</div><span>{{ reviewSelected.content }}</span>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Placeholder card when no review have been written yet -->
+		<div v-else class="empty-card-general mt-5">
+			<div class="card mb-3">
+				<div class="card-create">
+					<div class="create-profile-text">
+						Al momento non è ancora presente nessuna recensione, <span class="eng-sentence">keep up the
+							good work!</span>
 					</div>
 				</div>
 			</div>
@@ -171,7 +173,6 @@
 	li {
 		text-decoration: none;
 		list-style-type: none;
-		display: flex;
 		align-items: center;
 		max-height: 25px;
 		overflow: hidden;
@@ -194,10 +195,17 @@
 
 
 	/* Card reviews */
-	.card-reviews-container {
+	.reviews-list-card {
 		border: 3px solid var(--color-complementary);
-		border-radius: 20px;
+		border-radius: 15px;
+
+		overflow: hidden;
+	}
+
+	.card-inbox {
 		height: 300px;
+		margin: 5px 0;
+
 		overflow: auto;
 	}
 
@@ -242,12 +250,12 @@
 	}
 
 	.list-date {
-		flex-basis: 15%;
+		padding-right: 10px;
 		border-right: 3px dashed var(--color-secondary);
 	}
 
 	.list-vote {
-		flex-basis: 10%;
+		flex-basis: 120px;
 		border-right: 3px dashed var(--color-secondary);
 	}
 
@@ -257,13 +265,14 @@
 	}
 
 	.list-name {
-		flex-basis: 20%;
+		flex-basis: 130px;
+		padding-right: 5px;
 		border-right: 3px dashed var(--color-secondary);
 
 	}
 
 	.list-content {
-		flex-basis: 50%;
+		flex: 1;
 
 	}
 
@@ -281,11 +290,10 @@
 		padding: 15px;
 	}
 
-	.title-star {
+	.card-header {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		margin: 0 15px;
 	}
 
 	.fa-stethoscope {
