@@ -15,18 +15,15 @@
 		},
 		methods: {
 			getApiMessages() {
-				axios.get(this.messagesApiUrl)
+				axios.get(this.store.apiUri + 'messages', {
+					withCredentials: true
+				})
 					.then(response => {
 						// handle success
-						console.log(response.data);
-						let messagesProfiles = response.data.messages
-						console.log(messagesProfiles)
-						let idProfile = store.profileDataGeneral.id
-						console.log(idProfile)
-
-						const messagesProfile = messagesProfiles.filter(message => message.profile_id === idProfile)
-						console.log(messagesProfile)
-						this.messagesProfile = messagesProfile
+						// console.log(response.data);
+						const { data: { messages: profileMessages } } = response;
+						console.log(profileMessages);
+						this.messagesProfile = profileMessages;
 
 						// Fixed date
 						// let hourDate = this.messagesProfile[index].updated_at
@@ -43,8 +40,6 @@
 			selectMessage(index) {
 				this.messageSelected = this.messagesProfile[index]
 				this.messageSelectedFlag = true
-				console.log(this.messagesProfile[index])
-				console.log(this.messagesProfile[index])
 
 				// Fixed date
 				// let hourDate = this.messagesProfile[index].updated_at
@@ -56,7 +51,6 @@
 			getNormalFormatHourDate(index) {
 				// Fixed date
 				let hourDate = this.messagesProfile[index].updated_at
-				console.log(hourDate)
 				const date = new Date(hourDate)
 
 				// Così posso togliere i secondi
