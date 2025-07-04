@@ -10,7 +10,7 @@
 				price: null,
 				profilesApiUrl: 'http://127.0.0.1:8000/api/profiles',
 				sponsorships: [],
-				sponsorship: false,
+				isSponsorized: false,
 				cardBronze: false,
 				cardSilver: false,
 				cardGold: false,
@@ -91,24 +91,23 @@
 				}
 			},
 			getApiProfiles() {
-				axios.get(this.profilesApiUrl)
+				axios.get(this.store.apiUri + 'profiles', {
+					withCredentials: true
+				})
 					.then(response => {
-						let profileDataGeneral = store.profileDataGeneral
-						let sponsorships = response.data.profiles[profileDataGeneral.id].sponsorships
-						this.sponsorships = sponsorships
+						console.log(response);
+						const { data: { data: { active_sponsorships: activeSponsorships } } } = response;
+						this.sponsorships = activeSponsorships;
 
-						if (sponsorships.length) {
-							this.sponsorship = true
-						} else {
-							this.sponsorship = false
-						}
-
-						if (this.sponsorships[0].id === 1) {
-							this.cardBronze = true
-						} else if (this.sponsorships[0].id === 2) {
-							this.cardSilver = true
-						} else if (this.sponsorships[0].id === 3) {
-							this.cardGold = true
+						// Set sponsorization status
+						if (activeSponsorships.length) this.isSponsorized = true;
+						else this.isSponsorized = false;
+						// Set type of sponsorization
+						if (this.isSponsorized) {
+							const sponsorshipId = this.sponsorships[0].id;
+							if (sponsorshipId === 1) this.cardBronze = true;
+							else if (sponsorshipId === 2) this.cardSilver = true;
+							else if (sponsorshipId === 3) this.cardGold = true;
 						}
 					})
 					.catch(function (error) {
@@ -146,7 +145,7 @@
 		<h2>Sponsorizzazione</h2>
 		<Loader v-if="!loaded" />
 		<div class="container-flex" v-else>
-			<div class="is-not-sponsored" v-if="!sponsorship">
+			<div class="is-not-sponsored" v-if="!isSponsorized">
 				<div class="sponsored-description">
 					<p>
 						Investi nelle tue competenze, sponsorizza il tuo profilo!
