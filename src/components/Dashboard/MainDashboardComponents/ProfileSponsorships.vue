@@ -2,12 +2,14 @@
 	import axios from 'axios';
 	import { store } from '../../../../js/store.js';
 	import dropin from 'braintree-web-drop-in';
+	import { nextTick } from 'vue';
 
 	export default {
 		data() {
 			return {
 				store,
 				price: null,
+				sponsorshipName: null,
 				profilesApiUrl: 'http://127.0.0.1:8000/api/profiles',
 				sponsorships: [],
 				isSponsorized: false,
@@ -19,35 +21,48 @@
 				instance: null,
 				loading: false,
 				error: null,
-				paymentSuccess: false
+				paymentSuccess: false,
+				isWaitingToken: false,
 			}
 		},
 		methods: {
 			async getPriceBronze() {
 				this.price = 2.99;
 				store.price = this.price;
+				this.sponsorshipName = 'Bronze';
 				this.showPaymentForm = true;
 				await this.initializePayment();
 			},
 			async getPriceSilver() {
 				this.price = 5.99;
 				store.price = this.price;
+				this.sponsorshipName = 'Silver';
 				this.showPaymentForm = true;
 				await this.initializePayment();
 			},
 			async getPriceGold() {
 				this.price = 9.99;
 				store.price = this.price;
+				this.sponsorshipName = 'Gold';
 				this.showPaymentForm = true;
 				await this.initializePayment();
 			},
 			async initializePayment() {
+				await nextTick();
+				// If another payment was previously initialized inside #dropin-container, remove it
+				const container = document.getElementById('dropin-container');
+				const containerChild = container.firstChild;
+				if (containerChild) container.removeChild(containerChild);
+				// and remove error
+				this.error = null;
+
 				try {
-					const response = await axios.get('http://127.0.0.1:8000/api/braintree/token');
-					const clientToken = response.data.token;
+					this.isWaitingToken = true;
+					const { data: { token } } = await axios.get('http://127.0.0.1:8000/api/braintree/token');
+					this.isWaitingToken = false;
 
 					const dropinInstance = await dropin.create({
-						authorization: clientToken,
+						authorization: token,
 						container: '#dropin-container',
 						locale: 'it_IT',
 						paypal: {
@@ -55,39 +70,40 @@
 							amount: this.price,
 							currency: 'EUR'
 						}
+					}, (error, dropinInstance) => {
+						if (error) console.error(error);
+
+						this.$refs.btnPay.addEventListener('click', event => {
+							dropinInstance.requestPaymentMethod(async (error, payload) => {
+								if (error) console.error(error);
+
+								console.log('Request payment method payload -->', payload)
+								try {
+									await axios.post('http://127.0.0.1:8000/api/braintree/process-payment', {
+										payment_method_nonce: payload.nonce,
+										sponsorshipName: this.sponsorshipName,
+										amount: this.price,
+									}, {
+										withCredentials: true
+									});
+
+									this.paymentSuccess = true;
+									this.showPaymentForm = false;
+									this.getApiProfiles();
+								} catch (error) {
+									this.error = 'Pagamento fallito per favore riprova.'
+								} finally {
+									this.loading = false;
+								}
+							})
+						})
 					});
 
 					this.instance = dropinInstance;
 				} catch (error) {
 					this.error = 'Errore durante l\'inizializzazione del modulo di pagamento';
+					this.isWaitingToken = false;
 					console.error(error);
-				}
-			},
-			async submitPayment() {
-				if (!this.instance) {
-					return;
-				}
-
-				this.loading = true;
-				this.error = null;
-
-				try {
-					const { nonce } = await this.instance.requestPaymentMethod();
-					const fakePayPalNonce = 'fake-paypal-one-time-nonce';
-
-					await axios.post('http://127.0.0.1:8000/api/braintree/process-payment', {
-						payment_method_nonce: fakePayPalNonce,
-						amount: this.price
-					});
-
-					this.paymentSuccess = true;
-					this.showPaymentForm = false;
-					this.getApiProfiles();
-				} catch (error) {
-					this.error = 'Pagamento fallito. Per favore riprova.';
-					console.error(error);
-				} finally {
-					this.loading = false;
 				}
 			},
 			getApiProfiles() {
@@ -100,7 +116,7 @@
 						this.sponsorships = activeSponsorships;
 
 						// Set sponsorization status
-						if (activeSponsorships.length) this.isSponsorized = true;
+						if (activeSponsorships) this.isSponsorized = true;
 						else this.isSponsorized = false;
 						// Set type of sponsorization
 						if (this.isSponsorized) {
@@ -114,15 +130,6 @@
 						console.log(error);
 					})
 			},
-			getTypeSponsorship() {
-				if (this.sponsorships[0].id === 1) {
-					return 'card-bronze'
-				} else if (this.sponsorships[0].id === 2) {
-					return 'card-silver'
-				} else if (this.sponsorships[0].id === 3) {
-					return 'card-gold'
-				}
-			}
 		},
 		computed: {
 			showLoader() {
@@ -184,10 +191,15 @@
 				<div v-if="showPaymentForm" class="checkout">
 					<div class="checkout-container">
 						<h3 class="heading-3">Pagamento</h3>
+						<!-- Token request loader in container -->
+						<div class="loader-container" v-show="isWaitingToken">
+							<Loader id="payment-loader" />
+						</div>
+						<!-- Payment section -->
 						<div class="checkout-form">
 							<div class="input-group">
 								<div class="input-box">
-									<div id="dropin-container"></div>
+									<div ref="dropinContainer" id="dropin-container"></div>
 								</div>
 							</div>
 
@@ -204,7 +216,7 @@
 
 							<div class="input-group">
 								<div class="input-box">
-									<button class="btn-pay" @click="submitPayment" :disabled="loading">
+									<button class="btn-pay" ref="btnPay" @click="" :disabled="loading">
 										{{ loading ? 'Elaborazione in corso...' : 'Procedi al pagamento' }}
 									</button>
 								</div>
@@ -356,6 +368,16 @@
 		width: 100%;
 		max-width: 800px;
 		padding: 20px;
+
+		/* Loader sizing */
+		.loader-container {
+			height: 150px;
+			position: relative;
+
+			.loader {
+				width: 34px;
+			}
+		}
 	}
 
 	.checkout-container {
