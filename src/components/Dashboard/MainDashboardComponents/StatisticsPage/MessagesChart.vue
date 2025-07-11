@@ -50,7 +50,6 @@
 			}
 		},
 		created() {
-			console.log('Chart data: ', this.dashboardStore.chartDataMessages);
 		}
 	}
 </script>

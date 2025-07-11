@@ -58,7 +58,7 @@
 					for (let i = 0; i < 12; i++) {
 						const inMonthElements = elementsArray.filter(element => Number(element.updated_at.slice(0, 2) - 1) === i);
 						result[i] += this.calcAverageVote(inMonthElements) ?? 0;
-						console.log(result[i]);
+						// console.log(result[i]);
 					}
 					return result;
 				}
@@ -93,7 +93,7 @@
 				});
 				// Compute data for datasets
 				let computedData = [];
-				if (chartDataName === 'charDataVotes') computedData = this.calcDataPerMonthArray(store[dataName], 'mean');
+				if (chartDataName === 'chartDataVotes') computedData = this.calcDataPerMonthArray(store[dataName], 'mean');
 				else computedData = this.calcDataPerMonthArray(store[dataName]);
 
 				store[chartDataName] = chartDataObject;
@@ -118,12 +118,21 @@
 				return this.dashboardStore.currentChartIndex;
 			}
 		},
-		created() {
-			this.setChartData('chartDataMessages', this.dashboardStore, 'profileMessages');
-			this.setChartData('chartDataReviews', this.dashboardStore, 'profileReviewsWithVotes');
-			this.setChartData('chartDataVotes', this.dashboardStore, 'profileReviewsWithVotes')
-			// this.getVotes();
-		}
+		watch: {
+			'dashboardStore.profileMessages': {
+				handler() {
+					this.setChartData('chartDataMessages', this.dashboardStore, 'profileMessages');
+				},
+				immediate: true
+			},
+			'dashboardStore.profileReviewsWithVotes': {
+				handler() {
+					this.setChartData('chartDataReviews', this.dashboardStore, 'profileReviewsWithVotes');
+					this.setChartData('chartDataVotes', this.dashboardStore, 'profileReviewsWithVotes')
+				},
+				immediate: true
+			}
+		},
 	}
 </script>
 
