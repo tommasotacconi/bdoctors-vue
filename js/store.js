@@ -3,12 +3,19 @@ import axios from 'axios';
 
 
 export const store = reactive({
-  // Variable for change content inside dashboard
-  informationPage: true,
-  messagePage: false,
-  reviewPage: false,
-  sponsorshipPage: false,
-  statisticPage: false,
+  // Api uri
+  // apiUri: 'http://127.0.0.1:8000/api/',
+  apiUri: 'https://127.0.0.1:5174/api/',
+	// Placeholder Uri
+	placeholderImg: 'https://st4.depositphotos.com/4329009/19956/v/450/depositphotos_199564354-stock-illustration-creative-vector-illustration-default-avatar.jpg',
+
+	// Authorization status
+	isAuthenticated: false,
+
+  searchedSpecialization: null,
+
+  // test route guard
+  responseStatus: false,
 
   // Variable needed for the advanced search
   searchedSpecialization: null,
@@ -17,16 +24,7 @@ export const store = reactive({
   // Variable for the show profile card in advanced search 
   doctorProfile: null,
 
-  // Variable for toggle sidebar inside dashboard
-  sidebar: true,
-
-  // Api uri
-  apiUri: 'http://localhost:8000/api/',
-  // Api call for profile information
-  informationPageId: '',
-
-  profileDataGeneral: {},
-
-
+  // user id, sponsorized profile id
+  userId: '',
 })
 

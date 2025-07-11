@@ -1,160 +1,178 @@
 <script>
-import { store } from '../../../js/store.js'
+	import { useRippleEffect } from '../../../js/composables/useRippleEffect.js';
+	import { dashboardStore } from '../../../js/dashboardStore.js'
 
-export default {
-    data() {
-        return {
-            store
-        }
-    },
-    methods: {
-        showMessages() {
-            store.informationPage = false;
-            store.reviewPage = false;
-            store.sponsorshipPage = false;
-            store.statisticPage = false;
-            store.messagePage = true;
-        },
-        showProfile() {
-            store.messagePage = false;
-            store.reviewPage = false;
-            store.sponsorshipPage = false;
-            store.statisticPage = false;
-            store.informationPage = true;
-        },
-        showReviews() {
-            store.messagePage = false;
-            store.informationPage = false;
-            store.sponsorshipPage = false;
-            store.statisticPage = false;
-            store.reviewPage = true;
-        },
-        showSponsorship() {
-            store.messagePage = false;
-            store.informationPage = false;
-            store.statisticPage = false;
-            store.reviewPage = false;
-            store.sponsorshipPage = true;
-        },
-        showStatistic() {
-            store.messagePage = false;
-            store.informationPage = false;
-            store.sponsorshipPage = false;
-            store.reviewPage = false;
-            store.statisticPage = true;
-        }
-    }
-}
+	export default {
+		data() {
+			return {
+				rippleStyles: [], // Array to store ripple styles for each button
+				isAnimating: [], // Array to track animation state for each button
+				dashboardStore,
+			}
+		},
+		methods: {
+			handleButtonClick(index, event) {
+				const buttonRef = this.$refs.buttonRefs[index]; // Get the button reference
+
+				if (!buttonRef) return;
+
+				// Trigger the ripple effect for the specific button
+				const { rippleStyle, isAnimating, triggerRipple } = useRippleEffect();
+				triggerRipple(event, buttonRef);
+
+				// Update the ripple styles and animation state for the button
+				this.rippleStyles[index] = { ...rippleStyle.value };
+				this.isAnimating[index] = isAnimating.value;
+
+				// Reset animation state after it completes
+				setTimeout(() => {
+					this.isAnimating[index] = false;
+				}, 1000);
+			},
+		},
+		computed: {}
+	}
 </script>
 
 <template>
-    <nav>
-        <RouterLink :to="{ name: 'homepage' }">
-            <div class="title-logo d-flex">
-                <div class="logo">
-                    <div class="square-general square1"></div>
-                    <div class="square-general square2"></div>
-                    <div class="square-general square3"></div>
-                    <div class="square-general square4"></div>
-                </div>
-                <div class="title">
-                    <h1>bdoctors</h1>
-                </div>
-            </div>
-        </RouterLink>
-        <section class="link-pages">
-            <h5 :class="store.informationPage ? 'selected-text' : ''" @click="showProfile">Profilo</h5>
-            <h5 :class="store.messagePage ? 'selected-text' : ''" @click="showMessages">Messaggi</h5>
-            <h5 :class="store.reviewPage ? 'selected-text' : ''" @click="showReviews">Recensioni</h5>
-            <h5 :class="store.sponsorshipPage ? 'selected-text' : ''" @click="showSponsorship">Sponsorizzazione</h5>
-            <h5 :class="store.statisticPage ? 'selected-text' : ''" @click="showStatistic">Statistiche</h5>
-        </section>
-    </nav>
+	<nav>
+		<RouterLink :to="{ name: 'homepage' }">
+			<div class="title-logo d-flex">
+				<div class="logo">
+					<div class="square-general square1"></div>
+					<div class="square-general square2"></div>
+					<div class="square-general square3"></div>
+					<div class="square-general square4"></div>
+				</div>
+				<div class="title">
+					<h1>bdoctors</h1>
+				</div>
+			</div>
+		</RouterLink>
+		<section class="link-pages">
+			<h2 ref="buttonRefs" :key="index" class="ripple-button"
+				:class="dashboardStore.currentPageIndex === index ? { 'selected-text': !isAnimating[index] } : null"
+				@click="(e) => { dashboardStore.currentPageIndex = index; handleButtonClick(index, e) }"
+				v-for="(label, index) in dashboardStore.labelsForComponents">
+				<span class="ripple" v-if="isAnimating[index]" :style="rippleStyles[index]"></span>
+				{{ label }}
+			</h2>
+		</section>
+	</nav>
 </template>
 
 <style scoped>
-/* General */
-nav {
-    height: 100%;
-    background-color: var(--color-primary);
-    border-right: 2px solid lightgray;
-    color: white;
-}
 
-a {
-    text-decoration: none;
-}
+	/* General */
+	nav {
+		height: 100%;
+		background-color: var(--color-primary);
+		border-right: 2px solid lightgray;
+		color: white;
+	}
 
-.link-pages {
-    margin-top: 20px;
-}
+	a {
+		text-decoration: none;
+	}
 
-h5 {
-    margin: 10px 0 0 0;
-    padding: 10px 10px 10px 20px;
-}
+	.link-pages {
+		margin-top: 20px;
+	}
 
-.selected-text {
-    background-color: var(--color-secondary);
-}
+	h2 {
+		padding: 10px 10px 10px 20px;
+		margin: 10px 0 0 0;
+		border: solid var(--color-primary);
+		border-width: 2px 0;
+		position: relative;
+		z-index: 1;
 
-h5:hover {
-    cursor: pointer;
-    margin: 10px 0;
-    border-bottom: 2px solid lightgray;
-    border-top: 2px solid lightgray;
-    background-color: #0E125D;
-}
+		font-size: 1.3rem;
+	}
 
-/* Logo */
-h1 {
-    color: white;
-    text-transform: uppercase;
-    margin: 0;
-    font-size: 2rem;
-}
+	h2:hover {
+		cursor: pointer;
+		/* border: solid lightgray;
+		background-color: var(--color-secondary); */
+	}
 
-.title-logo {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-    justify-content: center;
-    height: 10%;
-}
+	h2.selected-text {
+		background-color: var(--color-secondary);
+	}
 
-.logo {
-    width: 30px;
-    height: 30px;
-    display: flex;
-    flex-wrap: wrap;
-}
+	/* Logo */
+	h1 {
+		color: white;
+		text-transform: uppercase;
+		margin: 0;
+		font-size: 2rem;
+	}
 
-.square-general {
-    height: 15px;
-    width: 15px;
-}
+	.title-logo {
+		display: flex;
+		gap: 10px;
+		align-items: center;
+		justify-content: center;
+		height: 10%;
+	}
 
-.square1 {
-    background-color: #65B0FF;
-}
+	.logo {
+		flex: 0 0 30px;
+		height: 30px;
+		display: flex;
+		flex-wrap: wrap;
+	}
 
-.square2 {
-    background-color: white;
-}
+	.square-general {
+		height: 15px;
+		width: 15px;
+	}
 
-.square3 {
-    background-color: white;
-}
+	.square1 {
+		background-color: #65B0FF;
+	}
 
-.square4 {
-    background-color: #155489;
-}
+	.square2 {
+		background-color: white;
+	}
+
+	.square3 {
+		background-color: white;
+	}
+
+	.square4 {
+		background-color: #155489;
+	}
+
+	.ripple-button {
+		position: relative;
+		overflow: hidden;
+	}
+
+	.ripple-button .ripple {
+		position: absolute;
+		/* span.ripple is brought under h2 text, so that it acts as background for it */
+		z-index: -1;
+		border-radius: 50%;
+		color: white;
+		/* Slightly darker color */
+		background-image: radial-gradient(circle closest-side, var(--color-secondary), var(--color-secondary));
+		transform: scale(0.1);
+		animation: ripple-animation 1s ease forwards;
+	}
+
+	@keyframes ripple-animation {
+		to {
+			/* Expand circle */
+			transform: scale(2);
+		}
+	}
 
 
-/* Responsive */
-@media only screen and (max-width: 1024px) {
-    .title {
-        display: none;
-    }
-}
+	/* Responsive */
+	@media only screen and (max-width: 1024px) {
+		.title {
+			display: none;
+		}
+	}
 </style>
