@@ -214,7 +214,7 @@
 
 							<div class="input-group">
 								<div class="input-box">
-									<button class="btn-pay" ref="btnPay" @click="pay($event)" :disabled="loadingDropin || loadingPayment">
+									<button class="btn-pay" ref="btnPay" @click="pay" :disabled="loadingDropin || loadingPayment">
 										{{ loadingPayment ? 'Elaborazione in corso...' : 'Procedi al pagamento' }}
 									</button>
 								</div>
