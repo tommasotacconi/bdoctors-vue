@@ -4,7 +4,6 @@
 	import AppAlert from '../Generics/AppAlert.vue'
 
 	export default {
-		name: 'AppRegister',
 		data() {
 			return {
 				errors: {

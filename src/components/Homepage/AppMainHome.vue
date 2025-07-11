@@ -2,7 +2,6 @@
 	import SponsoredDoctors from './SponsoredDoctors.vue';
 
 	export default {
-		name: 'HomeMain',
 		data() {
 			return {
 				loaded: false,

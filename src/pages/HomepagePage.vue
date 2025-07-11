@@ -2,6 +2,7 @@
 	import AppMainHome from '../components/Homepage/AppMainHome.vue';
 
 	export default {
+		name: 'HomePage',
 		data() {
 			return {
 			}

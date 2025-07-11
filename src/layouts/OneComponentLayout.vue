@@ -10,7 +10,7 @@
 <template>
 	<div class="page-content bg">
 		<RouterView v-slot="{ Component }">
-			<KeepAlive include="HomeMain,DashboardPage,AppRegister">
+			<KeepAlive>
 				<component :is="Component"></component>
 			</KeepAlive>
 		</RouterView>

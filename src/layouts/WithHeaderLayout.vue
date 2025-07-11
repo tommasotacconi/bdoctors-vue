@@ -22,7 +22,7 @@
 	</RouterView> -->
 	<div class="page-content bg">
 		<RouterView v-slot="{ Component }">
-			<KeepAlive include="HomeMain,DashboardPage,AppRegister">
+			<KeepAlive include="HomePage,RegisterPage">
 				<component :is="Component"></component>
 			</KeepAlive>
 		</RouterView>
