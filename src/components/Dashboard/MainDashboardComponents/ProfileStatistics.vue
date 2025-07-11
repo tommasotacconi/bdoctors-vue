@@ -12,8 +12,9 @@
 				store,
 				dashboardStore,
 				chartContainerStyle: {
-					width: '100%',
-					aspectRatio: 5 / 3,
+					margin: '0 auto 80px',
+					width: '80%',
+					aspectRatio: 2,
 					padding: '20px 20px 0',
 					position: 'relative',
 					backgroundColor: '#fff',

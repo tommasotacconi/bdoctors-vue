@@ -23,7 +23,7 @@
 				},
 				options: {
 					responsive: true,
-					aspectRatio: 5 / 3,
+					aspectRatio: this.chartContainerStyle.aspectRatio,
 					plugins: {
 						legend: {
 							display: false
