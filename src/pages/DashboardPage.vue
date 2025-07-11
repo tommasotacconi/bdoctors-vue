@@ -8,7 +8,6 @@
 	import { emitter } from '../../js/eventBus.js';
 
 	export default {
-		name: 'DashboardPage',
 		data() {
 			return {
 				dashboardCycle: 0,
@@ -23,6 +22,9 @@
 			resetDashboard() {
 				if (this.dashboardCycle >= 1) {
 					// console.log('Another user has just logged in');
+					this.dashboardStore.currentPageIndex = 0;
+					this.dashboardStore.currentProfileSectionComponentIndex = 0;
+					this.dashboardStore.currentChartIndex = 0;
 					this.headerDashboardKey++;
 					this.mainDashboardKey++;
 				}

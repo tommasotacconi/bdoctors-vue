@@ -2,6 +2,7 @@
 	import AppRegister from '../components/Register/AppRegister.vue';
 
 	export default {
+		name: 'RegisterPage',
 		data() {
 			return {
 
