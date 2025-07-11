@@ -32,7 +32,8 @@
 		animation: l9 2s infinite linear;
 		position: absolute;
 		top: 50%;
-		left: 48%;
+		left: 50%;
+		translate: -50% -50%;
 	}
 
 	@keyframes l9 {

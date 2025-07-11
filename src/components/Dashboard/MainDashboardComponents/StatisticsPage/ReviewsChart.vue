@@ -1,6 +1,4 @@
 <script>
-	import { store } from '../../../../../js/store.js';
-
 	import {
 		Chart as ChartJS,
 		Title,
@@ -11,21 +9,21 @@
 		LinearScale
 	} from 'chart.js'
 	import { Bar } from 'vue-chartjs'
+	import { dashboardStore } from '../../../../../js/dashboardStore.js';
+
 
 	ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
 	export default {
 		name: 'App',
-		components: {
-			Bar
-		},
 		data() {
 			return {
-				store,
+				dashboardStore,
 				data: {
 				},
 				options: {
 					responsive: true,
+					aspectRatio: this.chartContainerStyle.aspectRatio,
 					plugins: {
 						legend: {
 							display: false
@@ -44,14 +42,24 @@
 		methods: {
 
 		},
+		components: {
+			Bar
+		},
+		props: {
+			chartContainerStyle: {
+				type: Object,
+				required: true
+			}
+		}
 	}
 </script>
 
 <template>
-	<h4>Recensioni ricevute <span class="total-year">(Totale anno: {{ store.profileReviews.length }})</span>
+	<h4>Recensioni ricevute
+		<span class="total-year">(Totale anno: {{ dashboardStore.profileReviewsWithVotes.length }})</span>
 	</h4>
-	<div class="char">
-		<Bar :data="store.chartDataReviews" :options="options" />
+	<div class="char" :style="chartContainerStyle">
+		<Bar :data="dashboardStore.chartDataReviews" :options="options" />
 	</div>
 </template>
 

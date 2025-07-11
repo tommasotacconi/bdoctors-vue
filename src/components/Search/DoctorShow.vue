@@ -1,7 +1,8 @@
 <script>
 	import axios from 'axios';
 	import { store } from '../../../js/store.js';
-	import AppHeader from '../Homepage/AppHeader.vue'
+	import AppHeader from '../Homepage/AppHeader.vue';
+	import { useGetPathFunctions } from '../../../js/composables/useGetPathFunctions.js';
 
 	export default {
 		data() {
@@ -43,7 +44,6 @@
 				},
 				messageFormValidated: false,
 				reviewFormValidated: false,
-				placeholderImg: 'https://st4.depositphotos.com/4329009/19956/v/450/depositphotos_199564354-stock-illustration-creative-vector-illustration-default-avatar.jpg'
 			}
 		},
 		components: {
@@ -60,16 +60,6 @@
 					.catch(function (error) {
 						console.log(error);
 					});
-			},
-			getProfilePhotoPath(doctor) {
-				// Calculate profile photo :src attribute depending on the presence of the 'photos' string in the db data photo profiles table
-				const photoPath = doctor.photo;
-				console.log(doctor.photo)
-				return photoPath.includes('photos') ? this.getFilePath(`storage/${photoPath}`) : new URL(this.placeholderImg).href;
-			},
-
-			getFilePath: function (filePath) {
-				return new URL(filePath, 'http://localhost:8000/').href;
 			},
 			// Method to send patients messages
 			sendMessageForm() {
@@ -210,6 +200,11 @@
 				return this.store.doctorProfile ? this.store.doctorProfile : this.profileData;
 			}
 		},
+		setup() {
+			const { getFilePath, getProfilePhotoPath } = useGetPathFunctions();
+
+			return { getFilePath, getProfilePhotoPath }
+		},
 		created: function () {
 			if (!this.store.doctorProfile) {
 				this.getProfileData();
@@ -223,14 +218,15 @@
 </script>
 
 <template>
-	<main class="container d-flex justify-content-center">
-		<div class="general-main">
+	<main>
+		<div class="d-flex justify-content-center container">
 			<Loader v-if="!loaded" />
 			<section class="card-general" v-else>
 				<div class="card mb-3">
 					<div class="card-flex">
 						<div class="img-doctor">
-							<img :src="getProfilePhotoPath(retrievedProfileData)" class="doctor-photo" alt="doctor photo">
+							<img :src="getProfilePhotoPath(this.store.placeholderImg, retrievedProfileData.photo)"
+								class="doctor-photo" alt="doctor photo">
 						</div>
 						<div class="card-body-title-section">
 							<h1 class="card-title py-3">
@@ -458,8 +454,12 @@
 		margin: 0;
 	}
 
-	/* Card edit*/
+	main {
+		height: 100%;
+		overflow: auto;
+	}
 
+	/* Card edit*/
 	.card-general {
 		display: flex;
 		flex-direction: column;

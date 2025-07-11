@@ -4,6 +4,7 @@
 	import DoctorShow from './DoctorShow.vue';
 	import { RouterLink } from 'vue-router';
 	import { finiteOrDefault } from 'chart.js/helpers';
+	import { useGetPathFunctions } from '../../../js/composables/useGetPathFunctions.js';
 
 	export default {
 		data() {
@@ -30,8 +31,6 @@
 				this.$router.push({
 					name: 'search.show', params: { searchId: this.$route.params.specialization, nameId: completeName }
 				})
-				console.log('Doctor position inside homepage ', index);
-				console.log(store.searchedSpecialization)
 			},
 			getFilteredReviewsData() {
 				axios.get(this.store.apiUri + `reviews/filter/${this.$route.params.specialization}/${this.rating}/${this.inputReviews}`)
@@ -48,14 +47,14 @@
 
 				this.loaded = false
 			},
-			getProfilePhotoPath(doctor) {
-				// Calculate profile photo :src attribute depending on the presence of the 'photos' string in the db data photo profiles table
-				const photoPath = doctor.photo;
-				return photoPath.includes('photos') ? this.getFilePath(`storage/${photoPath}`) : new URL(this.placeholderImg).href;
-			},
-			getFilePath: function (filePath) {
-				return new URL(filePath, 'http://localhost:8000/').href;
-			},
+			// getProfilePhotoPath(doctor) {
+			// 	// Calculate profile photo :src attribute depending on the presence of the 'photos' string in the db data photo profiles table
+			// 	const photoPath = doctor.photo;
+			// 	return photoPath?.includes('photos') ? this.getFilePath(`storage/${photoPath}`) : photoPath ?? new URL(this.store.placeholderImg).href;
+			// },
+			// getFilePath: function (filePath) {
+			// 	return new URL(filePath, this.store.apiUri.slice(-3)).href;
+			// },
 			resetInputs() {
 				this.rating = null;
 				this.inputReviews = null;
@@ -78,14 +77,19 @@
 				immediate: true
 			}
 		},
+		setup() {
+			const { getFilePath, getProfilePhotoPath } = useGetPathFunctions();
+
+			return { getFilePath, getProfilePhotoPath }
+		},
 	}
 </script>
 
 <template>
-	<main class="bg">
+	<main>
 		<div class="container">
 			<!-- Loader -->
-			<div class="loader" v-if="!loaded"></div>
+			<Loader v-if="!loaded" />
 
 			<!-- Components -->
 			<div v-if="loaded">
@@ -150,7 +154,8 @@
 					<div class="doctors-list" v-if="filteredDoctorsProfiles.length">
 						<div class="doctor-card" v-for="(doctorProfile, index) in filteredDoctorsProfiles"
 							@click="goToShowPage(doctorProfile, index)" :key="index">
-							<img class="doctor-photo" :src="getProfilePhotoPath(doctorProfile)" alt="doctor photo">
+							<img class="doctor-photo" :src="getProfilePhotoPath(this.store.placeholderImg, doctorProfile.photo)"
+								alt="doctor photo">
 							<section class="doctor-information">
 								<h5 class="doctor-name">
 									{{ doctorProfile.user.first_name }} {{ doctorProfile.user.last_name }}
@@ -181,8 +186,11 @@
 </template>
 
 <style scoped>
-	.bg {
-		background-image: url(../../public/tile_background.png);
+	main {
+		height: 100%;
+		padding-bottom: 20px;
+
+		overflow: hidden auto;
 	}
 
 	.container {
@@ -251,26 +259,29 @@
 
 	/* Doctor list */
 	.doctors-list {
-		display: flex;
-		gap: 50px 110px;
-		justify-content: start;
-		flex-wrap: wrap;
-		align-content: stretch;
-		margin-top: 30px;
+		--col-gap: 30px;
+	}
 
+	.doctors-list {
+		display: flex;
+		gap: 50px var(--col-gap);
+		flex-wrap: wrap;
+		margin-top: 30px;
 	}
 
 	.doctor-photo {
-		height: 200px;
+		width: 100%;
+		max-width: 230px;
 		aspect-ratio: 1;
 		object-fit: cover;
 		object-position: center;
 	}
 
 	.doctors-list> :hover {
-		scale: 1.1;
+		scale: 1.2;
 		cursor: pointer;
-		transition: 0.8s;
+		outline: thin solid var(--color-complementary);
+		outline-offset: 5px;
 	}
 
 
@@ -281,23 +292,23 @@
 	}
 
 	.doctor-card {
+		min-height: 450px;
+		flex: 0 1 calc(100% / 3 - 2 / 3 * var(--col-gap));
 		background-color: #D8F9FF;
 		padding: 25px 30px;
 		display: flex;
 		flex-direction: column;
 		gap: 15px;
-		justify-content: center;
 		align-items: center;
-		width: calc((100% / 3) - 80px);
 		border-radius: 30px;
 
-		/* height: 400px; */
+		transition: scale 0.2s;
 	}
 
 	img {
 		border-radius: 50%;
 		border: 3px solid #65B0FF;
-		height: 200px;
+		/* height: 200px; */
 
 	}
 
@@ -332,48 +343,22 @@
 	}
 
 
-	/* Loader progressive */
-	.loader {
-		--r1: 154%;
-		--r2: 68.5%;
-		width: 60px;
-		aspect-ratio: 1;
-		border-radius: 50%;
-		background:
-			radial-gradient(var(--r1) var(--r2) at top, #0000 79.5%, var(--color-secondary) 80%),
-			radial-gradient(var(--r1) var(--r2) at bottom, var(--color-secondary) 79.5%, #0000 80%),
-			radial-gradient(var(--r1) var(--r2) at top, #0000 79.5%, var(--color-secondary) 80%),
-			#ccc;
-		background-size: 50.5% 220%;
-		background-position: -100% 0%, 0% 0%, 100% 0%;
-		background-repeat: no-repeat;
-		animation: l9 2s infinite linear;
-		position: absolute;
-		top: 50%;
-		left: 50%;
-	}
-
-	@keyframes l9 {
-		33% {
-			background-position: 0% 33%, 100% 33%, 200% 33%
-		}
-
-		66% {
-			background-position: -100% 66%, 0% 66%, 100% 66%
-		}
-
-		100% {
-			background-position: 0% 100%, 100% 100%, 200% 100%
-		}
-	}
-
-
-
 	/* Media Queries */
+	/* Desktop (above 1024px) */
+	@media (min-width: 1024px) {
+		.doctors-list {
+			--col-gap: 50px;
+		}
+
+		/* 3 cards per row */
+		.doctor-card {
+			flex: calc(100% / 3 - 2 / 3 * var(--col-gap));
+		}
+	}
 
 	/* Mobile */
+	/* Large mobile */
 	@media (max-width: 768px) {
-
 		.advanced-filter {
 			flex-direction: column;
 			align-items: flex-start;
@@ -391,13 +376,12 @@
 		}
 
 		.doctors-list {
-			gap: 20px;
+			--col-gap: 20px;
 			justify-content: center;
 		}
 
 		.doctor-card {
-			width: calc(100% - 40px);
-			margin: 5px;
+			flex: calc(100% / 2 - 1 / 2 * var(--col-gap));
 		}
 
 		.title h2 {
@@ -422,16 +406,20 @@
 		}
 	}
 
-	/* Large Mobile Screens */
-
+	/* Small Mobile Screens */
 	@media (max-width: 480px) {
 		.doctors-list {
-			gap: 15px;
+			--col-gap: 15px;
+
+			&> :hover {
+				scale: none;
+			}
 		}
 
 		.doctor-card {
-			width: calc(100% - 20px);
+			flex: 1;
 			/* Ensure 1 card per row on very small screens */
+			min-height: 300px;
 		}
 
 		.doctor-name {
@@ -473,18 +461,6 @@
 		.doctor-card img {
 			height: 120px;
 			width: 120px;
-		}
-	}
-
-	/* Desktop (above 1024px) */
-	@media (min-width: 1024px) {
-		.doctors-list {
-			gap: 50px 110px;
-		}
-
-		.doctor-card {
-			width: calc((100% / 3) - 80px);
-			/* 3 cards per row */
 		}
 	}
 </style>
