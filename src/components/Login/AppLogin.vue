@@ -78,7 +78,7 @@
 				<button type="submit" id="login-button" class="btn btn-primary d-flex justify-content-center mt-4 mb-3"
 					:class="{ ['shaking-animation']: isAnimationActive }">
 					{{ loginButtonContent }}
-					<Loader v-if="isRequestPending" />
+					<Loader class="repositioned-loader" v-if="isRequestPending" />
 				</button>
 			</div>
 		</div>
@@ -172,9 +172,10 @@
 		}
 	}
 
-	button .loader {
+	button .repositioned-loader {
 		width: 25px;
 		position: static;
+		translate: none;
 
 		border: 2px solid #fff;
 	}
