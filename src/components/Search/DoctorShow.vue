@@ -218,8 +218,8 @@
 </script>
 
 <template>
-	<main class="container d-flex justify-content-center">
-		<div class="general-main">
+	<main>
+		<div class="d-flex justify-content-center container">
 			<Loader v-if="!loaded" />
 			<section class="card-general" v-else>
 				<div class="card mb-3">
@@ -454,8 +454,12 @@
 		margin: 0;
 	}
 
-	/* Card edit*/
+	main {
+		height: 100%;
+		overflow: auto;
+	}
 
+	/* Card edit*/
 	.card-general {
 		display: flex;
 		flex-direction: column;
