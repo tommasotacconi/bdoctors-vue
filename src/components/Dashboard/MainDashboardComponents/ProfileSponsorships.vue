@@ -417,8 +417,8 @@
 		width: 100%;
 		height: 50px;
 		border: none;
-		background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-		color: white;
+		background-color: var(--color-complementary);
+		color: rgb(0, 0, 0);
 		border-radius: 10px;
 		font-size: 16px;
 		cursor: pointer;
