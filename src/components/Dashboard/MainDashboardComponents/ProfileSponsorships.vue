@@ -10,19 +10,19 @@
 				store,
 				price: null,
 				sponsorshipName: null,
-				profilesApiUrl: 'http://127.0.0.1:8000/api/profiles',
 				sponsorships: [],
-				isSponsorized: false,
 				cardBronze: false,
 				cardSilver: false,
 				cardGold: false,
-				loaded: false,
-				showPaymentForm: false,
-				instance: null,
-				loading: false,
+				dropinInstance: null,
 				error: null,
-				paymentSuccess: false,
+				isSponsorshipLoaded: false,
+				isSponsorized: false,
+				loadingDropin: false,
+				showPaymentForm: false,
+				loadingPayment: false,
 				isWaitingToken: false,
+				paymentSuccess: false,
 			}
 		},
 		methods: {
@@ -47,14 +47,44 @@
 				this.showPaymentForm = true;
 				await this.initializePayment();
 			},
+			async pay(e) {
+				this.error = null;
+				this.loadingPayment = true;
+
+				try {
+					const { bindata, description, details, nonce, type } = await this.dropinInstance.requestPaymentMethod();
+
+					await axios.post('http://127.0.0.1:8000/api/braintree/process-payment', {
+						payment_method_nonce: nonce,
+						sponsorshipName: this.sponsorshipName,
+						amount: this.price,
+					}, {
+						withCredentials: true
+					});
+
+					this.isSponsorshipLoaded = false;
+					this.paymentSuccess = true;
+					this.getApiProfiles();
+				} catch (error) {
+					this.error = 'Pagamento fallito per favore riprova.'
+					console.error(error);
+				} finally {
+					this.loadingPayment = false;
+				}
+			},
 			async initializePayment() {
+				this.error = null;
+				// Disable buttons
+				this.loadingDropin = true;
+
 				await nextTick();
 				// If another payment was previously initialized inside #dropin-container, remove it
-				const container = document.getElementById('dropin-container');
-				const containerChild = container.firstChild;
-				if (containerChild) container.removeChild(containerChild);
-				// and remove error
-				this.error = null;
+				const container = this.$refs.dropinContainer;
+				while (container.firstChild) {
+					console.log('Found a child inside container removing it. Child: ', container.firstChild);
+					container.removeChild(container.firstChild);
+					await nextTick();
+				}
 
 				try {
 					this.isWaitingToken = true;
@@ -70,41 +100,16 @@
 							amount: this.price,
 							currency: 'EUR'
 						}
-					}, (error, dropinInstance) => {
-						if (error) console.error(error);
-
-						this.$refs.btnPay.addEventListener('click', event => {
-							dropinInstance.requestPaymentMethod(async (error, payload) => {
-								if (error) console.error(error);
-
-								console.log('Request payment method payload -->', payload)
-								try {
-									await axios.post('http://127.0.0.1:8000/api/braintree/process-payment', {
-										payment_method_nonce: payload.nonce,
-										sponsorshipName: this.sponsorshipName,
-										amount: this.price,
-									}, {
-										withCredentials: true
-									});
-
-									this.paymentSuccess = true;
-									this.showPaymentForm = false;
-									this.getApiProfiles();
-								} catch (error) {
-									this.error = 'Pagamento fallito per favore riprova.'
-								} finally {
-									this.loading = false;
-								}
-							})
-						})
 					});
 
-					this.instance = dropinInstance;
+					this.dropinInstance = dropinInstance;
 				} catch (error) {
-					this.error = 'Errore durante l\'inizializzazione del modulo di pagamento';
 					this.isWaitingToken = false;
+					this.error = 'Errore durante l\'inizializzazione del modulo di pagamento';
 					console.error(error);
 				}
+
+				this.loadingDropin = false;
 			},
 			getApiProfiles() {
 				axios.get(this.store.apiUri + 'profiles', {
@@ -116,15 +121,15 @@
 						this.sponsorships = activeSponsorships;
 
 						// Set sponsorization status
-						if (activeSponsorships) this.isSponsorized = true;
-						else this.isSponsorized = false;
-						// Set type of sponsorization
-						if (this.isSponsorized) {
+						if (activeSponsorships.length) {
+							this.isSponsorized = true;
 							const sponsorshipId = this.sponsorships[0].id;
 							if (sponsorshipId === 1) this.cardBronze = true;
 							else if (sponsorshipId === 2) this.cardSilver = true;
 							else if (sponsorshipId === 3) this.cardGold = true;
 						}
+
+						this.isSponsorshipLoaded = true;
 					})
 					.catch(function (error) {
 						console.log(error);
@@ -132,26 +137,19 @@
 			},
 		},
 		computed: {
-			showLoader() {
-				setTimeout(() => {
-					this.loaded = true
-				}, 2000)
-			}
 		},
 		created() {
 			this.getApiProfiles()
 		},
-		mounted() {
-			this.showLoader
-		}
 	}
 </script>
 
 <template>
 	<main class="container">
 		<h2>Sponsorizzazione</h2>
-		<Loader v-if="!loaded" />
+		<Loader :class="{ 'adapted-loader': paymentSuccess }" v-if="!isSponsorshipLoaded" />
 		<div class="container-flex" v-else>
+			<!-- Not sponsorized user case -->
 			<div class="is-not-sponsored" v-if="!isSponsorized">
 				<div class="sponsored-description">
 					<p>
@@ -164,21 +162,21 @@
 				</div>
 				<h3>Scegli la tua sponsorizzazione:</h3>
 				<section class="sponsor-cards">
-					<button class="sponsor-card card-bronze" @click="getPriceBronze()">
+					<button class="sponsor-card card-bronze" @click="getPriceBronze()" :disabled="loadingDropin">
 						<div class="card-description">
 							<p class="hour-sponsorship">Garantito per 24 ore</p>
 							<p class="price">2,99€</p>
 						</div>
 						<div class="premium-star"><i class="fa-solid fa-star"></i></div>
 					</button>
-					<button class="sponsor-card card-silver" @click="getPriceSilver()">
+					<button class="sponsor-card card-silver" @click="getPriceSilver()" :disabled="loadingDropin">
 						<div class="card-description">
 							<p class="hour-sponsorship">Garantito per 72 ore</p>
 							<p class="price">5,99€</p>
 						</div>
 						<div class="premium-star"><i class="fa-solid fa-star"></i></div>
 					</button>
-					<button class="sponsor-card card-gold" @click="getPriceGold()">
+					<button class="sponsor-card card-gold" @click="getPriceGold()" :disabled="loadingDropin">
 						<div class="card-description">
 							<p class="hour-sponsorship">Garantito per 144 ore</p>
 							<p class="price">9,99€</p>
@@ -216,27 +214,16 @@
 
 							<div class="input-group">
 								<div class="input-box">
-									<button class="btn-pay" ref="btnPay" @click="" :disabled="loading">
-										{{ loading ? 'Elaborazione in corso...' : 'Procedi al pagamento' }}
+									<button class="btn-pay" ref="btnPay" @click="pay($event)" :disabled="loadingDropin || loadingPayment">
+										{{ loadingPayment ? 'Elaborazione in corso...' : 'Procedi al pagamento' }}
 									</button>
 								</div>
 							</div>
 						</div>
 					</div>
 				</div>
-
-				<!-- Success Message -->
-				<div v-if="paymentSuccess" class="success-container">
-					<div class="success-message">
-						<i class="fa-solid fa-circle-check"></i>
-						<h3>Pagamento completato con successo!</h3>
-						<p>La tua sponsorizzazione è stata attivata.</p>
-						<router-link to="/" class="dashboard-button">
-							Torna alla Homepage
-						</router-link>
-					</div>
-				</div>
 			</div>
+			<!-- Sponsorized user case -->
 			<div class="is-sponsored" v-else>
 				<div class="sponsor-card card-bronze" v-if="cardBronze">
 					<div class="card-description">
@@ -256,6 +243,18 @@
 					</div>
 					<div class="premium-star"><i class="fa-solid fa-star"></i></div>
 				</div>
+			</div>
+		</div>
+
+		<!-- Success Message -->
+		<div v-if="paymentSuccess" class="success-container">
+			<div class="success-message">
+				<i class="fa-solid fa-circle-check"></i>
+				<h3>Pagamento completato con successo!</h3>
+				<p>La tua sponsorizzazione è stata attivata.</p>
+				<router-link to="/" class="dashboard-button">
+					Torna alla Homepage
+				</router-link>
 			</div>
 		</div>
 	</main>
@@ -291,6 +290,14 @@
 		padding-bottom: 20px;
 		text-align: center;
 		font-size: 1.2rem;
+	}
+
+	/* Riposition loader when showing success payment message */
+	.loader.adapted-loader {
+		width: 34px;
+		margin: 60px auto;
+		translate: none;
+		position: static;
 	}
 
 	/* Cards */
@@ -423,8 +430,9 @@
 		box-shadow: 0 8px 25px rgba(79, 70, 229, 0.4);
 	}
 
+	.sponsor-card:disabled,
 	.btn-pay:disabled {
-		background: #ccc;
+		opacity: 0.6;
 		cursor: not-allowed;
 	}
 
