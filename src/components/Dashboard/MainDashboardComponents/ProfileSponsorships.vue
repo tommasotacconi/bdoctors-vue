@@ -54,7 +54,7 @@
 				try {
 					const { bindata, description, details, nonce, type } = await this.dropinInstance.requestPaymentMethod();
 
-					await axios.post('http://127.0.0.1:8000/api/braintree/process-payment', {
+					await axios.post(this.store.apiUri + 'braintree/process-payment', {
 						payment_method_nonce: nonce,
 						sponsorshipName: this.sponsorshipName,
 						amount: this.price,
@@ -64,7 +64,7 @@
 
 					this.isSponsorshipLoaded = false;
 					this.paymentSuccess = true;
-					this.getApiProfiles();
+					this.getApiProfile();
 				} catch (error) {
 					this.error = 'Pagamento fallito per favore riprova.'
 					console.error(error);
@@ -81,14 +81,13 @@
 				// If another payment was previously initialized inside #dropin-container, remove it
 				const container = this.$refs.dropinContainer;
 				while (container.firstChild) {
-					console.log('Found a child inside container removing it. Child: ', container.firstChild);
 					container.removeChild(container.firstChild);
 					await nextTick();
 				}
 
 				try {
 					this.isWaitingToken = true;
-					const { data: { token } } = await axios.get('http://127.0.0.1:8000/api/braintree/token');
+					const { data: { token } } = await axios.get(this.store.apiUri + 'braintree/token');
 					this.isWaitingToken = false;
 
 					const dropinInstance = await dropin.create({
@@ -111,12 +110,12 @@
 
 				this.loadingDropin = false;
 			},
-			getApiProfiles() {
+			getApiProfile() {
 				axios.get(this.store.apiUri + 'profiles', {
 					withCredentials: true
 				})
 					.then(response => {
-						console.log(response);
+						// console.log(response);
 						const { data: { data: { active_sponsorships: activeSponsorships } } } = response;
 						this.sponsorships = activeSponsorships;
 
@@ -139,7 +138,7 @@
 		computed: {
 		},
 		created() {
-			this.getApiProfiles()
+			this.getApiProfile()
 		},
 	}
 </script>
