@@ -15,14 +15,9 @@
 
 <template>
 	<AppHeader class="app-header" />
-	<!-- <RouterView class="app-header" name="header" v-slot="{ Component }">
-		<KeepAlive>
-			<component :is="Component"></component>
-		</KeepAlive>
-	</RouterView> -->
 	<div class="page-content bg">
 		<RouterView v-slot="{ Component }">
-			<KeepAlive include="HomePage,RegisterPage">
+			<KeepAlive include="HomePage,RegisterPage,AdvancedSearchPage">
 				<component :is="Component"></component>
 			</KeepAlive>
 		</RouterView>
