@@ -11,15 +11,18 @@
 				// loader temporary cancelled
 				loaded: false,
 				store,
+				doctorInfo: {
+					first_name: null,
+					last_name: null,
+					homonymous_id: null,
+				},
 				messageForm: {
-					nameId: this.nameId,
 					first_name: '',
 					last_name: '',
 					email: '',
 					content: '',
 				},
 				reviewForm: {
-					nameId: this.nameId,
 					first_name: '',
 					last_name: '',
 					email: '',
@@ -50,6 +53,24 @@
 			AppHeader,
 		},
 		methods: {
+			setDoctorInfo() {
+				const nameId = this.$route.params.nameId;
+				// Match fisrst name and last name
+				let re = /\w+/g;
+				let result = nameId.match(re);
+				const firstName = result[0];
+				const lastName = result[1];
+				this.doctorInfo.first_name = firstName;
+				this.doctorInfo.last_name = lastName;
+				// Match homonymous id
+				re = /\d+/g;
+				result = '';
+				result = nameId.match(re)
+				if (result !== null) {
+					const homonymousId = result[0];
+					this.doctorInfo.homonymous_id = homonymousId;
+				}
+			},
 			getProfileData() {
 				axios.get(this.store.apiUri + 'profiles/' + this.$route.params.nameId)
 					.then(response => {
@@ -63,7 +84,10 @@
 			},
 			// Method to send patients messages
 			sendMessageForm() {
-				axios.post('http://localhost:8000/api/messages', this.messageForm)
+				axios.post('http://localhost:8000/api/messages', {
+					doctor_details: this.doctorInfo,
+					...this.messageForm,
+				})
 					.then(response => {
 						console.log('Message sent.', response.data)
 					})
@@ -78,7 +102,10 @@
 			},
 			// Method to send patients reviews
 			sendReviewForm() {
-				axios.post('http://localhost:8000/api/reviews', this.reviewForm)
+				axios.post('http://localhost:8000/api/reviews', {
+					doctor_details: this.doctorInfo,
+					...this.reviewForm,
+				})
 					.then(response => {
 						console.log('Review sent.', response.data)
 					})
@@ -193,9 +220,6 @@
 			}
 		},
 		computed: {
-			nameId() {
-				return this.$route.params.nameId;
-			},
 			retrievedProfileData() {
 				return this.store.doctorProfile ? this.store.doctorProfile : this.profileData;
 			}
@@ -211,9 +235,8 @@
 			}
 			else this.loaded = true;
 
+			this.setDoctorInfo();
 		},
-		mounted() {
-		}
 	}
 </script>
 
