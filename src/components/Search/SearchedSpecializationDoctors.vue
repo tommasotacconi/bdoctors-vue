@@ -86,101 +86,95 @@
 </script>
 
 <template>
-	<main>
+	<!-- Loader -->
+	<Loader v-if="!loaded" />
+
+	<main v-if="loaded">
 		<div class="container">
-			<!-- Loader -->
-			<Loader v-if="!loaded" />
+			<div class="title">
+				<h2>Risultati per <span class="specialization-title">{{ specializationName }} </span><span
+						v-if="!filteredDoctorsProfiles.length" class="total-specialization-doctor"> (Totale esperti:
+						{{
+							doctors.length
+						}})</span>
+					<span v-else class="total-specialization-doctor"> (Totale esperti: {{
+						filteredDoctorsProfiles.length }})</span>
+				</h2>
+			</div>
 
-			<!-- Components -->
-			<div v-if="loaded">
-				<div>
-					<div class="title">
-						<h2>Risultati per <span class="specialization-title">{{ specializationName }} </span><span
-								v-if="!filteredDoctorsProfiles.length" class="total-specialization-doctor"> (Totale esperti:
-								{{
-									doctors.length
-								}})</span>
-							<span v-else class="total-specialization-doctor"> (Totale esperti: {{
-								filteredDoctorsProfiles.length }})</span>
-						</h2>
-					</div>
-
-					<div class="advanced-filter">
-						<!-- Average Votes Filter Input -->
-						<div class="average-votes">
-							<div class="votes d-flex align-items-center">
-								<p class="me-2">Filtra per media voti: </p>
-								<div class="rating">
-									<form method="get" class="form-control rating" @submit.prevent="getFilteredReviews">
-										<button type="submit" class="btn btn-sm btn-secondary ms-2"
-											:class="{ 'disabled': rating === null }">Filtra</button>
-										<input type="radio" id="vote5" name="rating" value="5" v-model="rating">
-										<label for="vote5"><i class="fa-solid fa-stethoscope"></i>
-										</label>
-										<input type="radio" id="vote4" name="rating" value="4" v-model="rating">
-										<label for="vote4"><i class="fa-solid fa-stethoscope"></i>
-										</label>
-										<input type="radio" id="vote3" name="rating" value="3" v-model="rating">
-										<label for="vote3"><i class="fa-solid fa-stethoscope"></i>
-										</label>
-										<input type="radio" id="vote2" name="rating" value="2" v-model="rating">
-										<label for="vote2"><i class="fa-solid fa-stethoscope"></i>
-										</label>
-										<input type="radio" id="vote1" name="rating" value="1" v-model="rating">
-										<label for="vote1"><i class="fa-solid fa-stethoscope"></i>
-										</label>
-									</form>
-								</div>
-							</div>
-
-						</div>
-
-						<!-- Reviews Number Filter Input-->
-						<div class="reviews-number">
-							<p>Filtra per numero di recensioni:</p>
-							<form method="GET" class="form-control d-flex" @submit.prevent="getFilteredReviews">
-								<input type="number" class="form-control" id="reviews" name="reviews" min="0" v-model="inputReviews">
-								<button type="submit" :class="{ 'disabled': inputReviews === null }"
-									class="btn btn-sm btn-secondary ms-2">Filtra</button>
+			<div class="advanced-filter">
+				<!-- Average Votes Filter Input -->
+				<div class="average-votes">
+					<div class="votes d-flex align-items-center">
+						<p class="me-2">Filtra per media voti: </p>
+						<div class="rating">
+							<form method="get" class="form-control rating" @submit.prevent="getFilteredReviews">
+								<button type="submit" class="btn btn-sm btn-secondary ms-2"
+									:class="{ 'disabled': rating === null }">Filtra</button>
+								<input type="radio" id="vote5" name="rating" value="5" v-model="rating">
+								<label for="vote5"><i class="fa-solid fa-stethoscope"></i>
+								</label>
+								<input type="radio" id="vote4" name="rating" value="4" v-model="rating">
+								<label for="vote4"><i class="fa-solid fa-stethoscope"></i>
+								</label>
+								<input type="radio" id="vote3" name="rating" value="3" v-model="rating">
+								<label for="vote3"><i class="fa-solid fa-stethoscope"></i>
+								</label>
+								<input type="radio" id="vote2" name="rating" value="2" v-model="rating">
+								<label for="vote2"><i class="fa-solid fa-stethoscope"></i>
+								</label>
+								<input type="radio" id="vote1" name="rating" value="1" v-model="rating">
+								<label for="vote1"><i class="fa-solid fa-stethoscope"></i>
+								</label>
 							</form>
 						</div>
-
-						<!-- Reset Input Fields Button -->
-						<button type="reset" class="btn btn-sm btn-primary"
-							:class="{ 'disabled': rating === null && inputReviews === null }" @click="resetInputs">Cancella
-							Filtri</button>
-					</div>
-
-					<div class="doctors-list" v-if="filteredDoctorsProfiles.length">
-						<div class="doctor-card" v-for="(doctorProfile, index) in filteredDoctorsProfiles"
-							@click="goToShowPage(doctorProfile, index)" :key="index">
-							<img class="doctor-photo" :src="getProfilePhotoPath(this.store.placeholderImg, doctorProfile.photo)"
-								alt="doctor photo">
-							<section class="doctor-information">
-								<h5 class="doctor-name">
-									{{ doctorProfile.user.first_name }} {{ doctorProfile.user.last_name }}
-								</h5>
-								<div class="doctor-address">
-									<strong>Ufficio:</strong> {{ doctorProfile.office_address }}
-								</div>
-								<div class="doctor-average">
-									<strong>Media voti:</strong> {{ doctorProfile.media_voti ? doctorProfile.media_voti : "-" }}
-								</div>
-								<div class="doctor-reviews">
-									<strong>Recensioni ricevute:</strong> {{ doctorProfile.totalReviews ? doctorProfile.totalReviews :
-										"-"
-									}}
-								</div>
-							</section>
-						</div>
-					</div>
-					<div v-else>
-						<p>Nessun risultato trovato</p>
 					</div>
 
 				</div>
+
+				<!-- Reviews Number Filter Input-->
+				<div class="reviews-number">
+					<p>Filtra per numero di recensioni:</p>
+					<form method="GET" class="form-control d-flex" @submit.prevent="getFilteredReviews">
+						<input type="number" class="form-control" id="reviews" name="reviews" min="0" v-model="inputReviews">
+						<button type="submit" :class="{ 'disabled': inputReviews === null }"
+							class="btn btn-sm btn-secondary ms-2">Filtra</button>
+					</form>
+				</div>
+
+				<!-- Reset Input Fields Button -->
+				<button type="reset" class="btn btn-sm btn-primary"
+					:class="{ 'disabled': rating === null && inputReviews === null }" @click="resetInputs">Cancella
+					Filtri</button>
 			</div>
-			<div v-else-if="filteredDoctorsProfiles.length"></div>
+
+			<div class="doctors-list" v-if="filteredDoctorsProfiles.length">
+				<div class="doctor-card" v-for="(doctorProfile, index) in filteredDoctorsProfiles"
+					@click="goToShowPage(doctorProfile, index)" :key="index">
+					<img class="doctor-photo" :src="getProfilePhotoPath(this.store.placeholderImg, doctorProfile.photo)"
+						alt="doctor photo">
+					<section class="doctor-information">
+						<h5 class="doctor-name">
+							{{ doctorProfile.user.first_name }} {{ doctorProfile.user.last_name }}
+						</h5>
+						<div class="doctor-address">
+							<strong>Ufficio:</strong> {{ doctorProfile.office_address }}
+						</div>
+						<div class="doctor-average">
+							<strong>Media voti:</strong> {{ doctorProfile.media_voti ? doctorProfile.media_voti : "-" }}
+						</div>
+						<div class="doctor-reviews">
+							<strong>Recensioni ricevute:</strong> {{ doctorProfile.totalReviews ? doctorProfile.totalReviews :
+								"-"
+							}}
+						</div>
+					</section>
+				</div>
+			</div>
+			<div v-else>
+				<p>Nessun risultato trovato</p>
+			</div>
+
 		</div>
 	</main>
 </template>
