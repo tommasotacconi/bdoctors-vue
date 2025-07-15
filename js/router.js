@@ -5,7 +5,7 @@ import HomepagePage from '../src/pages/HomepagePage.vue';
 import RegisterPage from '../src/pages/RegisterPage.vue';
 import LoginPage from '../src/pages/LoginPage.vue';
 import AdvancedSearchPage from '../src/pages/AdvancedSearchPage.vue';
-import SearchedDoctor from '../src/components/Search/SearchedDoctor.vue';
+import SearchedSpecializationDoctors from '../src/components/Search/SearchedSpecializationDoctors.vue';
 import DoctorShow from '../src/components/Search/DoctorShow.vue';
 import DashboardPage from '../src/pages/DashboardPage.vue';
 
@@ -39,20 +39,21 @@ const routes = [
 				children: [
 					{
 						path: '/:specialization',
-						name: 'search',
-						component: SearchedDoctor
+						name: 'specializationDoctors',
+						component: SearchedSpecializationDoctors,
+						children: [
+							{
+								// Path to doctor, within specialization
+								path: '/:specialization/:name',
+								name: 'specializationDoctors.show',
+								component: DoctorShow
+							}
+						]
 					},
-					{
-						path: '/:specialization/:searchId/:nameId/testroute',
-						name: 'search.show',
-						component: DoctorShow
-					}
 				]
 			},
-			// Path to doctor, within specialization id, of doctord_id selected (first id for specialization
-			// second for doctor)
-			{ path: '/search/:searchId/:nameId',
-				name: 'search.show',
+			{ path: '/search/:name',
+				name: 'search',
 				component: DoctorShow,
 			},
 		]
