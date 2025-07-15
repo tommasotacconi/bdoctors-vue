@@ -1,7 +1,6 @@
 <script>
 	import axios from 'axios';
 	import { store } from '../../../js/store.js';
-	import AppHeader from '../Homepage/AppHeader.vue';
 	import { useGetPathFunctions } from '../../../js/composables/useGetPathFunctions.js';
 
 	export default {
@@ -50,7 +49,6 @@
 			}
 		},
 		components: {
-			AppHeader,
 		},
 		methods: {
 			setDoctorInfo() {

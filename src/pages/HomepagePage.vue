@@ -1,5 +1,5 @@
 <script>
-	import AppMainHome from '../components/Homepage/AppMainHome.vue';
+	import HomepageMain from '../components/Homepage/HomepageMain.vue';
 
 	export default {
 		name: 'HomePage',
@@ -8,13 +8,13 @@
 			}
 		},
 		components: {
-			AppMainHome,
+			HomepageMain,
 		}
 	}
 </script>
 
 <template>
-	<AppMainHome />
+	<HomepageMain />
 </template>
 
 <style scoped></style>
