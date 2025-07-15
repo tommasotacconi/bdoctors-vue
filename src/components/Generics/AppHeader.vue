@@ -53,7 +53,7 @@
 
 				// Nuova pagina nella quale usiamo i nomi. Piccola concatenazione di metodi per togliere gli spazi e rendere tutto minuscolo
 				this.$router.push({
-					name: 'search', params: {
+					name: 'specializationDoctors', params: {
 						specialization: store.selectedSpecializationName.trim().replace(/-/g, '_').replace(/ /g, "-").toLowerCase(),
 					},
 				})

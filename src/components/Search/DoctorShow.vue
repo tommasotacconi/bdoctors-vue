@@ -266,7 +266,7 @@
 							<p class="address">
 								<i class="fa-solid fa-location-dot"></i>{{ retrievedProfileData.office_address }}
 							</p>
-							<button class="btn close-btn" @click="$router.push({
+							<button class="btn btn-close" v-if="!$route.fullPath.includes('/search')" @click="$router.push({
 								name: 'specializationDoctors', params: { specialization: $route.params.specialization }
 							})"><i class="fa-solid fa-circle-xmark fa-xl"></i></button>
 						</div>
@@ -508,7 +508,7 @@
 			display: flex;
 			flex-wrap: wrap;
 
-			button.close-btn {
+			button.btn-close {
 				position: absolute;
 				top: 10px;
 				right: 10px;

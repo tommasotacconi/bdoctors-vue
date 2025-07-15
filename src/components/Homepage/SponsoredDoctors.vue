@@ -44,7 +44,7 @@
 				store.doctorProfile = doctorProfile;
 				let completeName = doctorProfile.user.first_name + '-' + doctorProfile.user.last_name;
 				if (doctorProfile.user.homonymous_id !== null) completeName += '-' + doctorProfile.user.homonymous_id;
-				this.$router.push({ name: 'search.show', params: { searchId: 'doctor', nameId: completeName } })
+				this.$router.push({ name: 'search', params: { name: completeName } })
 				console.log('Doctor position inside homepage ', index);
 				console.log(store.searchedSpecialization)
 			},
