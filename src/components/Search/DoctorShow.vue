@@ -54,10 +54,10 @@
 		},
 		methods: {
 			setDoctorInfo() {
-				const nameId = this.$route.params.nameId;
+				const name = this.$route.params.name;
 				// Match fisrst name and last name
 				let re = /\w+/g;
-				let result = nameId.match(re);
+				let result = name.match(re);
 				const firstName = result[0];
 				const lastName = result[1];
 				this.doctorInfo.first_name = firstName;
@@ -65,14 +65,14 @@
 				// Match homonymous id
 				re = /\d+/g;
 				result = '';
-				result = nameId.match(re)
+				result = name.match(re)
 				if (result !== null) {
 					const homonymousId = result[0];
 					this.doctorInfo.homonymous_id = homonymousId;
 				}
 			},
 			getProfileData() {
-				axios.get(this.store.apiUri + 'profiles/' + this.$route.params.nameId)
+				axios.get(this.store.apiUri + 'profiles/' + this.$route.params.name)
 					.then(response => {
 						// console.log(response);
 						this.profileData = response.data.profile;
@@ -246,7 +246,7 @@
 			<Loader v-if="!loaded" />
 			<section class="card-general" v-else>
 				<div class="card mb-3">
-					<div class="card-flex">
+					<div class="card-header">
 						<div class="img-doctor">
 							<img :src="getProfilePhotoPath(this.store.placeholderImg, retrievedProfileData.photo)"
 								class="doctor-photo" alt="doctor photo">
@@ -265,7 +265,12 @@
 									<li v-else>{{ 'Nessuna specializzazione indicata' }}</li>
 								</ul>
 							</div>
-							<p class="address">{{ retrievedProfileData.office_address }}</p>
+							<p class="address">
+								<i class="fa-solid fa-location-dot"></i>{{ retrievedProfileData.office_address }}
+							</p>
+							<button class="btn close-btn" @click="$router.push({
+								name: 'specializationDoctors', params: { specialization: $route.params.specialization }
+							})"><i class="fa-solid fa-circle-xmark fa-xl"></i></button>
 						</div>
 					</div>
 					<div class="card-body-text-section d-flex justify-content-between">
@@ -498,14 +503,21 @@
 		text-align: center;
 		width: 100%;
 		position: relative;
+
+		.card-header {
+			border-radius: 40px 40px 0 0;
+			background-color: #D8F9FF;
+			display: flex;
+			flex-wrap: wrap;
+
+			button.close-btn {
+				position: absolute;
+				top: 10px;
+				right: 10px;
+			}
+		}
 	}
 
-	.card-flex {
-		border-radius: 40px 40px 0 0;
-		background-color: #D8F9FF;
-		display: flex;
-		flex-wrap: wrap;
-	}
 
 	.img-doctor {
 		max-width: 30%;
@@ -541,6 +553,10 @@
 		& .address {
 			font-size: 1.1em;
 			color: var(--color-primary);
+
+			.fa-location-dot {
+				margin-right: 10px;
+			}
 		}
 
 		& .specializations-list {
@@ -682,7 +698,7 @@
 			/* Adjust the container padding */
 		}
 
-		.card-flex {
+		.card-header {
 			flex-direction: column;
 			/* Stack the content vertically */
 			align-items: center;
@@ -747,7 +763,7 @@
 			padding: 0 30px;
 		}
 
-		.card-flex {
+		.card-header {
 			flex-direction: row;
 		}
 
@@ -776,7 +792,7 @@
 			padding: 0 50px;
 		}
 
-		.card-flex {
+		.card-header {
 			flex-direction: row;
 		}
 
@@ -805,7 +821,7 @@
 			padding: 0 100px;
 		}
 
-		.card-flex {
+		.card-header {
 			flex-direction: row;
 		}
 

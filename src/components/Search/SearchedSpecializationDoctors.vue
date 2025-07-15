@@ -2,7 +2,6 @@
 	import axios from 'axios';
 	import { store } from '../../../js/store';
 	import DoctorShow from './DoctorShow.vue';
-	import { RouterLink } from 'vue-router';
 	import { finiteOrDefault } from 'chart.js/helpers';
 	import { useGetPathFunctions } from '../../../js/composables/useGetPathFunctions.js';
 
@@ -29,8 +28,10 @@
 				if (doctorProfile.user.homonymous_id !== null) completeName += '-' + doctorProfile.user.homonymous_id;
 				store.doctorProfile = doctorProfile;
 				this.$router.push({
-					name: 'search.show', params: { searchId: this.$route.params.specialization, nameId: completeName }
-				})
+					name: 'specializationDoctors.show', params: { name: completeName }
+				});
+
+				this.$refs.main.scrollTop = 0;
 			},
 			getFilteredReviewsData() {
 				axios.get(this.store.apiUri + `reviews/filter/${this.$route.params.specialization}/${this.rating}/${this.inputReviews}`)
@@ -89,7 +90,7 @@
 	<!-- Loader -->
 	<Loader v-if="!loaded" />
 
-	<main v-if="loaded">
+	<main ref="main" v-if="loaded">
 		<div class="container">
 			<div class="title">
 				<h2>Risultati per <span class="specialization-title">{{ specializationName }} </span><span
@@ -129,9 +130,7 @@
 							</form>
 						</div>
 					</div>
-
 				</div>
-
 				<!-- Reviews Number Filter Input-->
 				<div class="reviews-number">
 					<p>Filtra per numero di recensioni:</p>
@@ -141,13 +140,13 @@
 							class="btn btn-sm btn-secondary ms-2">Filtra</button>
 					</form>
 				</div>
-
 				<!-- Reset Input Fields Button -->
 				<button type="reset" class="btn btn-sm btn-primary"
 					:class="{ 'disabled': rating === null && inputReviews === null }" @click="resetInputs">Cancella
 					Filtri</button>
 			</div>
 
+			<!-- Doctors in selected specialization and eventually filtered -->
 			<div class="doctors-list" v-if="filteredDoctorsProfiles.length">
 				<div class="doctor-card" v-for="(doctorProfile, index) in filteredDoctorsProfiles"
 					@click="goToShowPage(doctorProfile, index)" :key="index">
@@ -175,6 +174,10 @@
 				<p>Nessun risultato trovato</p>
 			</div>
 
+			<div v-if="$route.params.name" class="pop-up doctor-show">
+				<!-- DoctorShow.vue component passed with router -->
+				<RouterView />
+			</div>
 		</div>
 	</main>
 </template>
@@ -182,9 +185,11 @@
 <style scoped>
 	main {
 		height: 100%;
-		padding-bottom: 20px;
+		padding-bottom: 60px;
 
 		overflow: hidden auto;
+		scroll-behavior: smooth;
+		position: relative;
 	}
 
 	.container {
@@ -336,6 +341,15 @@
 		transition: 0.8s;
 	}
 
+	/* Pop-up */
+	.pop-up.doctor-show {
+		backdrop-filter: blur(5px);
+
+		position: absolute;
+		top: 0;
+		right: 0;
+		left: 0;
+	}
 
 	/* Media Queries */
 	/* Desktop (above 1024px) */
