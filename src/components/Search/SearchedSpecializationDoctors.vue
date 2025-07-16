@@ -14,6 +14,7 @@
 				rating: null,
 				inputReviews: null,
 				loaded: false,
+				loadingPopUp: !!this.$route.params.name,
 				showDoctor: false,
 				filteredDoctorsProfiles: [],
 				placeholderImg: 'https://st4.depositphotos.com/4329009/19956/v/450/depositphotos_199564354-stock-illustration-creative-vector-illustration-default-avatar.jpg'
@@ -102,7 +103,7 @@
 	<!-- Loader -->
 	<Loader v-if="!loaded" />
 
-	<main ref="main" v-if="loaded">
+	<main ref="main" v-if="loaded" :style="{ overflow: loadingPopUp ? 'hidden' : 'hidden auto' }">
 		<div class="container">
 			<div class="title">
 				<h2>Risultati per <span class="specialization-title">{{ specializationName }} </span><span
@@ -175,9 +176,9 @@
 				<p>Nessun risultato trovato</p>
 			</div>
 
-			<div v-if="$route.params.name" class="pop-up doctor-show">
+			<div v-if="$route.params.name" class="pop-up doctor-show" :class="{ 'loading-pop-up': loadingPopUp }">
 				<!-- DoctorShow.vue component passed with router -->
-				<RouterView />
+				<RouterView @loaded-pop-up="loadingPopUp = false" />
 			</div>
 		</div>
 	</main>
@@ -351,6 +352,10 @@
 		top: 0;
 		right: 0;
 		left: 0;
+	}
+
+	.pop-up.loading-pop-up {
+		bottom: 0;
 	}
 
 	/* Media Queries */
