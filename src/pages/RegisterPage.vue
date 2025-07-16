@@ -1,27 +1,21 @@
 <script>
-import AppHeader from '../components/Homepage/AppHeader.vue';
-import AppRegister from '../components/Register/AppRegister.vue';
+	import AppRegister from '../components/Register/AppRegister.vue';
 
-export default {
-	data() {
-		return {
+	export default {
+		name: 'RegisterPage',
+		data() {
+			return {
 
+			}
+		},
+		components: {
+			AppRegister,
 		}
-	},
-	components: {
-		AppHeader,
-		AppRegister,
 	}
-}
 </script>
 
 <template>
-	<AppHeader />
-	<AppRegister class="bg" />
+	<AppRegister />
 </template>
 
-<style lang="scss" scoped>
-.bg {
-	background-image: url(../../public/tile_background.png);
-}
-</style>
+<style lang="scss" scoped></style>

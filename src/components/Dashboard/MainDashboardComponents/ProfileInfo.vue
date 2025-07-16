@@ -1,42 +1,43 @@
 <script>
 	import axios from 'axios';
 	import { store } from '../../../../js/store.js';
+	import { dashboardStore } from '../../../../js/dashboardStore.js';
+	import { useGetPathFunctions } from '../../../../js/composables/useGetPathFunctions.js';
 
 	export default {
 		data() {
 			return {
-				profileData: {},
 				loaded: false,
-				isAuthorized: false,
+				placeholderImg: 'https://st4.depositphotos.com/4329009/19956/v/450/depositphotos_199564354-stock-illustration-creative-vector-illustration-default-avatar.jpg',
 				store,
-				placeholderImg: 'https://st4.depositphotos.com/4329009/19956/v/450/depositphotos_199564354-stock-illustration-creative-vector-illustration-default-avatar.jpg'
+				dashboardStore
 			}
 		},
 		methods: {
 			getProfileData() {
-				axios.get(this.store.apiUri + 'profiles/' + this.$route.params.id, {
+				axios.get(this.store.apiUri + 'profiles', {
 					withCredentials: true,
 				})
-					.then(response => {
-						console.log(response);
+					.then(({ data: { data: profile } }) => {
+						// console.log('Profile: ', profile);
 						this.loaded = true;
-						this.isAuthorized = true;
-						this.profileData = response.data.data;
 
-						// Data da condividere all'interno degli altri componenti
-						store.profileDataGeneral = response.data.data
-						console.log('data general nello store:', store.profileDataGeneral)
-						localStorage.setItem('user_id', response.data.data.doctor.id)
-						localStorage.setItem('profile_id', response.data.data.id)
+						// Data to share inside other components
+						this.dashboardStore.profileDataGeneral = profile;
+						// localStorage.setItem('user_id', response.data.data.doctor.id)
+						// localStorage.setItem('profile_id', response.data.data.id)
 					})
 					.catch(err => {
-						console.log(err.response.data.message);
+						console.error('ERROR IN GET /api/profiles: ' + err.response.data.message);
 						this.loaded = true;
+					})
+					.finally(() => {
+						this.store.isAuthenticated = true;
 					});
 			},
-			getFilePath: function (filePath) {
-				return new URL(filePath, 'http://localhost:8000/').href;
-			},
+			// getFilePath: function (filePath) {
+			// 	return new URL(filePath, 'http://localhost:8000/').href;
+			// },
 		},
 		computed: {
 			/* showLoader() {
@@ -46,13 +47,14 @@
 			}, */
 			profilePhotoPath() {
 				// Calculate profile photo :src attribute depending on the presence of the 'photos' string in the db data photo profiles table
-				const photoPath = this.profileData.photo;
-				return photoPath.includes('photos') ? this.getFilePath(`storage/${this.profileData.photo}`) : new URL(this.placeholderImg).href;
+				const photoPath = this.dashboardStore.profileDataGeneral.photo;
+				return this.getProfilePhotoPath(this.store.placeholderImg, photoPath, this.store.apiUri.slice(0, -4));
+				// return photoPath.includes('photos') ? this.getFilePath(`storage/${this.dashboardStore.profileDataGeneral.photo}`) : photoPath ?? new URL(this.placeholderImg).href;
 			},
 			curriculumFileName() {
 				// Truncate curriculum lenght to 30 string characters
 				// 1. Retrieve data to be computed
-				const curriculumFilePath = this.profileData.curriculum;
+				const curriculumFilePath = this.dashboardStore.profileDataGeneral.curriculum;
 				// 2. If it is too long, truncate it
 				if (curriculumFilePath.length >= 30) curriculumFilePath.slice(0, 30);
 				// 3. If is included the parent directories 'curricula/', remove it
@@ -60,7 +62,12 @@
 
 			}
 		},
-		created: function () {
+		setup() {
+			const { getFilePath, getProfilePhotoPath } = useGetPathFunctions();
+
+			return { getFilePath, getProfilePhotoPath }
+		},
+		created() {
 			this.getProfileData();
 		},
 		mounted() {
@@ -75,12 +82,12 @@
 			<h2>Profilo</h2>
 
 			<!-- Loader -->
-			<div class="loader" v-if="!loaded"></div>
+			<Loader v-if="!loaded" />
 
 			<!-- Section with doctor info -->
-			<section class="card-general" v-if="loaded && isAuthorized">
+			<section class="card-general" v-if="loaded && store.isAuthenticated">
 				<!-- Card with info -->
-				<div class="card mb-3" v-if="Object.keys(profileData).length">
+				<div class="card mb-3" v-if="Object.keys(dashboardStore.profileDataGeneral).length">
 					<div class="card-flex">
 						<div class="img-doctor">
 							<img :src="profilePhotoPath" alt="doctor photo">
@@ -88,13 +95,13 @@
 						<div class="card-body-general">
 							<div class="card-body">
 								<div class="card-title-section">
-									<h4 class="card-title">{{ profileData.doctor.first_name }} {{
-										profileData.doctor.last_name }}
+									<h4 class="card-title">{{ dashboardStore.profileDataGeneral.doctor.first_name }} {{
+										dashboardStore.profileDataGeneral.doctor.last_name }}
 									</h4>
 									<div class="main-information-section">
 										<section class="email-section d-flex gap-1 align-items-center">
 											<h5>Email:</h5>
-											<p>{{ profileData.doctor.email }}</p>
+											<p>{{ dashboardStore.profileDataGeneral.doctor.email }}</p>
 										</section>
 										<section class="password-section d-flex gap-1 align-items-center">
 											<h5>Password:</h5>
@@ -106,26 +113,28 @@
 									<ul>
 										<li>
 											<strong>Curriculum: </strong>
-											<a :href="getFilePath(`storage/${profileData.curriculum}`)" target="_blank">{{ curriculumFileName
-											}}</a>
+											<a :href="getFilePath(`storage/${dashboardStore.profileDataGeneral.curriculum}`, this.store.apiUri.slice(0, -4))"
+												target="_blank">{{
+													curriculumFileName
+												}}</a>
 										</li>
 										<li>
 											<strong>Specializzazione:</strong> {{
-												profileData.doctor.specializations[0].name }}
+												dashboardStore.profileDataGeneral.doctor.specializations[0].name }}
 										</li>
 										<li>
-											<strong>Indirizzo:</strong> {{ profileData.office_address }}
+											<strong>Indirizzo:</strong> {{ dashboardStore.profileDataGeneral.office_address }}
 										</li>
 										<li>
-											<strong>Telefono:</strong> {{ profileData.phone }}
+											<strong>Telefono:</strong> {{ dashboardStore.profileDataGeneral.phone }}
 										</li>
 										<li>
-											<strong>Prestazioni:</strong> {{ profileData.services }}
+											<strong>Prestazioni:</strong> {{ dashboardStore.profileDataGeneral.services }}
 										</li>
 									</ul>
 								</div>
-								<routerLink :to="{ name: 'edit' }"><button href="#" class="edit-profile">Modifica il tuo
-										profilo</button></routerLink>
+								<button href="#" class="edit-profile"
+									@click="dashboardStore.currentProfileSectionComponentIndex = 2">Modifica il tuo profilo</button>
 							</div>
 						</div>
 					</div>
@@ -133,9 +142,9 @@
 				<!-- Placeholder card when a profile needs to be created -->
 				<div class="card mb-3" v-else>
 					<div class="card-create">
-						<routerLink :to="{ name: 'create' }">
-							<div class="plus"><i class="fa-solid fa-plus"></i></div>
-						</routerLink>
+						<button class="plus" @click="dashboardStore.currentProfileSectionComponentIndex = 1">
+							<div><i class="fa-solid fa-plus"></i></div>
+						</button>
 						<div class="create-profile-text">
 							Il tuo profilo sembra essere un po' vuoto... che ne dici di aggiungerci qualcosa?
 						</div>
@@ -144,7 +153,7 @@
 			</section>
 
 			<!-- Section unauthorized content -->
-			<section class="card-general" v-if="loaded && !isAuthorized">
+			<section class="card-general" v-if="loaded && !store.isAuthenticated">
 				<div class="card mb-3">
 					<div class="card-body">
 						Contenuto non autorizzato
@@ -289,49 +298,14 @@
     position: absolute;
     top: 50%;
     left: 59%;
-}
+	}
 
-@keyframes l1 {
+	@keyframes l1 {
     to {
         transform: rotate(.5turn)
     }
-}
+	}
 */
-
-	/* Loader progressive */
-	.loader {
-		--r1: 154%;
-		--r2: 68.5%;
-		width: 60px;
-		aspect-ratio: 1;
-		border-radius: 50%;
-		background:
-			radial-gradient(var(--r1) var(--r2) at top, #0000 79.5%, var(--color-secondary) 80%),
-			radial-gradient(var(--r1) var(--r2) at bottom, var(--color-secondary) 79.5%, #0000 80%),
-			radial-gradient(var(--r1) var(--r2) at top, #0000 79.5%, var(--color-secondary) 80%),
-			#ccc;
-		background-size: 50.5% 220%;
-		background-position: -100% 0%, 0% 0%, 100% 0%;
-		background-repeat: no-repeat;
-		animation: l9 2s infinite linear;
-		position: absolute;
-		top: 50%;
-		left: 59%;
-	}
-
-	@keyframes l9 {
-		33% {
-			background-position: 0% 33%, 100% 33%, 200% 33%
-		}
-
-		66% {
-			background-position: -100% 66%, 0% 66%, 100% 66%
-		}
-
-		100% {
-			background-position: 0% 100%, 100% 100%, 200% 100%
-		}
-	}
 
 	/* Responsive */
 	@media only screen and (max-width: 1300px) {
