@@ -69,6 +69,18 @@
 			specializationName() {
 				return this.$route.params.specialization.replace(/-/g, ' ').replace(/_/g, '-');
 			},
+			voteLabels() {
+				// Construct an objects array to bring label name and input value
+				const labels = [];
+				for (let i = 5; i >= 1; i--) {
+					const name = 'filter-vote' + i;
+					const inputValue = i;
+					const label = { name, inputValue }
+					labels.push(label);
+				}
+
+				return labels;
+			}
 		},
 		watch: {
 			'$route.params.specialization': {
@@ -109,24 +121,13 @@
 					<div class="votes d-flex align-items-center">
 						<p class="me-2">Filtra per media voti: </p>
 						<div class="rating">
-							<form method="get" class="form-control rating" @submit.prevent="getFilteredReviews">
+							<form id="filter-votes-form" class="form-control rating" @submit.prevent="getFilteredReviews">
 								<button type="submit" class="btn btn-sm btn-secondary ms-2"
 									:class="{ 'disabled': rating === null }">Filtra</button>
-								<input type="radio" id="vote5" name="rating" value="5" v-model="rating">
-								<label for="vote5"><i class="fa-solid fa-stethoscope"></i>
-								</label>
-								<input type="radio" id="vote4" name="rating" value="4" v-model="rating">
-								<label for="vote4"><i class="fa-solid fa-stethoscope"></i>
-								</label>
-								<input type="radio" id="vote3" name="rating" value="3" v-model="rating">
-								<label for="vote3"><i class="fa-solid fa-stethoscope"></i>
-								</label>
-								<input type="radio" id="vote2" name="rating" value="2" v-model="rating">
-								<label for="vote2"><i class="fa-solid fa-stethoscope"></i>
-								</label>
-								<input type="radio" id="vote1" name="rating" value="1" v-model="rating">
-								<label for="vote1"><i class="fa-solid fa-stethoscope"></i>
-								</label>
+								<div class="input-group" v-for="label in voteLabels">
+									<input type="radio" :id="label.name" name="rating" :value="label.inputValue" v-model="rating">
+									<label :for="label.name"><i class="fa-solid fa-stethoscope"></i></label>
+								</div>
 							</form>
 						</div>
 					</div>
@@ -240,12 +241,13 @@
 			cursor: pointer;
 		}
 
-		& label:hover,
-		& label:hover~label {
+		label:hover,
+		.input-group:has(label:hover)~.input-group label {
 			color: var(--color-complementary)
 		}
 
-		& input:checked~label {
+		input:checked+label,
+		.input-group:has(input:checked+label)~.input-group label {
 			color: var(--color-complementary)
 		}
 	}

@@ -268,7 +268,7 @@
 							</p>
 							<button class="btn btn-close" v-if="!$route.fullPath.includes('/search')" @click="$router.push({
 								name: 'specializationDoctors', params: { specialization: $route.params.specialization }
-							})"><i class="fa-solid fa-circle-xmark fa-xl"></i></button>
+							})"></button>
 						</div>
 					</div>
 					<div class="card-body-text-section d-flex justify-content-between">
@@ -323,8 +323,8 @@
 								<!-- Message Form -->
 								<h5 class="my-3">Contatta lo specialista</h5>
 								<div class="form-frame">
-									<form method="POST" class="form-control py-3" id="messageForm" @submit.prevent="validateMessageForm"
-										novalidate v-if="messageFormValidated === false">
+									<form id="message-form" class="form-control py-3" @submit.prevent="validateMessageForm" novalidate
+										v-if="messageFormValidated === false">
 										<div class="mb-3 col-12">
 											<label for="first_name" class="form-label">Nome</label>
 											<input type="text" placeholder="Inserisci il tuo nome" class="form-control"
@@ -377,7 +377,7 @@
 								<div class="my-3 py-3">
 									<h5 class="my-3">Lascia una recensione</h5>
 									<div class="form-frame">
-										<form method="POST" class="form-control py-3" @submit.prevent="validateReviewForm" novalidate
+										<form id="review-form" class="form-control py-3" @submit.prevent="validateReviewForm" novalidate
 											v-if="reviewFormValidated === false">
 
 											<div class="mb-3 col-12">
@@ -510,8 +510,9 @@
 
 			button.btn-close {
 				position: absolute;
-				top: 10px;
-				right: 10px;
+				--distance: 20px;
+				top: var(--distance);
+				right: var(--distance);
 			}
 		}
 	}
