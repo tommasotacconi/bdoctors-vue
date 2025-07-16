@@ -35,7 +35,7 @@
 			// 	this.isProfileManagementShown = !this.isProfileManagementShown;
 			// },
 			getSpecializations() {
-				axios.get(this.apiUrl)
+				axios.get(this.store.apiUri + 'specializations')
 					.then(response => {
 						// handle success
 						this.specializations = response.data.specializations;
@@ -170,7 +170,8 @@
 				</routerLink>
 				<!-- Searchbar section -->
 				<div class="search-bar">
-					<<<<<<< HEAD:src/components/Homepage/AppHeader.vue=======<!-- Updated search bar for specializations -->
+					<<<<<<< HEAD <<<<<<< HEAD:src/components/Homepage/AppHeader.vue=======<!-- Updated search bar for
+						specializations -->
 						>>>>>>> homepage:src/components/Generics/AppHeader.vue
 						<Transition>
 							<select @change="chooseSpecialization()" v-model="selectedSpecialization"
@@ -181,6 +182,17 @@
 								</option>
 							</select>
 						</Transition>
+						=======
+						<Transition>
+							<select @change="chooseSpecialization()" v-model="selectedSpecialization"
+								v-if="specializations.toString()" class="form-select" aria-label="Specialization Search">
+								<option value="" disabled>Ricerca il medico per specializzazione!</option>
+								<option v-for="(specialization, index) in specializations" :key="index" :value=specialization>
+									{{ specialization.name }}
+								</option>
+							</select>
+						</Transition>
+						>>>>>>> advanced-search
 				</div>
 			</div>
 			<div class="right-header" :class="rightHeaderClass" v-show="!showLoader">
