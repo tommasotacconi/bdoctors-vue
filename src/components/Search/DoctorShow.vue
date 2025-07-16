@@ -75,6 +75,7 @@
 						// console.log(response);
 						this.profileData = response.data.profile;
 						this.loaded = true;
+						this.$emit('loaded-pop-up');
 					})
 					.catch(function (error) {
 						console.log(error);

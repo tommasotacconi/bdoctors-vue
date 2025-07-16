@@ -35,7 +35,7 @@
 			// 	this.isProfileManagementShown = !this.isProfileManagementShown;
 			// },
 			getSpecializations() {
-				axios.get(this.apiUrl)
+				axios.get(this.store.apiUri + 'specializations')
 					.then(response => {
 						// handle success
 						this.specializations = response.data.specializations;
