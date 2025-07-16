@@ -8,108 +8,89 @@
 		data() {
 			return {
 				store,
-				sponsorshipsApiUrl: 'http://localhost:8000/api/sponsorships',
-				profilesApiUrl: 'http://localhost:8000/api/profiles',
-				usersSponsoredId: [],
-				profilesId: [],
-				filteredProfile: [],
-				loaded: true,
+				sponsoredProfiles: [],
+				requestedPage: 1,
+				elementsPerPage: 20,
+				totalSponsoredProfiles: null,
+				// profilesId: [],
+				// filteredProfile: [],
 			}
 		},
 		methods: {
-			getApiSponsorships() {
-				axios.get(this.sponsorshipsApiUrl)
+			getSponsoredProfiles(perPage = this.elementsPerPage, page = this.requestedPage) {
+				axios.get(this.store.apiUri + 'sponsorships/sponsored', {
+					params: {
+						page,
+						per_page: perPage
+					}
+				})
 					.then(response => {
-						// handle success
-						// console.log(response.data.sponsorships);
-						let sponsorships = response.data.sponsorships
-						for (let i = 0; i < sponsorships.length; i++) {
-							let sponsorshipProfiles = sponsorships[i].profiles
+						const sponsored = response.data.paginated_profiles.data;
+						console.log(sponsored);
+						this.sponsoredProfiles.push(...sponsored);
+						this.totalSponsoredProfiles = response.data.paginated_profiles.total;
 
-							for (let j = 0; j < sponsorshipProfiles.length; j++) {
-								let sponsored = sponsorshipProfiles[j]
-								this.usersSponsoredId.push(sponsored.user_id)
-							}
-						}
-						// console.log(this.userId)
-
-					})
-					.catch(function (error) {
-						// handle error
-						console.log(error);
-					})
-			},
-			getApiProfiles() {
-				axios.get(this.profilesApiUrl)
-					.then(response => {
-						// handle success
-
-						let profiles = response.data.profiles
-						let usersSponsoredId = this.usersSponsoredId
-
-						this.filteredProfile = profiles.filter(element => usersSponsoredId.includes(element.user_id)
-						)
-
-						console.log(this.filteredProfile);
 						this.$emit('loadedSponsoredProfiles');
 					})
 					.catch(function (error) {
 						// handle error
 						console.log(error);
 					})
+
+				// Update next requested page
+				this.requestedPage += 1;
 			},
-			goToShowPage(doctor, index) {
-				store.doctorProfile = doctor
-				let completeName = doctor.user.first_name + '-' + doctor.user.last_name
-				console.log("doctor", doctor)
-				this.$router.push({ name: 'search.show', params: { searchId: 'doctor', id: completeName.toLowerCase() } })
-				console.log(index)
+			goToShowPage(doctorProfile, index) {
+				store.doctorProfile = doctorProfile;
+				let completeName = doctorProfile.user.first_name + '-' + doctorProfile.user.last_name;
+				if (doctorProfile.user.homonymous_id !== null) completeName += '-' + doctorProfile.user.homonymous_id;
+				this.$router.push({ name: 'search', params: { name: completeName } })
+				console.log('Doctor position inside homepage ', index);
 				console.log(store.searchedSpecialization)
 			},
 		},
 		mounted() {
-			// this.showLoader
-			this.getApiSponsorships()
-			this.getApiProfiles()
+			this.getSponsoredProfiles();
 		},
 		computed: {
-			// showLoader() {
-			//     setTimeout(() => {
-			//         this.loaded = true
-			//     }, 2000)
-
-			// }
 		},
 	}
 </script>
 
 <template>
-	<main>
-		<div class="container sponsored-doctor-container">
-			<h3>Dottori in evidenza</h3>
-			<!-- <div class="loader" v-if="!loaded"></div> -->
-			<div class="sponsored-card-container">
-				<div class="card card-sponsored d-flex" style="width: 18rem;" v-for="(doctor, index) in filteredProfile"
-					@click="goToShowPage(doctor, index)">
-					<img
-						src="https://st4.depositphotos.com/4329009/19956/v/450/depositphotos_199564354-stock-illustration-creative-vector-illustration-default-avatar.jpg"
-						class="card-img-top" alt="...">
-					<div class="card-body">
-						<h5 class="card-title">{{ doctor.user.first_name }} {{ doctor.user.last_name }}</h5>
-						<div class="card-text">
-							<h6>Specializzazioni:</h6>
-							<ul class="list-unstyled">
-								<li v-for="doctorSpecialization in doctor.user.specializations">
-									{{ doctorSpecialization.name }}
-								</li>
-							</ul>
-						</div>
+	<div class="container component-container">
+		<h3>Dottori in evidenza</h3>
+		<div class="sponsored-card-container">
+			<div class="card card-sponsored d-flex" style="width: 18rem;" v-for="(sponsored, index) in sponsoredProfiles"
+				@click="goToShowPage(sponsored, index)">
+				<!-- <img
+					src="https://st4.depositphotos.com/4329009/19956/v/450/depositphotos_199564354-stock-illustration-creative-vector-illustration-default-avatar.jpg"
+					class="card-img-top" alt="..."> -->
+				<img
+					:src="sponsored.photo ?? 'https://st4.depositphotos.com/4329009/19956/v/450/depositphotos_199564354-stock-illustration-creative-vector-illustration-default-avatar.jpg'"
+					:alt="'foto profilo di' + sponsored.user.first_name + sponsored.user.last_name">
+				<div class="card-body">
+					<h5 class="card-title">{{ sponsored.user.first_name }} {{ sponsored.user.last_name }}</h5>
+					<div class="card-text">
+						<h6>Specializzazioni:</h6>
+						<ul class="list-unstyled">
+							<li v-for="doctorSpecialization in sponsored.user.specializations">
+								{{ doctorSpecialization.name }}
+							</li>
+						</ul>
 					</div>
 				</div>
 			</div>
+			<p class="info-box">
+				Visualizzati {{ sponsoredProfiles.length }} profili di {{ totalSponsoredProfiles }}
+			</p>
 		</div>
-
-	</main>
+		<div class="buttons-wrapper mx-auto">
+			<button v-if="!(sponsoredProfiles.length === totalSponsoredProfiles)" class="btn mt-4 mb-2"
+				@click="requestedPage === 2 ? getSponsoredProfiles(elementsPerPage = 5, requestedPage = 5) : getSponsoredProfiles()"><i
+					class="fa-regular fa-circle-down fa-2xl"></i></button>
+		</div>
+	</div>
 </template>
 
 <style scoped>
@@ -136,20 +117,21 @@
 	}
 
 	/* Sponsored Doctor */
-	.sponsored-doctor-container h2 {
+	.component-container h2 {
 		text-align: center;
 		margin-bottom: 20px;
 	}
 
-	.sponsored-doctor-container {
+	.component-container {
 		/* background-color: var(--color-complementary); */
-		background-color: white;
 		border-radius: 25px;
 		padding: 20px;
 		margin-bottom: 50px;
 	}
 
 	.sponsored-card-container {
+		padding: 10px 5px;
+		background-color: white;
 		display: flex;
 		gap: 30px;
 		justify-content: center;
@@ -190,6 +172,27 @@
 
 	.card-text {
 		text-align: start;
+	}
+
+	p.info-box {
+		padding: 15px 25px;
+		flex: 1 0 100%;
+		text-align: right;
+	}
+
+	.buttons-wrapper {
+		width: fit-content;
+
+		.fa-circle-down {
+			color: var(--color-secondary);
+
+			transition: color 0.6s ease-out;
+			;
+
+			&:hover {
+				color: var(--color-primary);
+			}
+		}
 	}
 
 

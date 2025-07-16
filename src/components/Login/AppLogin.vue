@@ -1,20 +1,23 @@
 <script>
 	import axios from 'axios';
 	import { store } from '../../../js/store';
+	import { emitter } from '../../../js/eventBus';
 
 	export default {
 		data() {
 			return {
 				inputEmail: '',
 				inputPassword: '',
-				responseStatus: false,
+				isRequestPending: false,
 				store,
 				isAnimationActive: false,
-				positiveAuthenticationSymbol: ''
+				positiveAuthenticationSymbol: '',
+				loginButtonText: 'Login'
 			}
 		},
 		methods: {
 			sendLoginData() {
+				this.isRequestPending = true;
 				axios.post(this.store.apiUri + 'login', {
 					email: this.inputEmail,
 					password: this.inputPassword
@@ -22,28 +25,35 @@
 					withCredentials: true,
 				})
 					.then(response => {
-						console.log(response);
-						this.responseStatus = true;
+						// this.store.isAuthenticated = true;
+						this.loginButtonText = '';
 						this.positiveAuthenticationSymbol = '✅';
+						this.isRequestPending = false;
+						emitter.emit('reset-dashboard');
 						setTimeout(() => {
 							this.$router.push({ name: 'dashboard', params: { id: response.data.user_id } })
 						}, 100);
 					})
 					.catch(error => {
+						this.isRequestPending = false;
 						// Trigger animation
 						this.isAnimationActive = true;
-						setTimeout(() => { this.isAnimationActive = false }, 200);
+						setTimeout(() => { this.isAnimationActive = false }, 250);
 						console.log(error);
 					});
 			},
+		},
+		computed: {
+			loginButtonContent() {
+				return !this.isRequestPending ? this.loginButtonText + this.positiveAuthenticationSymbol : null;
+			}
 		},
 		created: function () {
 			axios.get(this.store.apiUri + 'login/check', {
 				withCredentials: true,
 			})
 				.then(({ data: { authentication: { userId } } }) => {
-					console.log('Current authenticated user id: ' + userId);
-					if (userId) this.$router.push({ name: 'dashboard', params: { id: userId } })
+					if (userId) this.$router.push({ name: 'dashboard' })
 				})
 				.catch(err => { });
 		}
@@ -65,9 +75,11 @@
 			</div>
 			<!-- Button wrappers -->
 			<div class="buttons-wrapper col-12 d-flex justify-content-center">
-				<button type="submit" id="login-button" class="btn btn-primary mt-4 mb-3"
-					:class="{ ['shaking-animation']: isAnimationActive }">Login <span>{{ positiveAuthenticationSymbol
-					}}</span></button>
+				<button type="submit" id="login-button" class="btn btn-primary d-flex justify-content-center mt-4 mb-3"
+					:class="{ ['shaking-animation']: isAnimationActive }">
+					{{ loginButtonContent }}
+					<Loader class="repositioned-loader" v-if="isRequestPending" />
+				</button>
 			</div>
 		</div>
 	</form>
@@ -113,6 +125,7 @@
 	#login-button {
 		width: calc(100% - 24px);
 		background-color: #65B0FF;
+		position: relative;
 
 		&:hover {
 			background-color: #0E395D;
@@ -157,5 +170,13 @@
 		100% {
 			transform: translateX(0)
 		}
+	}
+
+	button .repositioned-loader {
+		width: 25px;
+		position: static;
+		translate: none;
+
+		border: 2px solid #fff;
 	}
 </style>

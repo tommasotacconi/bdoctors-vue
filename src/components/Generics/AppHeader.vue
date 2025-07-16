@@ -1,7 +1,10 @@
 <script>
 	import axios from 'axios';
-	import { store } from '../../../js/store';
+	import { store } from '../../../js/store.js';
+	import { dashboardStore } from '../../../js/dashboardStore.js';
 	import { RouterLink } from 'vue-router';
+	import AppUserIcon from '../Generics/AppUserIcon.vue';
+	import { useShowButtonsAnimation } from '../../../js/composables/useShowButtonsAnimation';
 
 	export default {
 		data() {
@@ -9,29 +12,30 @@
 				specializations: [],
 				selectedSpecialization: '',
 				store,
-				checkedLogin: false,
-				isLogged: false,
-				isProfileManagementShown: false,
-				logoutBtnTimeout: undefined,
+				dashboardStore,
+				checkingLogin: true,
+				// isProfileManagementShown: false,
+				isUserIconReady: false,
+				// logoutBtnTimeout: undefined,
 			}
 		},
 		methods: {
-			showProfileManagementButtons() {
-				// Discard timeout if is already set, otherwise set a new one
-				if (this.logoutBtnTimeout) {
-					this.logoutBtnTimeout = clearTimeout(this.logoutBtnTimeout);
-				} else {
-					// Se l'utente non interagisce farlo scomparire
-					this.logoutBtnTimeout = setTimeout(() => {
-						this.isProfileManagementShown = false
-						this.logoutBtnTimeout = clearTimeout(this.logoutBtnTimeout);
-					}, 5000)
-				}
+			// showProfileManagementButtons() {
+			// 	// Discard timeout if is already set, otherwise set a new one
+			// 	if (this.logoutBtnTimeout) {
+			// 		this.logoutBtnTimeout = clearTimeout(this.logoutBtnTimeout);
+			// 	} else {
+			// 		// Se l'utente non interagisce farlo scomparire
+			// 		this.logoutBtnTimeout = setTimeout(() => {
+			// 			this.isProfileManagementShown = false
+			// 			this.logoutBtnTimeout = clearTimeout(this.logoutBtnTimeout);
+			// 		}, 5000)
+			// 	}
 
-				this.isProfileManagementShown = !this.isProfileManagementShown;
-			},
-			getApi() {
-				axios.get(this.store.apiUri + 'specializations')
+			// 	this.isProfileManagementShown = !this.isProfileManagementShown;
+			// },
+			getSpecializations() {
+				axios.get(this.apiUrl)
 					.then(response => {
 						// handle success
 						this.specializations = response.data.specializations;
@@ -48,7 +52,7 @@
 
 				// Nuova pagina nella quale usiamo i nomi. Piccola concatenazione di metodi per togliere gli spazi e rendere tutto minuscolo
 				this.$router.push({
-					name: 'search', params: {
+					name: 'specializationDoctors', params: {
 						specialization: store.selectedSpecializationName.trim().replace(/-/g, '_').replace(/ /g, "-").toLowerCase(),
 					},
 				})
@@ -63,11 +67,18 @@
 						withCredentials: true
 					})
 					.then(response => {
-						this.isLogged = false;
+						this.checkingLogin = false;
+						this.store.isAuthenticated = false;
+						this.dashboardStore.profileDataGeneral = {};
 					})
 					.catch(err => {
+						this.checkingLogin = false;
 						console.log(err);
 					});
+
+				this.checkingLogin = true;
+				// Handle style for buttons' transition since the transitionend event never occur due to the 'display: none' set on the containing block after call to logout()
+				this.areProfileButtonsShown = false;
 			}
 		},
 		computed: {
@@ -88,30 +99,53 @@
 				}
 			},
 			rightHeaderClass() {
-				return this.isLogged ? {
+				return this.store.isAuthenticated ? {
 					'logged-user': true,
 					'not-logged-user': false,
 				} : {
 					'logged-user': false,
 					'not-logged-user': true,
 				};
+			},
+			showLoader() {
+				if (this.checkingLogin) {
+					return true;
+				}
+				else {
+					if (this.store.isAuthenticated) {
+						return !this.isUserIconReady;
+					}
+					return false;
+				}
 			}
+		},
+		components: {
+			AppUserIcon
+		},
+		setup() {
+			const { buttonsStyle: profileButtonsStyle, areButtonsShown: areProfileButtonsShown, showButtonsTimeout: showProfileButtonsTimeout, showButtons: showProfileButtons, removeButtonsFromFlow: removeProfileButtonsFromFlow } = useShowButtonsAnimation();
+
+			return { profileButtonsStyle, areProfileButtonsShown, showProfileButtonsTimeout, showProfileButtons, removeProfileButtonsFromFlow };
 		},
 		created() {
 			axios.get(this.store.apiUri + 'login/check', {
 				withCredentials: true,
 			})
 				.then(({ data: { authentication: { userId } } }) => {
-					this.isLogged = true;
-					this.checkedLogin = true;
-					this.store.userId = userId;
+					this.store.isAuthenticated = true;
+					this.checkingLogin = false;
+					// this.store.userId = userId;
 				})
 				.catch(err => {
-					this.checkedLogin = true;
+					this.checkingLogin = false;
 				});
+
+			this.getSpecializations();
 		},
-		mounted() {
-			this.getApi()
+		deactivated() {
+			// Handle style for buttons' transition since the transitionend event never occur when broswing to another page
+			this.areProfileButtonsShown = false;
+			this.showProfileButtonsTimeout = clearTimeout(this.showProfileButtonsTimeout);
 		}
 	}
 </script>
@@ -120,6 +154,7 @@
 	<header class="general-header">
 		<div class="container container-header d-flex gap-3">
 			<div class="left-header d-flex">
+				<!-- Logo section -->
 				<routerLink style="text-decoration: none; color: inherit;" :to="{ name: 'homepage' }">
 					<div class="left-header-title-logo d-flex">
 						<div class="logo">
@@ -133,38 +168,46 @@
 						</div>
 					</div>
 				</routerLink>
+				<!-- Searchbar section -->
 				<div class="search-bar">
-					<Transition>
-						<select @change="chooseSpecialization()" v-model="selectedSpecialization" v-if="specializations.toString()"
-							class="form-select" aria-label="Specialization Search">
-							<option value="" disabled>Ricerca il medico per specializzazione!</option>
-							<option v-for="(specialization, index) in specializations" :key="index" :value=specialization>{{
-								specialization.name
-							}}
-							</option>
-						</select>
-					</Transition>
+					<<<<<<< HEAD:src/components/Homepage/AppHeader.vue=======<!-- Updated search bar for specializations -->
+						>>>>>>> homepage:src/components/Generics/AppHeader.vue
+						<Transition>
+							<select @change="chooseSpecialization()" v-model="selectedSpecialization"
+								v-if="specializations.toString()" class="form-select" aria-label="Specialization Search">
+								<option value="" disabled>Ricerca il medico per specializzazione!</option>
+								<option v-for="(specialization, index) in specializations" :key="index" :value=specialization>
+									{{ specialization.name }}
+								</option>
+							</select>
+						</Transition>
 				</div>
 			</div>
-			<div class="right-header d-flex" :class="rightHeaderClass" v-if="checkedLogin">
+			<div class="right-header" :class="rightHeaderClass" v-show="!showLoader">
+				<!-- Buttons when isAuthenticated = false -->
 				<routerLink :to="{ name: 'register' }">
 					<button class="btn button-logup">Registrati</button>
 				</routerLink>
 				<routerLink :to="{ name: 'login' }">
-					<button class="btn button-login"><i class="fa-solid fa-user-doctor"></i></button>
+					<button class="btn button-with-icon"><i class="fa-solid fa-user-doctor"></i></button>
 				</routerLink>
+				<!-- Buttons when isAuthenticated = true -->
 				<div class="user">
-					<Transition>
-						<div class="user-buttons-wrapper d-flex justify-content-between" v-if="isProfileManagementShown">
-							<router-link :to="{ name: 'dashboard', params: { id: store.userId } }" class="btn personal-area">Area
-								personale</router-link>
-							<button class="logout" @click="logout()">
-								<span class="logout-text">Esci</span>
-							</button>
-						</div>
-					</Transition>
-					<i class="fa-solid fa-user fa-user-doctor" @click="showProfileManagementButtons"></i>
+					<div class="user-buttons-wrapper" :style="profileButtonsStyle" v-show="areProfileButtonsShown"
+						@transitionend="removeProfileButtonsFromFlow">
+						<router-link :to="{ name: 'dashboard' }" class="btn button-with-icon personal-area">
+							<!-- <span class="personal-area-link">Area Personale</span> -->
+							<i class="fa-solid fa-user-doctor"></i>
+						</router-link>
+						<button class="logout" @click="logout()">
+							<span class="logout-text">Esci</span>
+						</button>
+					</div>
+					<AppUserIcon :parent="'AppHeader'" @click="showProfileButtons" @user-icon-ready="isUserIconReady = true" />
 				</div>
+			</div>
+			<div class=" loader-container right-header" v-show="showLoader">
+				<Loader id="loader" />
 			</div>
 		</div>
 	</header>
@@ -175,9 +218,9 @@
 	/* General */
 	.general-header {
 		background-color: #0E395D;
-		height: 80px;
-		border-bottom-left-radius: 25px;
-		border-bottom-right-radius: 25px;
+		height: var(--header-h);
+		border-bottom-left-radius: var(--header-border-r);
+		border-bottom-right-radius: var(--header-border-r);
 	}
 
 	.container-header {
@@ -281,11 +324,14 @@
 	/* Right header */
 	.right-header {
 		height: 100%;
+
+		display: flex;
 		align-items: center;
 		gap: 20px;
 	}
 
 	.user-buttons-wrapper {
+		width: max-content;
 		margin-right: 10px;
 	}
 
@@ -296,19 +342,25 @@
 		font-style: italic;
 		color: white;
 		font-weight: bold;
+
+		span {
+			margin-right: 5px;
+			display: none;
+		}
 	}
 
 	.right-header .btn.button-logup {
 		background-color: var(--color-secondary);
 	}
 
-	.right-header .btn.button-login {
+	.right-header .btn.button-with-icon {
 		background-color: var(--color-complementary);
-		padding-top: 8px;
-		padding-bottom: 8px;
+		/* Padding calc is given by
+		(((factor * font-size) + 2 * y-pd) - content-height) / 2 */
+		padding: calc((((1.5 * 16px) + 2 * 10px) - 33.33px) / 2) 16px;
 
 		&::after {
-			content: 'Login';
+			content: 'Area Personale';
 		}
 	}
 
@@ -347,12 +399,20 @@
 		}
 	}
 
+	/* Loader sizing */
+	.right-header .loader {
+		width: 34px;
+		position: static;
+	}
+
 	.fa-user-doctor {
+		height: 100%;
+		padding: 8px;
 		border-radius: 50%;
 		border: 1px solid white;
-		padding: 6px;
 		background-color: white;
-		color: #65B0FF;
+		color: var(--color-complementary);
+		/* color: #65B0FF; */
 		margin-right: 7px;
 	}
 
@@ -360,31 +420,25 @@
 	/* User logout */
 	.user {
 		display: flex;
-		gap: 15px;
 		align-items: center;
-	}
-
-	.fa-user {
-		border-radius: 50%;
-		border: 1px solid white;
-		padding: 8px;
-		background-color: white;
-		color: var(--color-complementary);
-		margin-right: 7px;
-		height: 100%
 	}
 
 	.logout {
 		margin-left: 10px;
+		margin-right: 15px;
 	}
 
 	.logout-text {
-		font-style: italic;
+		/* font-style: italic; */
 		text-decoration: none;
 		color: white;
 		font-weight: bold;
 	}
 
+	#loader {
+		margin-right: calc(34px / 2);
+		translate: 50% 0;
+	}
 
 	/* Responsive */
 	@media screen and (max-width: 1230px) {
@@ -398,7 +452,7 @@
 	}
 
 	@media screen and (max-width: 992px) {
-		.right-header .btn.button-login {
+		.right-header .btn.button-with-icon {
 			&::after {
 				content: '';
 			}
@@ -406,6 +460,12 @@
 
 		.fa-user-doctor {
 			margin-right: 0px;
+		}
+	}
+
+	@media screen and (min-width: 768px) {
+		.right-header .btn span {
+			display: unset;
 		}
 	}
 </style>
