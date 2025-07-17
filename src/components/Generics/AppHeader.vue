@@ -132,7 +132,7 @@
 				axios.get(this.store.apiUri + 'login/check', {
 					withCredentials: true,
 				})
-					.then(({ data: { authentication: { userId } } }) => {
+					.then(response => {
 						this.store.isAuthenticated = true;
 						this.checkingLogin = false;
 						// this.store.userId = userId;
