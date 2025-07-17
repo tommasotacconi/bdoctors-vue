@@ -21,6 +21,7 @@
 					.then(({ data: { data: profile } }) => {
 						// console.log('Profile: ', profile);
 						this.loaded = true;
+						this.store.isAuthenticated = true;
 
 						// Data to share inside other components
 						this.dashboardStore.profileDataGeneral = profile;
@@ -32,8 +33,10 @@
 						this.loaded = true;
 					})
 					.finally(() => {
-						this.store.isAuthenticated = true;
+						this.dashboardStore.isProfileRequestPending = false;
 					});
+
+				this.dashboardStore.isProfileRequestPending = true;
 			},
 			// getFilePath: function (filePath) {
 			// 	return new URL(filePath, 'http://localhost:8000/').href;
