@@ -128,17 +128,20 @@
 			return { profileButtonsStyle, areProfileButtonsShown, showProfileButtonsTimeout, showProfileButtons, removeProfileButtonsFromFlow };
 		},
 		created() {
-			axios.get(this.store.apiUri + 'login/check', {
-				withCredentials: true,
-			})
-				.then(({ data: { authentication: { userId } } }) => {
-					this.store.isAuthenticated = true;
-					this.checkingLogin = false;
-					// this.store.userId = userId;
+			if (this.store.isAuthenticated === null) {
+				axios.get(this.store.apiUri + 'login/check', {
+					withCredentials: true,
 				})
-				.catch(err => {
-					this.checkingLogin = false;
-				});
+					.then(({ data: { authentication: { userId } } }) => {
+						this.store.isAuthenticated = true;
+						this.checkingLogin = false;
+						// this.store.userId = userId;
+					})
+					.catch(err => {
+						this.checkingLogin = false;
+					});
+			}
+			else this.checkingLogin = false;
 
 			this.getSpecializations();
 		},
