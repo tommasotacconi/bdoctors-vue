@@ -35,7 +35,7 @@
 					.then(response => {
 						this.store.isAuthenticated = false;
 						this.dashboardStore.profileDataGeneral = {};
-						this.$router.push({ path: '/' });
+						this.$router.push({ name: 'homepage' });
 					})
 					.catch(err => {
 						console.log(err);
