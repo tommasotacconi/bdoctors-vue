@@ -18,7 +18,7 @@ const routes = [
 		component: WithHeaderLayout,
 		children: [
 			{
-				path: 'dottori',
+				path: 'inizia-ricerca',
 				name: 'homepage',
 				component: HomepagePage,
 			},
