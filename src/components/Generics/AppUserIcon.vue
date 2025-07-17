@@ -29,14 +29,14 @@
 				// });
 			},
 			setProfilePhotoPath() {
-				// console.log('Evaluating whether to compute profilePhotoPath', '--- Parent:', this.parent);
-				if (!this.store.isAuthenticated) {
+				console.log('Evaluating whether to compute profilePhotoPath', '--- Parent:', this.parent);
+				if (!this.store.isAuthenticated || this.dashboardStore.isProfileRequestPending) {
 					this.profilePhotoPath = '';
 					return;
 				}
 				// console.log('Computing <profilePhotPath>', '--- Parent: ', this.parent);
 				// Calculate profile photo :src attribute depending on the presence of the 'photos'
-				// string in the db data photo profiles table
+				// string in the profiles table's column photo
 				const photoPath = this.dashboardStore.profileDataGeneral.photo ?? this.profilePhotoPath;
 				// console.log('Photo path: ' + photoPath, '--- Parent: ' + this.parent);
 				if (!photoPath) {
@@ -54,8 +54,11 @@
 			}
 		},
 		watch: {
-			'store.isAuthenticated'() {
-				this.setProfilePhotoPath();
+			'store.isAuthenticated'(newValue) {
+				if (newValue) this.setProfilePhotoPath();
+			},
+			'dashboardStore.isProfileRequestPending'(newValue) {
+				if (!newValue) this.setProfilePhotoPath();
 			}
 		},
 		setup() {
@@ -71,7 +74,7 @@
 </script>
 
 <template>
-	<i class="button fa-solid fa-user" :class="{ ['user-img']: profilePhotoPath }">
+	<i class="button fa-solid fa-user" :class="{ ['user-profile-photo']: profilePhotoPath }">
 		<img :src="profilePhotoPath" alt="foto profilo">
 	</i>
 
@@ -93,7 +96,7 @@
 		}
 	}
 
-	.fa-user.user-img {
+	.fa-user.user-profile-photo {
 		padding: 2px;
 
 		img {
@@ -106,7 +109,7 @@
 		}
 	}
 
-	.user-img::before {
+	.user-profile-photo::before {
 		content: none;
 	}
 

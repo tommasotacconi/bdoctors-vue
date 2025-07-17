@@ -19,6 +19,7 @@ export const dashboardStore = reactive({
 	labelsForCharts: ['Messaggi', 'Recensioni', 'Voti'],
 
 	profileDataGeneral: {},
+	isProfileRequestPending: false,
 
   // Chart data 
   chartDataMessages: {},

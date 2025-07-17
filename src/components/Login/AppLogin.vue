@@ -25,7 +25,7 @@
 					withCredentials: true,
 				})
 					.then(response => {
-						// this.store.isAuthenticated = true;
+						this.store.isAuthenticated = true;
 						this.loginButtonText = '';
 						this.positiveAuthenticationSymbol = '✅';
 						this.isRequestPending = false;
@@ -53,6 +53,7 @@
 				withCredentials: true,
 			})
 				.then(({ data: { authentication: { userId } } }) => {
+					this.store.isAuthenticated = true;
 					if (userId) this.$router.push({ name: 'dashboard' })
 				})
 				.catch(err => { });
