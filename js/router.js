@@ -18,15 +18,15 @@ const routes = [
 		component: WithHeaderLayout,
 		children: [
 			{
-				path: '',
+				path: 'inizia-ricerca',
 				name: 'homepage',
 				component: HomepagePage,
 			},
-			{ path: 'user/login',
+			{ path: 'utente/accesso',
 				name: 'login',
 				component: LoginPage,
 			},
-			{ path: 'user/register',
+			{ path: 'utente/registrazione',
 				name: 'register',
 				component: RegisterPage,
 			},
@@ -38,13 +38,13 @@ const routes = [
 				component: AdvancedSearchPage,
 				children: [
 					{
-						path: '/:specialization',
+						path: ':specialization',
 						name: 'specializationDoctors',
 						component: SearchedSpecializationDoctors,
 						children: [
 							{
 								// Path to doctor, within specialization
-								path: '/:specialization/:name',
+								path: ':name',
 								name: 'specializationDoctors.show',
 								component: DoctorShow
 							}
@@ -52,17 +52,17 @@ const routes = [
 					},
 				]
 			},
-			{ path: '/search/:name',
+			{ path: '/cerca/:name',
 				name: 'search',
 				component: DoctorShow,
 			},
 		]
 	},
 	{
-		path: '/',
+		path: '',
 		component: OneComponentLayout,
 		children: [
-			{ path: 'user',
+			{ path: '/utente/profilo',
 				name: 'dashboard',
 				component: DashboardPage,
 			},
