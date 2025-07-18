@@ -72,7 +72,7 @@
 			getProfileData() {
 				axios.get(this.store.apiUri + 'profiles/' + this.$route.params.name)
 					.then(response => {
-						// console.log(response);
+						console.log(response);
 						this.profileData = response.data.profile;
 						this.loaded = true;
 						this.$emit('loaded-pop-up');
@@ -218,10 +218,26 @@
 				this.reviewForm.votes = null;
 			}
 		},
+		props: {
+			searchedSpecialization: {
+				type: String,
+				required: false
+			}
+		},
 		computed: {
 			retrievedProfileData() {
 				return this.store.doctorProfile ? this.store.doctorProfile : this.profileData;
-			}
+			},
+			otherDoctorSpecializations() {
+				if (!this.searchedSpecialization) return undefined;
+
+				const specializationParam = this.$route.params.specialization;
+				let searchedSpecialization = specializationParam.replace(/-/g, ' ').replace(/_/g, '-');
+				searchedSpecialization = searchedSpecialization[0].toUpperCase() + searchedSpecialization.slice(1);
+				const allDoctorSpecializations = this.store.doctorProfile?.user.specializations;
+
+				return allDoctorSpecializations?.filter(({ name }) => name !== searchedSpecialization);
+			},
 		},
 		setup() {
 			const { getFilePath, getProfilePhotoPath } = useGetPathFunctions();
@@ -229,12 +245,15 @@
 			return { getFilePath, getProfilePhotoPath }
 		},
 		created: function () {
+			this.setDoctorInfo();
+
 			if (!this.store.doctorProfile) {
 				this.getProfileData();
-			}
-			else this.loaded = true;
 
-			this.setDoctorInfo();
+				return;
+			}
+			else if (this.store.doctorProfile) this.$emit('loaded-pop-up');
+			this.loaded = true;
 		},
 	}
 </script>
@@ -261,13 +280,18 @@
 								<ul class="specializations-list">
 									<li class="specializations-list-item" v-if="retrievedProfileData.specialization_name">
 										{{ retrievedProfileData.specialization_name }}</li>
+									<template v-else-if="retrievedProfileData.user.specializations.length">
+										<li class="specializations-list-item"
+											v-for="specialization in retrievedProfileData.user.specializations">
+											{{ specialization.name }}</li>
+									</template>
 									<li v-else>{{ 'Nessuna specializzazione indicata' }}</li>
 								</ul>
 							</div>
 							<p class="address">
 								<i class="fa-solid fa-location-dot"></i>{{ retrievedProfileData.office_address }}
 							</p>
-							<button class="btn btn-close" v-if="!$route.fullPath.includes('/search')" @click="$router.push({
+							<button class="btn btn-close" v-if="$route.name !== 'search'" @click="$router.push({
 								name: 'specializationDoctors', params: { specialization: $route.params.specialization }
 							})"></button>
 						</div>
@@ -283,15 +307,12 @@
 										Curriculum.pdf
 									</div>
 								</li>
-								<li id="specialization-border" class="card-list-item">
+								<li id="specialization-border" class="card-list-item" v-if="otherDoctorSpecializations?.length">
 									<h3>Altre specializzazioni</h3>
 									<div class="data-element specializations-element">
 										<ul class="specializations-list">
-											<li class="specializations-list-item" v-if="retrievedProfileData.user.specializations"
-												v-for="specialization in (retrievedProfileData.user.specializations)">{{
-													specialization.name }}</li>
-
-											<li v-else>{{ 'Non sono presenti specializzazioni al momento' }}</li>
+											<li class="specializations-list-item" v-for="specialization in otherDoctorSpecializations">{{
+												specialization.name }}</li>
 										</ul>
 									</div>
 									<!-- {{ profileData.doctor.specializations[0].name }} -->

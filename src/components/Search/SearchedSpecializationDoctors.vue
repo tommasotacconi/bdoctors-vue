@@ -89,6 +89,26 @@
 					this.getFilteredReviewsData();
 				},
 				immediate: true
+			},
+			'filteredDoctorsProfiles': {
+				handler(newValue) {
+					const urlName = this.$route.params.name;
+					if (urlName) {
+						const doctorProfile = this.filteredDoctorsProfiles.find(({ user }) => {
+							let result = false;
+							// Compare user complete name, homonymous_id included, with in URL name
+							const homonymousIdPart = user.homonymous_id ? `-${user.homonymous_id}` : null;
+							const fullNamePart = `${user.first_name}-${user.last_name}`;
+							let completeName = '';
+							completeName = homonymousIdPart ? fullNamePart + homonymousIdPart : fullNamePart;
+							result = completeName === urlName;
+
+							return result;
+						})
+
+						this.store.doctorProfile = doctorProfile;
+					}
+				}
 			}
 		},
 		setup() {
@@ -178,7 +198,7 @@
 
 			<div v-if="$route.params.name" class="pop-up doctor-show" :class="{ 'loading-pop-up': loadingPopUp }">
 				<!-- DoctorShow.vue component passed with router -->
-				<RouterView @loaded-pop-up="loadingPopUp = false" />
+				<RouterView @loaded-pop-up="loadingPopUp = false" :searchedSpecialization="specializationName" />
 			</div>
 		</div>
 	</main>
