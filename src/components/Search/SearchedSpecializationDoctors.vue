@@ -261,7 +261,7 @@
 
 	/* Doctor list */
 	.doctors-list {
-		--col-gap: 30px;
+		--col-gap: 50px;
 	}
 
 	.doctors-list {
@@ -295,7 +295,7 @@
 
 	.doctor-card {
 		min-height: 450px;
-		flex: 0 1 calc(100% / 3 - 2 / 3 * var(--col-gap));
+		flex: 0 calc(100% / 3 - 2 / 3 * var(--col-gap));
 		background-color: #D8F9FF;
 		padding: 25px 30px;
 		display: flex;
@@ -359,15 +359,10 @@
 	}
 
 	/* Media Queries */
-	/* Desktop (above 1024px) */
-	@media (min-width: 1024px) {
+	/* Desktop (under 1024px) */
+	@media (max-width: 1024px) {
 		.doctors-list {
-			--col-gap: 50px;
-		}
-
-		/* 3 cards per row */
-		.doctor-card {
-			flex: calc(100% / 3 - 2 / 3 * var(--col-gap));
+			--col-gap: 30px;
 		}
 	}
 
@@ -396,7 +391,7 @@
 		}
 
 		.doctor-card {
-			flex: calc(100% / 2 - 1 / 2 * var(--col-gap));
+			flex: 0 calc(100% / 2 - 1 / 2 * var(--col-gap));
 		}
 
 		.title h2 {
@@ -432,8 +427,8 @@
 		}
 
 		.doctor-card {
-			flex: 1;
 			/* Ensure 1 card per row on very small screens */
+			flex: auto;
 			min-height: 300px;
 		}
 
