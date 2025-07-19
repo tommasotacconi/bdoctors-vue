@@ -15,10 +15,10 @@
 		methods: {
 			getProfilePhoto() {
 				// console.log('Calling api for profilePhoto');
-				axios.get(this.store.apiUri + 'profiles', {
+				axios.get(this.store.apiUri + 'profiles/authenticated', {
 					withCredentials: true,
 				})
-					.then(({ data: { data: { photo } } }) => {
+					.then(({ data: { profile: { photo } } }) => {
 						this.profilePhotoPath = photo;
 						// this.$emit('userIconReady');
 						this.setProfilePhotoPath();
