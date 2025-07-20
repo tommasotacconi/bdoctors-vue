@@ -29,7 +29,7 @@
 				// });
 			},
 			setProfilePhotoPath() {
-				console.log('Evaluating whether to compute profilePhotoPath', '--- Parent:', this.parent);
+				// console.log('Evaluating whether to compute profilePhotoPath', '--- Parent:', this.parent);
 				if (!this.store.isAuthenticated || this.dashboardStore.isProfileRequestPending) {
 					this.profilePhotoPath = '';
 					return;
