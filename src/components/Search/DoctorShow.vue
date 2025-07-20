@@ -72,7 +72,7 @@
 			getProfileData() {
 				axios.get(this.store.apiUri + 'profiles/' + this.$route.params.name)
 					.then(response => {
-						console.log(response);
+						// console.log(response);
 						this.profileData = response.data.profile;
 						this.loaded = true;
 						this.$emit('loaded-pop-up');
