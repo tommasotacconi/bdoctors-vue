@@ -41,7 +41,7 @@
 					.then(response => {
 						// handle success
 						this.filteredDoctorsProfiles = response.data;
-						console.log('filtered doctors:', this.filteredDoctorsProfiles);
+						// console.log('Api filtered doctors:', this.filteredDoctorsProfiles);
 						this.loaded = true;
 					})
 					.catch(function (error) {
