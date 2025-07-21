@@ -71,7 +71,6 @@
 				const firstChild = this.$refs.titleDiv;
 				const marginTopStringProperty = getComputedStyle(firstChild)['margin-top'];
 				const marginTop = Number(marginTopStringProperty.slice(0, -2));
-				console.log(height, marginTop)
 				this.containerHeight = height + marginTop;
 			}
 		},
@@ -123,8 +122,8 @@
 				}
 			},
 			'loaded': {
-				handler() {
-					this.$nextTick(this.saveContainerHeight);
+				handler(newValue) {
+					if (newValue) this.$nextTick(this.saveContainerHeight);
 				}
 			}
 		},
