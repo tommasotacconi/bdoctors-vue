@@ -4,20 +4,22 @@
 	import DoctorShow from './DoctorShow.vue';
 	import { finiteOrDefault } from 'chart.js/helpers';
 	import { useGetPathFunctions } from '../../../js/composables/useGetPathFunctions.js';
+	import { nextTick } from 'vue';
 
 	export default {
 		data() {
 			return {
+				placeholderImg: 'https://st4.depositphotos.com/4329009/19956/v/450/depositphotos_199564354-stock-illustration-creative-vector-illustration-default-avatar.jpg',
 				store,
 				searchedDoctor: [],
+				filteredDoctorsProfiles: [],
 				doctors: [],
 				rating: null,
 				inputReviews: null,
 				loaded: false,
 				loadingPopUp: !!this.$route.params.name,
 				showDoctor: false,
-				filteredDoctorsProfiles: [],
-				placeholderImg: 'https://st4.depositphotos.com/4329009/19956/v/450/depositphotos_199564354-stock-illustration-creative-vector-illustration-default-avatar.jpg'
+				containerHeight: 0,
 			}
 		},
 		components: {
@@ -62,6 +64,16 @@
 				this.inputReviews = null;
 				this.getFilteredReviews();
 			},
+			saveContainerHeight() {
+				const height = this.$refs.container.getBoundingClientRect().height;
+				// Compute margin using if present inside first and last child's margin due to margin collapse
+				// and having container no margin
+				const firstChild = this.$refs.titleDiv;
+				const marginTopStringProperty = getComputedStyle(firstChild)['margin-top'];
+				const marginTop = Number(marginTopStringProperty.slice(0, -2));
+				console.log(height, marginTop)
+				this.containerHeight = height + marginTop;
+			}
 		},
 		computed: {
 			orderedDoctors() {
@@ -81,7 +93,7 @@
 				}
 
 				return labels;
-			}
+			},
 		},
 		watch: {
 			'$route.params.specialization': {
@@ -109,6 +121,11 @@
 						this.store.doctorProfile = doctorProfile;
 					}
 				}
+			},
+			'loaded': {
+				handler() {
+					this.$nextTick(this.saveContainerHeight);
+				}
 			}
 		},
 		setup() {
@@ -124,8 +141,8 @@
 	<Loader v-if="!loaded" />
 
 	<main ref="main" v-if="loaded" :style="{ overflow: loadingPopUp ? 'hidden' : 'hidden auto' }">
-		<div class="container">
-			<div class="title">
+		<div ref="container" class="container">
+			<div ref="titleDiv" class="title">
 				<h2>Risultati per <span class="specialization-title">{{ specializationName }} </span><span
 						v-if="!filteredDoctorsProfiles.length" class="total-specialization-doctor"> (Totale esperti:
 						{{
@@ -198,7 +215,8 @@
 
 			<div v-if="$route.params.name" class="pop-up doctor-show" :class="{ 'loading-pop-up': loadingPopUp }">
 				<!-- DoctorShow.vue component passed with router -->
-				<RouterView @loaded-pop-up="loadingPopUp = false" :searchedSpecialization="specializationName" />
+				<RouterView @loaded-pop-up="loadingPopUp = false" :searchedSpecialization="specializationName"
+					:containerHeight />
 			</div>
 		</div>
 	</main>
@@ -366,6 +384,8 @@
 
 	/* Pop-up */
 	.pop-up.doctor-show {
+		padding-top: 30px;
+		padding-bottom: 60px;
 		backdrop-filter: blur(5px);
 
 		position: absolute;

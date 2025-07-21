@@ -222,6 +222,10 @@
 			searchedSpecialization: {
 				type: String,
 				required: false
+			},
+			containerHeight: {
+				type: Number,
+				required: false,
 			}
 		},
 		computed: {
@@ -244,7 +248,7 @@
 
 			return { getFilePath, getProfilePhotoPath }
 		},
-		created: function () {
+		created() {
 			this.setDoctorInfo();
 
 			if (!this.store.doctorProfile) {
@@ -253,13 +257,14 @@
 				return;
 			}
 			else if (this.store.doctorProfile) this.$emit('loaded-pop-up');
+
 			this.loaded = true;
 		},
 	}
 </script>
 
 <template>
-	<main>
+	<main class="pop-up-main" :style="{ 'min-height': containerHeight + 'px' }">
 		<div class="d-flex justify-content-center container">
 			<Loader v-if="!loaded" />
 			<section class="card-general" v-else>
@@ -502,9 +507,8 @@
 		margin: 0;
 	}
 
-	main {
-		height: 100%;
-		overflow: auto;
+	main.pop-up-main {
+		padding: 0;
 	}
 
 	/* Card edit*/
