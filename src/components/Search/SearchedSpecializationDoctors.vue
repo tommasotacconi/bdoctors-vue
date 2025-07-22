@@ -12,10 +12,11 @@
 				placeholderImg: 'https://st4.depositphotos.com/4329009/19956/v/450/depositphotos_199564354-stock-illustration-creative-vector-illustration-default-avatar.jpg',
 				store,
 				searchedDoctor: [],
-				filteredDoctorsProfiles: [],
+				filteredDoctors: [],
 				doctors: [],
 				rating: null,
-				inputReviews: null,
+				reviewsNumber: null,
+				isFiltering: false,
 				loaded: false,
 				loadingPopUp: !!this.$route.params.name,
 				showDoctor: false,
@@ -37,11 +38,11 @@
 				this.$refs.main.scrollTop = 0;
 			},
 			getFilteredReviewsData() {
-				axios.get(this.store.apiUri + `reviews/filter/${this.$route.params.specialization}/${this.rating}/${this.inputReviews}`)
+				axios.get(this.store.apiUri + `reviews/filter/${this.$route.params.specialization}/${this.rating}/${this.reviewsNumber}`)
 					.then(response => {
 						// handle success
-						this.filteredDoctorsProfiles = response.data;
-						// console.log('Api filtered doctors:', this.filteredDoctorsProfiles);
+						this.doctors = response.data;
+						// console.log('Api filtered doctors:', this.filteredDoctors);
 						this.loaded = true;
 					})
 					.catch(function (error) {
@@ -50,6 +51,26 @@
 					});
 
 				this.loaded = false
+			},
+			filterDoctors(options) {
+				this.isFiltering = true;
+				const { byVotes } = options;
+				const { byReviewsNumber } = options;
+
+				if (byVotes && this.rating) {
+					const param = 'avg_vote';
+					this.filteredDoctors = this.filterFunction(param, this.rating);
+				}
+
+				if (byReviewsNumber && this.reviewsNumber) {
+					const param = 'total_reviews';
+					this.filteredDoctors = this.filterFunction(param, this.reviewsNumber);
+				}
+			},
+			filterFunction(filteringParam, comparisonValue) {
+				const result = this.doctors.filter(({ [filteringParam]: param }) => param >= comparisonValue);
+
+				return result;
 			},
 			// getProfilePhotoPath(doctor) {
 			// 	// Calculate profile photo :src attribute depending on the presence of the 'photos' string in the db data photo profiles table
@@ -61,8 +82,9 @@
 			// },
 			resetInputs() {
 				this.rating = null;
-				this.inputReviews = null;
-				this.getFilteredReviews();
+				this.reviewsNumber = null;
+				this.isFiltering = false;
+				this.filteredDoctors.length = 0;
 			},
 			saveContainerHeight() {
 				const height = this.$refs.container.getBoundingClientRect().height;
@@ -101,11 +123,11 @@
 				},
 				immediate: true
 			},
-			'filteredDoctorsProfiles': {
+			'doctors': {
 				handler(newValue) {
 					const urlName = this.$route.params.name;
 					if (urlName) {
-						const doctorProfile = this.filteredDoctorsProfiles.find(({ user }) => {
+						const doctorProfile = this.doctors.find(({ user }) => {
 							let result = false;
 							// Compare user complete name, homonymous_id included, with in URL name
 							const homonymousIdPart = user.homonymous_id ? `-${user.homonymous_id}` : null;
@@ -143,22 +165,23 @@
 		<div ref="container" class="container">
 			<div ref="titleDiv" class="title">
 				<h2>Risultati per <span class="specialization-title">{{ specializationName }} </span><span
-						v-if="!filteredDoctorsProfiles.length" class="total-specialization-doctor"> (Totale esperti:
+						v-if="!filteredDoctors.length" class="total-specialization-doctor"> (Totale esperti:
 						{{
 							doctors.length
 						}})</span>
 					<span v-else class="total-specialization-doctor"> (Totale esperti: {{
-						filteredDoctorsProfiles.length }})</span>
+						filteredDoctors.length }})</span>
 				</h2>
 			</div>
 
 			<div class="advanced-filter">
-				<!-- Average Votes Filter Input -->
+				<!-- Average Vote Filter Input -->
 				<div class="average-votes">
 					<div class="votes d-flex align-items-center">
 						<p class="me-2">Filtra per media voti: </p>
 						<div class="rating">
-							<form id="filter-votes-form" class="form-control rating" @submit.prevent="getFilteredReviews">
+							<form id="filter-votes-form" class="form-control rating"
+								@submit.prevent="filterDoctors({ byVotes: true })">
 								<button type="submit" class="btn btn-sm btn-secondary ms-2"
 									:class="{ 'disabled': rating === null }">Filtra</button>
 								<div class="input-group" v-for="label in voteLabels">
@@ -172,21 +195,21 @@
 				<!-- Reviews Number Filter Input-->
 				<div class="reviews-number">
 					<p>Filtra per numero di recensioni:</p>
-					<form method="GET" class="form-control d-flex" @submit.prevent="getFilteredReviews">
-						<input type="number" class="form-control" id="reviews" name="reviews" min="0" v-model="inputReviews">
-						<button type="submit" :class="{ 'disabled': inputReviews === null }"
+					<form method="GET" class="form-control d-flex" @submit.prevent="filterDoctors({ byReviewsNumber: true })">
+						<input type="number" class="form-control" id="reviews" name="reviews" min="0" v-model="reviewsNumber">
+						<button type="submit" :class="{ 'disabled': reviewsNumber === null }"
 							class="btn btn-sm btn-secondary ms-2">Filtra</button>
 					</form>
 				</div>
 				<!-- Reset Input Fields Button -->
 				<button type="reset" class="btn btn-sm btn-primary"
-					:class="{ 'disabled': rating === null && inputReviews === null }" @click="resetInputs">Cancella
+					:class="{ 'disabled': rating === null && reviewsNumber === null }" @click="resetInputs">Cancella
 					Filtri</button>
 			</div>
 
 			<!-- Doctors in selected specialization and eventually filtered -->
-			<div class="doctors-list" v-if="filteredDoctorsProfiles.length">
-				<div class="doctor-card" v-for="(doctorProfile, index) in filteredDoctorsProfiles"
+			<div class="doctors-list" v-if="isFiltering ? filteredDoctors.length : doctors.length">
+				<div class="doctor-card" v-for="(doctorProfile, index) in (isFiltering ? filteredDoctors : doctors)"
 					@click="goToShowPage(doctorProfile, index)" :key="index">
 					<img class="doctor-photo" :src="getProfilePhotoPath(this.store.placeholderImg, doctorProfile.photo)"
 						alt="doctor photo">
@@ -198,10 +221,10 @@
 							<strong>Ufficio:</strong> {{ doctorProfile.office_address }}
 						</div>
 						<div class="doctor-average">
-							<strong>Media voti:</strong> {{ doctorProfile.media_voti ? doctorProfile.media_voti : "-" }}
+							<strong>Media voti:</strong> {{ doctorProfile.avg_vote ? doctorProfile.avg_vote : "-" }}
 						</div>
 						<div class="doctor-reviews">
-							<strong>Recensioni ricevute:</strong> {{ doctorProfile.totalReviews ? doctorProfile.totalReviews :
+							<strong>Recensioni ricevute:</strong> {{ doctorProfile.total_reviews ? doctorProfile.total_reviews :
 								"-"
 							}}
 						</div>
