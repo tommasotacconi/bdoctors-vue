@@ -3,6 +3,7 @@
 	import { store } from '../../../js/store.js';
 	import { useGetPathFunctions } from '../../../js/composables/useGetPathFunctions.js';
 	import { homepageStore } from '../../../js/homepageStore.js';
+	import AppPopUpCard from '../Generics/AppPopUpCard.vue';
 
 	export default {
 		data() {
@@ -53,6 +54,7 @@
 			}
 		},
 		components: {
+			AppPopUpCard
 		},
 		methods: {
 			setDoctorInfo() {
@@ -281,242 +283,239 @@
 	<main :class="{ 'pop-up-main': isComponentPopUp }" :style="{ 'min-height': containerHeight + 'px' }">
 		<div class="d-flex justify-content-center container">
 			<Loader v-if="!loaded" />
-			<section class="card-general" v-else>
-
-				<!-- Card for retrieved doctor -->
-				<div class="card mb-3"
-					v-if="retrievedProfileData && Object.keys(retrievedProfileData).length && retrievedProfileData.constructor === Object">
-					<div class=" card-header">
-						<div class="img-doctor">
-							<img :src="getProfilePhotoPath(this.store.placeholderImg, retrievedProfileData.photo)"
-								class="doctor-photo" alt="doctor photo">
-						</div>
-						<div class="card-body-title-section">
-							<h1 class="card-title py-3">
-								Dott. {{ retrievedProfileData.user.first_name }} {{ retrievedProfileData.user.last_name }}
-							</h1>
-							<div class="title-specializations d-flex">
-								<h4 class="text-start">
-									Specialista in:
-								</h4>
-								<ul class="specializations-list">
-									<li class="specializations-list-item" v-if="retrievedProfileData.specialization_name">
-										{{ retrievedProfileData.specialization_name }}</li>
-									<template v-else-if="retrievedProfileData.user.specializations.length">
-										<li class="specializations-list-item"
-											v-for="specialization in retrievedProfileData.user.specializations">
-											{{ specialization.name }}</li>
-									</template>
-									<li v-else>{{ 'Nessuna specializzazione indicata' }}</li>
-								</ul>
-							</div>
-							<p class="address">
-								<i class="fa-solid fa-location-dot"></i>{{ retrievedProfileData.office_address }}
-							</p>
-							<button class="btn btn-close" v-if="$route.name !== 'search'" @click="$router.push({
-								name: 'specializationDoctors', params: { specialization: $route.params.specialization }
-							})"></button>
-						</div>
+			<!-- Card for retrieved doctor -->
+			<AppPopUpCard
+				v-if="retrievedProfileData && Object.keys(retrievedProfileData).length && retrievedProfileData.constructor === Object">
+				<template #card-header>
+					<div class="img-doctor">
+						<img :src="getProfilePhotoPath(this.store.placeholderImg, retrievedProfileData.photo)" class="doctor-photo"
+							alt="doctor photo">
 					</div>
-					<div class="card-body-text-section d-flex justify-content-between">
-
-						<div class="left-content col-5 py-3">
-							<h5>Informazioni aggiuntive</h5>
-							<ul class="d-flex flex-wrap row-gap-3 ul-child-elements py-3">
-								<li id="curriculum-border" class="card-list-item">
-									<h3>Curriculum</h3>
-									<div class="data-element curriculum-element">
-										Curriculum.pdf
-									</div>
-								</li>
-								<li id="specialization-border" class="card-list-item" v-if="otherDoctorSpecializations?.length">
-									<h3>Altre specializzazioni</h3>
-									<div class="data-element specializations-element">
-										<ul class="specializations-list">
-											<li class="specializations-list-item" v-for="specialization in otherDoctorSpecializations">{{
-												specialization.name }}</li>
-										</ul>
-									</div>
-									<!-- {{ profileData.doctor.specializations[0].name }} -->
-								</li>
-								<li id="address-border" class="card-list-item">
-									<h3>Indirizzo</h3>
-									<div class="data-element address-element">
-										{{ retrievedProfileData.office_address }}
-									</div>
-									<!-- {{ profileData.office_address }} -->
-								</li>
-								<li id="phone-border" class="card-list-item">
-									<h3>Telefono</h3>
-									<div class="data-element telephone-element">
-										{{ retrievedProfileData.phone }}
-									</div>
-									<!-- {{ profileData.phone }} -->
-								</li>
-								<li id="services-border" class="card-list-item">
-									<h3>Prestazioni</h3>
-									<div class="data-element services-element">
-										{{ retrievedProfileData.services }}
-									</div>
-									<!-- {{ profileData.services }} -->
-								</li>
+					<div class="card-header-title-section">
+						<h1 class="card-title py-3">
+							Dott. {{ retrievedProfileData.user.first_name }} {{ retrievedProfileData.user.last_name }}
+						</h1>
+						<div class="title-specializations d-flex">
+							<h4 class="text-start">
+								Specialista in:
+							</h4>
+							<ul class="specializations-list">
+								<li class="specializations-list-item" v-if="retrievedProfileData.specialization_name">
+									{{ retrievedProfileData.specialization_name }}</li>
+								<template v-else-if="retrievedProfileData.user.specializations.length">
+									<li class="specializations-list-item"
+										v-for="specialization in retrievedProfileData.user.specializations">
+										{{ specialization.name }}</li>
+								</template>
+								<li v-else>{{ 'Nessuna specializzazione indicata' }}</li>
 							</ul>
 						</div>
-						<div class="right-content col-5">
-							<div class="forms">
-								<!-- Message Form -->
-								<h5 class="my-3">Contatta lo specialista</h5>
+						<p class="address">
+							<i class="fa-solid fa-location-dot"></i>{{ retrievedProfileData.office_address }}
+						</p>
+						<button class="btn btn-close" v-if="$route.name !== 'search'" @click="$router.push({
+							name: 'specializationDoctors', params: { specialization: $route.params.specialization }
+						})"></button>
+					</div>
+				</template>
+
+				<template #default>
+					<div class="left-content col-5 py-3">
+						<h5>Informazioni aggiuntive</h5>
+						<ul class="d-flex flex-wrap row-gap-3 ul-child-elements py-3">
+							<li id="curriculum-border" class="card-list-item">
+								<h3>Curriculum</h3>
+								<div class="data-element curriculum-element">
+									Curriculum.pdf
+								</div>
+							</li>
+							<li id="specialization-border" class="card-list-item" v-if="otherDoctorSpecializations?.length">
+								<h3>Altre specializzazioni</h3>
+								<div class="data-element specializations-element">
+									<ul class="specializations-list">
+										<li class="specializations-list-item" v-for="specialization in otherDoctorSpecializations">{{
+											specialization.name }}</li>
+									</ul>
+								</div>
+								<!-- {{ profileData.doctor.specializations[0].name }} -->
+							</li>
+							<li id="address-border" class="card-list-item">
+								<h3>Indirizzo</h3>
+								<div class="data-element address-element">
+									{{ retrievedProfileData.office_address }}
+								</div>
+								<!-- {{ profileData.office_address }} -->
+							</li>
+							<li id="phone-border" class="card-list-item">
+								<h3>Telefono</h3>
+								<div class="data-element telephone-element">
+									{{ retrievedProfileData.phone }}
+								</div>
+								<!-- {{ profileData.phone }} -->
+							</li>
+							<li id="services-border" class="card-list-item">
+								<h3>Prestazioni</h3>
+								<div class="data-element services-element">
+									{{ retrievedProfileData.services }}
+								</div>
+								<!-- {{ profileData.services }} -->
+							</li>
+						</ul>
+					</div>
+					<div class="right-content col-5">
+						<div class="forms">
+							<!-- Message Form -->
+							<h5 class="my-3">Contatta lo specialista</h5>
+							<div class="form-frame">
+								<form id="message-form" class="form-control py-3" @submit.prevent="validateMessageForm" novalidate
+									v-if="messageFormValidated === false">
+									<div class="mb-3 col-12">
+										<label for="first_name" class="form-label">Nome</label>
+										<input type="text" placeholder="Inserisci il tuo nome" class="form-control"
+											:class="{ 'invalid-input': errors.messageForm.first_name }" id="first_name"
+											v-model.trim="messageForm.first_name" required>
+										<div class="invalid" v-if="errors.messageForm.first_name">
+											<p> {{ errors.messageForm.first_name }} </p>
+										</div>
+									</div>
+									<div class="mb-3 col-12">
+										<label for="last_name" class="form-label">Cognome</label>
+										<input type="text" placeholder="Inserisci il tuo cognome" class="form-control"
+											:class="{ 'invalid-input': errors.messageForm.last_name }" id="last_name"
+											v-model.trim="messageForm.last_name" required>
+										<div class="invalid" v-if="errors.messageForm.last_name">
+											<p> {{ errors.messageForm.last_name }} </p>
+										</div>
+									</div>
+									<div class="mb-3 col-12">
+										<label for="email" class="form-label">Email</label>
+										<input type="email" class="form-control" :class="{ 'invalid-input': errors.messageForm.email }"
+											id="email" placeholder="Inserisci il tuo indirizzo email" v-model.trim="messageForm.email"
+											required>
+										<div class="invalid" v-if="errors.messageForm.email">
+											<p> {{ errors.messageForm.email }} </p>
+										</div>
+									</div>
+									<div class="mb-3 col-12">
+										<label for="content" class="form-label align-start">Messaggio</label>
+										<textarea class="form-control" placeholder="Scrivi qui il tuo messaggio"
+											:class="{ 'invalid-input': errors.messageForm.content }" id="content" rows="3"
+											v-model="messageForm.content"></textarea>
+										<div class="invalid" v-if="errors.messageForm.content">
+											<p> {{ errors.messageForm.content }} </p>
+										</div>
+									</div>
+									<button type="submit" class="btn btn-primary btn-submit"
+										:class="{ 'disabled': messageFormValidated === true }">Invia
+										messaggio</button>
+								</form>
+
+								<div v-else class="my-3">
+									<p class="my-2">
+										Il tuo messaggio è stato inviato correttamente.
+									</p>
+									<button type="button" @click="resetMessageForm" class="btn btn-sm btn-primary">Conferma</button>
+								</div>
+							</div>
+
+							<div class="my-3 py-3">
+								<h5 class="my-3">Lascia una recensione</h5>
 								<div class="form-frame">
-									<form id="message-form" class="form-control py-3" @submit.prevent="validateMessageForm" novalidate
-										v-if="messageFormValidated === false">
+									<form id="review-form" class="form-control py-3" @submit.prevent="validateReviewForm" novalidate
+										v-if="reviewFormValidated === false">
 										<div class="mb-3 col-12">
 											<label for="first_name" class="form-label">Nome</label>
-											<input type="text" placeholder="Inserisci il tuo nome" class="form-control"
-												:class="{ 'invalid-input': errors.messageForm.first_name }" id="first_name"
-												v-model.trim="messageForm.first_name" required>
-											<div class="invalid" v-if="errors.messageForm.first_name">
-												<p> {{ errors.messageForm.first_name }} </p>
+											<input type="text" class="form-control" placeholder="Inserisci il tuo nome"
+												:class="{ 'invalid-input': errors.reviewForm.first_name }" id="first_name"
+												v-model.trim="reviewForm.first_name" required>
+											<div class="invalid" v-if="errors.reviewForm.first_name">
+												<p> {{ errors.reviewForm.first_name }} </p>
 											</div>
 										</div>
 										<div class="mb-3 col-12">
 											<label for="last_name" class="form-label">Cognome</label>
-											<input type="text" placeholder="Inserisci il tuo cognome" class="form-control"
-												:class="{ 'invalid-input': errors.messageForm.last_name }" id="last_name"
-												v-model.trim="messageForm.last_name" required>
-											<div class="invalid" v-if="errors.messageForm.last_name">
-												<p> {{ errors.messageForm.last_name }} </p>
+											<input type="text" class="form-control" placeholder="Inserisci il tuo cognome"
+												:class="{ 'invalid-input': errors.reviewForm.last_name }" id="last_name"
+												v-model.trim="reviewForm.last_name" required>
+											<div class="invalid" v-if="errors.reviewForm.last_name">
+												<p> {{ errors.reviewForm.last_name }} </p>
 											</div>
 										</div>
 										<div class="mb-3 col-12">
 											<label for="email" class="form-label">Email</label>
-											<input type="email" class="form-control" :class="{ 'invalid-input': errors.messageForm.email }"
-												id="email" placeholder="Inserisci il tuo indirizzo email" v-model.trim="messageForm.email"
+											<input type="email" class="form-control" :class="{ 'invalid-input': errors.reviewForm.email }"
+												id="email" placeholder="Inserisci il tuo indirizzo email" v-model.trim="reviewForm.email"
 												required>
-											<div class="invalid" v-if="errors.messageForm.email">
-												<p> {{ errors.messageForm.email }} </p>
+											<div class="invalid" v-if="errors.reviewForm.email">
+												<p> {{ errors.reviewForm.email }} </p>
 											</div>
 										</div>
 										<div class="mb-3 col-12">
 											<label for="content" class="form-label align-start">Messaggio</label>
 											<textarea class="form-control" placeholder="Scrivi qui il tuo messaggio"
-												:class="{ 'invalid-input': errors.messageForm.content }" id="content" rows="3"
-												v-model="messageForm.content"></textarea>
-											<div class="invalid" v-if="errors.messageForm.content">
-												<p> {{ errors.messageForm.content }} </p>
+												:class="{ 'invalid-input': errors.reviewForm.content }" id="content" rows="3"
+												v-model="reviewForm.content"></textarea>
+											<div class="invalid" v-if="errors.reviewForm.content">
+												<p> {{ errors.reviewForm.content }} </p>
 											</div>
 										</div>
+										<div class="votes">
+											<input type="radio" id="vote5" name="votes" value="5" v-model="reviewForm.votes">
+											<label for="vote5"><i class="fa-solid fa-stethoscope"></i>
+											</label>
+											<input type="radio" id="vote4" name="votes" value="4" v-model="reviewForm.votes">
+											<label for="vote4"><i class="fa-solid fa-stethoscope"></i>
+											</label>
+											<input type="radio" id="vote3" name="votes" value="3" v-model="reviewForm.votes">
+											<label for="vote3"><i class="fa-solid fa-stethoscope"></i>
+											</label>
+											<input type="radio" id="vote2" name="votes" value="2" v-model="reviewForm.votes">
+											<label for="vote2"><i class="fa-solid fa-stethoscope"></i>
+											</label>
+											<input type="radio" id="vote1" name="votes" value="1" v-model="reviewForm.votes">
+											<label for="vote1"><i class="fa-solid fa-stethoscope"></i>
+											</label>
+										</div>
+										<div class="invalid mb-3" v-if="errors.reviewForm.votes">
+											<p> {{ errors.reviewForm.votes }} </p>
+										</div>
 										<button type="submit" class="btn btn-primary btn-submit"
-											:class="{ 'disabled': messageFormValidated === true }">Invia
-											messaggio</button>
+											:class="{ 'disabled': reviewFormValidated === true }">Invia
+											recensione</button>
 									</form>
 
 									<div v-else class="my-3">
 										<p class="my-2">
-											Il tuo messaggio è stato inviato correttamente.
+											La tua recensione è stata inviata correttamente.
 										</p>
-										<button type="button" @click="resetMessageForm" class="btn btn-sm btn-primary">Conferma</button>
+										<button type="button" @click="resetReviewForm" class="btn btn-sm btn-primary">Conferma</button>
 									</div>
 								</div>
-
-								<div class="my-3 py-3">
-									<h5 class="my-3">Lascia una recensione</h5>
-									<div class="form-frame">
-										<form id="review-form" class="form-control py-3" @submit.prevent="validateReviewForm" novalidate
-											v-if="reviewFormValidated === false">
-
-											<div class="mb-3 col-12">
-												<label for="first_name" class="form-label">Nome</label>
-												<input type="text" class="form-control" placeholder="Inserisci il tuo nome"
-													:class="{ 'invalid-input': errors.reviewForm.first_name }" id="first_name"
-													v-model.trim="reviewForm.first_name" required>
-												<div class="invalid" v-if="errors.reviewForm.first_name">
-													<p> {{ errors.reviewForm.first_name }} </p>
-												</div>
-											</div>
-											<div class="mb-3 col-12">
-												<label for="last_name" class="form-label">Cognome</label>
-												<input type="text" class="form-control" placeholder="Inserisci il tuo cognome"
-													:class="{ 'invalid-input': errors.reviewForm.last_name }" id="last_name"
-													v-model.trim="reviewForm.last_name" required>
-												<div class="invalid" v-if="errors.reviewForm.last_name">
-													<p> {{ errors.reviewForm.last_name }} </p>
-												</div>
-											</div>
-											<div class="mb-3 col-12">
-												<label for="email" class="form-label">Email</label>
-												<input type="email" class="form-control" :class="{ 'invalid-input': errors.reviewForm.email }"
-													id="email" placeholder="Inserisci il tuo indirizzo email" v-model.trim="reviewForm.email"
-													required>
-												<div class="invalid" v-if="errors.reviewForm.email">
-													<p> {{ errors.reviewForm.email }} </p>
-												</div>
-											</div>
-											<div class="mb-3 col-12">
-												<label for="content" class="form-label align-start">Messaggio</label>
-												<textarea class="form-control" placeholder="Scrivi qui il tuo messaggio"
-													:class="{ 'invalid-input': errors.reviewForm.content }" id="content" rows="3"
-													v-model="reviewForm.content"></textarea>
-												<div class="invalid" v-if="errors.reviewForm.content">
-													<p> {{ errors.reviewForm.content }} </p>
-												</div>
-											</div>
-											<div class="votes">
-												<input type="radio" id="vote5" name="votes" value="5" v-model="reviewForm.votes">
-												<label for="vote5"><i class="fa-solid fa-stethoscope"></i>
-												</label>
-												<input type="radio" id="vote4" name="votes" value="4" v-model="reviewForm.votes">
-												<label for="vote4"><i class="fa-solid fa-stethoscope"></i>
-												</label>
-												<input type="radio" id="vote3" name="votes" value="3" v-model="reviewForm.votes">
-												<label for="vote3"><i class="fa-solid fa-stethoscope"></i>
-												</label>
-												<input type="radio" id="vote2" name="votes" value="2" v-model="reviewForm.votes">
-												<label for="vote2"><i class="fa-solid fa-stethoscope"></i>
-												</label>
-												<input type="radio" id="vote1" name="votes" value="1" v-model="reviewForm.votes">
-												<label for="vote1"><i class="fa-solid fa-stethoscope"></i>
-												</label>
-											</div>
-											<div class="invalid mb-3" v-if="errors.reviewForm.votes">
-												<p> {{ errors.reviewForm.votes }} </p>
-											</div>
-											<button type="submit" class="btn btn-primary btn-submit"
-												:class="{ 'disabled': reviewFormValidated === true }">Invia
-												recensione</button>
-										</form>
-										<div v-else class="my-3">
-											<p class="my-2">
-												La tua recensione è stata inviata correttamente.
-											</p>
-											<button type="button" @click="resetReviewForm" class="btn btn-sm btn-primary">Conferma</button>
-										</div>
-									</div>
-								</div>
-
 							</div>
+
 						</div>
 					</div>
-				</div>
+				</template>
+			</AppPopUpCard>
 
-				<!-- Card in case of no doctor retrieved -->
-				<div class="card not-found mb-3" v-else>
-					<div class="card-header">
-						<button class="btn btn-close" v-if="$route.name !== 'search'" @click="$router.push({
-							name: 'specializationDoctors', params: { specialization: $route.params.specialization }
-						})"></button>
-					</div>
-					<div class="card-body-text-section d-flex justify-content-between">
-						{{
-							isSpecializationParamValid ?
-								"Nessuno specialista con questa specializzazione, verfica le specializzazioni del tuo medico " +
-								"o che il nome inserito sia corretto." :
-								!doctorNotFound ?
-									"Specializzazione inserita non corretta, controlla la specializzazione inserita." :
-									"Dottore cercato non trovato, controlla il nome inserito e l'id finale, se presente."
-						}}
-					</div>
-				</div>
-			</section>
+			<!-- Card in case of no doctor retrieved -->
+			<AppPopUpCard class="not-found" v-else>
+				<template #card-header>
+					<button class="btn btn-close" v-if="$route.name !== 'search' && isSpecializationParamValid" @click="$router.push({
+						name: 'specializationDoctors', params: { specialization: $route.params.specialization }
+					})"></button>
+				</template>
+				<template #default>
+					{{
+						isSpecializationParamValid ?
+							"Nessuno specialista con questa specializzazione, verfica le specializzazioni del tuo medico " +
+							"o che il nome inserito sia corretto." :
+							!doctorNotFound ?
+								"Specializzazione inserita non corretta, controlla la specializzazione inserita." :
+								"Dottore cercato non trovato, controlla il nome inserito e l'id finale, se presente."
+					}}
+				</template>
+			</AppPopUpCard>
 		</div>
 	</main>
 </template>
@@ -556,34 +555,12 @@
 	}
 
 	/* Card edit*/
-	.card-general {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-	}
-
-	.card {
-		min-height: 80vh;
-		margin-top: 50px;
-		border-radius: 40px;
-		border: 3px solid #65B0FF;
-		text-align: center;
-		width: 100%;
-		position: relative;
-
-		.card-header {
-			border-radius: 40px 40px 0 0;
-			background-color: #D8F9FF;
-			display: flex;
-			flex-wrap: wrap;
-
-			button.btn-close {
-				position: absolute;
-				--distance: 20px;
-				top: var(--distance);
-				right: var(--distance);
-			}
+	.card .card-header {
+		button.btn-close {
+			position: absolute;
+			--distance: 20px;
+			top: var(--distance);
+			right: var(--distance);
 		}
 	}
 
@@ -608,15 +585,13 @@
 		border-radius: 50%;
 	}
 
-
-	.card-body-title-section {
+	.card-header-title-section {
 		display: flex;
 		justify-content: center;
 		flex-direction: column;
 		flex-basis: 60%;
 		align-items: start;
 		padding: 20px;
-
 
 		& .address {
 			font-size: 1.1em;
@@ -760,19 +735,6 @@
 	}
 
 
-	/* Not found doctor */
-	.card.not-found {
-		min-height: 50vh;
-		width: 700px;
-
-		text-align: left;
-
-		.card-header {
-			height: 10vh;
-			padding-top: 20px;
-		}
-	}
-
 	/* Responsive */
 	@media (max-width: 576px) {
 		.container {
@@ -787,7 +749,7 @@
 			/* Center align elements */
 		}
 
-		.card-body-title-section {
+		.card-header-title-section {
 			text-align: center;
 			/* Center the title and text */
 		}

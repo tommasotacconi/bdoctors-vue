@@ -5,6 +5,7 @@
 	import { finiteOrDefault } from 'chart.js/helpers';
 	import { useGetPathFunctions } from '../../../js/composables/useGetPathFunctions.js';
 	import { nextTick } from 'vue';
+	import AppPopUpCard from '../Generics/AppPopUpCard.vue';
 
 	export default {
 		data() {
@@ -20,11 +21,12 @@
 				loaded: false,
 				loadingPopUp: !!this.$route.params.name,
 				containerHeight: 0,
-
+				specializationNotFound: false
 			}
 		},
 		components: {
 			DoctorShow,
+			AppPopUpCard
 		},
 		methods: {
 			goToShowPage(doctorProfile, index) {
@@ -44,7 +46,7 @@
 						this.doctors = response.data;
 					})
 					.catch(error => {
-
+						this.specializationNotFound = true;
 					})
 					.finally(() => {
 						this.loaded = true;
@@ -137,7 +139,9 @@
 			},
 			'loaded': {
 				handler(newValue) {
-					if (newValue) this.$nextTick(this.saveContainerHeight);
+					this.$nextTick(() => {
+						if (newValue && this.$refs.container) this.$nextTick(this.saveContainerHeight);
+					})
 				}
 			}
 		},
@@ -154,7 +158,7 @@
 	<Loader v-if="!loaded" />
 
 	<main ref="main" v-if="loaded" :style="{ overflow: loadingPopUp ? 'hidden' : 'hidden auto' }">
-		<div ref="container" class="container">
+		<div ref="container" class="container" v-if="!specializationNotFound">
 			<div ref="titleDiv" class="title">
 				<h2>Risultati per <span class="specialization-title">{{ specializationName }} </span><span
 						v-if="!filteredDoctors.length" class="total-specialization-doctor"> (Totale esperti:
@@ -233,6 +237,12 @@
 					:containerHeight />
 			</div>
 		</div>
+
+		<AppPopUpCard class="not-found mx-auto" v-else>
+			<template #default>
+				Specializzazione inserita non corretta, controlla la specializzazione inserita.
+			</template>
+		</AppPopUpCard>
 	</main>
 </template>
 
@@ -261,6 +271,12 @@
 
 		h2 {
 			font-weight: 300;
+		}
+	}
+
+	.title.not-found {
+		h2 {
+			font-size: 1.5rem;
 		}
 	}
 
