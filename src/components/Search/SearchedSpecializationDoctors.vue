@@ -19,8 +19,8 @@
 				isFiltering: false,
 				loaded: false,
 				loadingPopUp: !!this.$route.params.name,
-				showDoctor: false,
 				containerHeight: 0,
+
 			}
 		},
 		components: {
@@ -42,11 +42,9 @@
 					.then(response => {
 						// handle success
 						this.doctors = response.data;
-						console.log('Api filtered doctors:', this.doctors);
 					})
 					.catch(error => {
-						// handle error
-						console.log(error)
+
 					})
 					.finally(() => {
 						this.loaded = true;
@@ -74,14 +72,6 @@
 
 				return result;
 			},
-			// getProfilePhotoPath(doctor) {
-			// 	// Calculate profile photo :src attribute depending on the presence of the 'photos' string in the db data photo profiles table
-			// 	const photoPath = doctor.photo;
-			// 	return photoPath?.includes('photos') ? this.getFilePath(`storage/${photoPath}`) : photoPath ?? new URL(this.store.placeholderImg).href;
-			// },
-			// getFilePath: function (filePath) {
-			// 	return new URL(filePath, this.store.apiUri.slice(-3)).href;
-			// },
 			resetInputs() {
 				this.rating = null;
 				this.reviewsNumber = null;
