@@ -5,18 +5,20 @@
 	import { RouterLink } from 'vue-router';
 	import AppUserIcon from '../Generics/AppUserIcon.vue';
 	import { useShowButtonsAnimation } from '../../../js/composables/useShowButtonsAnimation';
+	import { homepageStore } from '../../../js/homepageStore.js';
 
 	export default {
 		data() {
 			return {
 				specializations: [],
 				selectedSpecialization: '',
-				store,
-				dashboardStore,
 				checkingLogin: true,
 				// isProfileManagementShown: false,
 				isUserIconReady: false,
 				// logoutBtnTimeout: undefined,
+				store,
+				dashboardStore,
+				homepageStore
 			}
 		},
 		methods: {
@@ -39,7 +41,8 @@
 					.then(response => {
 						// handle success
 						this.specializations = response.data.specializations;
-						if (!store.searchedSpecialization && this.$route.params.specialization) this.updateSelectByParam();
+						this.homepageStore.allSpecializations = response.data.specializations;
+						if (this.$route.params.specialization) this.updateSelectByParam();
 					})
 					.catch(function (error) {
 						// handle error
@@ -49,16 +52,17 @@
 			chooseSpecialization() {
 				store.searchedSpecialization = this.selectedSpecialization.id
 				store.selectedSpecializationName = this.selectedSpecialization.name
+				this.homepageStore.selectedSpecialization = this.selectedSpecialization.name
 
 				// Nuova pagina nella quale usiamo i nomi. Piccola concatenazione di metodi per togliere gli spazi e rendere tutto minuscolo
 				this.$router.push({
 					name: 'specializationDoctors', params: {
-						specialization: store.selectedSpecializationName.trim().replace(/-/g, '_').replace(/ /g, "-").toLowerCase(),
+						specialization: this.homepageStore.selectedSpecialization.trim().replace(/-/g, '_').replace(/ /g, "-").toLowerCase(),
 					},
 				})
 			},
 			updateSelectByParam() {
-				console.log('-- Updating select by means of param')
+				// console.log('-- Updating select by means of param');
 				this.selectedSpecialization = this.specializationParam || '';
 			},
 			logout() {
