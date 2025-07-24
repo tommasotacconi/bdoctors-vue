@@ -2,6 +2,7 @@
 	import axios from 'axios';
 	import { store } from '../../../js/store.js';
 	import { useGetPathFunctions } from '../../../js/composables/useGetPathFunctions.js';
+	import { homepageStore } from '../../../js/homepageStore.js';
 
 	export default {
 		data() {
@@ -10,6 +11,7 @@
 				// loader temporary cancelled
 				loaded: false,
 				store,
+				homepageStore,
 				doctorInfo: {
 					first_name: null,
 					last_name: null,
@@ -46,27 +48,42 @@
 				},
 				messageFormValidated: false,
 				reviewFormValidated: false,
+				isSpecializationParamValid: undefined,
+				doctorNotFound: false,
 			}
 		},
 		components: {
 		},
 		methods: {
 			setDoctorInfo() {
-				const name = this.$route.params.name;
-				// Match fisrst name and last name
-				let re = /\w+/g;
-				let result = name.match(re);
-				const firstName = result[0];
-				const lastName = result[1];
-				this.doctorInfo.first_name = firstName;
-				this.doctorInfo.last_name = lastName;
-				// Match homonymous id
-				re = /\d+/g;
-				result = '';
-				result = name.match(re)
-				if (result !== null) {
-					const homonymousId = result[0];
-					this.doctorInfo.homonymous_id = homonymousId;
+				if (this.$route.params.specialization) {
+					// Check specialization param's validity
+					this.isSpecializationParamValid = this.homepageStore.allSpecializations.some(element => element.name.toLowerCase() === this.searchedSpecialization);
+
+					if (this.isSpecializationValid && this.searchedDoctor) {
+						const user = this.searchedDoctor.user;
+						this.doctorInfo.first_name = user.first_name;
+						this.doctorInfo.last_name = user.last_name;
+						if (user.homonymous_id) this.doctorInfo.homonymous_id = user.homonymous_id;
+					}
+
+					this.loaded = true;
+					this.$emit('loaded-pop-up');
+				}
+				else {
+					const name = this.$route.params.name;
+					// Match fisrst name and last name
+					let re = /\w+/g;
+					let result = name.match(re);
+					const firstName = result[0];
+					const lastName = result[1];
+					this.doctorInfo.first_name = firstName;
+					this.doctorInfo.last_name = lastName;
+					// Match homonymous id
+					re = /\d+/g;
+					this.doctorInfo.homonymous_id = name.match(re)?.[0];
+
+					this.getProfileData();
 				}
 			},
 			getProfileData() {
@@ -74,11 +91,12 @@
 					.then(response => {
 						// console.log(response);
 						this.profileData = response.data.profile;
-						this.loaded = true;
-						this.$emit('loaded-pop-up');
 					})
-					.catch(function (error) {
-						console.log(error);
+					.catch(() => {
+						this.doctorNotFound = true;
+					})
+					.finally(() => {
+						this.loaded = true;
 					});
 			},
 			// Method to send patients messages
@@ -223,25 +241,30 @@
 				type: String,
 				required: false
 			},
+			searchedDoctor: {
+				type: Object,
+				required: false
+			},
 			containerHeight: {
 				type: Number,
 				required: false,
-			}
+			},
 		},
 		computed: {
 			retrievedProfileData() {
-				return this.store.doctorProfile ? this.store.doctorProfile : this.profileData;
+				return this.searchedDoctor ? this.searchedDoctor : this.profileData;
 			},
 			otherDoctorSpecializations() {
 				if (!this.searchedSpecialization) return undefined;
 
-				const specializationParam = this.$route.params.specialization;
-				let searchedSpecialization = specializationParam.replace(/-/g, ' ').replace(/_/g, '-');
-				searchedSpecialization = searchedSpecialization[0].toUpperCase() + searchedSpecialization.slice(1);
-				const allDoctorSpecializations = this.store.doctorProfile?.user.specializations;
+				const searchedSpecialization = this.searchedSpecialization[0].toUpperCase() + this.searchedSpecialization.slice(1);
+				const allDoctorSpecializations = this.searchedDoctor.user.specializations;
 
 				return allDoctorSpecializations?.filter(({ name }) => name !== searchedSpecialization);
 			},
+			isComponentPopUp() {
+				return !!this.containerHeight
+			}
 		},
 		setup() {
 			const { getFilePath, getProfilePhotoPath } = useGetPathFunctions();
@@ -250,26 +273,20 @@
 		},
 		created() {
 			this.setDoctorInfo();
-
-			if (!this.store.doctorProfile) {
-				this.getProfileData();
-
-				return;
-			}
-			else if (this.store.doctorProfile) this.$emit('loaded-pop-up');
-
-			this.loaded = true;
 		},
 	}
 </script>
 
 <template>
-	<main class="pop-up-main" :style="{ 'min-height': containerHeight + 'px' }">
+	<main :class="{ 'pop-up-main': isComponentPopUp }" :style="{ 'min-height': containerHeight + 'px' }">
 		<div class="d-flex justify-content-center container">
 			<Loader v-if="!loaded" />
 			<section class="card-general" v-else>
-				<div class="card mb-3">
-					<div class="card-header">
+
+				<!-- Card for retrieved doctor -->
+				<div class="card mb-3"
+					v-if="retrievedProfileData && Object.keys(retrievedProfileData).length && retrievedProfileData.constructor === Object">
+					<div class=" card-header">
 						<div class="img-doctor">
 							<img :src="getProfilePhotoPath(this.store.placeholderImg, retrievedProfileData.photo)"
 								class="doctor-photo" alt="doctor photo">
@@ -480,6 +497,25 @@
 						</div>
 					</div>
 				</div>
+
+				<!-- Card in case of no doctor retrieved -->
+				<div class="card not-found mb-3" v-else>
+					<div class="card-header">
+						<button class="btn btn-close" v-if="$route.name !== 'search'" @click="$router.push({
+							name: 'specializationDoctors', params: { specialization: $route.params.specialization }
+						})"></button>
+					</div>
+					<div class="card-body-text-section d-flex justify-content-between">
+						{{
+							isSpecializationParamValid ?
+								"Nessuno specialista con questa specializzazione, verfica le specializzazioni del tuo medico " +
+								"o che il nome inserito sia corretto." :
+								!doctorNotFound ?
+									"Specializzazione inserita non corretta, controlla la specializzazione inserita." :
+									"Dottore cercato non trovato, controlla il nome inserito e l'id finale, se presente."
+						}}
+					</div>
+				</div>
 			</section>
 		</div>
 	</main>
@@ -509,6 +545,14 @@
 
 	main.pop-up-main {
 		padding: 0;
+	}
+
+	main:not(.pop-up-main) {
+		height: 100%;
+		padding-bottom: 60px;
+		scroll-behavior: smooth;
+
+		overflow: hidden auto
 	}
 
 	/* Card edit*/
@@ -542,7 +586,6 @@
 			}
 		}
 	}
-
 
 	.img-doctor {
 		max-width: 30%;
@@ -713,6 +756,20 @@
 
 		& input:checked~label {
 			color: var(--color-complementary)
+		}
+	}
+
+
+	/* Not found doctor */
+	.card.not-found {
+		min-height: 50vh;
+		width: 700px;
+
+		text-align: left;
+
+		.card-header {
+			height: 10vh;
+			padding-top: 20px;
 		}
 	}
 

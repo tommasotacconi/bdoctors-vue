@@ -11,7 +11,7 @@
 			return {
 				placeholderImg: 'https://st4.depositphotos.com/4329009/19956/v/450/depositphotos_199564354-stock-illustration-creative-vector-illustration-default-avatar.jpg',
 				store,
-				searchedDoctor: [],
+				searchedDoctor: null,
 				filteredDoctors: [],
 				doctors: [],
 				rating: null,
@@ -42,13 +42,15 @@
 					.then(response => {
 						// handle success
 						this.doctors = response.data;
-						// console.log('Api filtered doctors:', this.filteredDoctors);
-						this.loaded = true;
+						console.log('Api filtered doctors:', this.doctors);
 					})
-					.catch(function (error) {
+					.catch(error => {
 						// handle error
 						console.log(error)
-					});
+					})
+					.finally(() => {
+						this.loaded = true;
+					})
 
 				this.loaded = false
 			},
@@ -139,7 +141,7 @@
 							return result;
 						})
 
-						this.store.doctorProfile = doctorProfile;
+						if (doctorProfile) this.searchedDoctor = doctorProfile;
 					}
 				}
 			},
@@ -237,7 +239,7 @@
 
 			<div v-if="$route.params.name" class="pop-up doctor-show" :class="{ 'loading-pop-up': loadingPopUp }">
 				<!-- DoctorShow.vue component passed with router -->
-				<RouterView @loaded-pop-up="loadingPopUp = false" :searchedSpecialization="specializationName"
+				<RouterView @loaded-pop-up="loadingPopUp = false" :searchedSpecialization="specializationName" :searchedDoctor
 					:containerHeight />
 			</div>
 		</div>
