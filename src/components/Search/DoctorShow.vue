@@ -5,12 +5,20 @@
 	import { homepageStore } from '../../../js/homepageStore.js';
 	import AppPopUpCard from '../Generics/AppPopUpCard.vue';
 	import AppForm from '../Generics/AppForm.vue';
+	import { isNavigationFailure } from 'vue-router';
 
 	export default {
 		data() {
 			return {
 				profileData: {},
 				// loader temporary cancelled
+				extraInfos: {
+					curriculum: 'curriculum',
+					specializations: 'altre specializzazioni',
+					office_address: 'indirizzo',
+					phone: 'telefono',
+					services: 'prestazioni'
+				},
 				loaded: false,
 				store,
 				homepageStore,
@@ -125,7 +133,7 @@
 			},
 		},
 		computed: {
-			retrievedProfileData() {
+			retrievedProfile() {
 				return this.searchedDoctor ? this.searchedDoctor : this.profileData;
 			},
 			otherDoctorSpecializations() {
@@ -183,33 +191,32 @@
 			<Loader v-if="!loaded" />
 			<!-- Card for retrieved doctor -->
 			<AppPopUpCard
-				v-if="retrievedProfileData && Object.keys(retrievedProfileData).length && retrievedProfileData.constructor === Object">
+				v-if="retrievedProfile && Object.keys(retrievedProfile).length && retrievedProfile.constructor === Object">
 				<template #card-header>
 					<div class="img-doctor">
-						<img :src="getProfilePhotoPath(this.store.placeholderImg, retrievedProfileData.photo)" class="doctor-photo"
+						<img :src="getProfilePhotoPath(this.store.placeholderImg, retrievedProfile.photo)" class="doctor-photo"
 							alt="doctor photo">
 					</div>
 					<div class="card-header-title-section">
 						<h1 class="card-title py-3">
-							Dott. {{ retrievedProfileData.user.first_name }} {{ retrievedProfileData.user.last_name }}
+							Dott. {{ retrievedProfile.user.first_name }} {{ retrievedProfile.user.last_name }}
 						</h1>
 						<div class="title-specializations d-flex">
 							<h4 class="text-start">
 								Specialista in:
 							</h4>
 							<ul class="specializations-list">
-								<li class="specializations-list-item" v-if="retrievedProfileData.specialization_name">
-									{{ retrievedProfileData.specialization_name }}</li>
-								<template v-else-if="retrievedProfileData.user.specializations.length">
-									<li class="specializations-list-item"
-										v-for="specialization in retrievedProfileData.user.specializations">
+								<li class="specializations-list-item" v-if="retrievedProfile.specialization_name">
+									{{ retrievedProfile.specialization_name }}</li>
+								<template v-else-if="retrievedProfile.user.specializations.length">
+									<li class="specializations-list-item" v-for="specialization in retrievedProfile.user.specializations">
 										{{ specialization.name }}</li>
 								</template>
 								<li v-else>{{ 'Nessuna specializzazione indicata' }}</li>
 							</ul>
 						</div>
 						<p class="address">
-							<i class="fa-solid fa-location-dot"></i>{{ retrievedProfileData.office_address }}
+							<i class="fa-solid fa-location-dot"></i>{{ retrievedProfile.office_address }}
 						</p>
 						<button class="btn btn-close" v-if="$route.name !== 'search'" @click="$router.push({
 							name: 'specializationDoctors', params: { specialization: $route.params.specialization }
@@ -221,39 +228,23 @@
 					<div class="left-content col-5 py-3">
 						<h5>Informazioni aggiuntive</h5>
 						<ul class="d-flex flex-wrap row-gap-3 ul-child-elements py-3">
-							<li id="curriculum-border" class="card-list-item">
-								<h3>Curriculum</h3>
-								<div class="data-element curriculum-element">
-									Curriculum.pdf
-								</div>
-							</li>
-							<li class="card-list-item" v-if="otherDoctorSpecializations?.length">
-								<h3>Altre specializzazioni</h3>
-								<div class="data-element specializations-element">
-									<ul class="specializations-list">
-										<li class="specializations-list-item" v-for="specialization in otherDoctorSpecializations">{{
-											specialization.name }}</li>
-									</ul>
-								</div>
-							</li>
-							<li class="card-list-item">
-								<h3>Indirizzo</h3>
-								<div class="data-element address-element">
-									{{ retrievedProfileData.office_address }}
-								</div>
-							</li>
-							<li class="card-list-item">
-								<h3>Telefono</h3>
-								<div class="data-element telephone-element">
-									{{ retrievedProfileData.phone }}
-								</div>
-							</li>
-							<li class="card-list-item">
-								<h3>Prestazioni</h3>
-								<div class="data-element services-element">
-									{{ retrievedProfileData.services }}
-								</div>
-							</li>
+							<!-- repeated information .card-list-item -->
+							<template v-for="(translation, info) in extraInfos">
+								<li class="card-list-item"
+									v-if="info === 'specializations' ? otherDoctorSpecializations?.length : true">
+									<h3>{{ translation[0].toUpperCase() + translation.slice(1) }}</h3>
+									<div class="data-element" :class="[info + '-element']">
+										<template v-if="info !== 'specializations'">{{ retrievedProfile[info] }}</template>
+										<template v-else>
+											<ul class="specializations-list">
+												<li class="specializations-list-item" v-for="specialization in otherDoctorSpecializations">
+													{{ specialization.name }}</li>
+											</ul>
+										</template>
+
+									</div>
+								</li>
+							</template>
 						</ul>
 					</div>
 					<div class="right-content col-5">
