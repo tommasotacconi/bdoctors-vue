@@ -11,20 +11,5 @@ export const store = reactive({
 
 	// Authorization status
 	isAuthenticated: null,
-
-  searchedSpecialization: null,
-
-  // test route guard
-  responseStatus: false,
-
-  // Variable needed for the advanced search
-  searchedSpecialization: null,
-  selectedSpecializationName: null,
-
-  // Variable for the show profile card in advanced search 
-  doctorProfile: null,
-
-  // user id, sponsorized profile id
-  userId: '',
 })
 
