@@ -29,7 +29,7 @@
 						let totalNumberVote = 0
 						for (let i = 0; i < this.reviewsProfile.length; i++) {
 							let review = this.reviewsProfile[i]
-							totalNumberVote += review.votes
+							totalNumberVote += review.vote
 						}
 						this.averageVote = Math.round(totalNumberVote / this.reviewsProfile.length)
 
@@ -99,7 +99,7 @@
 					<div class="card-body-list">
 						<ul class="list-general" v-for="(review, index) in reviewsProfile" @click="selectReview(index)">
 							<li class="list-date">{{ getNormalFormatHourDate(index) }}</li>
-							<li class="list-vote"><i class="fa-solid fa-stethoscope" v-for="star in review.votes"></i>
+							<li class="list-vote"><i class="fa-solid fa-stethoscope" v-for="star in review.vote"></i>
 							</li>
 							<!-- <li class="list-email">{{ review.email }}</li> -->
 							<li class="list-name">{{ review.first_name }} {{ review.last_name }}</li>
@@ -115,7 +115,7 @@
 						<div class="star">
 							<strong>Voto: </strong>
 							<span>
-								<i class="fa-solid fa-stethoscope" v-for="star in reviewSelected.votes"></i>
+								<i class="fa-solid fa-stethoscope" v-for="star in reviewSelected.vote"></i>
 							</span>
 						</div>
 					</div>

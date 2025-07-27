@@ -29,7 +29,7 @@
 
 				for (let i = 0; i < profileReviews.length; i++) {
 					let review = profileReviews[i]
-					totalNumberVote += review.votes
+					totalNumberVote += review.vote
 				}
 				return Math.round(totalNumberVote / profileReviews.length)
 			},
