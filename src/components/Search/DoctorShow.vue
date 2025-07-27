@@ -4,6 +4,7 @@
 	import { useGetPathFunctions } from '../../../js/composables/useGetPathFunctions.js';
 	import { homepageStore } from '../../../js/homepageStore.js';
 	import AppPopUpCard from '../Generics/AppPopUpCard.vue';
+	import AppForm from '../Generics/AppForm.vue';
 
 	export default {
 		data() {
@@ -18,35 +19,41 @@
 					last_name: null,
 					homonymous_id: null,
 				},
-				messageForm: {
-					first_name: '',
-					last_name: '',
-					email: '',
-					content: '',
-				},
-				reviewForm: {
-					first_name: '',
-					last_name: '',
-					email: '',
-					content: '',
-					votes: ''
-				},
-				errors: {
-					messageForm: {
-						first_name: '',
-						last_name: '',
-						email: "",
-						content: ''
+				// List of all form all elements to select from the singular form  
+				formElements: {
+					first_name: {
+						id: 'firstName',
+						type: 'input',
+						label: 'Nome',
+						placeholder: 'Inserisci il tuo nome'
 					},
-					reviewForm: {
-						first_name: '',
-						last_name: '',
-						email: "",
-						content: '',
-						votes: null,
+					last_name: {
+						id: 'lastName',
+						type: 'input',
+						label: 'Cognome',
+						placeholder: 'Inserisci il tuo cognome'
+					},
+					email: {
+						id: 'email',
+						type: 'input',
+						label: 'Email',
+						placeholder: 'Inserisci il tuo indirizzo email'
+					},
+					content: {
+						id: undefined,
+						type: 'input',
+						label: undefined,
+						placeholder: 'Scrivi qui'
+					},
+					vote: {
+						id: 'vote',
+						type: 'radio',
+						label: null,
+						placeholder: null
 					}
-
 				},
+				createMessageApiRoute: 'messages',
+				createReviewApiRoute: 'reviews',
 				messageFormValidated: false,
 				reviewFormValidated: false,
 				isSpecializationParamValid: undefined,
@@ -54,7 +61,8 @@
 			}
 		},
 		components: {
-			AppPopUpCard
+			AppPopUpCard,
+			AppForm
 		},
 		methods: {
 			setDoctorInfo() {
@@ -62,7 +70,7 @@
 					// Check specialization param's validity
 					this.isSpecializationParamValid = this.homepageStore.allSpecializations.some(element => element.name.toLowerCase() === this.searchedSpecialization);
 
-					if (this.isSpecializationValid && this.searchedDoctor) {
+					if (this.isSpecializationParamValid && this.searchedDoctor) {
 						const user = this.searchedDoctor.user;
 						this.doctorInfo.first_name = user.first_name;
 						this.doctorInfo.last_name = user.last_name;
@@ -101,142 +109,6 @@
 						this.loaded = true;
 					});
 			},
-			// Method to send patients messages
-			sendMessageForm() {
-				axios.post('http://localhost:8000/api/messages', {
-					doctor_details: this.doctorInfo,
-					...this.messageForm,
-				})
-					.then(response => {
-						console.log('Message sent.', response.data)
-					})
-					.catch(function (error) {
-						// handle error
-						console.error(error)
-						console.log(error.response.data);
-					})
-					.finally(function () {
-						// always executed
-					});
-			},
-			// Method to send patients reviews
-			sendReviewForm() {
-				axios.post('http://localhost:8000/api/reviews', {
-					doctor_details: this.doctorInfo,
-					...this.reviewForm,
-				})
-					.then(response => {
-						console.log('Review sent.', response.data)
-					})
-					.catch(function (error) {
-						// handle error
-						console.error(error)
-						console.log(error.response.data.errors);
-					})
-					.finally(function () {
-						// always executed
-					});
-			},
-			//Validation methods
-			resetErrorsMessageFields() {
-				this.errors.messageForm.first_name = '';
-				this.errors.messageForm.last_name = '';
-				this.errors.messageForm.email = '';
-				this.errors.messageForm.content = '';
-			},
-			resetErrorsReviewFields() {
-				this.errors.reviewForm.first_name = '';
-				this.errors.reviewForm.last_name = '';
-				this.errors.reviewForm.email = '';
-				this.errors.reviewForm.content = '';
-				this.errors.reviewForm.votes = '';
-			},
-			validEmail(email) {
-				const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-				return re.test(email);
-			},
-			validateMessageForm() {
-				this.resetErrorsMessageFields();
-				if (!this.messageForm.first_name) {
-					this.errors.messageForm.first_name = 'Il nome è obbligatorio.';
-				} else if (this.messageForm.first_name.length <= 2) {
-					this.errors.messageForm.first_name = 'Il nome deve contenere almeno 3 caratteri.';
-				};
-				if (!this.messageForm.last_name) {
-					this.errors.messageForm.last_name = "Il cognome è obbligatorio."
-				} else if (this.messageForm.last_name.length <= 2) {
-					this.errors.messageForm.last_name = "Il cognome deve contenere almeno 3 caratteri."
-				};
-				if (!this.messageForm.email) {
-					this.errors.messageForm.email = "L'email è obbligatoria.";
-				} else if (!this.validEmail(this.messageForm.email)) {
-					this.errors.messageForm.email = "L'email inserita non è valida.";
-				}
-				if (!this.messageForm.content) {
-					this.errors.messageForm.content = "Inserisci il corpo del messaggio"
-				}
-
-				if (!this.errors.messageForm.first_name &&
-					!this.errors.messageForm.last_name &&
-					!this.errors.messageForm.email &&
-					!this.errors.messageForm.content
-				) {
-					this.messageFormValidated = true;
-					this.sendMessageForm();
-				}
-
-				console.log(this.messageForm);
-				console.log(this.errors.messageForm);
-			},
-			validateReviewForm() {
-				this.resetErrorsReviewFields();
-				if (!this.reviewForm.first_name) {
-					this.errors.reviewForm.first_name = 'Il nome è obbligatorio.';
-				} else if (this.reviewForm.first_name.length <= 2) {
-					this.errors.reviewForm.first_name = 'Il nome deve contenere almeno 3 caratteri.';
-				};
-				if (!this.reviewForm.last_name) {
-					this.errors.reviewForm.last_name = "Il cognome è obbligatorio."
-				} else if (this.reviewForm.last_name.length <= 2) {
-					this.errors.reviewForm.last_name = "Il cognome deve contenere almeno 3 caratteri."
-				};
-				if (!this.reviewForm.email) {
-					this.errors.reviewForm.email = "L'email è obbligatoria.";
-				} else if (!this.validEmail(this.reviewForm.email)) {
-					this.errors.reviewForm.email = "L'email inserita non è valida.";
-				}
-				if (!this.reviewForm.content) {
-					this.errors.reviewForm.content = "Inserisci il corpo del messaggio"
-				}
-				if (!this.reviewForm.votes) {
-					this.errors.reviewForm.votes = "Devi inserire da 1 a 5 stetoscopi per poter inviare la tua recensione"
-				}
-
-				if (!this.errors.reviewForm.first_name &&
-					!this.errors.reviewForm.last_name &&
-					!this.errors.reviewForm.email &&
-					!this.errors.reviewForm.content &&
-					!this.errors.reviewForm.votes
-				) {
-					this.reviewFormValidated = true;
-					this.sendReviewForm();
-				}
-			},
-			resetMessageForm() {
-				this.messageFormValidated = false;
-				this.messageForm.first_name = '';
-				this.messageForm.last_name = '';
-				this.messageForm.email = '';
-				this.messageForm.content = '';
-			},
-			resetReviewForm() {
-				this.reviewFormValidated = false;
-				this.reviewForm.first_name = '';
-				this.reviewForm.last_name = '';
-				this.reviewForm.email = '';
-				this.reviewForm.content = '';
-				this.reviewForm.votes = null;
-			}
 		},
 		props: {
 			searchedSpecialization: {
@@ -263,6 +135,32 @@
 				const allDoctorSpecializations = this.searchedDoctor.user.specializations;
 
 				return allDoctorSpecializations?.filter(({ name }) => name !== searchedSpecialization);
+			},
+			messageFormElements() {
+				let formElements = {};
+				for (const el in this.formElements) {
+					if (el === 'content') {
+						const elObject = { ...this.formElements[el], id: 'message', label: 'Messaggio' };
+						elObject.placeholder += ' il tuo messaggio';
+						formElements[el] = elObject;
+					}
+					else if (el !== 'vote') formElements[el] = this.formElements[el];
+				}
+
+				return formElements;
+			},
+			reviewFormElements() {
+				let formElements = {};
+				for (const el in this.formElements) {
+					if (el === 'content') {
+						const elObject = { ...this.formElements[el], id: 'review', label: 'Recensione' };
+						elObject.placeholder += ' la tua recensione';
+						formElements[el] = elObject;
+					}
+					else formElements[el] = this.formElements[el];
+				}
+
+				return formElements;
 			},
 			isComponentPopUp() {
 				return !!this.containerHeight
@@ -329,7 +227,7 @@
 									Curriculum.pdf
 								</div>
 							</li>
-							<li id="specialization-border" class="card-list-item" v-if="otherDoctorSpecializations?.length">
+							<li class="card-list-item" v-if="otherDoctorSpecializations?.length">
 								<h3>Altre specializzazioni</h3>
 								<div class="data-element specializations-element">
 									<ul class="specializations-list">
@@ -337,28 +235,24 @@
 											specialization.name }}</li>
 									</ul>
 								</div>
-								<!-- {{ profileData.doctor.specializations[0].name }} -->
 							</li>
-							<li id="address-border" class="card-list-item">
+							<li class="card-list-item">
 								<h3>Indirizzo</h3>
 								<div class="data-element address-element">
 									{{ retrievedProfileData.office_address }}
 								</div>
-								<!-- {{ profileData.office_address }} -->
 							</li>
-							<li id="phone-border" class="card-list-item">
+							<li class="card-list-item">
 								<h3>Telefono</h3>
 								<div class="data-element telephone-element">
 									{{ retrievedProfileData.phone }}
 								</div>
-								<!-- {{ profileData.phone }} -->
 							</li>
-							<li id="services-border" class="card-list-item">
+							<li class="card-list-item">
 								<h3>Prestazioni</h3>
 								<div class="data-element services-element">
 									{{ retrievedProfileData.services }}
 								</div>
-								<!-- {{ profileData.services }} -->
 							</li>
 						</ul>
 					</div>
@@ -366,133 +260,10 @@
 						<div class="forms">
 							<!-- Message Form -->
 							<h5 class="my-3">Contatta lo specialista</h5>
-							<div class="form-frame">
-								<form id="message-form" class="form-control py-3" @submit.prevent="validateMessageForm" novalidate
-									v-if="messageFormValidated === false">
-									<div class="mb-3 col-12">
-										<label for="first_name" class="form-label">Nome</label>
-										<input type="text" placeholder="Inserisci il tuo nome" class="form-control"
-											:class="{ 'invalid-input': errors.messageForm.first_name }" id="first_name"
-											v-model.trim="messageForm.first_name" required>
-										<div class="invalid" v-if="errors.messageForm.first_name">
-											<p> {{ errors.messageForm.first_name }} </p>
-										</div>
-									</div>
-									<div class="mb-3 col-12">
-										<label for="last_name" class="form-label">Cognome</label>
-										<input type="text" placeholder="Inserisci il tuo cognome" class="form-control"
-											:class="{ 'invalid-input': errors.messageForm.last_name }" id="last_name"
-											v-model.trim="messageForm.last_name" required>
-										<div class="invalid" v-if="errors.messageForm.last_name">
-											<p> {{ errors.messageForm.last_name }} </p>
-										</div>
-									</div>
-									<div class="mb-3 col-12">
-										<label for="email" class="form-label">Email</label>
-										<input type="email" class="form-control" :class="{ 'invalid-input': errors.messageForm.email }"
-											id="email" placeholder="Inserisci il tuo indirizzo email" v-model.trim="messageForm.email"
-											required>
-										<div class="invalid" v-if="errors.messageForm.email">
-											<p> {{ errors.messageForm.email }} </p>
-										</div>
-									</div>
-									<div class="mb-3 col-12">
-										<label for="content" class="form-label align-start">Messaggio</label>
-										<textarea class="form-control" placeholder="Scrivi qui il tuo messaggio"
-											:class="{ 'invalid-input': errors.messageForm.content }" id="content" rows="3"
-											v-model="messageForm.content"></textarea>
-										<div class="invalid" v-if="errors.messageForm.content">
-											<p> {{ errors.messageForm.content }} </p>
-										</div>
-									</div>
-									<button type="submit" class="btn btn-primary btn-submit"
-										:class="{ 'disabled': messageFormValidated === true }">Invia
-										messaggio</button>
-								</form>
-
-								<div v-else class="my-3">
-									<p class="my-2">
-										Il tuo messaggio è stato inviato correttamente.
-									</p>
-									<button type="button" @click="resetMessageForm" class="btn btn-sm btn-primary">Conferma</button>
-								</div>
-							</div>
-
-							<div class="my-3 py-3">
-								<h5 class="my-3">Lascia una recensione</h5>
-								<div class="form-frame">
-									<form id="review-form" class="form-control py-3" @submit.prevent="validateReviewForm" novalidate
-										v-if="reviewFormValidated === false">
-										<div class="mb-3 col-12">
-											<label for="first_name" class="form-label">Nome</label>
-											<input type="text" class="form-control" placeholder="Inserisci il tuo nome"
-												:class="{ 'invalid-input': errors.reviewForm.first_name }" id="first_name"
-												v-model.trim="reviewForm.first_name" required>
-											<div class="invalid" v-if="errors.reviewForm.first_name">
-												<p> {{ errors.reviewForm.first_name }} </p>
-											</div>
-										</div>
-										<div class="mb-3 col-12">
-											<label for="last_name" class="form-label">Cognome</label>
-											<input type="text" class="form-control" placeholder="Inserisci il tuo cognome"
-												:class="{ 'invalid-input': errors.reviewForm.last_name }" id="last_name"
-												v-model.trim="reviewForm.last_name" required>
-											<div class="invalid" v-if="errors.reviewForm.last_name">
-												<p> {{ errors.reviewForm.last_name }} </p>
-											</div>
-										</div>
-										<div class="mb-3 col-12">
-											<label for="email" class="form-label">Email</label>
-											<input type="email" class="form-control" :class="{ 'invalid-input': errors.reviewForm.email }"
-												id="email" placeholder="Inserisci il tuo indirizzo email" v-model.trim="reviewForm.email"
-												required>
-											<div class="invalid" v-if="errors.reviewForm.email">
-												<p> {{ errors.reviewForm.email }} </p>
-											</div>
-										</div>
-										<div class="mb-3 col-12">
-											<label for="content" class="form-label align-start">Messaggio</label>
-											<textarea class="form-control" placeholder="Scrivi qui il tuo messaggio"
-												:class="{ 'invalid-input': errors.reviewForm.content }" id="content" rows="3"
-												v-model="reviewForm.content"></textarea>
-											<div class="invalid" v-if="errors.reviewForm.content">
-												<p> {{ errors.reviewForm.content }} </p>
-											</div>
-										</div>
-										<div class="votes">
-											<input type="radio" id="vote5" name="votes" value="5" v-model="reviewForm.votes">
-											<label for="vote5"><i class="fa-solid fa-stethoscope"></i>
-											</label>
-											<input type="radio" id="vote4" name="votes" value="4" v-model="reviewForm.votes">
-											<label for="vote4"><i class="fa-solid fa-stethoscope"></i>
-											</label>
-											<input type="radio" id="vote3" name="votes" value="3" v-model="reviewForm.votes">
-											<label for="vote3"><i class="fa-solid fa-stethoscope"></i>
-											</label>
-											<input type="radio" id="vote2" name="votes" value="2" v-model="reviewForm.votes">
-											<label for="vote2"><i class="fa-solid fa-stethoscope"></i>
-											</label>
-											<input type="radio" id="vote1" name="votes" value="1" v-model="reviewForm.votes">
-											<label for="vote1"><i class="fa-solid fa-stethoscope"></i>
-											</label>
-										</div>
-										<div class="invalid mb-3" v-if="errors.reviewForm.votes">
-											<p> {{ errors.reviewForm.votes }} </p>
-										</div>
-										<button type="submit" class="btn btn-primary btn-submit"
-											:class="{ 'disabled': reviewFormValidated === true }">Invia
-											recensione</button>
-									</form>
-
-									<div v-else class="my-3">
-										<p class="my-2">
-											La tua recensione è stata inviata correttamente.
-										</p>
-										<button type="button" @click="resetReviewForm" class="btn btn-sm btn-primary">Conferma</button>
-									</div>
-								</div>
-							</div>
-
+							<AppForm :apiRoute="createMessageApiRoute" :elements="messageFormElements" :doctorInfo />
+							<!-- Review Form -->
+							<h5 class="my-3">Lascia una recensione</h5>
+							<AppForm class="mb-3" :apiRoute="createReviewApiRoute" :elements="reviewFormElements" :doctorInfo />
 						</div>
 					</div>
 				</template>
@@ -644,18 +415,18 @@
 		list-style-type: none;
 	}
 
-	form {
-		border-radius: 40px;
-	}
+	// form {
+	// 	border-radius: 40px;
+	// }
 
-	.form-frame {
-		display: flex;
-		min-height: 400px;
-		justify-content: center;
-		align-items: center;
-		border-radius: 40px;
-		border: 3px solid #65B0FF;
-	}
+	// .form-frame {
+	// 	display: flex;
+	// 	min-height: 400px;
+	// 	justify-content: center;
+	// 	align-items: center;
+	// 	border-radius: 40px;
+	// 	border: 3px solid #65B0FF;
+	// }
 
 	.edit-profile {
 		background-color: var(--color-secondary);

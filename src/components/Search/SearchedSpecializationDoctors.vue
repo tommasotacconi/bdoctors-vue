@@ -32,7 +32,7 @@
 			goToShowPage(doctorProfile, index) {
 				let completeName = doctorProfile.user.first_name + '-' + doctorProfile.user.last_name;
 				if (doctorProfile.user.homonymous_id !== null) completeName += '-' + doctorProfile.user.homonymous_id;
-				store.doctorProfile = doctorProfile;
+				this.searchedDoctor = doctorProfile;
 				this.$router.push({
 					name: 'specializationDoctors.show', params: { name: completeName }
 				});
