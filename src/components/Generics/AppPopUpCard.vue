@@ -13,7 +13,7 @@
 		<div class="card-header">
 			<slot name="card-header"></slot>
 		</div>
-		<div class="card-body-text-section d-flex justify-content-between">
+		<div class="card-body d-flex justify-content-between">
 			<slot></slot>
 		</div>
 	</div>
@@ -29,7 +29,7 @@
 		width: 100%;
 		position: relative;
 
-		.card-header {
+		div.card-header {
 			border-radius: 40px 40px 0 0;
 			background-color: #D8F9FF;
 			display: flex;
@@ -43,7 +43,7 @@
 			}
 		}
 
-		.card-body-text-section {
+		div.card-body {
 			border-top: 2px solid var(--color-complementary);
 			padding: 16px 50px;
 		}

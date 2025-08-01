@@ -56,7 +56,7 @@
 					vote: {
 						id: 'vote',
 						type: 'radio',
-						label: null,
+						label: 'Voto',
 						placeholder: null
 					}
 				},
@@ -66,6 +66,11 @@
 				reviewFormValidated: false,
 				isSpecializationParamValid: undefined,
 				doctorNotFound: false,
+				isMessageFormButtonShown: true,
+				isMessageFormShown: false,
+				isReviewFormButtonShown: true,
+				isReviewFormShown: false,
+				winInnerWidth: window.innerWidth,
 			}
 		},
 		components: {
@@ -117,6 +122,30 @@
 						this.loaded = true;
 					});
 			},
+			showForm(form) {
+				if (form === 'messageForm') {
+					this.isMessageFormButtonShown = false;
+					this.isReviewFormShown = false;
+					this.$nextTick(() => {
+						setTimeout(() => {
+							this.isMessageFormShown = true;
+							this.isReviewFormButtonShown = true;
+						}, 100);
+					});
+				} else if (form === 'reviewForm') {
+					this.isReviewFormButtonShown = false;
+					this.isMessageFormShown = false;
+					this.$nextTick(() => {
+						setTimeout(() => {
+							this.isReviewFormShown = true;
+							this.isMessageFormButtonShown = true;
+						}, 100)
+					});
+				}
+			},
+			onResize(e) {
+				this.winInnerWidth = window.innerWidth;
+			}
 		},
 		props: {
 			searchedSpecialization: {
@@ -172,7 +201,10 @@
 			},
 			isComponentPopUp() {
 				return !!this.containerHeight
-			}
+			},
+			areShowFormButtonsShown() {
+				return this.isMessageFormButtonShown && this.isReviewFormButtonShown;
+			},
 		},
 		setup() {
 			const { getFilePath, getProfilePhotoPath } = useGetPathFunctions();
@@ -181,7 +213,11 @@
 		},
 		created() {
 			this.setDoctorInfo();
+			window.addEventListener('resize', this.onResize);
 		},
+		destroyed() {
+			window.removeEventListener('resize', this.onResize);
+		}
 	}
 </script>
 
@@ -247,14 +283,32 @@
 							</template>
 						</ul>
 					</div>
-					<div class="right-content col-5">
-						<div class="forms">
+					<div class="right-content col-5 py-3">
+						<!-- Button to show message form -->
+						<button class="btn btn-primary mb-4" v-show="isMessageFormButtonShown"
+							@click="showForm('messageForm')">Contatta lo
+							specialista</button>
+						<!-- Button to show review form -->
+						<button v-show="isReviewFormButtonShown" class="btn btn-primary mb-4"
+							:class="{ 'ms-3': areShowFormButtonsShown && winInnerWidth >= 1400 }"
+							@click="showForm('reviewForm')">Lascia
+							una
+							recensione</button>
+						<div v-show="isMessageFormShown" class="message-form">
 							<!-- Message Form -->
-							<h5 class="my-3">Contatta lo specialista</h5>
-							<AppForm :apiRoute="createMessageApiRoute" :elements="messageFormElements" :doctorInfo />
+							<h5 class="mb-3">Contatta lo specialista</h5>
+							<Transition>
+								<AppForm v-show="isMessageFormShown" class="mb-4" :apiRoute="createMessageApiRoute"
+									:elements="messageFormElements" :doctorInfo :isRendered="isMessageFormShown" />
+							</Transition>
+						</div>
+						<div v-show="isReviewFormShown" class="review-form">
 							<!-- Review Form -->
-							<h5 class="my-3">Lascia una recensione</h5>
-							<AppForm class="mb-3" :apiRoute="createReviewApiRoute" :elements="reviewFormElements" :doctorInfo />
+							<h5 class="mb-3">Lascia una recensione</h5>
+							<Transition>
+								<AppForm v-show="isReviewFormShown" class="mb-3" :apiRoute="createReviewApiRoute"
+									:elements="reviewFormElements" :doctorInfo />
+							</Transition>
 						</div>
 					</div>
 				</template>
@@ -371,20 +425,23 @@
 	}
 
 
-	.card-body-text-section {
-		border-top: 2px solid var(--color-complementary);
-		padding: 16px 50px;
-
+	.card-body {
 		ul.ul-child-elements>* {
 			flex-basis: 100%;
 			min-height: 50px;
 		}
+
+		.right-content {
+			h5 {
+				color: var(--color-tertiary);
+			}
+		}
 	}
 
 	.card-list-item {
-		border: 1px grey;
+		border: 1px solid grey;
 		border-radius: 10px;
-		box-shadow: -2px 2px 3px 1px var(--color-complementary);
+		box-shadow: 0 8px 12px -3px var(--color-complementary);
 		padding: 10px;
 	}
 
@@ -406,18 +463,28 @@
 		list-style-type: none;
 	}
 
-	// form {
-	// 	border-radius: 40px;
-	// }
+	.btn {
+		background-color: var(--color-tertiary);
 
-	// .form-frame {
-	// 	display: flex;
-	// 	min-height: 400px;
-	// 	justify-content: center;
-	// 	align-items: center;
-	// 	border-radius: 40px;
-	// 	border: 3px solid #65B0FF;
-	// }
+		&:hover {
+			background-color: var(--color-primary);
+		}
+
+		span {
+			margin-right: 5px;
+			display: none;
+		}
+	}
+
+	/* Form entrance animation */
+	.form-frame {
+		animation: forwards move-up;
+	}
+
+	.v-enter-active {
+		animation: 1.2s ease-in move-up;
+	}
+
 
 	.edit-profile {
 		background-color: var(--color-secondary);
@@ -433,7 +500,6 @@
 		left: 50%;
 		translate: -50% 0;
 	}
-
 
 	/* Card create */
 	.card-create {
@@ -461,42 +527,6 @@
 	}
 
 
-	/* Message form */
-	.invalid {
-		color: red;
-	}
-
-	.invalid-input {
-		border-color: red;
-	}
-
-	/*votes */
-	.votes {
-		margin-bottom: 20px;
-		display: flex;
-		flex-direction: row-reverse;
-		justify-content: center;
-
-		& input {
-			display: none;
-		}
-
-		& label {
-			font-size: 24px;
-			cursor: pointer;
-		}
-
-		& label:hover,
-		& label:hover~label {
-			color: var(--color-complementary)
-		}
-
-		& input:checked~label {
-			color: var(--color-complementary)
-		}
-	}
-
-
 	/* Responsive */
 	@media (max-width: 576px) {
 		.container {
@@ -521,7 +551,7 @@
 			min-width: 250px;
 		}
 
-		.card-body-text-section {
+		.card-body {
 			flex-direction: column;
 			/* Stack content vertically */
 			padding-top: 20px;
@@ -573,7 +603,7 @@
 			flex-direction: row;
 		}
 
-		.card-body-text-section {
+		.card-body {
 			flex-direction: row;
 		}
 
@@ -602,7 +632,7 @@
 			flex-direction: row;
 		}
 
-		.card-body-text-section {
+		.card-body {
 			flex-direction: row;
 		}
 
@@ -631,7 +661,7 @@
 			flex-direction: row;
 		}
 
-		.card-body-text-section {
+		.card-body {
 			flex-direction: row;
 		}
 

@@ -108,11 +108,17 @@
 			// }
 		},
 		computed: {
-			formNameSuffix() {
+			formContent() {
+				return this.elements.content.label;
+			},
+			formContentSuffix() {
 				return this.elements.content.id === 'message' ? 'o' : 'a';
 			},
-			yourFormNameSentence() {
-				return this.elements.content.id === 'message' ? 'Il tuo messaggio' : 'La tua recensione';
+			formContentArticle() {
+				return this.elements.content.id === 'message' ? 'il' : 'la';
+			},
+			yourFormContentSentence() {
+				return `${this.formContentArticle[0].toUpperCase() + this.formContentArticle.slice(1)} tu${this.formContentSuffix} ${this.formContent.toLowerCase()}`;
 			}
 		},
 		props: {
@@ -128,7 +134,10 @@
 				type: Object,
 				required: true
 			},
-
+			isRendered: {
+				type: Boolean,
+				required: false
+			}
 		},
 		created() {
 			this.createFormData();
@@ -137,13 +146,12 @@
 </script>
 
 <template>
-	<div class="form-frame">
-		<form id="message-form" class="form-control py-3" @submit.prevent="validateForm" novalidate
-			v-if="sent === undefined">
+	<div class="form-frame p-3 pt-1">
+		<form v-if="sent === undefined" id="message-form" @submit.prevent="validateForm" novalidate>
 			<!-- Generic form element -->
-			<div class="mb-3 col-12" :class="{ 'votes': key === 'vote' }" v-for="(el, key) in elements">
+			<div class="mb-2" v-for="(el, key) in elements">
 				<template v-if="key !== 'vote'">
-					<label :for="el.id" class="form-label">{{ el.label }}</label>
+					<label :for="el.id" class="badge rounded-pill">{{ el.label }}</label>
 					<input v-if="key !== 'content'" :id="el.id" v-model.trim="formData[key]" :type="el.type"
 						:placeholder="el.placeholder" class="form-control" :class="{ 'invalid-input': errors[key] }"
 						:rows="key === 'content' ? 3 : null" required>
@@ -151,10 +159,15 @@
 						:placeholder="el.placeholder" class="form-control" :class="{ 'invalid-input': errors[key] }"
 						:rows="key === 'content' ? 3 : null" required></textarea>
 				</template>
-				<template v-if="key === 'vote'" v-for="vote in [5, 4, 3, 2, 1]">
-					<input :id="el.id + vote" class="form-control" :class="{ 'invalid-input': errors[key] }" :value="vote"
-						v-model.trim="formData[key]" :type="el.type" required>
-					<label :for="el.id + vote" class="form-label"><i class="fa-solid fa-stethoscope"></i></label>
+				<template v-if="key === 'vote'">
+					<label class="badge rounded-pill">{{ el.label }}</label>
+					<div class="form-control text-center vote">
+						<template v-for="vote in [5, 4, 3, 2, 1]">
+							<input :id="el.id + vote" class="form-control" :class="{ 'invalid-input': errors[key] }" :value="vote"
+								v-model.trim="formData[key]" :type="el.type" required>
+							<label :for="el.id + vote" class="form-label stethoscope"><i class="fa-solid fa-stethoscope"></i></label>
+						</template>
+					</div>
 				</template>
 				<!-- Box for single input's error message -->
 				<div class="invalid" v-if="errors[key]">
@@ -162,27 +175,34 @@
 				</div>
 			</div>
 			<!-- Submit button -->
-			<button type="submit" class="btn btn-primary btn-submit" :class="{ 'disabled': validated }">Invia
-				messaggio</button>
+			<div class="buttons-wrapper text-center">
+				<button type="submit" class="btn btn-primary btn-submit mx-auto mt-4" :class="{ 'disabled': validated }">Invia
+					{{ formContent.toLowerCase() }}</button>
+			</div>
 		</form>
 
 		<Loader v-else-if="sent === null" />
 
+		<!-- Notification message for successfull sending -->
 		<div v-else-if="sent" class="my-3">
 			<p class="my-2 px-2">
-				{{ yourFormNameSentence }} è stat{{ formNameSuffix }} inviat{{ formNameSuffix }} correttamente.
+				{{ yourFormContentSentence }} è stat{{ formContentSuffix }} inviat{{ formContentSuffix }} correttamente.
 			</p>
-			<button type="button" @click="sent = undefined" class="btn btn-sm btn-primary">Invia nuovo</button>
+			<button type="button" @click="sent = undefined" class="btn btn-primary btn-sm">Invia nuov{{ formContentSuffix
+			}}</button>
 		</div>
 
+		<!-- Notification message for impossible sending -->
 		<div v-else class="my-3">
 			<p class="my-2 px-2">
-				{{ yourFormNameSentence }} non può essere inviat{{ formNameSuffix }} al momento. Controlla la connessione a
+				{{ yourFormContentSentence }} non può essere inviat{{ formContentSuffix }} al momento. Controlla la
+				connessione
+				a
 				internet
 				o riprova più tardi.
 			</p>
 			<button type="button" @click="sent = undefined; validated = undefined"
-				class="btn btn-sm btn-primary">Riprova</button>
+				class="btn btn-primary btn-sm">Riprova</button>
 		</div>
 	</div>
 </template>
@@ -194,8 +214,9 @@
 
 		justify-content: center;
 		align-items: center;
-		border-radius: 40px;
-		border: 3px solid #65B0FF;
+		border-radius: var(--bs-border-radius);
+		/* border: var(--bs-border-width) solid var(--color-primary); */
+		/* box-shadow: 0px 4px 20px -10px var(--color-tertiary); */
 
 		/* Loader sizing */
 		.loader {
@@ -203,45 +224,84 @@
 			position: static;
 			translate: none;
 		}
+	}
 
+	.btn {
+		background-color: var(--color-tertiary);
+
+		&:hover {
+			background-color: var(--color-primary);
+		}
+
+		span {
+			margin-right: 5px;
+			display: none;
+		}
 	}
 
 	form {
-		border-radius: 40px;
-	}
+		width: 100%;
+		text-align: start;
+		animation: 0.6s ease-out 0.6s forwards fade;
+		opacity: 0;
 
-	/* Message form */
-	.invalid {
-		color: red;
-	}
-
-	.invalid-input {
-		border-color: red;
-	}
-
-	/*votes */
-	.votes {
-		margin-bottom: 20px;
-		display: flex;
-		flex-direction: row-reverse;
-		justify-content: center;
-
-		& input {
-			display: none;
+		label.badge.rounded-pill {
+			background-color: var(--color-tertiary);
 		}
 
-		& label {
-			font-size: 24px;
-			cursor: pointer;
+		input[type="input"].form-control,
+		textarea.form-control,
+		div.form-control {
+			border: 2px solid var(--color-tertiary);
 		}
 
-		& label:hover,
-		& label:hover~label {
-			color: var(--color-complementary)
+
+		/* Form error */
+		.invalid {
+			color: red;
 		}
 
-		& input:checked~label {
-			color: var(--color-complementary)
+		.invalid-input {
+			border-color: red;
 		}
+
+		/*vote*/
+		.vote {
+			padding: 10px 0;
+			margin-bottom: 20px;
+
+			display: flex;
+			flex-direction: row-reverse;
+			justify-content: center;
+
+			& input {
+				display: none;
+			}
+
+			& label {
+				height: 2.5rem;
+				aspect-ratio: 1;
+				margin: 0 2.5px;
+				border: 2px solid var(--color-tertiary);
+				border-radius: 50%;
+
+				line-height: 2.5rem;
+				font-size: 1.3rem;
+				cursor: pointer;
+				transition: color 1s ease-out;
+			}
+
+			& label:hover,
+			& label:hover~label {
+				background-color: var(--color-tertiary);
+				color: var(--color-complementary);
+			}
+
+			& input:checked~label {
+				background-color: var(--color-tertiary);
+				color: var(--color-complementary);
+			}
+		}
+
 	}
 </style>
