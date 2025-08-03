@@ -141,7 +141,12 @@
 		},
 		created() {
 			this.createFormData();
+			console.log('Created AppForm');
+		},
+		mounted() {
+			console.log('Mounted AppForm');
 		}
+
 	}
 </script>
 

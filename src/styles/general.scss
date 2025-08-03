@@ -33,6 +33,7 @@ body {
 	overflow: hidden;
 }
 
+// Utility
 .btn {
 	border-radius: 25px;
 	padding: 10px 16px;
@@ -40,7 +41,13 @@ body {
 	font-style: italic;
 	color: white;
 	font-weight: bold;
+
+	&.pos-static {
+		position: static;
+		translate: none;
+	}
 }
+
 
 label.badge.rounded-pill {
 	width: fit-content;
@@ -76,8 +83,8 @@ textarea.form-control {
 		box-shadow: none;
 	}
 
-  50% {
-    box-shadow: 0 15px 10px -2px var(--color-tertiary);
+  60% {
+    box-shadow: 0 26px 36px 0px var(--color-tertiary);
   }
 
 	to {

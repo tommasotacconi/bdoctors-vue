@@ -5,7 +5,10 @@
 	import { homepageStore } from '../../../js/homepageStore.js';
 	import AppPopUpCard from '../Generics/AppPopUpCard.vue';
 	import AppForm from '../Generics/AppForm.vue';
+	import MessageForm from '../Generics/AppForm.vue';
+	import ReviewForm from '../Generics/AppForm.vue';
 	import { isNavigationFailure } from 'vue-router';
+	import { KeepAlive } from 'vue';
 
 	export default {
 		data() {
@@ -22,6 +25,8 @@
 				loaded: false,
 				store,
 				homepageStore,
+				isSpecializationParamValid: undefined,
+				doctorNotFound: false,
 				doctorInfo: {
 					first_name: null,
 					last_name: null,
@@ -62,20 +67,17 @@
 				},
 				createMessageApiRoute: 'messages',
 				createReviewApiRoute: 'reviews',
-				messageFormValidated: false,
-				reviewFormValidated: false,
-				isSpecializationParamValid: undefined,
-				doctorNotFound: false,
-				isMessageFormButtonShown: true,
-				isMessageFormShown: false,
-				isReviewFormButtonShown: true,
-				isReviewFormShown: false,
+				currentFormType: null,
+				formTitle: '',
+				isCurrentFormShown: false,
 				winInnerWidth: window.innerWidth,
 			}
 		},
 		components: {
 			AppPopUpCard,
-			AppForm
+			AppForm,
+			MessageForm,
+			ReviewForm
 		},
 		methods: {
 			setDoctorInfo() {
@@ -122,26 +124,16 @@
 						this.loaded = true;
 					});
 			},
-			showForm(form) {
-				if (form === 'messageForm') {
-					this.isMessageFormButtonShown = false;
-					this.isReviewFormShown = false;
-					this.$nextTick(() => {
-						setTimeout(() => {
-							this.isMessageFormShown = true;
-							this.isReviewFormButtonShown = true;
-						}, 100);
-					});
-				} else if (form === 'reviewForm') {
-					this.isReviewFormButtonShown = false;
-					this.isMessageFormShown = false;
-					this.$nextTick(() => {
-						setTimeout(() => {
-							this.isReviewFormShown = true;
-							this.isMessageFormButtonShown = true;
-						}, 100)
-					});
-				}
+			setCurrentForm(formType) {
+				this.isCurrentFormShown = true;
+				if (this.currentFormType !== null) this.currentFormType = '';
+				if (formType === 'ReviewForm') this.formTitle = 'Lascia una recensione';
+				else if (formType === 'MessageForm') this.formTitle = 'Contatta lo specialista';
+				this.$nextTick(() => {
+					setTimeout(() => {
+						this.currentFormType = formType;
+					}, 100);
+				});
 			},
 			onResize(e) {
 				this.winInnerWidth = window.innerWidth;
@@ -198,6 +190,15 @@
 				}
 
 				return formElements;
+			},
+			currentFormElements() {
+				if (this.currentFormType === null) return undefined;
+				if (this.currentFormType === 'MessageForm') return this.messageFormElements;
+				if (this.currentFormType === 'ReviewForm') return this.reviewFormElements;
+			},
+			currentCreateResourceApiRoute() {
+				if (this.currentFormType === 'MessageForm') return this.createMessageApiRoute;
+				if (this.currentFormType === 'ReviewForm') return this.createReviewApiRoute;
 			},
 			isComponentPopUp() {
 				return !!this.containerHeight
@@ -284,30 +285,28 @@
 						</ul>
 					</div>
 					<div class="right-content col-5 py-3">
-						<!-- Button to show message form -->
-						<button class="btn btn-primary mb-4" v-show="isMessageFormButtonShown"
-							@click="showForm('messageForm')">Contatta lo
-							specialista</button>
-						<!-- Button to show review form -->
-						<button v-show="isReviewFormButtonShown" class="btn btn-primary mb-4"
-							:class="{ 'ms-3': areShowFormButtonsShown && winInnerWidth >= 1400 }"
-							@click="showForm('reviewForm')">Lascia
-							una
-							recensione</button>
-						<div v-show="isMessageFormShown" class="message-form">
-							<!-- Message Form -->
-							<h5 class="mb-3">Contatta lo specialista</h5>
-							<Transition>
-								<AppForm v-show="isMessageFormShown" class="mb-4" :apiRoute="createMessageApiRoute"
-									:elements="messageFormElements" :doctorInfo :isRendered="isMessageFormShown" />
+						<div class="buttons-wrapper mb-3">
+							<Transition name="slide-up">
+								<!-- Button to show message form -->
+								<button class="btn btn-primary" v-if="currentFormType === 'ReviewForm' ||
+									currentFormType === null" :class="{ 'pos-static': !isCurrentFormShown }"
+									@click="setCurrentForm('MessageForm')">Contatta</button>
+								<!-- Button to show review form -->
+								<button v-else-if="currentFormType === 'MessageForm'" class="btn btn-primary"
+									@click="setCurrentForm('ReviewForm')">Recensisci</button>
 							</Transition>
+							<button v-if="!isCurrentFormShown" class="btn btn-primary pos-static"
+								:class="{ 'ms-3': winInnerWidth >= 768 }" @click="setCurrentForm('ReviewForm')">Recensisci</button>
 						</div>
-						<div v-show="isReviewFormShown" class="review-form">
-							<!-- Review Form -->
-							<h5 class="mb-3">Lascia una recensione</h5>
+						<div v-show="isCurrentFormShown" class="review-form">
+							<!-- Dynamic Form -->
+							<h5 class="mb-3">{{ formTitle }}
+							</h5>
 							<Transition>
-								<AppForm v-show="isReviewFormShown" class="mb-3" :apiRoute="createReviewApiRoute"
-									:elements="reviewFormElements" :doctorInfo />
+								<KeepAlive>
+									<AppForm v-if="currentFormType" :key="currentFormType" class="mb-3"
+										:apiRoute="currentCreateResourceApiRoute" :elements="currentFormElements" :doctorInfo />
+								</KeepAlive>
 							</Transition>
 						</div>
 					</div>
@@ -435,6 +434,11 @@
 			h5 {
 				color: var(--color-tertiary);
 			}
+
+			.buttons-wrapper {
+				min-height: 50px;
+				position: relative;
+			}
 		}
 	}
 
@@ -466,6 +470,10 @@
 	.btn {
 		background-color: var(--color-tertiary);
 
+		position: absolute;
+		left: 50%;
+		translate: -50% 0;
+
 		&:hover {
 			background-color: var(--color-primary);
 		}
@@ -474,6 +482,22 @@
 			margin-right: 5px;
 			display: none;
 		}
+	}
+
+	/* Buttons animations */
+	.slide-up-enter-active,
+	.slide-up-leave-active {
+		transition: all 0.25s ease-out;
+	}
+
+	.slide-up-enter-from {
+		opacity: 0;
+		transform: translateY(30px);
+	}
+
+	.slide-up-leave-to {
+		opacity: 0;
+		transform: translateY(-30px);
 	}
 
 	/* Form entrance animation */
