@@ -228,7 +228,7 @@
 			<Loader v-if="!loaded" />
 			<!-- Card for retrieved doctor -->
 			<AppPopUpCard
-				v-if="retrievedProfile && Object.keys(retrievedProfile).length && retrievedProfile.constructor === Object">
+				v-else-if="retrievedProfile && Object.keys(retrievedProfile).length && retrievedProfile.constructor === Object">
 				<template #card-header>
 					<div class="img-doctor">
 						<img :src="getProfilePhotoPath(this.store.placeholderImg, retrievedProfile.photo)" class="doctor-photo"
