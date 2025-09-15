@@ -50,13 +50,13 @@
 
 		/* Not found doctor */
 		&.not-found {
-			min-height: 50vh;
-			width: 700px;
+			min-height: 250px;
+			width: 500px;
 
 			text-align: left;
 
 			.card-header {
-				height: 10vh;
+				min-height: 50px;
 				padding-top: 20px;
 			}
 		}
