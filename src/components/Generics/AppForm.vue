@@ -1,6 +1,7 @@
 <script>
 	import axios from 'axios';
 	import { store } from '../../../js/store';
+	import Multiselect from './Multiselect.vue';
 
 	export default {
 		data() {
@@ -21,10 +22,27 @@
 			}
 		},
 		methods: {
+			setNestedValue(obj, path, value) {
+				const keys = path.split('.');
+				const lastKey = keys.pop();
+				const parent = keys.reduce((current, key) => current[key], obj);
+				parent[lastKey] = value;
+			},
+			updateSpecs(specializations, reactiveObj, key) {
+				// Prepare a constant array result to insert ids value
+				const result = [];
+				// Insert ids taken from specializations parameter in reactive variable specializations, property of errors 
+				for (let i = 0; i < specializations.length; i++) {
+					result.push(specializations[i].id);
+				}
+
+				reactiveObj[key] = result;
+			},
 			createFormData() {
 				for (const key in this.elements) {
-					if (key !== 'vote') this.$data.formData[key] = '';
-					else this.$data.formData[key] = null;
+					if (key === 'specializationsId') this.$data.formData[key] = [];
+					else if ((key === 'vote')) this.$data.formData[key] = null;
+					else this.$data.formData[key] = '';
 					this.$data.errors[key] = '';
 				}
 			},
@@ -40,19 +58,21 @@
 					const value = this.formData[data];
 					const label = this.elements[data].label;
 
-					if (!value) {
-						if (data === 'messageContent' || data === 'reviewContent') {
+					if (!value || !value.length) {
+						if (data === 'content' || data === 'messageContent' || data === 'reviewContent') {
 							const msgAdaptedPart = data === 'messageContent' ? '' : 'la';
 							this.errors[data] = `Inserisci il corpo del${msgAdaptedPart} ${label.toLowerCase()}`;
 						}
 						else if (data === 'vote') this.errors[data] = 'Inserisci un voto in stetoscopi da 1 a 5';
-						else if (data !== 'email') this.errors[data] = `Il ${label.toLowerCase()} è obbligatorio`;
+						else if (data !== 'email' && data !== 'password' && data !== 'pwConf') this.errors[data] = `Il ${label.toLowerCase()} è obbligatorio`;
 						else this.errors[data] = `La ${label.toLowerCase()} è obbligatoria`;
 					}
 					else if ((data === 'first_name' || data === 'last_name') && value.length <= 2)
 						this.errors[data] = `Il ${label.toLowerCase()} deve contenere almeno 3 caratteri`;
 					else if (data === 'email' && !this.validateEmail(value)) this.errors[data] = 'L\'email inserita non è valida';
 				}
+				// Run custom validation function if any
+				if (this.perfectValidation) this.perfectValidation(this);
 				// Check form validity by errors' presence
 				let isValid = true;
 				for (const data of Object.keys(this.formData)) {
@@ -80,9 +100,12 @@
 			},
 			sendForm() {
 				this.sent = null;
+				// Convert to snake_case data
+				const { pwConf, ...data } = this.camelToSnake(this.formData);
+				console.log(data);
 				axios.post(this.store.apiUri + this.apiRoute, {
 					doctor_details: this.doctorInfo,
-					...this.formData,
+					...data,
 				})
 					.then(response => {
 						// console.log('Message sent.', response.data);
@@ -94,6 +117,15 @@
 						console.log(err.response.data);
 						this.sent = false;
 					})
+			},
+			camelToSnake(obj) {
+				const result = {};
+				for (const [key, value] of Object.entries(this.formData)) {
+					const snakeKey = key.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
+					result[snakeKey] = value;
+				}
+
+				return result;
 			}
 			// [Symbol.iterator]() {
 			// 	let i = 0;
@@ -109,16 +141,17 @@
 		},
 		computed: {
 			formContent() {
-				return this.elements.content.label;
+				if (this.elements.content) return this.elements.content?.label;
+				else if (this.elements.firstName && this.elements.lastName) return 'Registrazione';
 			},
 			formContentSuffix() {
-				return this.elements.content.id === 'message' ? 'o' : 'a';
+				return this.elements.content?.id === 'message' ? 'o' : 'a';
 			},
 			formContentArticle() {
-				return this.elements.content.id === 'message' ? 'il' : 'la';
+				return this.elements.content?.id === 'message' ? 'il' : 'la';
 			},
 			yourFormContentSentence() {
-				return `${this.formContentArticle[0].toUpperCase() + this.formContentArticle.slice(1)} tu${this.formContentSuffix} ${this.formContent.toLowerCase()}`;
+				if (this.formContent && this.formContentSuffix && this.formContentArticle) return `${this.formContentArticle[0].toUpperCase() + this.formContentArticle.slice(1)} tu${this.formContentSuffix} ${this.formContent.toLowerCase()}`;
 			}
 		},
 		props: {
@@ -131,13 +164,29 @@
 				required: true
 			},
 			doctorInfo: {
-				type: Object,
+				type: [Object, null],
 				required: true
+			},
+			perfectValidation: {
+				type: Function,
+				required: false
 			},
 			isRendered: {
 				type: Boolean,
 				required: false
+			},
+			formFrameClass: {
+				type: Object
+			},
+			formClass: {
+				type: Object
+			},
+			wrapperInnerDiv: {
+				type: Object
 			}
+		},
+		components: {
+			Multiselect
 		},
 		created() {
 			this.createFormData();
@@ -151,38 +200,61 @@
 </script>
 
 <template>
-	<div class="form-frame p-3 pt-1">
-		<form v-if="sent === undefined" id="message-form" @submit.prevent="validateForm" novalidate>
+	<div class="form-frame p-3 pt-1" :class="formFrameClass">
+		<form v-if="sent === undefined" id="message-form" @submit.prevent="validateForm" novalidate :class="formClass">
 			<!-- Generic form element -->
-			<div class="mb-2" v-for="(el, key) in elements">
-				<template v-if="key !== 'vote'">
-					<label :for="el.id" class="badge rounded-pill">{{ el.label }}</label>
-					<input v-if="key !== 'content'" :id="el.id" v-model.trim="formData[key]" :type="el.type"
-						:placeholder="el.placeholder" class="form-control" :class="{ 'invalid-input': errors[key] }"
-						:rows="key === 'content' ? 3 : null" required>
-					<textarea v-if="key === 'content'" :id="el.id" v-model.trim="formData[key]" :type="el.type"
-						:placeholder="el.placeholder" class="form-control" :class="{ 'invalid-input': errors[key] }"
-						:rows="key === 'content' ? 3 : null" required></textarea>
-				</template>
-				<template v-if="key === 'vote'">
-					<label class="badge rounded-pill">{{ el.label }}</label>
-					<div class="form-control text-center vote">
-						<template v-for="vote in [5, 4, 3, 2, 1]">
-							<input :id="el.id + vote" class="form-control" :class="{ 'invalid-input': errors[key] }" :value="vote"
-								v-model.trim="formData[key]" :type="el.type" required>
-							<label :for="el.id + vote" class="form-label stethoscope"><i class="fa-solid fa-stethoscope"></i></label>
-						</template>
+			<div :class="wrapperInnerDiv">
+				<!-- Form field's template -->
+				<div class="mb-2" :class="el.wrapperStyle" v-for="(el, key) in elements">
+					<!-- If vote field -->
+					<template v-if="key === 'vote'">
+						<label class="badge rounded-pill">{{ el.label }}</label>
+						<div class="form-control text-center vote">
+							<template v-for="vote in [5, 4, 3, 2, 1]">
+								<input :id="el.id + vote" class="form-control" :class="{ 'invalid-input': errors[key] }" :value="vote"
+									v-model.trim="formData[key]" :type="el.type" required>
+								<label :for="el.id + vote" class="form-label stethoscope"><i
+										class="fa-solid fa-stethoscope"></i></label>
+							</template>
+						</div>
+					</template>
+					<!-- If specializations' multiselect field -->
+					<template v-else-if="key === 'specializationsId'">
+						<label for="el.id" class="badge rounded-pill">{{ el.label }}</label>
+						<Multiselect id="" class="specializations-multiselect" :class="{ 'invalid-input': errors[key] }"
+							@send-values="(specializations) => { updateSpecs(specializations, formData, key); }" />
+					</template>
+					<!-- If other fields of type text input and textarea -->
+					<template v-else>
+						<label :for="el.id" class="badge rounded-pill">{{ el.label }}</label>
+						<input v-if="key !== 'content'" :id="el.id" v-model.trim="formData[key]" :type="el.type"
+							:placeholder="el.placeholder" class="form-control" :class="{ 'invalid-input': errors[key] }"
+							:rows="key === 'content' ? 3 : null" required>
+						<textarea v-if="key === 'content'" :id="el.id" v-model.trim="formData[key]" :type="el.type"
+							:placeholder="el.placeholder" class="form-control" :class="{ 'invalid-input': errors[key] }"
+							:rows="key === 'content' ? 3 : null" required></textarea>
+					</template>
+					<!-- Box for single input's error message -->
+					<div class="invalid" v-if="errors[key]">
+						<p>{{ errors[key] }}</p>
 					</div>
-				</template>
-				<!-- Box for single input's error message -->
-				<div class="invalid" v-if="errors[key]">
-					<p> {{ errors[key] }} </p>
 				</div>
-			</div>
-			<!-- Submit button -->
-			<div class="buttons-wrapper text-center">
-				<button type="submit" class="btn btn-primary btn-submit mx-auto mt-4" :class="{ 'disabled': validated }">Invia
-					{{ formContent.toLowerCase() }}</button>
+
+				<!-- Submit button for review or message form-->
+				<div v-if="formContent === 'Messaggio' || formContent === 'Recensione'" class="buttons-wrapper text-center">
+					<button type="submit" class="btn btn-primary btn-submit mx-auto mt-4" :class="{ 'disabled': validated }">Invia
+						{{ formContent.toLowerCase() }}
+					</button>
+				</div>
+				<!-- Submit, reset buttons for registration or login -->
+				<div v-if="formContent === 'Registrazione'" class="buttons-wrapper mt-3">
+					<button type="submit" id="register-button" class="btn btn-primary btn-submit mx-auto"
+						:class="{ 'disabled': validated }">Registrati
+					</button>
+					<button type="button" id="reset-button" class="btn btn-warning ms-3" :class="{ 'disabled': validated }"
+						@click.prevent="resetForm()">Pulisci
+					</button>
+				</div>
 			</div>
 		</form>
 
@@ -248,13 +320,13 @@
 		width: 100%;
 		text-align: start;
 		animation: 0.6s ease-out 0.6s forwards fade;
-		opacity: 0;
+		opacity: 0 overflow;
 
 		label.badge.rounded-pill {
 			background-color: var(--color-tertiary);
 		}
 
-		input[type="input"].form-control,
+		input[type="text"].form-control,
 		textarea.form-control,
 		div.form-control {
 			border: 2px solid var(--color-tertiary);
@@ -264,6 +336,10 @@
 		/* Form error */
 		.invalid {
 			color: red;
+
+			p {
+				margin: 0;
+			}
 		}
 
 		.invalid-input {

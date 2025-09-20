@@ -65,8 +65,8 @@
 						placeholder: null
 					}
 				},
-				createMessageApiRoute: 'messages',
-				createReviewApiRoute: 'reviews',
+				messageApiRoute: 'messages',
+				reviewApiRoute: 'reviews',
 				currentFormType: null,
 				formTitle: '',
 				isCurrentFormShown: false,
@@ -197,8 +197,8 @@
 				if (this.currentFormType === 'ReviewForm') return this.reviewFormElements;
 			},
 			currentCreateResourceApiRoute() {
-				if (this.currentFormType === 'MessageForm') return this.createMessageApiRoute;
-				if (this.currentFormType === 'ReviewForm') return this.createReviewApiRoute;
+				if (this.currentFormType === 'MessageForm') return this.messageApiRoute;
+				if (this.currentFormType === 'ReviewForm') return this.reviewApiRoute;
 			},
 			isComponentPopUp() {
 				return !!this.containerHeight
