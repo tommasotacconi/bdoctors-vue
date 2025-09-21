@@ -31,6 +31,7 @@
 					.catch(err => {
 						console.error('ERROR IN GET /api/profiles: ' + err.response.data.message);
 						this.loaded = true;
+						if (err.response.status !== 401) this.store.isAuthenticated = true;
 					})
 					.finally(() => {
 						this.dashboardStore.isProfileRequestPending = false;

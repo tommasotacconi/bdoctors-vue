@@ -23,10 +23,10 @@
 						// this.$emit('userIconReady');
 						this.setProfilePhotoPath();
 					})
-				// .catch(err => {
-				// 	console.log('ERROR IN GET /api/profiles: ' + err.response.data.message);
-				// 	this.loaded = true;
-				// });
+					.catch(err => {
+						// 	console.log('ERROR IN GET /api/profiles: ' + err.response.data.message);
+						// 	this.loaded = true;
+					});
 			},
 			setProfilePhotoPath() {
 				// console.log('Evaluating whether to compute profilePhotoPath', '--- Parent:', this.parent);
