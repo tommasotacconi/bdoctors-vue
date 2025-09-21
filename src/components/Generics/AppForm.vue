@@ -230,9 +230,9 @@
 						<input v-if="key !== 'content'" :id="el.id" v-model.trim="formData[key]" :type="el.type"
 							:placeholder="el.placeholder" class="form-control" :class="{ 'invalid-input': errors[key] }"
 							:rows="key === 'content' ? 3 : null" required>
-						<textarea v-if="key === 'content'" :id="el.id" v-model.trim="formData[key]" :type="el.type"
-							:placeholder="el.placeholder" class="form-control" :class="{ 'invalid-input': errors[key] }"
-							:rows="key === 'content' ? 3 : null" required></textarea>
+						<textarea v-if="key === 'content'" :id="el.id" v-model.trim="formData[key]" :placeholder="el.placeholder"
+							class="form-control" :class="{ 'invalid-input': errors[key] }" :rows="key === 'content' ? 3 : null"
+							required></textarea>
 					</template>
 					<!-- Box for single input's error message -->
 					<div class="invalid" v-if="errors[key]">
@@ -320,16 +320,22 @@
 		width: 100%;
 		text-align: start;
 		animation: 0.6s ease-out 0.6s forwards fade;
-		opacity: 0 overflow;
+		opacity: 0;
 
 		label.badge.rounded-pill {
 			background-color: var(--color-tertiary);
 		}
 
 		input[type="text"].form-control,
+		input[type="email"],
 		textarea.form-control,
 		div.form-control {
 			border: 2px solid var(--color-tertiary);
+		}
+
+		input[type="text"].form-control,
+		input[type="email"] {
+			height: 3.2rem;
 		}
 
 

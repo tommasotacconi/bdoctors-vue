@@ -36,25 +36,24 @@
 				formElements: {
 					first_name: {
 						id: 'firstName',
-						type: 'input',
+						type: 'text',
 						label: 'Nome',
 						placeholder: 'Inserisci il tuo nome'
 					},
 					last_name: {
 						id: 'lastName',
-						type: 'input',
+						type: 'text',
 						label: 'Cognome',
 						placeholder: 'Inserisci il tuo cognome'
 					},
 					email: {
 						id: 'email',
-						type: 'input',
+						type: 'email',
 						label: 'Email',
 						placeholder: 'Inserisci il tuo indirizzo email'
 					},
 					content: {
 						id: undefined,
-						type: 'input',
 						label: undefined,
 						placeholder: 'Scrivi qui'
 					},
