@@ -22,12 +22,6 @@
 			}
 		},
 		methods: {
-			setNestedValue(obj, path, value) {
-				const keys = path.split('.');
-				const lastKey = keys.pop();
-				const parent = keys.reduce((current, key) => current[key], obj);
-				parent[lastKey] = value;
-			},
 			updateSpecs(specializations, reactiveObj, key) {
 				// Prepare a constant array result to insert ids value
 				const result = [];
@@ -58,9 +52,9 @@
 					const value = this.formData[data];
 					const label = this.elements[data].label;
 
-					if (!value || !value.length) {
-						if (data === 'content' || data === 'messageContent' || data === 'reviewContent') {
-							const msgAdaptedPart = data === 'messageContent' ? '' : 'la';
+					if (!value || value instanceof Array && !value.length) {
+						if (data === 'content') {
+							const msgAdaptedPart = label === 'Messaggio' ? '' : 'la';
 							this.errors[data] = `Inserisci il corpo del${msgAdaptedPart} ${label.toLowerCase()}`;
 						}
 						else if (data === 'vote') this.errors[data] = 'Inserisci un voto in stetoscopi da 1 a 5';
@@ -83,8 +77,8 @@
 					this.sendForm();
 				}
 
-				console.table({ 'Form\'s data': this.formData });
-				console.table({ 'form\'s errors': this.errors });
+				// console.table({ 'Form\'s data': this.formData });
+				// console.table({ 'Form\'s errors': this.errors });
 			},
 			resetForm() {
 				for (const key in this.formData) {
@@ -127,28 +121,21 @@
 
 				return result;
 			}
-			// [Symbol.iterator]() {
-			// 	let i = 0;
-			// 	return {
-			// 		next() {
-			// 			if (i < Object.keys(this).length) {
-			// 				return { value: this[Object.keys(this)[i++]], done: false }
-			// 			}
-			// 			return { value: undefined, done: true };
-			// 		},
-			// 	};
-			// }
 		},
 		computed: {
 			formContent() {
-				if (this.elements.content) return this.elements.content?.label;
+				if (this.elements.content) return this.elements.content.label;
 				else if (this.elements.firstName && this.elements.lastName) return 'Registrazione';
 			},
 			formContentSuffix() {
-				return this.elements.content?.id === 'message' ? 'o' : 'a';
+				const cont = this.formContent;
+				if (cont.search(/^(Messaggio|Recensione)$/) !== -1) return cont === 'Messaggio' ? 'o' : 'a';
+				else return cont === 'Accesso' ? 'o' : 'a';
 			},
 			formContentArticle() {
-				return this.elements.content?.id === 'message' ? 'il' : 'la';
+				const cont = this.formContent;
+				if (this.formContent.search(/^(Messaggio|Recensione)$/ !== -1)) return cont === 'Messaggio' ? 'il' : 'la';
+				else return cont === 'Accesso' ? 'il' : 'la';
 			},
 			yourFormContentSentence() {
 				if (this.formContent && this.formContentSuffix && this.formContentArticle) return `${this.formContentArticle[0].toUpperCase() + this.formContentArticle.slice(1)} tu${this.formContentSuffix} ${this.formContent.toLowerCase()}`;

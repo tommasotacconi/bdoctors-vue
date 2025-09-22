@@ -17,25 +17,6 @@
 	export default {
 		data() {
 			return {
-				errors: {
-					firstName: [],
-					lastName: [],
-					homeAddress: [],
-					specializations: [],
-					email: [],
-					password: [],
-					passwordConfirmation: [],
-				},
-				isValidated: false,
-				firstName: '',
-				lastName: '',
-				homeAddress: '',
-				specializations: [],
-				email: '',
-				password: '',
-				passwordConfirmation: '',
-				isAlertShown: false,
-				responseStatus: false,
 				/* List of all form elements */
 				formElements: {
 					firstName: new formField('first-name-input', 'text', 'Nome', '', 'col-md-6'),
@@ -49,6 +30,32 @@
 			}
 		},
 		methods: {
+			customValidation(formInstance) {
+				// Start validation
+				const data = formInstance.formData;
+				const elements = formInstance.elements;
+				const errors = formInstance.errors;
+
+				for (const field in data) {
+					const value = data[field];
+					const label = elements[field].label;
+
+					if ((field === 'firstName' || field === 'lastName') && value && (value.length < 2 || value.length > 50))
+						errors[field] = `Il ${label.toLowerCase()} può essere composto da 2 a 50 caratteri`;
+					if ((field === 'firstName' || field === 'lastName') && value.includes(' '))
+						errors[field] = `Il ${label.toLowerCase()} non può contenere spazi`;
+					if (field === 'homeAddress' && (value.length < 3 || value.length > 100))
+						errors[field] = "L'indirizzo di residenza può essere composto da 3 a 100 caratteri";
+					if (field === 'specializations_id' && !value.length) errors[field] = "Selezionare almeno una specializzazione";
+					if (field === 'email' && (value.length < 6 || value.length > 50))
+						errors[field] = "La email può essere composta da 6 a 50 caratteri";
+					if (field === 'password') {
+						if (value.includes(' ')) errors[field] = "La password non può contenere spazi";
+						if (value.length < 8) errors[field] = "La password può essere composta da minimo 8 caratteri";
+					}
+					if (field === 'pwConf' && !errors['password'] && value && value !== data['password']) errors[field] = "Le password non coincidono"
+				}
+			},
 		},
 		components: {
 			Multiselect,
