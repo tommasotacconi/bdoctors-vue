@@ -9,11 +9,7 @@
 
 <template>
 	<div class="page-content bg">
-		<RouterView v-slot="{ Component }">
-			<KeepAlive>
-				<component :is="Component"></component>
-			</KeepAlive>
-		</RouterView>
+		<RouterView />
 	</div>
 </template>
 

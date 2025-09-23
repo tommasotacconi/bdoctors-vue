@@ -39,9 +39,11 @@
 				// string in the profiles table's column photo
 				const photoPath = this.dashboardStore.profileDataGeneral.photo ?? this.profilePhotoPath;
 				// console.log('Photo path: ' + photoPath, '--- Parent: ' + this.parent);
-				if (!photoPath) {
-					this.getProfilePhoto();
-				} else {
+				if (photoPath === '') this.getProfilePhoto();
+				else if ((this.parent === 'AppHeader' || this.parent === 'HeaderDashboard') && photoPath === null) {
+					this.$emit('userIconReady');
+				}
+				else {
 					this.profilePhotoPath = this.getProfilePhotoPath(this.store.placeholderImg, photoPath, this.store.apiUri.slice(0, -4));
 					this.$emit('userIconReady');
 				}

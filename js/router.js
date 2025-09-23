@@ -12,9 +12,6 @@ import DashboardPage from '../src/pages/DashboardPage.vue';
 const routes = [
 	{ 
 		path: '/',
-		// Currently the only layout needed, so all the routes use it
-		// even when an header is not present (simply not inserted in the
-		// components property) 
 		component: WithHeaderLayout,
 		children: [
 			{
@@ -30,10 +27,8 @@ const routes = [
 				name: 'register',
 				component: RegisterPage,
 			},
-			// Path to all doctors with selected specialization id  
-			// { path: '/search/:searchId', component: AdvancedSearch, name: 'search' },
 			// Path to all doctors with selected specialization id and satisfing filter parameters
-			// `inputRating`, `:inputReviews`  
+			// 'rating' and 'reviewsNumber'  
 			{ path: '',
 				component: AdvancedSearchPage,
 				children: [
@@ -59,10 +54,10 @@ const routes = [
 		]
 	},
 	{
-		path: '',
+		path: '/utente',
 		component: OneComponentLayout,
 		children: [
-			{ path: '/utente/profilo',
+			{ path: 'profilo',
 				name: 'dashboard',
 				component: DashboardPage,
 			},
