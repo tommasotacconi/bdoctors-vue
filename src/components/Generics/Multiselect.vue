@@ -1,6 +1,7 @@
 <script>
 	import VueMultiselect from 'vue-multiselect';
 	import axios from 'axios';
+	import { store } from '../../../js/store';
 
 	export default {
 
@@ -8,6 +9,7 @@
 			return {
 				value: this.specializations,
 				options: [],
+				store
 			}
 		},
 		props: {
