@@ -8,7 +8,6 @@
 			return {
 				value: this.specializations,
 				options: [],
-				apiUrl: "http://127.0.0.1:8000/api/specializations"
 			}
 		},
 		props: {
@@ -22,7 +21,7 @@
 
 			// Get Specializations through API call
 			getSpecializations() {
-				axios.get(this.apiUrl)
+				axios.get(this.store.apiUrl)
 					.then(response => {
 						this.options = response.data.specializations;
 					})
@@ -53,8 +52,8 @@
 	<!--- @update:modelValue: on every change inside specializations array, this will update the parent's array through custom events -->
 	<div>
 		<VueMultiselect v-model="value" :options="options" :multiple="true" :close-on-select="false"
-			:clear-on-select="false" track-by="name" placeholder="Seleziona una o più specializzazioni"
-			:show-labels="true" @update:modelValue="sendValues" :custom-label="nameOnly">
+			:clear-on-select="false" track-by="name" placeholder="Seleziona una o più specializzazioni" :show-labels="true"
+			@update:modelValue="sendValues" :custom-label="nameOnly">
 		</VueMultiselect>
 	</div>
 </template>
