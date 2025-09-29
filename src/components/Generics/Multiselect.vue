@@ -21,7 +21,7 @@
 
 			// Get Specializations through API call
 			getSpecializations() {
-				axios.get(this.store.apiUrl)
+				axios.get(this.store.apiUri)
 					.then(response => {
 						this.options = response.data.specializations;
 					})
