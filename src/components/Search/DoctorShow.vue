@@ -345,371 +345,380 @@
 </template>
 
 <style lang="scss" scoped>
-	h1 {
-		color: var(--color-complementary);
-	}
-
-	h4 {
-		color: var(--color-primary);
-	}
-
-	h3 {
-		font-size: 1.2rem;
-	}
-
-	h5 {
-		margin: 0;
-		color: var(--color-complementary);
-	}
-
-	p {
-		margin: 0;
-	}
-
-	main.pop-up-main {
-		padding: 0;
-	}
-
-	main:not(.pop-up-main) {
-		height: 100%;
-		padding-bottom: 60px;
-		scroll-behavior: smooth;
-
-		overflow: hidden auto
-	}
-
-	/* Card edit*/
-	.card .card-header {
-		button.btn-close {
-			position: absolute;
-			--distance: 20px;
-			top: var(--distance);
-			right: var(--distance);
-		}
-	}
-
-	.img-doctor {
-		max-width: 30%;
-		flex-basis: 40%;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		padding-left: 20px;
-	}
-
-	.doctor-photo {
-		aspect-ratio: 1;
-		object-fit: cover;
-		object-position: center;
-	}
-
-	.card img {
-		width: 90%;
-		margin: 15px;
-		border-radius: 50%;
-	}
-
-	.card-header-title-section {
-		display: flex;
-		justify-content: center;
-		flex-direction: column;
-		flex-basis: 60%;
-		align-items: start;
-		padding: 20px;
-
-		& .address {
-			font-size: 1.1em;
-			color: var(--color-primary);
-
-			.fa-location-dot {
-				margin-right: 10px;
-			}
+	:deep() {
+		h1 {
+			color: var(--color-complementary);
 		}
 
-		& .specializations-list {
-			font-size: 1.3rem;
+		h4 {
 			color: var(--color-primary);
 		}
-	}
 
-
-	.card-body {
-		ul.ul-child-elements>* {
-			flex-basis: 100%;
-			min-height: 50px;
+		h3 {
+			font-size: 1.2rem;
 		}
 
-		.right-content {
-			h5 {
-				color: var(--color-tertiary);
+		h5 {
+			margin: 0;
+			color: var(--color-complementary);
+		}
+
+		p {
+			margin: 0;
+		}
+
+		main.pop-up-main {
+			padding: 0;
+		}
+
+		main:not(.pop-up-main) {
+			height: 100%;
+			padding-bottom: 60px;
+			scroll-behavior: smooth;
+
+			overflow: hidden auto
+		}
+
+		/* Card edit*/
+		.card .card-header {
+			button.btn-close {
+				position: absolute;
+				--distance: 20px;
+				top: var(--distance);
+				right: var(--distance);
 			}
-
-			.buttons-wrapper {
-				min-height: 50px;
-				position: relative;
-			}
-		}
-	}
-
-	.card-list-item {
-		border: 1px solid grey;
-		border-radius: 10px;
-		box-shadow: 0 8px 12px -3px var(--color-complementary);
-		padding: 10px;
-	}
-
-	.card-list-item h3 {
-		color: var(--color-primary);
-	}
-
-	.title-specializations ul {
-		text-align: start;
-		padding-left: 0;
-		list-style-type: none;
-		padding: 0 20px;
-		color: var(--color-primary);
-	}
-
-	ul {
-		text-align: start;
-		padding-left: 0;
-		list-style-type: none;
-	}
-
-	.btn {
-		background-color: var(--color-tertiary);
-
-		position: absolute;
-		left: 50%;
-		translate: -50% 0;
-
-		&:hover {
-			background-color: var(--color-primary);
 		}
 
-		span {
-			margin-right: 5px;
-			display: none;
-		}
-	}
-
-	/* Buttons animations */
-	.slide-up-enter-active,
-	.slide-up-leave-active {
-		transition: all 0.25s ease-out;
-	}
-
-	.slide-up-enter-from {
-		opacity: 0;
-		transform: translateY(30px);
-	}
-
-	.slide-up-leave-to {
-		opacity: 0;
-		transform: translateY(-30px);
-	}
-
-	/* Form entrance animation */
-	.form-frame {
-		animation: forwards move-up;
-	}
-
-	.v-enter-active {
-		animation: 1.2s ease-in move-up;
-	}
-
-
-	.edit-profile {
-		background-color: var(--color-secondary);
-		border-radius: 20px;
-		padding: 8px 15px;
-		text-decoration: none;
-		color: var(--color-primary);
-		font-weight: bold;
-		border: 1px solid var(--color-primary);
-
-		position: absolute;
-		bottom: 15px;
-		left: 50%;
-		translate: -50% 0;
-	}
-
-	/* Card create */
-	.card-create {
-		padding: 30px 20px;
-		display: flex;
-		flex-direction: column;
-		gap: 20px;
-		align-items: center;
-	}
-
-	.plus {
-		border: 1px solid white;
-		border-radius: 30px;
-		display: inline;
-		padding: 16px 26px;
-		color: lightgray;
-		background-color: white;
-		width: 80px;
-		font-size: 1.5rem;
-		font-weight: bold;
-	}
-
-	.create-profile-text {
-		opacity: 0.5;
-	}
-
-
-	/* Responsive */
-	@media (max-width: 576px) {
-		.container {
-			padding: 0 15px;
-			/* Adjust the container padding */
-		}
-
-		.card-header {
-			flex-direction: column;
-			/* Stack the content vertically */
+		.img-doctor {
+			max-width: 30%;
+			flex-basis: 40%;
+			display: flex;
 			align-items: center;
-			/* Center align elements */
+			justify-content: center;
+			padding-left: 20px;
+		}
+
+		.doctor-photo {
+			aspect-ratio: 1;
+			object-fit: cover;
+			object-position: center;
+		}
+
+		.card img {
+			width: 90%;
+			margin: 15px;
+			border-radius: 50%;
 		}
 
 		.card-header-title-section {
-			text-align: center;
-			/* Center the title and text */
+			display: flex;
+			justify-content: center;
+			flex-direction: column;
+			flex-basis: 60%;
+			align-items: start;
+			padding: 20px;
+
+			& .address {
+				font-size: 1.1em;
+				color: var(--color-primary);
+
+				.fa-location-dot {
+					margin-right: 10px;
+				}
+			}
+
+			& .specializations-list {
+				font-size: 1.3rem;
+				color: var(--color-primary);
+			}
 		}
 
-		.img-doctor img {
-			width: 100%;
-			min-width: 250px;
-		}
 
 		.card-body {
-			flex-direction: column;
-			/* Stack content vertically */
-			padding-top: 20px;
+			ul.ul-child-elements>* {
+				flex-basis: 100%;
+				min-height: 50px;
+			}
+
+			.right-content {
+				h5 {
+					color: var(--color-tertiary);
+				}
+
+				.buttons-wrapper {
+					min-height: 50px;
+					position: relative;
+				}
+			}
 		}
 
-		.left-content,
-		.right-content {
-			width: 100%;
-			/* Full width for each section */
-			padding: 15px 0;
-		}
-
-		.form-frame {
+		.card-list-item {
+			border: 1px solid grey;
+			border-radius: 10px;
+			box-shadow: 0 8px 12px -3px var(--color-complementary);
 			padding: 10px;
 		}
 
-		.votes input {
-			width: 20px;
-			/* Smaller radio buttons */
-			height: 20px;
+		.card-list-item h3 {
+			color: var(--color-primary);
 		}
 
-		.votes label {
-			font-size: 14px;
-			/* Reduce font size */
+		.title-specializations ul {
+			text-align: start;
+			padding-left: 0;
+			list-style-type: none;
+			padding: 0 20px;
+			color: var(--color-primary);
 		}
 
-		.btn-submit {
-			width: 100%;
-			/* Full width button */
+		ul {
+			text-align: start;
+			padding-left: 0;
+			list-style-type: none;
 		}
 
-		.specializations-list {
-			display: block;
-			margin-top: 10px;
+		.btn {
+			background-color: var(--color-tertiary);
+
+			position: absolute;
+			left: 50%;
+			translate: -50% 0;
+
+			&:hover {
+				background-color: var(--color-primary);
+			}
+
+			span {
+				margin-right: 5px;
+				display: none;
+			}
 		}
 
-		.specializations-list-item {
-			margin-bottom: 5px;
-		}
-	}
-
-	@media (min-width: 768px) and (max-width: 991.98px) {
-		.container {
-			padding: 0 30px;
+		/* Buttons animations */
+		.slide-up-enter-active,
+		.slide-up-leave-active {
+			transition: all 0.25s ease-out;
 		}
 
-		.card-header {
-			flex-direction: row;
+		.slide-up-enter-from {
+			opacity: 0;
+			transform: translateY(30px);
 		}
 
-		.card-body {
-			flex-direction: row;
+		.slide-up-leave-to {
+			opacity: 0;
+			transform: translateY(-30px);
 		}
 
-		.left-content,
-		.right-content {
-			width: 48%;
-			padding-right: 15px;
+		/* Form entrance animation */
+		.form-frame {
+			animation: forwards move-up;
 		}
 
-		.form-frame form .form-control {
-			width: 100%;
+		.v-enter-active {
+			animation: 1.2s ease-in move-up;
 		}
 
-		.votes input {
-			margin-right: 5px;
-		}
-	}
 
-	/* Desktop */
-	@media (min-width: 992px) and (max-width: 1200px) {
-		.container {
-			padding: 0 50px;
-		}
+		.edit-profile {
+			background-color: var(--color-secondary);
+			border-radius: 20px;
+			padding: 8px 15px;
+			text-decoration: none;
+			color: var(--color-primary);
+			font-weight: bold;
+			border: 1px solid var(--color-primary);
 
-		.card-header {
-			flex-direction: row;
-		}
-
-		.card-body {
-			flex-direction: row;
+			position: absolute;
+			bottom: 15px;
+			left: 50%;
+			translate: -50% 0;
 		}
 
-		.left-content,
-		.right-content {
-			width: 48%;
-			padding-right: 15px;
+		/* Card create */
+		.card-create {
+			padding: 30px 20px;
+			display: flex;
+			flex-direction: column;
+			gap: 20px;
+			align-items: center;
 		}
 
-		.form-frame form .form-control {
-			width: 100%;
+		.plus {
+			border: 1px solid white;
+			border-radius: 30px;
+			display: inline;
+			padding: 16px 26px;
+			color: lightgray;
+			background-color: white;
+			width: 80px;
+			font-size: 1.5rem;
+			font-weight: bold;
 		}
 
-		.votes input {
-			margin-right: 5px;
-		}
-	}
-
-	/* Large Desktop */
-	@media (min-width: 1200px) {
-		.container {
-			padding: 0 100px;
+		.create-profile-text {
+			opacity: 0.5;
 		}
 
-		.card-header {
-			flex-direction: row;
+
+		/* Responsive */
+		@media (max-width: 576px) {
+			.container {
+				padding: 0 15px;
+				/* Adjust the container padding */
+			}
+
+			.card.pop-up-card {
+				.card-header {
+					flex-direction: column;
+					/* Stack the content vertically */
+					flex-wrap: nowrap;
+					align-items: center;
+					/* Center align elements */
+
+					.img-doctor {
+						padding: 0;
+					}
+				}
+
+				.card-header-title-section {
+					text-align: center;
+					/* Center the title and text */
+				}
+
+				.img-doctor img {
+					width: 100%;
+					min-width: 250px;
+				}
+
+				.card-body {
+					flex-direction: column;
+					/* Stack content vertically */
+					padding-top: 20px;
+				}
+
+				.left-content,
+				.right-content {
+					width: 100%;
+					/* Full width for each section */
+					padding: 15px 0;
+				}
+
+				.form-frame {
+					padding: 10px;
+				}
+
+				.votes input {
+					width: 20px;
+					/* Smaller radio buttons */
+					height: 20px;
+				}
+
+				.votes label {
+					font-size: 14px;
+					/* Reduce font size */
+				}
+
+				.btn-submit {
+					width: 100%;
+					/* Full width button */
+				}
+
+				.specializations-list {
+					display: block;
+					margin-top: 10px;
+				}
+
+				.specializations-list-item {
+					margin-bottom: 5px;
+				}
+			}
 		}
 
-		.card-body {
-			flex-direction: row;
+		@media (min-width: 768px) and (max-width: 991.98px) {
+			.container {
+				padding: 0 30px;
+			}
+
+			.card-header {
+				flex-direction: row;
+			}
+
+			.card-body {
+				flex-direction: row;
+			}
+
+			.left-content,
+			.right-content {
+				width: 48%;
+				padding-right: 15px;
+			}
+
+			.form-frame form .form-control {
+				width: 100%;
+			}
+
+			.votes input {
+				margin-right: 5px;
+			}
 		}
 
-		.left-content,
-		.right-content {
-			width: 48%;
-			padding-right: 30px;
+		/* Desktop */
+		@media (min-width: 992px) and (max-width: 1200px) {
+			.container {
+				padding: 0 50px;
+			}
+
+			.card-header {
+				flex-direction: row;
+			}
+
+			.card-body {
+				flex-direction: row;
+			}
+
+			.left-content,
+			.right-content {
+				width: 48%;
+				padding-right: 15px;
+			}
+
+			.form-frame form .form-control {
+				width: 100%;
+			}
+
+			.votes input {
+				margin-right: 5px;
+			}
 		}
 
-		.form-frame form .form-control {
-			width: 100%;
-		}
+		/* Large Desktop */
+		@media (min-width: 1200px) {
+			.container {
+				padding: 0 100px;
+			}
 
-		.votes input {
-			margin-right: 10px;
+			.card-header {
+				flex-direction: row;
+			}
+
+			.card-body {
+				flex-direction: row;
+			}
+
+			.left-content,
+			.right-content {
+				width: 48%;
+				padding-right: 30px;
+			}
+
+			.form-frame form .form-control {
+				width: 100%;
+			}
+
+			.votes input {
+				margin-right: 10px;
+			}
 		}
 	}
 </style>
