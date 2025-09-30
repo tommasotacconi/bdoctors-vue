@@ -230,8 +230,9 @@
 				v-else-if="retrievedProfile && Object.keys(retrievedProfile).length && retrievedProfile.constructor === Object">
 				<template #card-header>
 					<div class="img-doctor">
-						<img :src="getProfilePhotoPath(this.store.placeholderImg, retrievedProfile.photo)" class="doctor-photo"
-							alt="doctor photo">
+						<img
+							:src="getProfilePhotoPath(this.store.placeholderImg, retrievedProfile.photo, this.store.apiUri.slice(0, -4))"
+							class="doctor-photo" alt="doctor photo">
 					</div>
 					<div class="card-header-title-section">
 						<h1 class="card-title py-3">
