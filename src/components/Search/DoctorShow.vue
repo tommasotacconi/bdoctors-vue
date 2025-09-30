@@ -271,12 +271,21 @@
 									v-if="info === 'specializations' ? otherDoctorSpecializations?.length : true">
 									<h3>{{ translation[0].toUpperCase() + translation.slice(1) }}</h3>
 									<div class="data-element" :class="[info + '-element']">
-										<template v-if="info !== 'specializations'">{{ retrievedProfile[info] }}</template>
-										<template v-else>
+										<template v-if="info === 'specializations'">
 											<ul class="specializations-list">
 												<li class="specializations-list-item" v-for="specialization in otherDoctorSpecializations">
 													{{ specialization.name }}</li>
 											</ul>
+										</template>
+										<template v-else-if="info === 'curriculum' && retrievedProfile[info]">
+											<!-- Show a link depending on curriculum string value length. //Could be used in future for curriculum inserted as plain text -->
+											<span v-if="retrievedProfile[info].length < 100">Visualizza il <a
+													:href="getFilePath('storage/' + retrievedProfile[info], store.apiUri.slice(0, -3))"
+													target="_blank">curriculum</a></span>
+											<span v-else>{{ retrievedProfile[info] }}</span>
+										</template>
+										<template v-else>
+											{{ retrievedProfile[info] }}
 										</template>
 
 									</div>
