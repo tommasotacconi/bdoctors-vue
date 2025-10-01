@@ -2,6 +2,7 @@
 	import axios from 'axios';
 	import { RouterLink } from 'vue-router';
 	import { store } from '../../../js/store.js';
+	import { useGetPathFunctions } from '../../../js/composables/useGetPathFunctions.js';
 
 
 	export default {
@@ -49,6 +50,11 @@
 				console.log(store.searchedSpecialization)
 			},
 		},
+		setup() {
+			const { getFilePath, getProfilePhotoPath } = useGetPathFunctions();
+
+			return { getFilePath, getProfilePhotoPath };
+		},
 		mounted() {
 			this.getSponsoredProfiles();
 		},
@@ -63,11 +69,7 @@
 		<div class="sponsored-card-container">
 			<div class="card card-sponsored d-flex" style="width: 18rem;" v-for="(sponsored, index) in sponsoredProfiles"
 				@click="goToShowPage(sponsored, index)">
-				<!-- <img
-					src="https://st4.depositphotos.com/4329009/19956/v/450/depositphotos_199564354-stock-illustration-creative-vector-illustration-default-avatar.jpg"
-					class="card-img-top" alt="..."> -->
-				<img
-					:src="sponsored.photo ?? 'https://st4.depositphotos.com/4329009/19956/v/450/depositphotos_199564354-stock-illustration-creative-vector-illustration-default-avatar.jpg'"
+				<img :src="getProfilePhotoPath(this.store.placeholderImg, sponsored.photo, this.store.apiUri.slice(0, -4))"
 					:alt="'foto profilo di' + sponsored.user.first_name + sponsored.user.last_name">
 				<div class="card-body">
 					<h5 class="card-title">{{ sponsored.user.first_name }} {{ sponsored.user.last_name }}</h5>
