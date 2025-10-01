@@ -56,8 +56,7 @@
 			},
 			filterDoctors(options) {
 				this.isFiltering = true;
-				const { byVotes } = options;
-				const { byReviewsNumber } = options;
+				const { byVotes, byReviewsNumber } = options;
 
 				if (byVotes && this.rating) {
 					const param = 'avg_vote';
@@ -70,7 +69,12 @@
 				}
 			},
 			filterFunction(filteringParam, comparisonValue) {
-				const result = this.doctors.filter(({ [filteringParam]: param }) => param >= comparisonValue);
+				// Filter out doctors with a filter value not valid, i.e. equal to null for avg_vote or 0 for reviews
+				const nonFilterableDoctors = this.doctors.filter(({ [filteringParam]: param }) => param === null || param === 0);
+				const result = this.doctors.filter(({ [filteringParam]: param, user: { email } }) => {
+					if (nonFilterableDoctors.find(({ user: { email: comparisonEmail } }) => email === comparisonEmail)) return true;
+					return param >= comparisonValue
+				});
 
 				return result;
 			},
