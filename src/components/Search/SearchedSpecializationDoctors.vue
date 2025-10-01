@@ -207,7 +207,8 @@
 			<div class="doctors-list" v-if="isFiltering ? filteredDoctors.length : doctors.length">
 				<div class="doctor-card" v-for="(doctorProfile, index) in (isFiltering ? filteredDoctors : doctors)"
 					@click="goToShowPage(doctorProfile, index)" :key="index">
-					<img class="doctor-photo" :src="getProfilePhotoPath(this.store.placeholderImg, doctorProfile.photo)"
+					<img class="doctor-photo"
+						:src="getProfilePhotoPath(this.store.placeholderImg, doctorProfile.photo, store.apiUri.slice(0, -4))"
 						alt="doctor photo">
 					<section class="doctor-information">
 						<h5 class="doctor-name">
