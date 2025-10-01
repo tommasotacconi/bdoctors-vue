@@ -105,7 +105,8 @@
 					this.doctorInfo.last_name = lastName;
 					// Match homonymous id
 					re = /\d+/g;
-					this.doctorInfo.homonymous_id = name.match(re)?.[0];
+					const homId = name.match(re)?.[0];
+					if (homId) this.doctorInfo.homonymous_id = homId;
 
 					this.getProfileData();
 				}
