@@ -135,12 +135,6 @@
 			border-width: 2px;
 		}
 
-		.invalid-element,
-		div#multiselect-container .specializations-input.invalid-element {
-			color: #e4005b;
-			border-color: currentColor;
-		}
-
 		div:has(> .specializations-multiselect) {
 			height: 10rem;
 			overflow: clip;
@@ -152,21 +146,12 @@
 			}
 
 			.specializations-multiselect {
-				border: 2px solid #65B0FF;
+				border: 2px solid var(--color-secondary);
 				border-radius: 7px;
 			}
-		}
 
-		.btn-warning {
-			color: #fff;
-			background-color: #ca9400;
-		}
-
-		#register-button {
-			background-color: #65B0FF;
-
-			&:hover {
-				background-color: #0E395D;
+			.specializations-multiselect.invalid-input {
+				border-color: var(--color-error);
 			}
 		}
 	}

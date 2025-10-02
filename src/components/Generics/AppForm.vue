@@ -291,12 +291,6 @@
 	}
 
 	.btn {
-		background-color: var(--color-tertiary);
-
-		&:hover {
-			background-color: var(--color-primary);
-		}
-
 		span {
 			margin-right: 5px;
 			display: none;
@@ -328,7 +322,7 @@
 
 		/* Form error */
 		.invalid {
-			color: red;
+			color: var(--color-error);
 
 			p {
 				margin: 0;
