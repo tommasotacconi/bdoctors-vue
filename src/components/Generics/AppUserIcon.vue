@@ -14,7 +14,7 @@
 		},
 		methods: {
 			getProfilePhoto() {
-				// console.log('Calling api for profilePhoto');
+				// console.log('calling api for profilePhoto');
 				axios.get(this.store.apiUri + 'profiles/authenticated', {
 					withCredentials: true,
 				})
@@ -24,8 +24,7 @@
 						this.setProfilePhotoPath();
 					})
 					.catch(err => {
-						// 	console.log('ERROR IN GET /api/profiles: ' + err.response.data.message);
-						// 	this.loaded = true;
+						// console.log('error GET /api/profiles: ' + err.response.data.message);
 					});
 			},
 			setProfilePhotoPath() {

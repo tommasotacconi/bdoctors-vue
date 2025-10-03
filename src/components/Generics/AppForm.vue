@@ -96,19 +96,18 @@
 				this.sent = null;
 				// Convert to snake_case data
 				const { pwConf, ...data } = this.camelToSnake(this.formData);
-				console.log(data);
+				// console.log(data);
 				axios.post(this.store.apiUri + this.apiRoute, {
 					doctor_details: this.doctorInfo,
 					...data,
 				})
 					.then(response => {
-						// console.log('Message sent.', response.data);
+						// console.log('message sent.', response.data);
 						this.sent = true;
 						this.resetForm();
 					})
 					.catch(err => {
-						// handle error
-						console.log(err.response.data);
+						// console.log(err.response.data);
 						this.sent = false;
 					})
 			},
@@ -177,12 +176,7 @@
 		},
 		created() {
 			this.createFormData();
-			console.log('Created AppForm');
 		},
-		mounted() {
-			console.log('Mounted AppForm');
-		}
-
 	}
 </script>
 

@@ -35,8 +35,7 @@
 
 					})
 					.catch(function (error) {
-						// handle error
-						console.log(error);
+						// console.log(error);
 					})
 					.finally(() => {
 						this.loaded = true;

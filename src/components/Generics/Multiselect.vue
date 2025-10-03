@@ -27,9 +27,8 @@
 					.then(response => {
 						this.options = response.data.specializations;
 					})
-					.catch(function (error) {
-						// handle error
-						console.log(error);
+					.catch(function (err) {
+						// console.log('multiselect\'s error GET /api/specialization: ', err);
 					});
 			},
 

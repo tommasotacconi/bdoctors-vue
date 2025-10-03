@@ -27,15 +27,13 @@
 				})
 					.then(response => {
 						const sponsored = response.data.paginated_profiles.data;
-						console.log(sponsored);
 						this.sponsoredProfiles.push(...sponsored);
 						this.totalSponsoredProfiles = response.data.paginated_profiles.total;
 
 						this.$emit('loadedSponsoredProfiles');
 					})
-					.catch(function (error) {
-						// handle error
-						console.log(error);
+					.catch(function (err) {
+						// console.log('error GET /api/sponsorships/sponsored: ', err);
 					})
 
 				// Update next requested page
@@ -46,8 +44,8 @@
 				let completeName = doctorProfile.user.first_name + '-' + doctorProfile.user.last_name;
 				if (doctorProfile.user.homonymous_id !== null) completeName += '-' + doctorProfile.user.homonymous_id;
 				this.$router.push({ name: 'search', params: { name: completeName } })
-				console.log('Doctor position inside homepage ', index);
-				console.log(store.searchedSpecialization)
+				// console.log('doctor position inside homepage ', index);
+				// console.log(store.searchedSpecialization)
 			},
 		},
 		setup() {

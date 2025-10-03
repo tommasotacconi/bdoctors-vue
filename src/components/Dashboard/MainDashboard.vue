@@ -31,9 +31,7 @@
 						this.dashboardStore.profileMessages = messages;
 					})
 					.catch(function (err) {
-						// handle error
-						console.log('ERROR in GET /api/messages: ' + err.response.data.message);
-
+						// console.log(err);
 					})
 			},
 			getApiReviewsWithVotes() {
