@@ -46,14 +46,17 @@
 						errors[field] = `Il ${label.toLowerCase()} non può contenere spazi`;
 					if (field === 'homeAddress' && (value.length < 3 || value.length > 100))
 						errors[field] = "L'indirizzo di residenza può essere composto da 3 a 100 caratteri";
-					if (field === 'specializations_id' && !value.length) errors[field] = "Selezionare almeno una specializzazione";
+					if (field === 'specializationsId' && !value.length) errors[field] = "Selezionare almeno una specializzazione";
 					if (field === 'email' && (value.length < 6 || value.length > 50))
 						errors[field] = "La email può essere composta da 6 a 50 caratteri";
 					if (field === 'password') {
 						if (value.includes(' ')) errors[field] = "La password non può contenere spazi";
 						if (value.length < 8) errors[field] = "La password può essere composta da minimo 8 caratteri";
 					}
-					if (field === 'pwConf' && !errors['password'] && value && value !== data['password']) errors[field] = "Le password non coincidono"
+					if (field === 'pwConf') {
+						if (!errors['password'] && value && value !== data['password']) errors[field] = "Le password non coincidono";
+						else errors[field] = "";
+					}
 				}
 			},
 		},
@@ -135,12 +138,6 @@
 			border-width: 2px;
 		}
 
-		.invalid-element,
-		div#multiselect-container .specializations-input.invalid-element {
-			color: #e4005b;
-			border-color: currentColor;
-		}
-
 		div:has(> .specializations-multiselect) {
 			height: 10rem;
 			overflow: clip;
@@ -152,21 +149,12 @@
 			}
 
 			.specializations-multiselect {
-				border: 2px solid #65B0FF;
+				border: 2px solid var(--color-secondary);
 				border-radius: 7px;
 			}
-		}
 
-		.btn-warning {
-			color: #fff;
-			background-color: #ca9400;
-		}
-
-		#register-button {
-			background-color: #65B0FF;
-
-			&:hover {
-				background-color: #0E395D;
+			.specializations-multiselect.invalid-input {
+				border-color: var(--color-error);
 			}
 		}
 	}

@@ -125,12 +125,7 @@
 
 	#login-button {
 		width: calc(100% - 24px);
-		background-color: #65B0FF;
 		position: relative;
-
-		&:hover {
-			background-color: #0E395D;
-		}
 	}
 
 	#login-button.shaking-animation {
@@ -174,7 +169,7 @@
 	}
 
 	button .repositioned-loader {
-		width: 25px;
+		width: 24px;
 		position: static;
 		translate: none;
 

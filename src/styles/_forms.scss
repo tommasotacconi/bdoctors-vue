@@ -1,0 +1,9 @@
+form {
+	input.invalid-input.form-control {
+		&[type="text"],
+		&[type="password"],
+		&[type="email"] {
+			border-color: var(--color-error);
+		}
+	}	
+}
