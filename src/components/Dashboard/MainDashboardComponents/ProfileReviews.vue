@@ -29,7 +29,7 @@
 						let totalNumberVote = 0
 						for (let i = 0; i < this.reviewsProfile.length; i++) {
 							let review = this.reviewsProfile[i]
-							totalNumberVote += review.votes
+							totalNumberVote += review.vote
 						}
 						this.averageVote = Math.round(totalNumberVote / this.reviewsProfile.length)
 
@@ -99,7 +99,7 @@
 					<div class="card-body-list">
 						<ul class="list-general" v-for="(review, index) in reviewsProfile" @click="selectReview(index)">
 							<li class="list-date">{{ getNormalFormatHourDate(index) }}</li>
-							<li class="list-vote"><i class="fa-solid fa-stethoscope" v-for="star in review.votes"></i>
+							<li class="list-vote"><i class="fa-solid fa-stethoscope" v-for="star in review.vote"></i>
 							</li>
 							<!-- <li class="list-email">{{ review.email }}</li> -->
 							<li class="list-name">{{ review.first_name }} {{ review.last_name }}</li>
@@ -115,7 +115,7 @@
 						<div class="star">
 							<strong>Voto: </strong>
 							<span>
-								<i class="fa-solid fa-stethoscope" v-for="star in reviewSelected.votes"></i>
+								<i class="fa-solid fa-stethoscope" v-for="star in reviewSelected.vote"></i>
 							</span>
 						</div>
 					</div>
@@ -184,33 +184,34 @@
 	.reviews-list-card {
 		border: 3px solid var(--color-complementary);
 		border-radius: 15px;
+		backdrop-filter: blur(3px);
 
 		overflow: hidden;
 	}
 
 	.card-inbox {
 		height: 300px;
-		margin: 5px 0;
 
 		overflow: auto;
 	}
 
 	.card-header-title {
 		padding: 10px 15px;
-		margin-bottom: 10px;
+		margin-bottom: 20px;
+		border-radius: 12px;
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
 		position: sticky;
 		top: 0;
 		z-index: 1;
-		background-color: white;
+		background-color: var(--color-secondary);
 	}
 
 	.reviews-number,
 	.avg-vote-number {
 		border-radius: 20px;
-		border: 3px dashed var(--color-secondary);
+		border: 3px solid var(--color-complementary);
 		padding: 8px 15px;
 		background-color: var(--color-secondary);
 		color: white;
@@ -274,6 +275,7 @@
 		border: 3px solid var(--color-complementary);
 		border-radius: 20px;
 		padding: 15px;
+		backdrop-filter: blur(3px);
 	}
 
 	.card-header {

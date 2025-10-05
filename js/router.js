@@ -5,63 +5,59 @@ import HomepagePage from '../src/pages/HomepagePage.vue';
 import RegisterPage from '../src/pages/RegisterPage.vue';
 import LoginPage from '../src/pages/LoginPage.vue';
 import AdvancedSearchPage from '../src/pages/AdvancedSearchPage.vue';
-import SearchedDoctor from '../src/components/Search/SearchedDoctor.vue';
+import SearchedSpecializationDoctors from '../src/components/Search/SearchedSpecializationDoctors.vue';
 import DoctorShow from '../src/components/Search/DoctorShow.vue';
 import DashboardPage from '../src/pages/DashboardPage.vue';
 
 const routes = [
 	{ 
 		path: '/',
-		// Currently the only layout needed, so all the routes use it
-		// even when an header is not present (simply not inserted in the
-		// components property) 
 		component: WithHeaderLayout,
 		children: [
 			{
-				path: '',
+				path: 'inizia-ricerca',
 				name: 'homepage',
 				component: HomepagePage,
 			},
-			{ path: 'user/login',
+			{ path: 'utente/accesso',
 				name: 'login',
 				component: LoginPage,
 			},
-			{ path: 'user/register',
+			{ path: 'utente/registrazione',
 				name: 'register',
 				component: RegisterPage,
 			},
-			// Path to all doctors with selected specialization id  
-			// { path: '/search/:searchId', component: AdvancedSearch, name: 'search' },
 			// Path to all doctors with selected specialization id and satisfing filter parameters
-			// `inputRating`, `:inputReviews`  
+			// 'rating' and 'reviewsNumber'  
 			{ path: '',
 				component: AdvancedSearchPage,
 				children: [
 					{
-						path: '/:specialization',
-						name: 'search',
-						component: SearchedDoctor
+						path: ':specialization',
+						name: 'specializationDoctors',
+						component: SearchedSpecializationDoctors,
+						children: [
+							{
+								// Path to doctor, within specialization
+								path: ':name',
+								name: 'specializationDoctors.show',
+								component: DoctorShow
+							}
+						]
 					},
-					{
-						path: '/:specialization/:searchId/:nameId/testroute',
-						name: 'search.show',
-						component: DoctorShow
-					}
 				]
 			},
-			// Path to doctor, within specialization id, of doctord_id selected (first id for specialization
-			// second for doctor)
-			{ path: '/search/:searchId/:nameId',
-				name: 'search.show',
+			{ path: '/cerca/:name',
+				name: 'search',
 				component: DoctorShow,
 			},
 		]
 	},
 	{
-		path: '/',
+		path: '/utente',
 		component: OneComponentLayout,
 		children: [
-			{ path: 'user',
+			{ path: 'profilo',
 				name: 'dashboard',
 				component: DashboardPage,
 			},

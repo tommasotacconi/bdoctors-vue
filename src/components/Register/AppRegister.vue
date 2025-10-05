@@ -2,113 +2,68 @@
 	import axios from 'axios';
 	import Multiselect from '../Generics/Multiselect.vue';
 	import AppAlert from '../Generics/AppAlert.vue'
+	import AppForm from '../Generics/AppForm.vue';
+
+	class formField {
+		constructor(id, type, label, placeholder = undefined, wrapperStyle = undefined) {
+			this.id = id,
+				this.type = type,
+				this.label = label,
+				this.placeholder = placeholder,
+				this.wrapperStyle = wrapperStyle
+		}
+	}
 
 	export default {
 		data() {
 			return {
-				errors: {
-					firstName: [],
-					lastName: [],
-					homeAddress: [],
-					specializations: [],
-					email: [],
-					password: [],
-					passwordConfirmation: [],
-				},
-				isValidated: false,
-				firstName: '',
-				lastName: '',
-				homeAddress: '',
-				specializations: [],
-				email: '',
-				password: '',
-				passwordConfirmation: '',
-				isAlertShown: false,
-				responseStatus: false,
+				/* List of all form elements */
+				formElements: {
+					firstName: new formField('first-name-input', 'text', 'Nome', '', 'col-md-6'),
+					lastName: new formField('last-name-input', 'text', 'Cognome', '', 'col-md-6'),
+					homeAddress: new formField('home-address-input', 'text', 'Indirizzo di residenza'),
+					specializationsId: new formField('specializations-input', 'multiselect', 'Specializzazioni', 'Seleziona una o più specializzazioni'),
+					email: new formField('email-input', 'email', 'Email'),
+					password: new formField('password-input', 'password', 'Password'),
+					pwConf: new formField('password-conf-input', 'password', 'Conferma password')
+				}
 			}
 		},
 		methods: {
-			updateSpecs(specializations) {
-				// Prepare a constant array result to insert ids value
-				const result = [];
-				// Insert ids taken from specializations parameter in reactive variable specializations, property of errors 
-				for (let i = 0; i < specializations.length; i++) {
-					result.push(specializations[i].id);
-				}
-				this.specializations = result;
-				console.log('---current specializations---', this.specializations);
-			},
-			checkEmailValidity(email) {
-				const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-				return re.test(email);
-			},
-			checkFormValidity() {
-				// Subscribe errors object with an empty one, to be ready for a next validation
-				const allKeys = Object.keys(this.errors);
-				for (let i = 0; i < allKeys.length; i++) {
-					this.errors[allKeys[i]] = [];
-				}
+			customValidation(formInstance) {
 				// Start validation
-				if (this.firstName.length < 2 || this.firstName > 50) this.errors.firstName.push("Il nome può essere composto da 2 a 50 caratteri.");
-				if (this.firstName.includes(' ')) this.errors.firstName.push("Rimuovere gli spazi.");
-				if (this.lastName.length < 2 || this.lastName > 50) this.errors.lastName.push("Il cognome può essere composto da 2 a 50 caratteri.");
-				if (this.lastName.includes(' ')) this.errors.lastName.push("Rimuovere gli spazi.");
-				if (this.homeAddress.length < 3 || this.homeAddress > 100) this.errors.homeAddress.push("L'indirizzo di residenza può essere composto da 3 a 100 caratteri.");
-				if (!this.specializations.length) this.errors.specializations.push("Selezionare almeno una specializzazione.");
-				if (this.email.length < 6 || this.email.length > 50) this.errors.email.push("La email può essere composta da 6 a 50 caratteri.");
-				if (!this.checkEmailValidity(this.email)) this.errors.email.push("La email non ha un formato valido.");
-				if (this.password.includes(' ')) this.errors.password.push("Rimuovere gli spazi.");
-				if (this.password.length < 8) this.errors.password.push("La password può essere composta da minimo 8 caratteri.");
-				if (this.password !== this.passwordConfirmation) this.errors.passwordConfirmation.push("Le password non coincidono.");
-				// Declare form validated by means of reactive variable 'isValidated'
-				this.isValidated = true;
-				// Check if the errors object is still empty
-				for (let i = 0; i < allKeys.length; i++) {
-					if (this.errors[allKeys[i]].length) return false;
-				}
-				return true
-			},
-			resetForm() {
-				this.firstName = [];
-				this.lastName = [];
-				this.homeAddress = [];
-				this.specializations = [];
-				this.email = [];
-				this.password = [];
-				this.passwordConfirmation = [];
-			},
-			sendRegistrationData() {
-				// Reset alert to hidden state
-				this.isAlertShown = false;
-				// Runs the validation to control if it can move forward
-				if (!this.checkFormValidity()) return
-				// Makes the call
-				axios.post('http://127.0.0.1:8000/api/register', {
-					first_name: this.firstName,
-					last_name: this.lastName,
-					home_address: this.homeAddress,
-					specialization_id: this.specializations,
-					email: this.email,
-					password: this.password,
-					password_confirmation: this.passwordConfirmation
-				})
-					.then(response => {
-						console.log(response);
-						this.responseStatus = true;
-						this.isAlertShown = true;
-						this.$router.push('/user/login')
+				const data = formInstance.formData;
+				const elements = formInstance.elements;
+				const errors = formInstance.errors;
 
-					})
-					.catch(error => {
-						console.log(error);
-						// Trigger the alert by variable isAlertShown
-						this.isAlertShown = true;
-					});
+				for (const field in data) {
+					const value = data[field];
+					const label = elements[field].label;
+
+					if ((field === 'firstName' || field === 'lastName') && value && (value.length < 2 || value.length > 50))
+						errors[field] = `Il ${label.toLowerCase()} può essere composto da 2 a 50 caratteri`;
+					if ((field === 'firstName' || field === 'lastName') && value.includes(' '))
+						errors[field] = `Il ${label.toLowerCase()} non può contenere spazi`;
+					if (field === 'homeAddress' && (value.length < 3 || value.length > 100))
+						errors[field] = "L'indirizzo di residenza può essere composto da 3 a 100 caratteri";
+					if (field === 'specializationsId' && !value.length) errors[field] = "Selezionare almeno una specializzazione";
+					if (field === 'email' && (value.length < 6 || value.length > 50))
+						errors[field] = "La email può essere composta da 6 a 50 caratteri";
+					if (field === 'password') {
+						if (value.includes(' ')) errors[field] = "La password non può contenere spazi";
+						if (value.length < 8) errors[field] = "La password può essere composta da minimo 8 caratteri";
+					}
+					if (field === 'pwConf') {
+						if (!errors['password'] && value && value !== data['password']) errors[field] = "Le password non coincidono";
+						else errors[field] = "";
+					}
+				}
 			},
 		},
 		components: {
 			Multiselect,
-			AppAlert
+			AppAlert,
+			AppForm
 		},
 		computed: {
 		}
@@ -117,177 +72,90 @@
 
 <template>
 	<!-- Register form -->
-	<form class="" action="post" @submit.prevent="sendRegistrationData" novalidate>
-		<div class="row card register-card" id="login-card">
-
-			<!-- first_name input -->
-			<div class="col-md-6 mb-2">
-				<label for="first-name-input" class="badge rounded-pill">Nome</label>
-				<input type="text" id="first-name-input" class="form-control"
-					:class="{ 'invalid-element': errors.firstName.length }" v-model.trim="firstName">
-				<div class="invalid-element" v-if="errors.firstName.length">
-					<div v-for="(error, index) in errors.firstName" :key="index">{{ error }}</div>
-				</div>
-			</div>
-			<!-- last_name input -->
-			<div class="col-md-6 mb-2">
-				<label for="last-name-input" class="badge rounded-pill">Cognome</label>
-				<input type="text" id="last-name-input" class="form-control"
-					:class="{ 'invalid-element': errors.lastName.length }" v-model.trim="lastName">
-				<div class="invalid-element" v-if="errors.lastName.length">
-					<div v-for="(error, index) in errors.lastName" :key="index">{{ error }}</div>
-				</div>
-			</div>
-			<!-- home_address input -->
-			<div class="col-md-12 mb-2">
-				<label for="home-address-input" class="badge rounded-pill">Indirizzo di residenza</label>
-				<input type="text" id="home-address-input" class="form-control"
-					:class="{ 'invalid-element': errors.homeAddress.length }" v-model.trim="homeAddress">
-				<div class="invalid-element" v-if="errors.homeAddress.length">
-					<div v-for="(error, index) in errors.homeAddress" :key="index">{{ error }} </div>
-				</div>
-			</div>
-			<!-- specializations with Multiselect component-->
-			<div id="multiselect-container" class="col-md-12 mb-2">
-				<label for="specializations-input" class="badge rounded-pill">Specializzazioni</label>
-				<Multiselect id="" class="specializations-input" :class="{ 'invalid-element': errors.specializations.length }"
-					@send-values="updateSpecs" />
-				<div class="invalid-element" v-if="errors.specializations.length">
-					<div v-for="(error, index) in errors.specializations" :key="index">{{ error }}</div>
-				</div>
-			</div>
-			<!-- email input -->
-			<div class="col-md-12 mb-3">
-				<label for="email-input" class="badge rounded-pill">Email</label>
-				<input type="text" id="email-input" class="form-control" :class="{ 'invalid-element': errors.email.length }"
-					v-model.trim="email">
-				<div class="invalid-element" v-if="errors.email.length">
-					<div v-for="(error, index) in errors.email" :key="index">{{ error }} </div>
-				</div>
-			</div>
-			<!-- password input -->
-			<div class="col-md-12 mb-2">
-				<label for="password-input" class="badge rounded-pill">Password</label>
-				<input type="password" id="password-input" class="form-control"
-					:class="{ 'invalid-element': errors.password.length }" v-model.trim="password">
-				<div class="invalid-element" v-if="errors.password.length">
-					<div v-for="(error, index) in errors.password" :key="index">{{ error }}</div>
-				</div>
-			</div>
-			<!-- confirm password input -->
-			<div class="col-md-12 mb-2">
-				<label for="password-confirmation-input" class="badge rounded-pill">Conferma password</label>
-				<input type="password" id="password-confirmation-input" class="form-control"
-					:class="{ 'invalid-element': errors.passwordConfirmation.length }" v-model.trim="passwordConfirmation">
-				<div class="invalid-element" v-if="errors.passwordConfirmation.length">
-					<div v-for="(error, index) in errors.passwordConfirmation" :key="index">{{ error }}</div>
-				</div>
-			</div>
-
-			<!-- Button wrappers -->
-			<div class="buttons-wrapper mt-3">
-				<!-- register button -->
-				<button type="submit" class="btn btn-primary" id="register-button">Registrati</button>
-				<!-- reset button -->
-				<button type="reset" class="btn btn-warning ms-3" id="reset-button"
-					@click.prevent="resetForm()">Pulisci</button>
-			</div>
-
-			<!-- Alert container -->
-			<div class="col-md-12" v-show="isAlertShown">
-				<!-- Alert card for confirmed registration -->
-				<AppAlert id="result-alert" class="alert alert-success mt-2" v-show="responseStatus">
-					I dati sono stati registrati
-				</AppAlert>
-				<!-- Alert card for confirmed registration -->
-				<AppAlert id="result-alert" class="alert-danger mt-2" v-show="!responseStatus">
-					I dati inseriti non sono validi. Provare a cambiare la email.
-				</AppAlert>
-			</div>
-
-		</div>
-	</form>
+	<main>
+		<AppForm :apiRoute="'register'" :elements="formElements" :doctorInfo="null"
+			:wrapperInnerDiv="['row', 'register-card', 'card']" :perfectValidation="customValidation" />
+	</main>
 </template>
 
 <style scoped>
 
 	/* Generics */
-	form {
-		min-height: 900px;
-		height: calc(100vh - 80px);
-		display: flex;
-		align-items: center;
+	main {
+		height: 100%;
+		overflow: auto;
+		padding-top: 0;
 	}
 
-	label {
-		width: fit-content;
-		font-size: 0.9rem;
-		/* padding: 0 10px; */
-		background-color: #65B0FF;
-		color: white;
+	/* Form custom-style using specific class */
+	:deep() {
+		form {
+			min-height: 900px;
+			height: calc(100vh - 80px);
+			display: flex;
+			align-items: center;
 
-		position: relative;
-		left: 15px;
-		top: 12px;
-	}
+			label.badge.rounded-pill {
+				width: fit-content;
+				font-size: 0.9rem;
+				/* padding: 0 10px; */
+				background-color: #65B0FF;
+				color: white;
 
-	input {
-		height: 3.2rem;
-		border: 2px solid #65B0FF;
-	}
+				position: relative;
+				left: 15px;
+				top: 12px;
+			}
 
-	/* Utilities */
-	.card {
-		padding-bottom: 20px;
-		background-color: var(--color-complementary);
-		/* #FFB465; */
-		flex-direction: row;
-	}
-
-	.register-card {
-		margin: 0 auto;
-		width: 600px;
-	}
-
-	#result-alert {
-		padding-left: 10px;
-		padding-right: 10px;
-		display: block;
-		border-width: 2px;
-	}
-
-	.invalid-element,
-	div#multiselect-container .specializations-input.invalid-element {
-		color: #e4005b;
-		border-color: currentColor;
-	}
-
-	div#multiselect-container {
-		height: 10rem;
-		overflow: clip;
-		overflow-clip-margin: 190px;
-
-		label {
-			position: relative;
-			z-index: 1;
+			input[type="text"],
+			input[type="password"],
+			input[type="email"] {
+				&.form-control {
+					height: 3.2rem;
+					border: 2px solid #65B0FF;
+				}
+			}
 		}
 
-		.specializations-input {
-			border: 2px solid #65B0FF;
-			border-radius: 7px;
+
+		/* Utilities */
+		.card {
+			padding-bottom: 20px;
+			background-color: var(--color-complementary);
+			/* #FFB465; */
+			flex-direction: row;
 		}
-	}
 
-	.btn-warning {
-		color: #fff;
-		background-color: #ca9400;
-	}
+		.register-card {
+			margin: 0 auto;
+			width: 600px;
+		}
 
-	#register-button {
-		background-color: #65B0FF;
+		#result-alert {
+			padding-left: 10px;
+			padding-right: 10px;
+			display: block;
+			border-width: 2px;
+		}
 
-		&:hover {
-			background-color: #0E395D;
+		div:has(> .specializations-multiselect) {
+			height: 10rem;
+			overflow: clip;
+			overflow-clip-margin: 190px;
+
+			label {
+				position: relative;
+				z-index: 51;
+			}
+
+			.specializations-multiselect {
+				border: 2px solid var(--color-secondary);
+				border-radius: 7px;
+			}
+
+			.specializations-multiselect.invalid-input {
+				border-color: var(--color-error);
+			}
 		}
 	}
 </style>

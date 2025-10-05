@@ -9,6 +9,8 @@
 		data() {
 			return {
 				// isLogoutShown: false,
+				checkingLogin: false,
+				isUserIconReady: false,
 				store,
 				dashboardStore
 			}
@@ -28,22 +30,38 @@
 			// 	}
 			// },
 			logout() {
-				axios.post('https://127.0.0.1:5174/api/logout', '',
+				axios.post(this.store.apiUri + 'logout', '',
 					{
 						withCredentials: true
 					})
 					.then(response => {
+						this.checkingLogin = false;
 						this.store.isAuthenticated = false;
 						this.dashboardStore.profileDataGeneral = {};
-						this.$router.push({ path: '/' });
+						this.$router.push({ name: 'homepage' });
 					})
 					.catch(err => {
+						this.checkingLogin = false;
 						console.log(err);
 					});
+				this.checkingLogin = true;
 			}
 		},
 		components: {
 			AppUserIcon
+		},
+		computed: {
+			showLoader() {
+				if (this.checkingLogin) {
+					return true;
+				}
+				else {
+					if (this.store.isAuthenticated) {
+						return !this.isUserIconReady;
+					}
+					return false;
+				}
+			}
 		},
 		setup() {
 			const { buttonsStyle: profileButtonsStyle, areButtonsShown: areProfileButtonsShown, showButtonsTimeout: showProfileButtonsTimeout, showButtons: showProfileButtons, removeButtonsFromFlow: removeProfileButtonsFromFlow } = useShowButtonsAnimation();
@@ -55,10 +73,10 @@
 
 <template>
 	<header class="header-element">
-		<div class="left-header-section">
+		<div class="left-header">
 			<button class="menu-button" @click="toggleSidebar"><i class="fa-solid fa-bars"></i></button>
 		</div>
-		<div class="right-header-section user">
+		<div class="right-header user" v-show="!showLoader">
 			<!-- Logout button -->
 			<button :style="profileButtonsStyle" v-show="areProfileButtonsShown" class="button logout-btn" @click="logout"
 				@transitionend="removeProfileButtonsFromFlow">
@@ -67,7 +85,10 @@
 				<!-- </router-link> -->
 			</button>
 			<!-- User icon -->
-			<AppUserIcon :parent="'HeaderDashboard'" @click="showProfileButtons" />
+			<AppUserIcon :parent="'HeaderDashboard'" @user-icon-ready="isUserIconReady = true" @click="showProfileButtons" />
+		</div>
+		<div class=" loader-container right-header" v-show="showLoader">
+			<Loader id="loader" />
 		</div>
 	</header>
 </template>
@@ -94,10 +115,10 @@
 		font-size: 2rem;
 	}
 
-	.right-header-section {
+	/* .right-header {
 		height: 45px;
 		line-height: 45px;
-	}
+	} */
 
 	.logout-btn {
 		margin-right: 15px;
@@ -112,6 +133,14 @@
 		color: white;
 		font-weight: bold;
 	}
+
+	/* Loader sizing */
+	.right-header .loader {
+		width: 34px;
+		position: static;
+		translate: none;
+	}
+
 
 	/* .v-enter-active,
 	.v-leave-active {

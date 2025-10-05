@@ -25,7 +25,7 @@
 					withCredentials: true,
 				})
 					.then(response => {
-						// this.store.isAuthenticated = true;
+						this.store.isAuthenticated = true;
 						this.loginButtonText = '';
 						this.positiveAuthenticationSymbol = '✅';
 						this.isRequestPending = false;
@@ -53,8 +53,8 @@
 				withCredentials: true,
 			})
 				.then(({ data: { authentication: { userId } } }) => {
-					console.log('Current authenticated user id: ' + userId);
-					if (userId) this.$router.push({ name: 'dashboard', params: { id: userId } })
+					this.store.isAuthenticated = true;
+					if (userId) this.$router.push({ name: 'dashboard' })
 				})
 				.catch(err => { });
 		}
@@ -79,7 +79,7 @@
 				<button type="submit" id="login-button" class="btn btn-primary d-flex justify-content-center mt-4 mb-3"
 					:class="{ ['shaking-animation']: isAnimationActive }">
 					{{ loginButtonContent }}
-					<Loader v-if="isRequestPending" />
+					<Loader class="repositioned-loader" v-if="isRequestPending" />
 				</button>
 			</div>
 		</div>
@@ -125,12 +125,7 @@
 
 	#login-button {
 		width: calc(100% - 24px);
-		background-color: #65B0FF;
 		position: relative;
-
-		&:hover {
-			background-color: #0E395D;
-		}
 	}
 
 	#login-button.shaking-animation {
@@ -173,9 +168,10 @@
 		}
 	}
 
-	button .loader {
-		width: 25px;
+	button .repositioned-loader {
+		width: 24px;
 		position: static;
+		translate: none;
 
 		border: 2px solid #fff;
 	}

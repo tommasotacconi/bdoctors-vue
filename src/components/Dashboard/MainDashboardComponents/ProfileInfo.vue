@@ -15,12 +15,13 @@
 		},
 		methods: {
 			getProfileData() {
-				axios.get(this.store.apiUri + 'profiles', {
+				axios.get(this.store.apiUri + 'profiles/authenticated', {
 					withCredentials: true,
 				})
-					.then(({ data: { data: profile } }) => {
+					.then(({ data: { profile } }) => {
 						// console.log('Profile: ', profile);
 						this.loaded = true;
+						this.store.isAuthenticated = true;
 
 						// Data to share inside other components
 						this.dashboardStore.profileDataGeneral = profile;
@@ -30,10 +31,13 @@
 					.catch(err => {
 						console.error('ERROR IN GET /api/profiles: ' + err.response.data.message);
 						this.loaded = true;
+						if (err.response.status !== 401) this.store.isAuthenticated = true;
 					})
 					.finally(() => {
-						this.store.isAuthenticated = true;
+						this.dashboardStore.isProfileRequestPending = false;
 					});
+
+				this.dashboardStore.isProfileRequestPending = true;
 			},
 			// getFilePath: function (filePath) {
 			// 	return new URL(filePath, 'http://localhost:8000/').href;
@@ -95,13 +99,13 @@
 						<div class="card-body-general">
 							<div class="card-body">
 								<div class="card-title-section">
-									<h4 class="card-title">{{ dashboardStore.profileDataGeneral.doctor.first_name }} {{
-										dashboardStore.profileDataGeneral.doctor.last_name }}
+									<h4 class="card-title">{{ dashboardStore.profileDataGeneral.user.first_name }} {{
+										dashboardStore.profileDataGeneral.user.last_name }}
 									</h4>
 									<div class="main-information-section">
 										<section class="email-section d-flex gap-1 align-items-center">
 											<h5>Email:</h5>
-											<p>{{ dashboardStore.profileDataGeneral.doctor.email }}</p>
+											<p>{{ dashboardStore.profileDataGeneral.user.email }}</p>
 										</section>
 										<section class="password-section d-flex gap-1 align-items-center">
 											<h5>Password:</h5>
@@ -120,7 +124,7 @@
 										</li>
 										<li>
 											<strong>Specializzazione:</strong> {{
-												dashboardStore.profileDataGeneral.doctor.specializations[0].name }}
+												dashboardStore.profileDataGeneral.user.specializations[0].name }}
 										</li>
 										<li>
 											<strong>Indirizzo:</strong> {{ dashboardStore.profileDataGeneral.office_address }}

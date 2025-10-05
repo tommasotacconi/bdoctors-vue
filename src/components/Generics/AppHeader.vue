@@ -5,19 +5,20 @@
 	import { RouterLink } from 'vue-router';
 	import AppUserIcon from '../Generics/AppUserIcon.vue';
 	import { useShowButtonsAnimation } from '../../../js/composables/useShowButtonsAnimation';
+	import { homepageStore } from '../../../js/homepageStore.js';
 
 	export default {
 		data() {
 			return {
-				apiUrl: 'http://127.0.0.1:8000/api/specializations',
 				specializations: [],
 				selectedSpecialization: '',
-				store,
-				dashboardStore,
 				checkingLogin: true,
 				// isProfileManagementShown: false,
 				isUserIconReady: false,
 				// logoutBtnTimeout: undefined,
+				store,
+				dashboardStore,
+				homepageStore
 			}
 		},
 		methods: {
@@ -36,11 +37,12 @@
 			// 	this.isProfileManagementShown = !this.isProfileManagementShown;
 			// },
 			getSpecializations() {
-				axios.get(this.apiUrl)
+				axios.get(this.store.apiUri + 'specializations')
 					.then(response => {
 						// handle success
 						this.specializations = response.data.specializations;
-						if (!store.searchedSpecialization && this.$route.params.specialization) this.updateSelectByParam();
+						this.homepageStore.allSpecializations = response.data.specializations;
+						if (this.$route.params.specialization) this.updateSelectByParam();
 					})
 					.catch(function (error) {
 						// handle error
@@ -50,16 +52,17 @@
 			chooseSpecialization() {
 				store.searchedSpecialization = this.selectedSpecialization.id
 				store.selectedSpecializationName = this.selectedSpecialization.name
+				this.homepageStore.selectedSpecialization = this.selectedSpecialization.name
 
 				// Nuova pagina nella quale usiamo i nomi. Piccola concatenazione di metodi per togliere gli spazi e rendere tutto minuscolo
 				this.$router.push({
-					name: 'search', params: {
-						specialization: store.selectedSpecializationName.trim().replace(/-/g, '_').replace(/ /g, "-").toLowerCase(),
+					name: 'specializationDoctors', params: {
+						specialization: this.homepageStore.selectedSpecialization.trim().replace(/-/g, '_').replace(/ /g, "-").toLowerCase(),
 					},
 				})
 			},
 			updateSelectByParam() {
-				console.log('-- Updating select by means of param')
+				// console.log('-- Updating select by means of param');
 				this.selectedSpecialization = this.specializationParam || '';
 			},
 			logout() {
@@ -129,17 +132,20 @@
 			return { profileButtonsStyle, areProfileButtonsShown, showProfileButtonsTimeout, showProfileButtons, removeProfileButtonsFromFlow };
 		},
 		created() {
-			axios.get(this.store.apiUri + 'login/check', {
-				withCredentials: true,
-			})
-				.then(({ data: { authentication: { userId } } }) => {
-					this.store.isAuthenticated = true;
-					this.checkingLogin = false;
-					// this.store.userId = userId;
+			if (this.store.isAuthenticated === null) {
+				axios.get(this.store.apiUri + 'login/check', {
+					withCredentials: true,
 				})
-				.catch(err => {
-					this.checkingLogin = false;
-				});
+					.then(response => {
+						this.store.isAuthenticated = true;
+						this.checkingLogin = false;
+						// this.store.userId = userId;
+					})
+					.catch(err => {
+						this.checkingLogin = false;
+					});
+			}
+			else this.checkingLogin = false;
 
 			this.getSpecializations();
 		},
@@ -171,7 +177,6 @@
 				</routerLink>
 				<!-- Searchbar section -->
 				<div class="search-bar">
-					<!-- Updated search bar for specializations -->
 					<Transition>
 						<select @change="chooseSpecialization()" v-model="selectedSpecialization" v-if="specializations.toString()"
 							class="form-select" aria-label="Specialization Search">
@@ -186,17 +191,17 @@
 			<div class="right-header" :class="rightHeaderClass" v-show="!showLoader">
 				<!-- Buttons when isAuthenticated = false -->
 				<routerLink :to="{ name: 'register' }">
-					<button class="btn button-logup">Registrati</button>
+					<button class="btn btn-logup"></button>
 				</routerLink>
 				<routerLink :to="{ name: 'login' }">
-					<button class="btn button-with-icon"><i class="fa-solid fa-user-doctor"></i></button>
+					<button class="btn btn-with-icon btn-login"><i class="fa-solid fa-user-doctor"></i></button>
 				</routerLink>
 				<!-- Buttons when isAuthenticated = true -->
 				<div class="user">
 					<div class="user-buttons-wrapper" :style="profileButtonsStyle" v-show="areProfileButtonsShown"
 						@transitionend="removeProfileButtonsFromFlow">
-						<router-link :to="{ name: 'dashboard' }" class="btn button-with-icon personal-area">
-							<!-- <span class="personal-area-link">Area Personale</span> -->
+						<router-link :to="{ name: 'dashboard' }" class="btn btn-with-icon btn-personal-area">
+							<!-- <span class="btn-personal-area-link">Area Personale</span> -->
 							<i class="fa-solid fa-user-doctor"></i>
 						</router-link>
 						<button class="logout" @click="logout()">
@@ -349,24 +354,34 @@
 		}
 	}
 
-	.right-header .btn.button-logup {
+	.right-header .btn.btn-logup {
 		background-color: var(--color-secondary);
-	}
-
-	.right-header .btn.button-with-icon {
-		background-color: var(--color-complementary);
-		/* Padding calc is given by
-		(((factor * font-size) + 2 * y-pd) - content-height) / 2 */
-		padding: calc((((1.5 * 16px) + 2 * 10px) - 33.33px) / 2) 16px;
 
 		&::after {
-			content: 'Area Personale';
+			content: 'Registrati'
 		}
 	}
 
-	.right-header .btn.personal-area {
-		background-color: var(--color-complementary);
+	.right-header .btn.btn-with-icon {
 		flex-shrink: 0;
+		/* Padding calc for with icon buttons to match height of only text buttons
+		(((line-height-factor * font-size) + 2 * y-pd) - icon-height) / 2 */
+		padding: calc((((1.5 * 16px) + 2 * 10px) - 33.33px) / 2) 16px;
+		background-color: var(--color-complementary);
+	}
+
+	.btn.btn-login {
+		&::after {
+			content: 'Accedi';
+		}
+	}
+
+	.right-header .btn.btn-personal-area {
+		background-color: var(--color-complementary);
+
+		&::after {
+			content: 'Area personale'
+		}
 	}
 
 	.right-header.not-logged-user {
@@ -452,7 +467,7 @@
 	}
 
 	@media screen and (max-width: 992px) {
-		.right-header .btn.button-with-icon {
+		.right-header .btn.btn-with-icon {
 			&::after {
 				content: '';
 			}

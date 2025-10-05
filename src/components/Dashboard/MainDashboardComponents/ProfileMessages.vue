@@ -105,13 +105,15 @@
 					<h5 class="title">Messaggio selezionato</h5>
 
 					<div class="message-name">
-						<strong>Da:</strong> {{ messageSelected.first_name }} {{ messageSelected.last_name }}
+						<strong>Da:</strong> <span class="sender">{{ messageSelected.first_name }} {{
+							messageSelected.last_name }}</span>
 					</div>
 					<div class="message-email">
-						<strong>E-mail:</strong> {{ messageSelected.email }}
+						<strong>E-mail:</strong> <span class="sender">{{ messageSelected.email }}</span>
 					</div>
 					<div class="message-content">
-						<div><strong>Contenuto:</strong></div> <span>{{ messageSelected.content }}</span>
+						<div><strong>Contenuto:</strong></div>
+						<pre>{{ messageSelected.content }}</pre>
 					</div>
 				</div>
 			</div>
@@ -149,10 +151,15 @@
 		cursor: pointer;
 	}
 
+	pre {
+		margin-bottom: 0;
+		padding: 10px 15px;
+		font-family: 'Reddit Sans';
+		font-size: 1.3rem;
+	}
 
 	/* Inbox Card */
 	.card-inbox::-webkit-scrollbar {
-		width: 10px;
 		position: relative;
 		top: 0;
 		right: 10px;
@@ -161,13 +168,13 @@
 	.messages-list-card {
 		border: 3px solid var(--color-complementary);
 		border-radius: 15px;
+		backdrop-filter: blur(3px);
 
 		overflow: hidden;
 	}
 
 	.card-inbox {
 		height: 300px;
-		margin: 5px 0;
 
 		overflow: auto;
 	}
@@ -175,18 +182,19 @@
 	.card-header-title {
 		padding: 10px 15px;
 		margin-bottom: 20px;
+		border-radius: 12px;
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
 		position: sticky;
 		top: 0;
 		z-index: 1;
-		background-color: white;
+		background-color: var(--color-secondary);
 	}
 
 	.messages-number {
 		border-radius: 20px;
-		border: 3px solid var(--color-secondary);
+		border: 3px solid #fff;
 		padding: 8px 15px;
 		background-color: var(--color-secondary);
 		color: white;
@@ -241,6 +249,12 @@
 		border: 3px solid var(--color-complementary);
 		border-radius: 20px;
 		padding: 15px;
+		/* background-color: #fff; */
+		background: linear-gradient(var(--color-secondary), #fff 40%);
+
+		::-webkit-scrollbar {
+			height: 10px;
+		}
 	}
 
 	.selected-message {
@@ -259,7 +273,7 @@
 		border-bottom: 2px dashed var(--color-secondary);
 	}
 
-	.message-content {
-		margin-bottom: 12px;
+	.sender {
+		color: var(--color-primary);
 	}
 </style>

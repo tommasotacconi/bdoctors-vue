@@ -15,33 +15,35 @@
 		methods: {
 			getProfilePhoto() {
 				// console.log('Calling api for profilePhoto');
-				axios.get(this.store.apiUri + 'profiles', {
+				axios.get(this.store.apiUri + 'profiles/authenticated', {
 					withCredentials: true,
 				})
-					.then(({ data: { data: { photo } } }) => {
+					.then(({ data: { profile: { photo } } }) => {
 						this.profilePhotoPath = photo;
 						// this.$emit('userIconReady');
 						this.setProfilePhotoPath();
 					})
-				// .catch(err => {
-				// 	console.log('ERROR IN GET /api/profiles: ' + err.response.data.message);
-				// 	this.loaded = true;
-				// });
+					.catch(err => {
+						// 	console.log('ERROR IN GET /api/profiles: ' + err.response.data.message);
+						// 	this.loaded = true;
+					});
 			},
 			setProfilePhotoPath() {
 				// console.log('Evaluating whether to compute profilePhotoPath', '--- Parent:', this.parent);
-				if (!this.store.isAuthenticated) {
+				if (!this.store.isAuthenticated || this.dashboardStore.isProfileRequestPending) {
 					this.profilePhotoPath = '';
 					return;
 				}
 				// console.log('Computing <profilePhotPath>', '--- Parent: ', this.parent);
 				// Calculate profile photo :src attribute depending on the presence of the 'photos'
-				// string in the db data photo profiles table
+				// string in the profiles table's column photo
 				const photoPath = this.dashboardStore.profileDataGeneral.photo ?? this.profilePhotoPath;
 				// console.log('Photo path: ' + photoPath, '--- Parent: ' + this.parent);
-				if (!photoPath) {
-					this.getProfilePhoto();
-				} else {
+				if (photoPath === '') this.getProfilePhoto();
+				else if ((this.parent === 'AppHeader' || this.parent === 'HeaderDashboard') && photoPath === null) {
+					this.$emit('userIconReady');
+				}
+				else {
 					this.profilePhotoPath = this.getProfilePhotoPath(this.store.placeholderImg, photoPath, this.store.apiUri.slice(0, -4));
 					this.$emit('userIconReady');
 				}
@@ -54,8 +56,11 @@
 			}
 		},
 		watch: {
-			'store.isAuthenticated'() {
-				this.setProfilePhotoPath();
+			'store.isAuthenticated'(newValue) {
+				if (newValue) this.setProfilePhotoPath();
+			},
+			'dashboardStore.isProfileRequestPending'(newValue) {
+				if (!newValue) this.setProfilePhotoPath();
 			}
 		},
 		setup() {
@@ -71,7 +76,7 @@
 </script>
 
 <template>
-	<i class="button fa-solid fa-user" :class="{ ['user-img']: profilePhotoPath }">
+	<i class="button fa-solid fa-user" :class="{ ['user-profile-photo']: profilePhotoPath }">
 		<img :src="profilePhotoPath" alt="foto profilo">
 	</i>
 
@@ -93,7 +98,7 @@
 		}
 	}
 
-	.fa-user.user-img {
+	.fa-user.user-profile-photo {
 		padding: 2px;
 
 		img {
@@ -106,7 +111,7 @@
 		}
 	}
 
-	.user-img::before {
+	.user-profile-photo::before {
 		content: none;
 	}
 

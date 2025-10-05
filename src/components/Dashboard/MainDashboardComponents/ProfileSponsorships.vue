@@ -111,12 +111,12 @@
 				this.loadingDropin = false;
 			},
 			getApiProfile() {
-				axios.get(this.store.apiUri + 'profiles', {
+				axios.get(this.store.apiUri + 'profiles/authenticated', {
 					withCredentials: true
 				})
 					.then(response => {
 						// console.log(response);
-						const { data: { data: { active_sponsorships: activeSponsorships } } } = response;
+						const { data: { profile: { active_sponsorships: activeSponsorships } } } = response;
 						this.sponsorships = activeSponsorships;
 
 						// Set sponsorization status
