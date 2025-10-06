@@ -9,11 +9,10 @@
 			return {
 				store,
 				price: null,
-				sponsorshipName: null,
-				sponsorships: [],
-				cardBronze: false,
-				cardSilver: false,
-				cardGold: false,
+				sponsorshipTypes: [],
+				sponsorshipName: '',
+				profileSponsorships: null,
+				cardType: null,
 				dropinInstance: null,
 				error: null,
 				isSponsorshipLoaded: false,
@@ -26,24 +25,18 @@
 			}
 		},
 		methods: {
-			async getPriceBronze() {
-				this.price = 2.99;
-				store.price = this.price;
-				this.sponsorshipName = 'Bronze';
-				this.showPaymentForm = true;
-				await this.initializePayment();
+			getSponsorshipTypes() {
+				axios.get(this.store.apiUri + 'sponsorships')
+					.then(({ data: { sponsorships } }) => {
+						console.log(sponsorships);
+						this.sponsorshipTypes = sponsorships;
+					})
+					.catch(err => {
+					})
 			},
-			async getPriceSilver() {
-				this.price = 5.99;
-				store.price = this.price;
-				this.sponsorshipName = 'Silver';
-				this.showPaymentForm = true;
-				await this.initializePayment();
-			},
-			async getPriceGold() {
-				this.price = 9.99;
-				store.price = this.price;
-				this.sponsorshipName = 'Gold';
+			async setSponsorshipType({ name, price }) {
+				this.sponsorshipName = name;
+				this.price = price;
 				this.showPaymentForm = true;
 				await this.initializePayment();
 			},
@@ -117,15 +110,12 @@
 					.then(response => {
 						// console.log(response);
 						const { data: { profile: { active_sponsorships: activeSponsorships } } } = response;
-						this.sponsorships = activeSponsorships;
+						this.profileSponsorships = activeSponsorships;
 
 						// Set sponsorization status
 						if (activeSponsorships.length) {
 							this.isSponsorized = true;
-							const sponsorshipId = this.sponsorships[0].id;
-							if (sponsorshipId === 1) this.cardBronze = true;
-							else if (sponsorshipId === 2) this.cardSilver = true;
-							else if (sponsorshipId === 3) this.cardGold = true;
+							this.cardType = this.profileSponsorships[0].name.toLowerCase();
 						}
 
 						this.isSponsorshipLoaded = true;
@@ -138,6 +128,7 @@
 		computed: {
 		},
 		created() {
+			this.getSponsorshipTypes();
 			this.getApiProfile()
 		},
 	}
@@ -161,24 +152,11 @@
 				</div>
 				<h3>Scegli la tua sponsorizzazione:</h3>
 				<section class="sponsor-cards">
-					<button class="sponsor-card card-bronze" @click="getPriceBronze()" :disabled="loadingDropin">
+					<button v-for="type in sponsorshipTypes" class="sponsor-card" :class="['card-' + type.name.toLowerCase()]"
+						@click="setSponsorshipType(type)" :disabled="loadingDropin">
 						<div class="card-description">
-							<p class="hour-sponsorship">Garantito per 24 ore</p>
-							<p class="price">2,99€</p>
-						</div>
-						<div class="premium-star"><i class="fa-solid fa-star"></i></div>
-					</button>
-					<button class="sponsor-card card-silver" @click="getPriceSilver()" :disabled="loadingDropin">
-						<div class="card-description">
-							<p class="hour-sponsorship">Garantito per 72 ore</p>
-							<p class="price">5,99€</p>
-						</div>
-						<div class="premium-star"><i class="fa-solid fa-star"></i></div>
-					</button>
-					<button class="sponsor-card card-gold" @click="getPriceGold()" :disabled="loadingDropin">
-						<div class="card-description">
-							<p class="hour-sponsorship">Garantito per 144 ore</p>
-							<p class="price">9,99€</p>
+							<p class="hour-sponsorship">Garantito per {{ type.duration }} ore</p>
+							<p class="price">{{ type.price }}</p>
 						</div>
 						<div class="premium-star"><i class="fa-solid fa-star"></i></div>
 					</button>
@@ -224,19 +202,7 @@
 			</div>
 			<!-- Sponsorized user case -->
 			<div class="is-sponsored" v-else>
-				<div class="sponsor-card card-bronze" v-if="cardBronze">
-					<div class="card-description">
-						<p class="hour-sponsorship">Il tuo profilo è sponsorizzato</p>
-					</div>
-					<div class="premium-star"><i class="fa-solid fa-star"></i></div>
-				</div>
-				<div class="sponsor-card card-silver" v-else-if="cardSilver">
-					<div class="card-description">
-						<p class="hour-sponsorship">Il tuo profilo è sponsorizzato</p>
-					</div>
-					<div class="premium-star"><i class="fa-solid fa-star"></i></div>
-				</div>
-				<div class="sponsor-card card-gold" v-else-if="cardGold">
+				<div class="sponsor-card card-bronze" :class="['card-' + this.profileSponsorships[0].name.toLowerCase()]">
 					<div class="card-description">
 						<p class="hour-sponsorship">Il tuo profilo è sponsorizzato</p>
 					</div>
@@ -251,7 +217,7 @@
 				<i class="fa-solid fa-circle-check"></i>
 				<h3>Pagamento completato con successo!</h3>
 				<p>La tua sponsorizzazione è stata attivata.</p>
-				<router-link to="/" class="dashboard-button">
+				<router-link :to="{ name: 'homepage' }" class="dashboard-button">
 					Torna alla Homepage
 				</router-link>
 			</div>
