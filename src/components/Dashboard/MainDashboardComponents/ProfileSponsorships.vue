@@ -191,7 +191,7 @@
 
 							<div class="input-group">
 								<div class="input-box">
-									<button class="btn-pay" ref="btnPay" @click="pay" :disabled="loadingDropin || loadingPayment">
+									<button class="btn btn-pay" ref="btnPay" @click="pay" :disabled="loadingDropin || loadingPayment">
 										{{ loadingPayment ? 'Elaborazione in corso...' : 'Procedi al pagamento' }}
 									</button>
 								</div>
@@ -382,23 +382,26 @@
 		width: 100%;
 		height: 50px;
 		border: none;
-		background-color: var(--color-complementary);
-		color: rgb(0, 0, 0);
-		border-radius: 10px;
+		/* background-color: var(--color-complementary); */
+		/* border-radius: 10px; */
 		font-size: 16px;
 		cursor: pointer;
-		transition: all 0.3s ease;
+		transition: background-color 0.3s ease;
 	}
 
-	.btn-pay:hover {
-		transform: translateY(-2px);
-		box-shadow: 0 8px 25px rgba(79, 70, 229, 0.4);
+	.btn-pay:hover,
+	.btn-pay:active,
+	.btn-pay:first-child:active {
+		background-color: var(--color-complementary);
+		color: #fff;
 	}
 
 	.sponsor-card:disabled,
 	.btn-pay:disabled {
-		opacity: 0.6;
+		opacity: 0.75;
 		cursor: not-allowed;
+		color: #fff;
+		background-color: var(--color-tertiary);
 	}
 
 	/* Success Message Styles */
