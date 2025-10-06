@@ -29,8 +29,10 @@
 						// localStorage.setItem('profile_id', response.data.data.id)
 					})
 					.catch(err => {
+						if (err.response.status !== 401) this.store.isAuthenticated = true;
 					})
 					.finally(() => {
+						this.loaded = true;
 						this.dashboardStore.isProfileRequestPending = false;
 					});
 

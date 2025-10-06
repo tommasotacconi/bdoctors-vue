@@ -20,11 +20,10 @@
 				})
 					.then(({ data: { profile: { photo } } }) => {
 						this.profilePhotoPath = photo;
-						// this.$emit('userIconReady');
 						this.setProfilePhotoPath();
 					})
 					.catch(err => {
-						// console.log('error GET /api/profiles: ' + err.response.data.message);
+						this.$emit('userIconReady');
 					});
 			},
 			setProfilePhotoPath() {
@@ -59,7 +58,11 @@
 				if (newValue) this.setProfilePhotoPath();
 			},
 			'dashboardStore.isProfileRequestPending'(newValue) {
-				if (!newValue) this.setProfilePhotoPath();
+				if (!newValue) {
+					const requestPhotoPath = this.dashboardStore.profileDataGeneral.photo;
+					if (requestPhotoPath) this.setProfilePhotoPath();
+					else this.$emit('userIconReady');
+				}
 			}
 		},
 		setup() {
