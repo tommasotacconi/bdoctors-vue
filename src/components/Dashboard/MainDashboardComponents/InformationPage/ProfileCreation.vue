@@ -58,8 +58,8 @@
 						this.createProfile();
 					}
 				}
-				console.log(this.formData);
-				console.log(this.errors);
+				// console.log(this.formData);
+				// console.log(this.errors);
 			},
 
 			handlePhoto(photo) {
@@ -78,7 +78,7 @@
 					withCredentials: true
 				})
 					.then(response => {
-						console.log('Response', response.data);
+						// console.log('created profiles', response.data);
 						this.profileData = response.data.profile;
 						this.isResponseStatusSuccess = true;
 						emitter.emit('reset-dashboard-header');
@@ -86,9 +86,8 @@
 						//store.profileDataGeneral = response.data.data
 						//localStorage.setItem('user_id', response.data.data.doctor.id)
 					})
-					.catch(function (error) {
-						// handle error
-						console.error(error)
+					.catch(function (err) {
+						// console.error(err)
 					})
 					.finally(function () {
 						// always executed
@@ -117,10 +116,6 @@
 			//     this.photo = files[0]
 			// },
 		},
-		created() {
-			this.store.informationPageId = this.$route.params.id;
-			console.log(store.informationPageId);
-		}
 	}
 </script>
 

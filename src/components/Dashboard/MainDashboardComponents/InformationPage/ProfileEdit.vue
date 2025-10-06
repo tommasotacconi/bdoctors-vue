@@ -80,9 +80,7 @@
 						emitter.emit('reset-dashboard-header');
 					})
 					.catch(function (error) {
-						// handle error
-						console.error(error)
-						// console.log(error.response.data.errors);
+						// console.log('profile update error: ', error.response.data.errors);
 					})
 					.finally(function () {
 						// always executed
@@ -174,7 +172,7 @@
 					result.push(specializations[i].id);
 				}
 				this.formData.specializations = result;
-				console.log('---current specializations---', this.formData.specializations);
+				// console.log('--current specializations--', this.formData.specializations);
 			},
 
 			getProfileData() {
@@ -196,9 +194,8 @@
 						this.oldPhoto = response.data.data.photo;
 						this.oldCurriculum = response.data.data.curriculum;
 					})
-					.catch(function (error) {
-						// handle error
-						console.error("failed", error)
+					.catch(function (err) {
+						// console.error(err)
 					})
 					.finally(function () {
 						// always executed

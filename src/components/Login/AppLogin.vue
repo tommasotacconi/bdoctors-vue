@@ -34,12 +34,11 @@
 							this.$router.push({ name: 'dashboard', params: { id: response.data.user_id } })
 						}, 100);
 					})
-					.catch(error => {
+					.catch(err => {
 						this.isRequestPending = false;
-						// Trigger animation
 						this.isAnimationActive = true;
 						setTimeout(() => { this.isAnimationActive = false }, 250);
-						console.log(error);
+						// console.log('error POST /api/login: ', err);
 					});
 			},
 		},

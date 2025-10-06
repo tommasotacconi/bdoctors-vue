@@ -42,7 +42,7 @@
 					})
 					.catch(err => {
 						this.checkingLogin = false;
-						console.log(err);
+						// console.log(err);p
 					});
 				this.checkingLogin = true;
 			}

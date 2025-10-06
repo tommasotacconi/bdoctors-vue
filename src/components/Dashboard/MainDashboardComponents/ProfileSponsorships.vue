@@ -60,7 +60,6 @@
 					this.getApiProfile();
 				} catch (error) {
 					this.error = 'Pagamento fallito per favore riprova.'
-					console.error(error);
 				} finally {
 					this.loadingPayment = false;
 				}
@@ -98,7 +97,6 @@
 				} catch (error) {
 					this.isWaitingToken = false;
 					this.error = 'Errore durante l\'inizializzazione del modulo di pagamento';
-					console.error(error);
 				}
 
 				this.loadingDropin = false;
@@ -121,7 +119,7 @@
 						this.isSponsorshipLoaded = true;
 					})
 					.catch(function (error) {
-						console.log(error);
+						// console.log(error);
 					})
 			},
 		},

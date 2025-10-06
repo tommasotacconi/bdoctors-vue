@@ -44,9 +44,8 @@
 						this.homepageStore.allSpecializations = response.data.specializations;
 						if (this.$route.params.specialization) this.updateSelectByParam();
 					})
-					.catch(function (error) {
-						// handle error
-						console.log(error);
+					.catch(function (err) {
+						// console.log(err);
 					})
 			},
 			chooseSpecialization() {
@@ -77,7 +76,7 @@
 					})
 					.catch(err => {
 						this.checkingLogin = false;
-						console.log(err);
+						// console.log(err);
 					});
 
 				this.checkingLogin = true;
@@ -97,7 +96,7 @@
 				for (let i = 0; i < this.specializations.length; i++) {
 					const specialization = this.specializations[i];
 					if (specializationInParamValue == specialization.name) {
-						console.log(specialization);
+						// console.log(specialization);
 						return specialization;
 					}
 				}

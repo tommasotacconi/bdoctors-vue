@@ -31,9 +31,7 @@
 						this.dashboardStore.profileMessages = messages;
 					})
 					.catch(function (err) {
-						// handle error
-						console.log('ERROR in GET /api/messages: ' + err.response.data.message);
-
+						// console.log(err);
 					})
 			},
 			getApiReviewsWithVotes() {
@@ -45,8 +43,8 @@
 						// this.getVotes();
 					})
 					.catch(function (err) {
-						// handle error
-						if (err.response?.data?.message) console.log('ERROR IN GET /api/reviews: ' + err.response.data.message);
+						// const msg = err.response?.data?.message; 
+						// if (msg) console.log('error GET /api/reviews: ' + msg);
 					})
 			},
 		},
