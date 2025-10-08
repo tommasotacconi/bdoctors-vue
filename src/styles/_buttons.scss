@@ -1,4 +1,15 @@
 .btn {
+	border-radius: 25px;
+	padding: 10px 16px;
+	border: 0;
+	font-style: italic;
+	color: white;
+	font-weight: bold;
+	
+	&.pos-static {
+		position: static;
+		translate: none;
+	}
 	background-color: var(--color-tertiary);
 
 	&:hover {

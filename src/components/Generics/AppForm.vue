@@ -125,6 +125,7 @@
 			formContent() {
 				if (this.elements.content) return this.elements.content.label;
 				else if (this.elements.firstName && this.elements.lastName) return 'Registrazione';
+				else if (this.elements.phone) return 'Nuovo profilo';
 			},
 			formContentSuffix() {
 				const cont = this.formContent;
@@ -181,8 +182,8 @@
 </script>
 
 <template>
-	<div class="form-frame p-3 pt-1" :class="formFrameClass">
-		<form v-if="sent === undefined" id="message-form" @submit.prevent="validateForm" novalidate :class="formClass">
+	<div class="form-frame container" :class="formFrameClass">
+		<form v-if="sent === undefined" @submit.prevent="validateForm" novalidate :class="formClass">
 			<!-- Generic form element -->
 			<div :class="wrapperInnerDiv">
 				<!-- Form field's template -->
@@ -236,6 +237,15 @@
 						@click.prevent="resetForm()">Pulisci
 					</button>
 				</div>
+				<!-- Submit, reset buttons for profile creation and edit -->
+				<div v-if="formContent === 'Nuovo profilo'" class="buttons-wrapper mt-3">
+					<button type="submit" id="register-button" class="btn btn-primary btn-submit mx-auto"
+						:class="{ 'disabled': validated }">Crea profilo
+					</button>
+					<button type="button" id="reset-button" class="btn btn-warning ms-3" :class="{ 'disabled': validated }"
+						@click.prevent="resetForm()">Pulisci
+					</button>
+				</div>
 			</div>
 		</form>
 
@@ -266,22 +276,12 @@
 </template>
 
 <style scoped>
-	.form-frame {
-		min-height: 400px;
-		display: flex;
 
-		justify-content: center;
-		align-items: center;
-		border-radius: var(--bs-border-radius);
-		/* border: var(--bs-border-width) solid var(--color-primary); */
-		/* box-shadow: 0px 4px 20px -10px var(--color-tertiary); */
-
-		/* Loader sizing */
-		.loader {
-			width: 34px;
-			position: static;
-			translate: none;
-		}
+	/* Loader sizing */
+	.loader {
+		width: 34px;
+		position: static;
+		translate: none;
 	}
 
 	.btn {
@@ -291,79 +291,4 @@
 		}
 	}
 
-	form {
-		width: 100%;
-		text-align: start;
-		animation: 0.6s ease-out 0.6s forwards fade;
-		opacity: 0;
-
-		label.badge.rounded-pill {
-			background-color: var(--color-tertiary);
-		}
-
-		input[type="text"].form-control,
-		input[type="email"],
-		textarea.form-control,
-		div.form-control {
-			border: 2px solid var(--color-tertiary);
-		}
-
-		input[type="text"].form-control,
-		input[type="email"] {
-			height: 3.2rem;
-		}
-
-
-		/* Form error */
-		.invalid {
-			color: var(--color-error);
-
-			p {
-				margin: 0;
-			}
-		}
-
-		.invalid-input {
-			border-color: red;
-		}
-
-		/*vote*/
-		.vote {
-			padding: 10px 0;
-			margin-bottom: 20px;
-
-			display: flex;
-			flex-direction: row-reverse;
-			justify-content: center;
-
-			& input {
-				display: none;
-			}
-
-			& label {
-				height: 2.5rem;
-				aspect-ratio: 1;
-				margin: 0 2.5px;
-				border: 2px solid var(--color-tertiary);
-				border-radius: 50%;
-
-				line-height: 2.5rem;
-				font-size: 1.3rem;
-				cursor: pointer;
-				transition: color 1s ease-out;
-			}
-
-			& label:hover,
-			& label:hover~label {
-				background-color: var(--color-tertiary);
-				color: var(--color-complementary);
-			}
-
-			& input:checked~label {
-				background-color: var(--color-tertiary);
-				color: var(--color-complementary);
-			}
-		}
-
-	}
 </style>

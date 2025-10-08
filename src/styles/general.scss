@@ -38,46 +38,6 @@ body {
 }
 
 // Utility
-.btn {
-	border-radius: 25px;
-	padding: 10px 16px;
-	border: 0;
-	font-style: italic;
-	color: white;
-	font-weight: bold;
-
-	&.pos-static {
-		position: static;
-		translate: none;
-	}
-}
-
-
-label.badge.rounded-pill {
-	width: fit-content;
-	font-size: 0.9rem;
-	/* padding: 0 10px; */
-	background-color: #65B0FF;
-	color: white;
-
-	position: relative;
-	left: 15px;
-	top: 12px;
-}
-
-input[type="input"].form-control,
-textarea.form-control {
-	border: 2px solid #65B0FF;
-}
-
-input[type="input"] {
-	height: 3.2rem;
-}
-
-textarea.form-control {
-	padding-top: 15px;
-	padding-top: 15px;
-}
 
 
 // Animations
