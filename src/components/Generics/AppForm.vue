@@ -2,6 +2,8 @@
 	import axios from 'axios';
 	import { store } from '../../../js/store';
 	import Multiselect from './Multiselect.vue';
+	import FileUpload from './FileUpload.vue';
+	import { dashboardStore } from '../../../js/dashboardStore';
 
 	export default {
 		data() {
@@ -18,7 +20,7 @@
 						}
 					 } */
 				store,
-
+				dashboardStore
 			}
 		},
 		methods: {
@@ -36,7 +38,7 @@
 				for (const key in this.elements) {
 					if (key === 'specializationsId') this.$data.formData[key] = [];
 					else if ((key === 'vote')) this.$data.formData[key] = null;
-					else this.$data.formData[key] = '';
+					else this.$data.formData[key] = this.elements[key].disabled ? this.dashboardStore.tmp[key.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`)] : '';
 					this.$data.errors[key] = '';
 				}
 			},
@@ -58,7 +60,7 @@
 							this.errors[data] = `Inserisci il corpo del${msgAdaptedPart} ${label.toLowerCase()}`;
 						}
 						else if (data === 'vote') this.errors[data] = 'Inserisci un voto in stetoscopi da 1 a 5';
-						else if (data !== 'email' && data !== 'password' && data !== 'pwConf') this.errors[data] = `Il ${label.toLowerCase()} è obbligatorio`;
+						else if (data !== 'email' && data !== 'password' && data !== 'pwConf' && data !== 'photo') this.errors[data] = `Il ${label.toLowerCase()} è obbligatorio`;
 						else this.errors[data] = `La ${label.toLowerCase()} è obbligatoria`;
 					}
 					else if ((data === 'first_name' || data === 'last_name') && value.length <= 2)
@@ -100,6 +102,11 @@
 				axios.post(this.store.apiUri + this.apiRoute, {
 					doctor_details: this.doctorInfo,
 					...data,
+				}, {
+					headers: {
+						"Content-Type": "multipart/form-data",
+					},
+					withCredentials: true
 				})
 					.then(response => {
 						// console.log('message sent.', response.data);
@@ -113,7 +120,7 @@
 			},
 			camelToSnake(obj) {
 				const result = {};
-				for (const [key, value] of Object.entries(this.formData)) {
+				for (const [key, value] of Object.entries(obj)) {
 					const snakeKey = key.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
 					result[snakeKey] = value;
 				}
@@ -124,8 +131,8 @@
 		computed: {
 			formContent() {
 				if (this.elements.content) return this.elements.content.label;
-				else if (this.elements.firstName && this.elements.lastName) return 'Registrazione';
-				else if (this.elements.phone) return 'Nuovo profilo';
+				else if (this.elements.pwConf) return 'registration';
+				else if (!this.elements.specializationsId) return 'create profile';
 			},
 			formContentSuffix() {
 				const cont = this.formContent;
@@ -168,12 +175,17 @@
 			formClass: {
 				type: Object
 			},
+			optionalPropsObject: {
+				type: Object,
+				required: true,
+			},
 			wrapperInnerDiv: {
 				type: Object
-			}
+			},
 		},
 		components: {
-			Multiselect
+			Multiselect,
+			FileUpload
 		},
 		created() {
 			this.createFormData();
@@ -185,7 +197,7 @@
 	<div class="form-frame container" :class="formFrameClass">
 		<form v-if="sent === undefined" @submit.prevent="validateForm" novalidate :class="formClass">
 			<!-- Generic form element -->
-			<div :class="wrapperInnerDiv">
+			<div class="row" :class="wrapperInnerDiv">
 				<!-- Form field's template -->
 				<div class="mb-2" :class="el.wrapperStyle" v-for="(el, key) in elements">
 					<!-- If vote field -->
@@ -194,7 +206,7 @@
 						<div class="form-control text-center vote">
 							<template v-for="vote in [5, 4, 3, 2, 1]">
 								<input :id="el.id + vote" class="form-control" :class="{ 'invalid-input': errors[key] }" :value="vote"
-									v-model.trim="formData[key]" :type="el.type" required>
+									v-model.trim="formData[key]" :type="el.type">
 								<label :for="el.id + vote" class="form-label stethoscope"><i
 										class="fa-solid fa-stethoscope"></i></label>
 							</template>
@@ -206,15 +218,22 @@
 						<Multiselect id="" class="specializations-multiselect" :class="{ 'invalid-input': errors[key] }"
 							@send-values="(specializations) => { updateSpecs(specializations, formData, key); }" />
 					</template>
+					<!-- if input type file field -->
+					<template v-else-if="key === 'photo' || key === 'curriculum'">
+						<label for="el.id" class="badge rounded-pill">{{ el.label }}</label>
+						<FileUpload class="form-control" :class="{ 'invalid-input': errors[key] }"
+							:accept="key === 'photo' ? 'image/jpeg,image/png,imgage/jpg,application/pdf' : 'application/pdf,text/plain'"
+							:size="2048 * 1000"
+							@uploaded-new-file="(value) => { console.log('uploaded new file'); optionalPropsObject.handleUploadedNewFile(value, formData, errors, key) }" />
+					</template>
 					<!-- If other fields of type text input and textarea -->
 					<template v-else>
 						<label :for="el.id" class="badge rounded-pill">{{ el.label }}</label>
-						<input v-if="key !== 'content'" :id="el.id" v-model.trim="formData[key]" :type="el.type"
+						<input v-if="el.type !== 'textarea'" :id="el.id" v-model.trim="formData[key]" :type="el.type"
 							:placeholder="el.placeholder" class="form-control" :class="{ 'invalid-input': errors[key] }"
-							:rows="key === 'content' ? 3 : null" required>
-						<textarea v-if="key === 'content'" :id="el.id" v-model.trim="formData[key]" :placeholder="el.placeholder"
-							class="form-control" :class="{ 'invalid-input': errors[key] }" :rows="key === 'content' ? 3 : null"
-							required></textarea>
+							:rows="key === 'content' ? 3 : null" :disabled="el.disabled">
+						<textarea v-else :id="el.id" v-model.trim="formData[key]" :placeholder="el.placeholder" class="form-control"
+							:class="{ 'invalid-input': errors[key] }" :rows="key === 'content' ? 3 : null"></textarea>
 					</template>
 					<!-- Box for single input's error message -->
 					<div class="invalid" v-if="errors[key]">
@@ -229,7 +248,7 @@
 					</button>
 				</div>
 				<!-- Submit, reset buttons for registration or login -->
-				<div v-if="formContent === 'Registrazione'" class="buttons-wrapper mt-3">
+				<div v-if="formContent === 'registration'" class="buttons-wrapper mt-3">
 					<button type="submit" id="register-button" class="btn btn-primary btn-submit mx-auto"
 						:class="{ 'disabled': validated }">Registrati
 					</button>
@@ -238,8 +257,8 @@
 					</button>
 				</div>
 				<!-- Submit, reset buttons for profile creation and edit -->
-				<div v-if="formContent === 'Nuovo profilo'" class="buttons-wrapper mt-3">
-					<button type="submit" id="register-button" class="btn btn-primary btn-submit mx-auto"
+				<div v-if="formContent === 'create profile'" class="buttons-wrapper mt-3">
+					<button type="submit" id="create-profile-button" class="btn btn-primary btn-submit mx-auto"
 						:class="{ 'disabled': validated }">Crea profilo
 					</button>
 					<button type="button" id="reset-button" class="btn btn-warning ms-3" :class="{ 'disabled': validated }"

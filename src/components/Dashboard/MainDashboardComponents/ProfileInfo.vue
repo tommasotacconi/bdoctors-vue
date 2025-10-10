@@ -30,6 +30,8 @@
 					})
 					.catch(err => {
 						if (err.response.status !== 401) this.store.isAuthenticated = true;
+						const { user } = err.response.data;
+						this.dashboardStore.tmp = { ...user }
 					})
 					.finally(() => {
 						this.loaded = true;

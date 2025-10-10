@@ -2,11 +2,11 @@
 	import axios from "axios";
 	import { store } from "../../../../../js/store.js";
 	import Multiselect from "../../../Generics/Multiselect.vue";
-	import PhotoUpload from "../../../Generics/PhotoUpload.vue";
-	import CvUpload from "../../../Generics/CvUpload.vue";
 	import AppAlert from "../../../Generics/AppAlert.vue";
 	import { dashboardStore } from "../../../../../js/dashboardStore.js";
 	import { emitter } from "../../../../../js/eventBus.js";
+	import AppForm from "../../../Generics/AppForm.vue";
+	import FormField from "../../../../../js/utils/FormField.js";
 
 	export default {
 		data() {
@@ -34,40 +34,52 @@
 				store,
 				dashboardStore,
 				profileData: {},
+				// List of all form all elements to select from the singular form  
+				formElements: {
+					firstName: new FormField('first-name-input', 'text', 'Nome', { d: true, wS: 'col-md-6' }),
+					lastName: new FormField('last-name-input', 'text', 'Cognome', { d: true, wS: 'col-md-6' }),
+					phone: new FormField('phone-input', 'tel', 'Telefono ufficio', { p: 'numero di telefono senza prefisso', wS: 'col-md-6' }),
+					officeAddress: new FormField('office-address-input', 'text', 'Indirizzo d\'ufficio', { p: 'Piazza/Via...', wS: 'col-md-6' }),
+					services: new FormField('services-input', 'textarea', 'Prestazioni erogate', { p: 'Inicare le prestazioni prefissandole con un asterisco', wS: 'col-md-12' }),
+					photo: new FormField('photo-input', 'file', 'Foto profilo', { wS: 'col-md-6' }),
+					curriculum: new FormField('curriculum-input', 'file', 'Curriculum', { wS: 'col-md-6' }),
+				}
 			}
 		},
 		components: {
+			AppForm,
 			Multiselect,
-			PhotoUpload,
-			CvUpload,
-			AppAlert
+			AppAlert,
 		},
 
 		methods: {
-			validateForm() {
-				this.errors = [];
-				if (!this.formData.phone) { this.errors.phone = "Il numero di telefono è obbligatorio." }
-				else if (isNaN(this.formData.phone)) { this.errors.phone = "Il numero di telefono può contenere solo numeri" };
-				if (!this.formData.office_address) this.errors.office_address = "L'indirizzo è obbligatorio.";
-				if (!this.formData.services) this.errors.services = "Inserire almeno una prestazione.";
-				if (!this.formData.photo) this.errors.photo = "La foto è obbligatoria";
-				if (!this.formData.curriculum) this.errors.curriculum = "Il curriculum è obbligatorio.";
-				if (!this.errors.length) {
-					this.validated = true;
-					if (this.validated = true) {
-						this.createProfile();
+			isObjectEmpty(objectName) {
+				return objectName && Object.entries(objectName).length === 0 && objectName.constructor === Object;
+			},
+			handleUploadedNewFile(file, formData, errors, field) {
+				errors[field] = '';
+
+				if (file && !this.isObjectEmpty(file)) formData[field] = file;
+				else errors[field] = `Inserire un file di dimensioni non superiori a 2048KB e del tipo indicato nel selettore di file`;
+			},
+			customValidation(formInstance) {
+				const data = formInstance.formData;
+				const elements = formInstance.elements;
+				const errors = formInstance.errors;
+
+				for (const field in data) {
+					const value = data[field];
+					const label = elements[field].label;
+					console.log(field, ': ', value);
+
+					if (field === 'phone' && value) {
+						// Use regex 
+						const reResult = /^\+?\d[\d\s]*$/.test(value);
+						if (!reResult) errors[field] = `Il ${label.toLowerCase()} può essere composto da numeri separati da spazi ed eventualmente iniziare con un prefisso '+##'`;
 					}
+					else if (field === 'officeAddress' && value.length > 50) errors[field] = `L\'${label.toLowerCase()} non può essere più lungo di 50 caratteri`;
+					else if (field === 'services' && !value) errors[field] = `Le ${label.toLowerCase()} sono obbligatorie`;
 				}
-				// console.log(this.formData);
-				// console.log(this.errors);
-			},
-
-			handlePhoto(photo) {
-				this.formData.photo = photo;
-			},
-
-			handleCurriculum(curriculum) {
-				this.formData.curriculum = curriculum;
 			},
 			//commento per commit 2
 			createProfile() {
@@ -122,97 +134,51 @@
 <template>
 	<div class="container py-3">
 		<header class="page-header row">
-			<button class="btn back-arrow col-1" @click="dashboardStore.currentProfileSectionComponentIndex = 0">
-				<i class="fa-solid fa-circle-arrow-left fa-2xl"></i></button>
-			<h1 class=" col-10 text-center">Crea il tuo profilo</h1>
+			<div class="col-2 align-items-center">
+				<button class="btn back-arrow" @click="dashboardStore.currentProfileSectionComponentIndex = 0">
+					<i class="fa-solid fa-circle-arrow-left fa-xl"></i></button>
+			</div>
+			<h1 class=" col-8 text-center">Crea il tuo profilo</h1>
 		</header>
 
-		<form action="" method="POST" class="row py-4 my-4" id="edit-form" @submit.prevent="validateForm" novalidate>
+		<!-- Alert -->
+		<div class="col-6" v-if="isResponseStatusSuccess">
+			<AppAlert class="alert-success d-flex">
+				<div class="col alert-body">
+					I tuoi dati sono stati aggiornati.
+				</div>
+				<div class="alert-footer">
+					<button type="button" class="btn btn-primary" @click="dashboardStore.currentProfileSectionComponentIndex = 0">
+						Torna al profilo
+					</button>
+				</div>
+			</AppAlert>
+		</div>
 
-			<div class="mb-3 col-6">
-				<label for="phone" class="form-label">Telefono</label>
-				<input type="tel" class="form-control" :class="{ 'invalid-input': errors.phone }" id="phone"
-					v-model="formData.phone" required>
-				<div class="invalid" v-if="errors.phone">
-					<p> {{ errors.phone }} </p>
-				</div>
-			</div>
-			<div class="mb-3 col-6">
-				<label for="office_address" class="form-label">Indirizzo</label>
-				<input type="text" class="form-control" :class="errors.office_address && 'invalid-input'" id="office_address"
-					v-model='formData.office_address' required>
-				<div class="invalid" v-if="errors.office_address">
-					<p> {{ errors.office_address }} </p>
-				</div>
-			</div>
-			<div class="mb-3">
-				<label for="services" class="form-label">Prestazioni</label>
-				<textarea class="form-control" :class="{ 'invalid-input': errors.services }" id="services"
-					v-model="formData.services" required></textarea>
-				<div class="invalid" v-if="errors.services">
-					<p> {{ errors.services }} </p>
-				</div>
-			</div>
-			<div class="mb-3 d-flex flex-column col-6">
-				<label for="photo" class="form-label">Foto profilo</label>
-				<PhotoUpload v-model="formData.photo" @file-selected="handlePhoto"></PhotoUpload>
-				<div>
-					<p> {{ errors.photo }} </p>
-				</div>
-			</div>
-			<div class="mb-3 d-flex flex-column col-6">
-				<label for="curriculum" class="form-label">Curriculum
-					Vitae</label>
-				<CvUpload v-model="formData.curriculum" @cv-selected="handleCurriculum"></CvUpload>
-				<div class="invalid" v-if="errors.curriculum">
-					<p> {{ errors.curriculum }} </p>
-				</div>
-			</div>
-
-			<div class="mb-3">
-				<button type="submit" class="btn me-2 btn-submit" data-bs-toggle="myModal :" data-bs-target="myModal"
-					:disabled="isResponseStatusSuccess">Crea profilo</button>
-				<button type="reset" class="btn btn-reset" :disabled="isResponseStatusSuccess">Reset</button>
-			</div>
-
-			<!-- Alert -->
-			<div class="col-6" v-if="isResponseStatusSuccess">
-				<AppAlert class="alert-success d-flex">
-					<div class="col alert-body">
-						I tuoi dati sono stati aggiornati.
-					</div>
-					<div class="alert-footer">
-						<button type="button" class="btn btn-primary"
-							@click="dashboardStore.currentProfileSectionComponentIndex = 0">
-							Torna al profilo
-						</button>
-					</div>
-				</AppAlert>
-			</div>
-
-		</form>
+		<!-- Form -->
+		<AppForm class="user-data-form" id="" :apiRoute="'profiles'" :elements="formElements" :doctorInfo="null"
+			:wrapperInnerDiv="['row']" :perfectValidation="customValidation"
+			:optionalPropsObject="{ handleUploadedNewFile }" />
 	</div>
 
 </template>
 
 <style scoped lang="scss">
+	@use '../../../../styles/forms';
 
-	#edit-form,
-	#errors {
-		border: 1px solid;
-		border-radius: 20px;
+	header {
+		margin-bottom: 30px;
+
+		h1 {
+			margin-bottom: 0;
+		}
 	}
 
 	.btn.back-arrow {
-		padding-left: 0;
-		color: var(--color-primary);
-
+		width: 60px;
+		color: #fff;
 		transition: color 0.3s;
-		text-align: start;
-
-		&:hover {
-			color: var(--color-secondary);
-		}
+		padding: 10px 0;
 	}
 
 	.btn-submit {
@@ -228,16 +194,18 @@
 		}
 	}
 
-	.invalid {
-		color: red;
-	}
-
-	.invalid-input {
-		border-color: red;
-	}
-
 	.alert-footer button {
 		background-color: var(--color-complementary);
 		border-color: var(--color-complementary);
+	}
+
+	:deep() {
+		form {
+			@include forms.set-fields-color(var(--color-secondary));
+
+			textarea {
+				height: 200px;
+			}
+		}
 	}
 </style>

@@ -90,8 +90,9 @@ form {
 		}
 	}
 
-	input.invalid-input.form-control[type],
-	.specializations-multiselect.invalid-input {
+	input.form-control.invalid-input[type],
+	.specializations-multiselect.invalid-input,
+	textarea.form-control.invalid-input {
 		border-color: var(--color-error);
 	}	
 
