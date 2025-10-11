@@ -126,44 +126,35 @@
 				}
 
 				return result;
-			}
-		},
-		computed: {
-			formContent() {
-				if (this.elements.content) return this.elements.content.label;
-				else if (this.elements.pwConf) return 'registration';
-				else if (!this.elements.specializationsId) return 'create profile';
 			},
-			formContentSuffix() {
-				const cont = this.formContent;
-				if (cont.search(/^(Messaggio|Recensione)$/) !== -1) return cont === 'Messaggio' ? 'o' : 'a';
-				else return cont === 'Accesso' ? 'o' : 'a';
-			},
-			formContentArticle() {
-				const cont = this.formContent;
-				if (this.formContent.search(/^(Messaggio|Recensione)$/ !== -1)) return cont === 'Messaggio' ? 'il' : 'la';
-				else return cont === 'Accesso' ? 'il' : 'la';
-			},
-			yourFormContentSentence() {
-				if (this.formContent && this.formContentSuffix && this.formContentArticle) return `${this.formContentArticle[0].toUpperCase() + this.formContentArticle.slice(1)} tu${this.formContentSuffix} ${this.formContent.toLowerCase()}`;
+			handleSuccessfulSend() {
+				if (this.name === 'messaggio' || this.name === 'recensione') sent = undefined;
+				else if (this.name === 'nuovo profilo' || this.name === 'modifica di profilo') {
+					this.sent = undefined;
+					this.dashboardStore.currentProfileSectionComponentIndex = 0;
+				}
 			}
 		},
 		props: {
+			doctorInfo: {
+				type: [Object, null],
+				required: true
+			},
 			apiRoute: {
 				type: String,
-				required: true
+				required: true,
 			},
 			elements: {
 				type: Object,
 				required: true
 			},
-			doctorInfo: {
-				type: [Object, null],
+			// Name, article, concordance
+			nameArtConc: {
+				type: Array,
 				required: true
 			},
 			perfectValidation: {
 				type: Function,
-				required: false
 			},
 			isRendered: {
 				type: Boolean,
@@ -176,11 +167,24 @@
 				type: Object
 			},
 			optionalPropsObject: {
-				type: Object,
-				required: true,
+				type: Object
 			},
 			wrapperInnerDiv: {
 				type: Object
+			},
+		},
+		computed: {
+			name() {
+				return this.nameArtConc[0];
+			},
+			art() {
+				return this.nameArtConc[1];
+			},
+			conc() {
+				return this.nameArtConc[2];
+			},
+			stdPhraseWithName() {
+				return `${this.art[0].toUpperCase()}${this.art.slice(1)} tu${this.conc} ${this.name}`
 			},
 		},
 		components: {
@@ -241,14 +245,14 @@
 					</div>
 				</div>
 
-				<!-- Submit button for review or message form-->
-				<div v-if="formContent === 'Messaggio' || formContent === 'Recensione'" class="buttons-wrapper text-center">
+				<!-- Submit content for review or message form-->
+				<div v-if="name === 'messaggio' || name === 'recensione'" class="buttons-wrapper text-center">
 					<button type="submit" class="btn btn-primary btn-submit mx-auto mt-4" :class="{ 'disabled': validated }">Invia
-						{{ formContent.toLowerCase() }}
+						{{ name.toLowerCase() }}
 					</button>
 				</div>
 				<!-- Submit, reset buttons for registration or login -->
-				<div v-if="formContent === 'registration'" class="buttons-wrapper mt-3">
+				<div v-if="name === 'registration'" class="buttons-wrapper mt-3">
 					<button type="submit" id="register-button" class="btn btn-primary btn-submit mx-auto"
 						:class="{ 'disabled': validated }">Registrati
 					</button>
@@ -257,7 +261,7 @@
 					</button>
 				</div>
 				<!-- Submit, reset buttons for profile creation and edit -->
-				<div v-if="formContent === 'create profile'" class="buttons-wrapper mt-3">
+				<div v-if="name === 'nuovo profilo' || name === 'modifica di profilo'" class="buttons-wrapper mt-3">
 					<button type="submit" id="create-profile-button" class="btn btn-primary btn-submit mx-auto"
 						:class="{ 'disabled': validated }">Crea profilo
 					</button>
@@ -271,43 +275,52 @@
 		<Loader v-else-if="sent === null" />
 
 		<!-- Notification message for successfull sending -->
-		<div v-else-if="sent" class="my-3">
-			<p class="my-2 px-2">
-				{{ yourFormContentSentence }} è stat{{ formContentSuffix }} inviat{{ formContentSuffix }} correttamente.
+		<div v-else-if="sent" class="msg-wrapper">
+			<p class="my-2">
+				{{ stdPhraseWithName }} è stat{{ conc }} inviat{{ conc }}
+				correttamente.
 			</p>
-			<button type="button" @click="sent = undefined" class="btn btn-primary btn-sm">Invia nuov{{ formContentSuffix
-			}}</button>
+
+			<button type="button" @click="handleSuccessfulSend" class="btn btn-sm d-block mx-auto">
+				<span v-if="name !== 'nuovo profilo' && name !== 'modifica di profilo'">Invia nuov{{ conc }}</span>
+				<span v-else>Vai al profilo</span>
+			</button>
 		</div>
 
 		<!-- Notification message for impossible sending -->
 		<div v-else class="my-3">
 			<p class="my-2 px-2">
-				{{ yourFormContentSentence }} non può essere inviat{{ formContentSuffix }} al momento. Controlla la
-				connessione
-				a
-				internet
-				o riprova più tardi.
+				{{ stdPhraseWithName }} non può essere inviat{{ conc }} al
+				momento.
+				Controlla
+				la
+				connessione a internet o riprova più tardi.
 			</p>
+
 			<button type="button" @click="sent = undefined; validated = undefined"
-				class="btn btn-primary btn-sm">Riprova</button>
+				class="btn btn-sm d-block mx-auto">Riprova</button>
 		</div>
 	</div>
 </template>
 
 <style scoped>
+	.form-frame {
+		position: relative;
+		display: flex;
+		justify-content: center;
+		align-items: center;
 
-	/* Loader sizing */
-	.loader {
-		width: 34px;
-		position: static;
-		translate: none;
-	}
+		p {
+			width: fit-content;
+		}
 
-	.btn {
-		span {
-			margin-right: 5px;
-			display: none;
+		.msg-wrapper {
+			width: fit-content;
+		}
+
+		/* Loader sizing */
+		.loader {
+			width: 34px;
 		}
 	}
-
 </style>

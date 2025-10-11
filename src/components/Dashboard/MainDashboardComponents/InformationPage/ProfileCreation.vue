@@ -11,25 +11,6 @@
 	export default {
 		data() {
 			return {
-				formData: {
-					//user_id: localStorage.getItem('user_id'),
-					phone: "",
-					office_address: "",
-					specializations: "",
-					services: "",
-					photo: null,
-					curriculum: null,
-					user_id: store.informationPageId
-				},
-				apiUrl: 'http://127.0.0.1:8000/api/profiles',
-				errors: {
-					phone: "",
-					office_address: "",
-					services: "",
-					photo: "",
-					curriculum: ""
-				},
-				validated: false,
 				isResponseStatusSuccess: false,
 				store,
 				dashboardStore,
@@ -105,28 +86,6 @@
 						// always executed
 					});
 			},
-			openProfile() {
-				// Once the user's been redirected to his profile, the modal's backdrop disappears
-				// const backdrop = document.querySelector('.modal-backdrop');
-				// if (backdrop) {
-				//     backdrop.remove();
-				// }
-				// redirect to user profile
-				this.$router.push({ name: 'dashboard', params: { id: this.profileData.id } });
-			}
-			// onPickFile() {
-			//     this.$refs.fileInput.click()
-			// },
-			// onFilePicked(event) {
-			//     const files = event.target.files
-			//     let filename = files[0].name
-			//     const fileReader = new FileReader()
-			//     fileReader.addEventListener('load', () => {
-			//         this.imageUrl = fileReader.result
-			//     })
-			//     fileReader.readAsDataURL(files[0])
-			//     this.photo = files[0]
-			// },
 		},
 	}
 </script>
@@ -141,7 +100,7 @@
 			<h1 class=" col-8 text-center">Crea il tuo profilo</h1>
 		</header>
 
-		<!-- Alert -->
+		<!-- Alert
 		<div class="col-6" v-if="isResponseStatusSuccess">
 			<AppAlert class="alert-success d-flex">
 				<div class="col alert-body">
@@ -153,11 +112,11 @@
 					</button>
 				</div>
 			</AppAlert>
-		</div>
+		</div> -->
 
 		<!-- Form -->
-		<AppForm class="user-data-form" id="" :apiRoute="'profiles'" :elements="formElements" :doctorInfo="null"
-			:wrapperInnerDiv="['row']" :perfectValidation="customValidation"
+		<AppForm class="user-data-form" id="" :doctorInfo="null" :apiRoute="'profiles'" :elements="formElements"
+			:nameArtConc="['nuovo profilo', 'il', 'o']" :wrapperInnerDiv="['row']" :perfectValidation="customValidation"
 			:optionalPropsObject="{ handleUploadedNewFile }" />
 	</div>
 
@@ -176,9 +135,13 @@
 
 	.btn.back-arrow {
 		width: 60px;
-		color: #fff;
-		transition: color 0.3s;
 		padding: 10px 0;
+		background-color: var(--color-primary);
+		transition: 0.4s;
+
+		&:hover {
+			color: var(--color-secondary);
+		}
 	}
 
 	.btn-submit {
