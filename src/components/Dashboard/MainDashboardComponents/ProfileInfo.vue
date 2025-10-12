@@ -138,7 +138,7 @@
 										</li>
 									</ul>
 								</div>
-								<button href="#" class="edit-profile"
+								<button href="#" class="btn edit-profile"
 									@click="dashboardStore.currentProfileSectionComponentIndex = 2">Modifica il tuo profilo</button>
 							</div>
 						</div>
@@ -255,7 +255,7 @@
 		text-align: start;
 	}
 
-	.edit-profile {
+	/* .edit-profile {
 		background-color: var(--color-secondary);
 		border-radius: 20px;
 		padding: 8px 15px;
@@ -263,7 +263,7 @@
 		color: var(--color-primary);
 		font-weight: bold;
 		border: 1px solid var(--color-primary);
-	}
+	} */
 
 
 	/* Card create */
