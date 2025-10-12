@@ -36,9 +36,10 @@
 			},
 			createFormData() {
 				for (const key in this.elements) {
-					if (key === 'specializationsId') this.$data.formData[key] = [];
+					const eventualValue = this.elements[key].value ?? '';
+					if (key === 'specializationsId') this.$data.formData[key] = eventualValue ? eventualValue : [];
 					else if ((key === 'vote')) this.$data.formData[key] = null;
-					else this.$data.formData[key] = this.elements[key].disabled ? this.dashboardStore.tmp[key.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`)] : '';
+					else this.$data.formData[key] = eventualValue;
 					this.$data.errors[key] = '';
 				}
 			},
@@ -198,9 +199,10 @@
 </script>
 
 <template>
+	<!-- /* Form section */ -->
 	<div class="form-frame container" :class="formFrameClass">
+		<!-- Generic form element -->
 		<form v-if="sent === undefined" @submit.prevent="validateForm" novalidate :class="formClass">
-			<!-- Generic form element -->
 			<div class="row" :class="wrapperInnerDiv">
 				<!-- Form field's template -->
 				<div class="mb-2" :class="el.wrapperStyle" v-for="(el, key) in elements">
@@ -220,6 +222,7 @@
 					<template v-else-if="key === 'specializationsId'">
 						<label for="el.id" class="badge rounded-pill">{{ el.label }}</label>
 						<Multiselect id="" class="specializations-multiselect" :class="{ 'invalid-input': errors[key] }"
+							:specializations="formData[key]"
 							@send-values="(specializations) => { updateSpecs(specializations, formData, key); }" />
 					</template>
 					<!-- if input type file field -->
@@ -245,6 +248,7 @@
 					</div>
 				</div>
 
+				<!-- /* Buttons section */ -->
 				<!-- Submit content for review or message form-->
 				<div v-if="name === 'messaggio' || name === 'recensione'" class="buttons-wrapper text-center">
 					<button type="submit" class="btn btn-primary btn-submit mx-auto mt-4" :class="{ 'disabled': validated }">Invia
@@ -252,7 +256,7 @@
 					</button>
 				</div>
 				<!-- Submit, reset buttons for registration or login -->
-				<div v-if="name === 'registration'" class="buttons-wrapper mt-3">
+				<div v-if="name === 'registrazione'" class="buttons-wrapper mt-3">
 					<button type="submit" id="register-button" class="btn btn-primary btn-submit mx-auto"
 						:class="{ 'disabled': validated }">Registrati
 					</button>
@@ -262,8 +266,11 @@
 				</div>
 				<!-- Submit, reset buttons for profile creation and edit -->
 				<div v-if="name === 'nuovo profilo' || name === 'modifica di profilo'" class="buttons-wrapper mt-3">
-					<button type="submit" id="create-profile-button" class="btn btn-primary btn-submit mx-auto"
-						:class="{ 'disabled': validated }">Crea profilo
+					<button type="submit" id="create-profile-button" class="btn btn-submit mx-auto"
+						:class="{ 'disabled': validated }">
+						<span v-if="name === 'nuovo profilo'">Crea</span>
+						<span v-else>Modifica</span>
+						profilo
 					</button>
 					<button type="button" id="reset-button" class="btn btn-warning ms-3" :class="{ 'disabled': validated }"
 						@click.prevent="resetForm()">Pulisci

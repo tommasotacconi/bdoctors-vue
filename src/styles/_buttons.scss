@@ -27,3 +27,14 @@
 		background-color: #e4005b;
 	}
 }
+
+.btn.back-arrow {
+	width: 60px;
+	padding: 10px 0;
+	background-color: var(--color-primary);
+	transition: 0.4s;
+
+	&:hover {
+		color: var(--color-secondary);
+	}
+}

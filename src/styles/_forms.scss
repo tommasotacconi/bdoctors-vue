@@ -28,6 +28,7 @@
 	
 	&.user-data-form {
 		background-color: var(--color-complementary);
+		@include set-fields-color(var(--color-secondary));
 	}
 }
 
@@ -49,6 +50,10 @@ form {
 
 		&::file-selector-button {
 			height: variables.$input-h;
+		}
+
+		&:disabled {
+			opacity: 0.6;
 		}
 	}
 
@@ -78,6 +83,7 @@ form {
 		position: relative;
 		left: 15px;
 		top: 12px;
+		z-index: 1;
 	}
 
 

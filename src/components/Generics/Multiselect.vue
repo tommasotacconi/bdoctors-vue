@@ -58,9 +58,10 @@
 		</VueMultiselect>
 	</div>
 </template>
-<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
-<style scoped lang="scss">
-	.invalid-input {
-		border-color: red;
+<style lang="scss">
+	@import 'vue-multiselect/dist/vue-multiselect.min.css';
+
+	.multiselect__tag {
+		background-color: var(--color-secondary);
 	}
 </style>
