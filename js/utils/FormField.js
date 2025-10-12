@@ -1,5 +1,5 @@
-export default class formField {
-	constructor(id, type, label, { p: placeholder = undefined, d: disabled = false, wS: wrapperStyle = undefined }) {
-		Object.assign(this, { id, type, label, placeholder, disabled, wrapperStyle });
+export default class FormField {
+	constructor(id, type, label, { v: value = undefined, p: placeholder = undefined, d: disabled = false, wS: wrapperStyle = undefined } = {}) {
+		Object.assign(this, { id, type, label, value, placeholder, disabled, wrapperStyle });
 	}
 }
