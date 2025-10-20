@@ -29,7 +29,7 @@
 				const result = [];
 				// Insert ids taken from specializations parameter in reactive variable specializations, property of errors 
 				for (let i = 0; i < specializations.length; i++) {
-					result.push(specializations[i].id);
+					result.push(specializations[i]);
 				}
 
 				reactiveObj[key] = result;
@@ -38,7 +38,7 @@
 				for (const key in this.elements) {
 					const eventualValue = this.elements[key].value ?? '';
 					if (key === 'specializationsId') this.$data.formData[key] = eventualValue ? eventualValue : [];
-					else if ((key === 'vote')) this.$data.formData[key] = null;
+					else if ((key === 'vote' || key === 'photo' || key === 'curriculum')) this.$data.formData[key] = null;
 					else this.$data.formData[key] = eventualValue;
 					this.$data.errors[key] = '';
 				}
@@ -52,6 +52,9 @@
 				this.resetErrors();
 				// Set errors if any
 				for (const data in this.formData) {
+					// Prevent validation on set up properties
+					if (['_method', 'send'].includes(data)) continue;
+
 					const value = this.formData[data];
 					const label = this.elements[data].label;
 
@@ -70,6 +73,8 @@
 				}
 				// Run custom validation function if any
 				if (this.perfectValidation) this.perfectValidation(this);
+				// Check if there are data to send first if 'send' property is present inside formData
+				if (this.formData.send && !this.formData.send.length) return;
 				// Check form validity by errors' presence
 				let isValid = true;
 				for (const data of Object.keys(this.formData)) {
@@ -97,12 +102,25 @@
 			},
 			sendForm() {
 				this.sent = null;
-				// Convert to snake_case data
-				const { pwConf, ...data } = this.camelToSnake(this.formData);
-				// console.log(data);
-				axios.post(this.store.apiUri + this.apiRoute, {
+				let dataToSend = {};
+				const areSendable = this.formData.send;
+				if (areSendable) {
+					for (const field of areSendable) {
+						dataToSend[field] = this.formData[field];
+					}
+
+					const { _method } = this.formData;
+					dataToSend._method = _method;
+
+					dataToSend = this.camelToSnake(dataToSend);
+				} else {
+					// Convert to snake_case data omitting pwConf
+					const { pwConf, ...toSend } = this.camelToSnake(this.formData);
+					dataToSend = toSend;
+				}
+				axios[this.method](this.store.apiUri + this.route, {
 					doctor_details: this.doctorInfo,
-					...data,
+					...dataToSend,
 				}, {
 					headers: {
 						"Content-Type": "multipart/form-data",
@@ -141,9 +159,14 @@
 				type: [Object, null],
 				required: true
 			},
-			apiRoute: {
-				type: String,
+			apiRouteAndMethod: {
+				type: Object,
 				required: true,
+				validator(value) {
+					const { route, method } = value;
+
+					return route && method;
+				}
 			},
 			elements: {
 				type: Object,
@@ -187,6 +210,16 @@
 			stdPhraseWithName() {
 				return `${this.art[0].toUpperCase()}${this.art.slice(1)} tu${this.conc} ${this.name}`
 			},
+			route() {
+				const { route } = this.apiRouteAndMethod;
+
+				return route;
+			},
+			method() {
+				const { method } = this.apiRouteAndMethod;
+
+				return method;
+			}
 		},
 		components: {
 			Multiselect,
@@ -220,22 +253,24 @@
 					</template>
 					<!-- If specializations' multiselect field -->
 					<template v-else-if="key === 'specializationsId'">
-						<label for="el.id" class="badge rounded-pill">{{ el.label }}</label>
-						<Multiselect id="" class="specializations-multiselect" :class="{ 'invalid-input': errors[key] }"
+						<label :for="el.id" class="badge rounded-pill">{{ el.label }}</label>
+						<Multiselect :id="el.id" class="specializations-multiselect" :class="{ 'invalid-input': errors[key] }"
 							:specializations="formData[key]"
 							@send-values="(specializations) => { updateSpecs(specializations, formData, key); }" />
 					</template>
-					<!-- if input type file field -->
+					<!-- if type=file input field -->
 					<template v-else-if="key === 'photo' || key === 'curriculum'">
-						<label for="el.id" class="badge rounded-pill">{{ el.label }}</label>
-						<FileUpload class="form-control" :class="{ 'invalid-input': errors[key] }"
-							:accept="key === 'photo' ? 'image/jpeg,image/png,imgage/jpg,application/pdf' : 'application/pdf,text/plain'"
-							:size="2048 * 1000"
-							@uploaded-new-file="(value) => { console.log('uploaded new file'); optionalPropsObject.handleUploadedNewFile(value, formData, errors, key) }" />
+						<label :for="el.id" class="badge rounded-pill">{{ el.label }}</label>
+						<FileUpload :id="el.id" class="form-control" :class="{ 'invalid-input': errors[key] }" :accept="el.accept"
+							:size="el.size * 1024" :value="el.value"
+							:nameAndConc="[el.label.toLowerCase(), el.fieldGenre = 'm' ? 'o' : 'a']"
+							@uploaded-new-file="(value) => { optionalPropsObject.handleUploadedNewFile(value, formData, errors, key) }"
+							:showPrev="el.showPreviousFile" />
 					</template>
 					<!-- If other fields of type text input and textarea -->
 					<template v-else>
-						<label :for="el.id" class="badge rounded-pill">{{ el.label }}</label>
+						<label :for="el.id" class="badge rounded-pill" :class="{ 'd-none': el.type === 'hidden' }">{{ el.label
+						}}</label>
 						<input v-if="el.type !== 'textarea'" :id="el.id" v-model.trim="formData[key]" :type="el.type"
 							:placeholder="el.placeholder" class="form-control" :class="{ 'invalid-input': errors[key] }"
 							:rows="key === 'content' ? 3 : null" :disabled="el.disabled">

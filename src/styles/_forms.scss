@@ -30,113 +30,112 @@
 		background-color: var(--color-complementary);
 		@include set-fields-color(var(--color-secondary));
 	}
-}
 
+	form {
+		width: 100%;
+		text-align: start;
+		animation: 0.6s ease-out 0.6s forwards fade;
+		opacity: 0;
 
-form {
-	width: 100%;
-	text-align: start;
-	animation: 0.6s ease-out 0.6s forwards fade;
-	opacity: 0;
+		@include set-fields-color(var(--color-tertiary));
 
-	@include set-fields-color(var(--color-tertiary));
+		input[type].form-control,
+		textarea.form-control,
+		div.form-control {
+			&:not(textarea, .vote) {
+				height: variables.$input-h;
+			}
 
-	input[type].form-control,
-	textarea.form-control,
-	div.form-control {
-		&:not(textarea, .vote) {
-			height: variables.$input-h;
+			&::file-selector-button {
+				height: variables.$input-h;
+			}
+
+			&:disabled {
+				opacity: 0.6;
+			}
 		}
 
-		&::file-selector-button {
-			height: variables.$input-h;
+		textarea.form-control {
+			padding-top: 15px;
 		}
 
-		&:disabled {
-			opacity: 0.6;
+		div:has(> .specializations-multiselect) {
+			height: 10rem;
+			overflow: clip;
+			overflow-clip-margin: 190px;
+
+			label {
+				position: relative;
+				z-index: 51;
+			}
+
+			.specializations-multiselect {
+				border-radius: 7px;
+			}
 		}
-	}
 
-	textarea.form-control {
-		padding-top: 15px;
-	}
+		label.badge.rounded-pill {
+			font-size: 0.9rem;
+			color: white;
 
-	div:has(> .specializations-multiselect) {
-		height: 10rem;
-		overflow: clip;
-		overflow-clip-margin: 190px;
-
-		label {
 			position: relative;
-			z-index: 51;
+			left: 15px;
+			top: 12px;
+			z-index: 1;
 		}
 
-		.specializations-multiselect {
-			border-radius: 7px;
-		}
-	}
 
-	label.badge.rounded-pill {
-		font-size: 0.9rem;
-		color: white;
+		/* Form error */
+		.invalid {
+			color: var(--color-error);
 
-		position: relative;
-		left: 15px;
-		top: 12px;
-		z-index: 1;
-	}
-
-
-	/* Form error */
-	.invalid {
-		color: var(--color-error);
-
-		p {
-			margin: 0;
-		}
-	}
-
-	input.form-control.invalid-input[type],
-	.specializations-multiselect.invalid-input,
-	textarea.form-control.invalid-input {
-		border-color: var(--color-error);
-	}	
-
-	/*vote*/
-	.vote {
-		padding: 10px 0;
-		margin-bottom: 20px;
-
-		display: flex;
-		flex-direction: row-reverse;
-		justify-content: center;
-
-		& input {
-			display: none;
+			p {
+				margin: 0;
+			}
 		}
 
-		& label {
-			height: 2.5rem;
-			aspect-ratio: 1;
-			margin: 0 2.5px;
-			border: 2px solid var(--color-tertiary);
-			border-radius: 50%;
+		input.form-control.invalid-input[type],
+		.specializations-multiselect.invalid-input,
+		textarea.form-control.invalid-input {
+			border-color: var(--color-error);
+		}	
 
-			line-height: 2.5rem;
-			font-size: 1.3rem;
-			cursor: pointer;
-			transition: color 1s ease-out;
-		}
+		/*vote*/
+		.vote {
+			padding: 10px 0;
+			margin-bottom: 20px;
 
-		& label:hover,
-		& label:hover~label {
-			background-color: var(--color-tertiary);
-			color: var(--color-complementary);
-		}
+			display: flex;
+			flex-direction: row-reverse;
+			justify-content: center;
 
-		& input:checked~label {
-			background-color: var(--color-tertiary);
-			color: var(--color-complementary);
+			& input {
+				display: none;
+			}
+
+			& label {
+				height: 2.5rem;
+				aspect-ratio: 1;
+				margin: 0 2.5px;
+				border: 2px solid var(--color-tertiary);
+				border-radius: 50%;
+
+				line-height: 2.5rem;
+				font-size: 1.3rem;
+				cursor: pointer;
+				transition: color 1s ease-out;
+			}
+
+			& label:hover,
+			& label:hover~label {
+				background-color: var(--color-tertiary);
+				color: var(--color-complementary);
+			}
+
+			& input:checked~label {
+				background-color: var(--color-tertiary);
+				color: var(--color-complementary);
+			}
 		}
 	}
 }

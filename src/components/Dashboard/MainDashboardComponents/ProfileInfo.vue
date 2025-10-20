@@ -108,10 +108,6 @@
 											<h5>Email:</h5>
 											<p>{{ dashboardStore.profileDataGeneral.user.email }}</p>
 										</section>
-										<section class="password-section d-flex gap-1 align-items-center">
-											<h5>Password:</h5>
-											<p>*********</p>
-										</section>
 									</div>
 								</div>
 								<div class="card-text">
@@ -124,11 +120,17 @@
 												}}</a>
 										</li>
 										<li>
-											<strong>Specializzazione:</strong> {{
-												dashboardStore.profileDataGeneral.user.specializations[0].name }}
+											<strong>Specializzazione:</strong>
+											<ul>
+												<li v-for="specialization in dashboardStore.profileDataGeneral.user.specializations">{{
+													specialization.name }}</li>
+											</ul>
 										</li>
 										<li>
-											<strong>Indirizzo:</strong> {{ dashboardStore.profileDataGeneral.office_address }}
+											<strong>Indirizzo di casa:</strong> {{ dashboardStore.profileDataGeneral.user.home_address }}
+										</li>
+										<li>
+											<strong>Indirizzo di ufficio:</strong> {{ dashboardStore.profileDataGeneral.office_address }}
 										</li>
 										<li>
 											<strong>Telefono:</strong> {{ dashboardStore.profileDataGeneral.phone }}
@@ -186,6 +188,11 @@
 
 	p {
 		margin: 0;
+	}
+
+	ul:has(ul) {
+		list-style-type: none;
+		/* list-style-position: inside; */
 	}
 
 	/* Card edit*/
