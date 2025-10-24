@@ -19,8 +19,8 @@
 					lastName: new FormField('last-name-input', 'text', 'Cognome', { wS: 'col-md-6' }),
 					email: new FormField('email-input', 'text', 'Email', { d: true, wS: 'col-md-6' }),
 					homeAddress: new FormField('home-address-input', 'text', 'Indirizzo di residenza', { p: 'Via/Piazza...', wS: 'col-md-6' }),
-					specializationsId: new FormField('specializations-input', 'multiselect', 'Specializzazioni', { p: 'Seleziona una o più specializzazioni' }),
-					phone: new FormField('phone-input', 'tel', 'Telefono ufficio', { p: 'numero di telefono senza prefisso', wS: 'col-md-6' }),
+					specializationsId: new FormField('specializations-input', 'multiselect', 'Specializzazioni', { p: 'Seleziona una o più specializzazioni', dR: false }),
+					phone: new FormField('phone-input', 'tel', 'Telefono d\'ufficio', { p: 'Numero di telefono', wS: 'col-md-6' }),
 					officeAddress: new FormField('office-address-input', 'text', 'Indirizzo d\'ufficio', { p: 'Piazza/Via...', wS: 'col-md-6' }),
 					services: new FormField('services-input', 'textarea', 'Prestazioni erogate', { p: 'Indicare le prestazioni prefissandole con un asterisco', wS: 'col-md-12' }),
 					photo: new FormField('photo-input', 'file', 'Foto profilo', { a: 'image/jpeg,image/png,imgage/jpg,application/pdf', s: 2048, sP: true, wS: 'col-md-6' }),
@@ -133,44 +133,27 @@
 				const data = formInstance.formData;
 				const elements = formInstance.elements;
 				const errors = formInstance.errors;
-				// Prepare a 'send' property on 'formData' to track what values have changed
-				data.send = [];
 
 				for (const field in data) {
 					// Prevent logic for '_method'
 					if (['_method', 'send'].includes(field)) continue;
 
 					const value = data[field];
-					const previousValue = elements[field].value;
 					const label = elements[field].label;
 
-					// Decide how to evaluate if input's content changed
-					let isChanged = false;
-					if (['photo', 'curriculum'].includes(field)) isChanged = !!value;
-					else if (field === 'specializationsId') {
-						let allPreviousArePresent = true;
-						let sameNumberOfSpecs = true;
-
-						for (const el in value) {
-							if (!value.every(({ id }) => previousValue.some(({ id: prevId }) => prevId === id))) allPreviousArePresent = false;
-						}
-						if (!(value.length === previousValue.length)) sameNumberOfSpecs = false;
-
-						if (!allPreviousArePresent || !sameNumberOfSpecs) isChanged = true;
-					}
-					else isChanged = value !== previousValue;
-					if (isChanged) console.log(field + ': \'' + value + '\' has changed (\'isChanged\'=' + isChanged + ')');
-
-					if (isChanged) {
-						// Register new field to send
-						data.send.push(field);
-
-						if (field === 'phone' && value) {
+					if (formInstance.send.length) {
+						if (field === 'homeAddress' && (value.length < 3 || value.length > 100))
+							errors[field] = "L'indirizzo di residenza può essere composto da 3 a 100 caratteri";
+						else if (field === 'specializationsId' && !value.length) errors[field] = "Selezionare almeno una specializzazione";
+						else if (field === 'phone' && value) {
 							// Use regex 
 							const reResult = /^\+?\d[\d\s]*$/.test(value);
 							if (!reResult) errors[field] = `Il ${label.toLowerCase()} può essere composto da numeri separati da spazi ed eventualmente iniziare con un prefisso '+##'`;
 						}
-						else if (field === 'officeAddress' && value.length > 50) errors[field] = `L\'${label.toLowerCase()} non può essere più lungo di 50 caratteri`;
+						else if (field === 'officeAddress') {
+							if (!value) errors[field] = errors[field].replace('Il', 'L\'');
+							else if (value.length > 50) errors[field] = `L\'${label.toLowerCase()} non può essere più lungo di 50 caratteri`;
+						}
 						else if (field === 'services' && !value) errors[field] = `Le ${label.toLowerCase()} sono obbligatorie`;
 						else if (field === 'photo' || field === 'curriculum' && value === null) errors[field] = '';
 					}
@@ -223,8 +206,9 @@
 		</div>
 
 		<AppForm class="user-data-form" id="" :doctorInfo="null" :apiRouteAndMethod="{ route: 'profiles', method: 'post' }"
-			:elements="formElements" :nameArtConc="['modifica di profilo', 'la', 'a']" :wrapperInnerDiv="['row']"
-			:perfectValidation="customValidation" :optionalPropsObject="{ handleUploadedNewFile, showPreviousFiles: true }" />
+			:elements="formElements" :nameArtConc="['modifica di profilo', 'la', 'a']" :checkPrevValues="true"
+			:wrapperInnerDiv="['row']" :perfectValidation="customValidation"
+			:optionalPropsObject="{ handleUploadedNewFile, showPreviousFiles: true }" />
 	</div>
 
 </template>

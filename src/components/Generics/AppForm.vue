@@ -38,7 +38,7 @@
 				for (const key in this.elements) {
 					const eventualValue = this.elements[key].value ?? '';
 					if (key === 'specializationsId') this.$data.formData[key] = eventualValue ? eventualValue : [];
-					else if ((key === 'vote' || key === 'photo' || key === 'curriculum')) this.$data.formData[key] = null;
+					else if (['vote', 'photo', 'curriculum'].includes(key)) this.$data.formData[key] = null;
 					else this.$data.formData[key] = eventualValue;
 					this.$data.errors[key] = '';
 				}
@@ -53,10 +53,13 @@
 				// Set errors if any
 				for (const data in this.formData) {
 					// Prevent validation on set up properties
-					if (['_method', 'send'].includes(data)) continue;
+					if (['_method'].includes(data)) continue;
 
 					const value = this.formData[data];
 					const label = this.elements[data].label;
+
+					// Check that field is enabled
+					if (this.elements[data].disabled) continue;
 
 					if (!value || value instanceof Array && !value.length) {
 						if (data === 'content') {
@@ -90,8 +93,17 @@
 			},
 			resetForm() {
 				for (const key in this.formData) {
-					if (key !== 'vote') this.formData[key] = '';
+					// Check if field enabled
+					if (this.elements[key].disabled) continue;
+
+					if (!['vote', 'photo', 'curriculum', 'specializationsId'].includes(key)) this.formData[key] = '';
+					else if (key === 'specializationsId') {
+						this.formData[key] = [];
+						// Reset Multiselect
+						this.$refs.multi[0].reset();
+					}
 					else this.formData[key] = null;
+
 					this.validated = false;
 				}
 			},
@@ -177,12 +189,11 @@
 				type: Array,
 				required: true
 			},
+			checkPrevValues: {
+				type: Boolean,
+			},
 			perfectValidation: {
 				type: Function,
-			},
-			isRendered: {
-				type: Boolean,
-				required: false
 			},
 			formFrameClass: {
 				type: Object
@@ -219,6 +230,36 @@
 				const { method } = this.apiRouteAndMethod;
 
 				return method;
+			},
+			send() {
+				let send = [];
+				let isChanged = false;
+
+				for (const field in this.formData) {
+					// Prevent logic for '_method'
+					if (['_method', 'send'].includes(field)) continue;
+
+					const value = this.formData[field];
+					const previousValue = this.elements[field].value;
+
+					if (['photo', 'curriculum'].includes(field)) isChanged = !!value;
+					else if (field === 'specializationsId') {
+						let allPreviousArePresent = true;
+						let sameNumberOfSpecs = true;
+
+						for (const el in value) {
+							if (!value.every(({ id }) => previousValue.some(({ id: prevId }) => prevId === id))) allPreviousArePresent = false;
+						}
+						if (!(value.length === previousValue.length)) sameNumberOfSpecs = false;
+
+						if (!allPreviousArePresent || !sameNumberOfSpecs) isChanged = true;
+					}
+					else isChanged = value !== previousValue;
+
+					if (isChanged) send.push(field);
+				}
+
+				return send;
 			}
 		},
 		components: {
@@ -254,8 +295,8 @@
 					<!-- If specializations' multiselect field -->
 					<template v-else-if="key === 'specializationsId'">
 						<label :for="el.id" class="badge rounded-pill">{{ el.label }}</label>
-						<Multiselect :id="el.id" class="specializations-multiselect" :class="{ 'invalid-input': errors[key] }"
-							:specializations="formData[key]"
+						<Multiselect ref="multi" :id="el.id" class="specializations-multiselect"
+							:class="{ 'invalid-input': errors[key] }" :specializations="formData[key]"
 							@send-values="(specializations) => { updateSpecs(specializations, formData, key); }" />
 					</template>
 					<!-- if type=file input field -->
@@ -302,7 +343,7 @@
 				<!-- Submit, reset buttons for profile creation and edit -->
 				<div v-if="name === 'nuovo profilo' || name === 'modifica di profilo'" class="buttons-wrapper mt-3">
 					<button type="submit" id="create-profile-button" class="btn btn-submit mx-auto"
-						:class="{ 'disabled': validated }">
+						:class="{ 'disabled': validated }" :disabled="checkPrevValues && !send.length">
 						<span v-if="name === 'nuovo profilo'">Crea</span>
 						<span v-else>Modifica</span>
 						profilo

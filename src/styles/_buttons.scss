@@ -12,7 +12,8 @@
 	}
 	background-color: var(--color-tertiary);
 
-	&:hover {
+	&:hover,
+	&:disabled {
 		color: #fff;
 		background-color: var(--color-secondary);
 	}

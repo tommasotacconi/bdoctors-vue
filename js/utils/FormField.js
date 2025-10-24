@@ -13,7 +13,7 @@ export default class FormField {
 	 * @param {string} [options.v=undefined] - Field value
 	 * @param {string} [options.p=undefined] - Placeholder text
 	 * @param {boolean} [options.d=false] - Disabled option
-	 * @param {boolean} [options.sP=false] - Hidden option
+	 * @param {boolean} [options.sP=false] - Show previous option
 	 * @param {string} [options.a=undefined] - Accepted file's MIME type 
 	 * @param {number} [options.s=undefined] - Accepted file's size
 	 * @param {object} [options.wS=undefined] - Class object for binding properties  

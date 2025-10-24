@@ -16,11 +16,10 @@
 			specializations: {
 				type: Array,
 				required: false,
-			}
+			},
 		},
 		components: { VueMultiselect },
 		methods: {
-
 			// Get Specializations through API call
 			getSpecializations() {
 				axios.get(this.store.apiUri + 'specializations')
@@ -37,10 +36,12 @@
 				this.$emit('send-values', this.value)
 			},
 			// method to show only the specialization name as options (multiselect)
-			nameOnly({ name }) {
+			getName({ name }) {
 				return `${name}`
 			},
-
+			reset() {
+				this.value = [];
+			}
 		},
 		mounted() {
 			this.getSpecializations();
@@ -54,7 +55,7 @@
 	<div>
 		<VueMultiselect v-model="value" :options="options" :multiple="true" :close-on-select="false"
 			:clear-on-select="false" track-by="name" placeholder="Seleziona una o più specializzazioni" :show-labels="true"
-			@update:modelValue="sendValues" :custom-label="nameOnly">
+			@update:modelValue="sendValues" :custom-label="getName">
 		</VueMultiselect>
 	</div>
 </template>
