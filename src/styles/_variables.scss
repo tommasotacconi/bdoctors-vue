@@ -1,2 +1,18 @@
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/variables";
+
+@function to-px($rem, $base: 16px) {
+	@return $rem / 1rem * $base;
+}
+
+// buttons
+$btn-br-radius: 25px;
+$btn-pd-top-bot: 10px;
+$btn-close-br-radius: to-px($btn-font-size) / 2 + $btn-pd-top-bot;
 // form fields
-$input-h: 3.2rem
+$input-h: 3.2rem;
+
+// cards
+$card-br-radius: 40px;
+
+

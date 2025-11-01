@@ -1,5 +1,7 @@
+@use 'variables' as vars;
+
 .btn {
-	border-radius: 25px;
+	border-radius: vars.$btn-br-radius;
 	padding: 10px 16px;
 	border: 0;
 	font-style: italic;

@@ -9,6 +9,7 @@
 	import ReviewForm from '../Generics/AppForm.vue';
 	import { isNavigationFailure } from 'vue-router';
 	import { KeepAlive } from 'vue';
+	import FormField from '../../../js/utils/FormField.js';
 
 	export default {
 		data() {
@@ -34,35 +35,11 @@
 				},
 				// List of all form all elements to select from the singular form  
 				formElements: {
-					first_name: {
-						id: 'firstName',
-						type: 'text',
-						label: 'Nome',
-						placeholder: 'Inserisci il tuo nome'
-					},
-					last_name: {
-						id: 'lastName',
-						type: 'text',
-						label: 'Cognome',
-						placeholder: 'Inserisci il tuo cognome'
-					},
-					email: {
-						id: 'email',
-						type: 'email',
-						label: 'Email',
-						placeholder: 'Inserisci il tuo indirizzo email'
-					},
-					content: {
-						id: undefined,
-						label: undefined,
-						placeholder: 'Scrivi qui'
-					},
-					vote: {
-						id: 'vote',
-						type: 'radio',
-						label: 'Voto',
-						placeholder: null
-					}
+					firstName: new FormField('first-name', 'text', 'Nome', { p: 'Inserisci il tuo nome' }),
+					lastName: new FormField('last-name', 'text', 'Cognome', { p: 'Inserisci il tuo cognome' }),
+					email: new FormField('email', 'email', 'Email', { p: 'Inserisci il tuo indirizzo email' }),
+					content: new FormField(undefined, 'textarea', undefined, { p: 'Scrivi qui' }),
+					vote: new FormField('vote', 'radio', 'Voto')
 				},
 				messageApiRoute: 'messages',
 				reviewApiRoute: 'reviews',
@@ -200,6 +177,10 @@
 				if (this.currentFormType === 'MessageForm') return this.messageApiRoute;
 				if (this.currentFormType === 'ReviewForm') return this.reviewApiRoute;
 			},
+			currentNameArtConc() {
+				if (this.currentFormType === 'MessageForm') return ['messaggio', 'il', 'o']
+				else if (this.currentFormType === 'ReviewForm') return ['recensione', 'la', 'a'];
+			},
 			isComponentPopUp() {
 				return !!this.containerHeight
 			},
@@ -230,13 +211,13 @@
 			<AppPopUpCard
 				v-else-if="retrievedProfile && Object.keys(retrievedProfile).length && retrievedProfile.constructor === Object">
 				<template #card-header>
-					<div class="img-doctor">
+					<div class="photo-wrapper">
 						<img
 							:src="getProfilePhotoPath(this.store.placeholderImg, retrievedProfile.photo, this.store.apiUri.slice(0, -4))"
 							class="doctor-photo" alt="doctor photo">
 					</div>
 					<div class="card-header-title-section">
-						<h1 class="card-title py-3">
+						<h1 class="card-title py-3 align-self-center">
 							Dott. {{ retrievedProfile.user.first_name }} {{ retrievedProfile.user.last_name }}
 						</h1>
 						<div class="title-specializations d-flex">
@@ -256,14 +237,14 @@
 						<p class="address">
 							<i class="fa-solid fa-location-dot"></i>{{ retrievedProfile.office_address }}
 						</p>
-						<button class="btn btn-close" v-if="$route.name !== 'search'" @click="$router.push({
-							name: 'specializationDoctors', params: { specialization: $route.params.specialization }
-						})"></button>
 					</div>
+					<button class="btn btn-close" v-if="$route.name !== 'search'" @click="$router.push({
+						name: 'specializationDoctors', params: { specialization: $route.params.specialization }
+					})"></button>
 				</template>
 
 				<template #default>
-					<div class="left-content col-5 py-3">
+					<div class="left-content col-md-5 col-xl-4 py-3">
 						<h5>Informazioni aggiuntive</h5>
 						<ul class="d-flex flex-wrap row-gap-3 ul-child-elements py-3">
 							<!-- repeated information .card-list-item -->
@@ -294,7 +275,7 @@
 							</template>
 						</ul>
 					</div>
-					<div class="right-content col-5 py-3">
+					<div class="right-content col-md-6 col-xl-6 mx-auto py-3">
 						<div class="buttons-wrapper mb-3">
 							<Transition name="slide-up">
 								<!-- Button to show message form -->
@@ -314,8 +295,9 @@
 							</h5>
 							<Transition>
 								<KeepAlive>
-									<AppForm v-if="currentFormType" :key="currentFormType" class="mb-3"
-										:apiRoute="currentCreateResourceApiRoute" :elements="currentFormElements" :doctorInfo />
+									<AppForm v-if="currentFormType" :key="currentFormType" class="mb-3" :doctorInfo
+										:apiRouteAndMethod="{ route: currentCreateResourceApiRoute, method: 'post' }"
+										:elements="currentFormElements" :nameArtConc="currentNameArtConc" />
 								</KeepAlive>
 							</Transition>
 						</div>
@@ -346,6 +328,8 @@
 </template>
 
 <style lang="scss" scoped>
+	@use '../../styles/forms';
+
 	h1 {
 		color: var(--color-complementary);
 	}
@@ -367,6 +351,18 @@
 		margin: 0;
 	}
 
+	ul {
+		text-align: start;
+		padding-left: 0;
+		list-style-type: none;
+
+		margin: {
+			top: 0;
+			bottom: 0
+		}
+	}
+
+	// Utilities
 	main.pop-up-main {
 		padding: 0;
 	}
@@ -379,62 +375,68 @@
 		overflow: hidden auto
 	}
 
-	/* Card edit*/
-	.card .card-header {
-		button.btn-close {
-			position: absolute;
-			--distance: 20px;
-			top: var(--distance);
-			right: var(--distance);
-		}
-	}
+	.pop-up-card .card-header {
+		.photo-wrapper {
+			--img-size: 150px;
+			max-width: var(--img-size);
+			flex-basis: var(--img-size);
+			display: flex;
+			align-items: center;
+			justify-content: center;
 
-	.img-doctor {
-		max-width: 30%;
-		flex-basis: 40%;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		padding-left: 20px;
-	}
-
-	.doctor-photo {
-		aspect-ratio: 1;
-		object-fit: cover;
-		object-position: center;
-	}
-
-	.card img {
-		width: 90%;
-		margin: 15px;
-		border-radius: 50%;
-	}
-
-	.card-header-title-section {
-		display: flex;
-		justify-content: center;
-		flex-direction: column;
-		flex-basis: 60%;
-		align-items: start;
-		padding: 20px;
-
-		& .address {
-			font-size: 1.1em;
-			color: var(--color-primary);
-
-			.fa-location-dot {
-				margin-right: 10px;
+			img.doctor-photo {
+				max-width: 100%;
+				margin: 15px;
+				border-radius: 50%;
+				aspect-ratio: 1;
+				object-fit: cover;
+				object-position: center;
 			}
 		}
 
-		& .specializations-list {
-			font-size: 1.3rem;
+		.title-specializations ul {
+			text-align: start;
+			padding-left: 0;
+			list-style-type: none;
+			padding: 0 20px;
 			color: var(--color-primary);
+		}
+
+		.card-header-title-section {
+			display: flex;
+			justify-content: center;
+			flex-direction: column;
+			flex-basis: 60%;
+			align-items: start;
+			padding: 20px;
+
+			& .address {
+				font-size: 1.1em;
+				color: var(--color-primary);
+
+				.fa-location-dot {
+					margin-right: 10px;
+				}
+			}
+
+			& .specializations-list {
+				margin-bottom: 15px;
+				font-size: 1.3rem;
+				color: var(--color-primary);
+			}
+
+			& .specializations-list-item {
+				margin-bottom: 5px;
+				border: 4px solid #fff;
+				border-radius: 10px;
+				border-top-width: 1px;
+				padding: 10px 6px;
+			}
 		}
 	}
 
 
-	.card-body {
+	.pop-up-card .card-body {
 		ul.ul-child-elements>* {
 			flex-basis: 100%;
 			min-height: 50px;
@@ -450,39 +452,32 @@
 				position: relative;
 			}
 		}
-	}
 
-	.card-list-item {
-		border: 1px solid grey;
-		border-radius: 10px;
-		box-shadow: 0 8px 12px -3px var(--color-complementary);
-		padding: 10px;
-	}
+		.card-list-item {
+			border: 1px solid grey;
+			border-radius: 10px;
+			box-shadow: 0 8px 12px -3px var(--color-complementary);
+			padding: 10px;
+		}
 
-	.card-list-item h3 {
-		color: var(--color-primary);
-	}
-
-	.title-specializations ul {
-		text-align: start;
-		padding-left: 0;
-		list-style-type: none;
-		padding: 0 20px;
-		color: var(--color-primary);
-	}
-
-	ul {
-		text-align: start;
-		padding-left: 0;
-		list-style-type: none;
+		.card-list-item h3 {
+			color: var(--color-primary);
+		}
 	}
 
 	.btn {
 		background-color: var(--color-tertiary);
 
 		position: absolute;
-		left: 50%;
 		translate: -50% 0;
+
+		&.btn-close {
+			// 2.7px is approximately the computed card-br-width that needs to be subtracted since it's from its inner side that is displaced hte button external border 
+			$btn-dist-from-corner: vars.$card-br-radius - vars.$btn-close-br-radius - 2.7px;
+			translate: 0;
+			right: $btn-dist-from-corner;
+			top: $btn-dist-from-corner;
+		}
 
 		&:hover {
 			background-color: var(--color-primary);
@@ -492,6 +487,13 @@
 			margin-right: 5px;
 			display: none;
 		}
+	}
+
+	:deep() {
+		.btn.btn-submit {
+			width: 100%;
+		}
+
 	}
 
 	/* Buttons animations */
@@ -519,202 +521,67 @@
 		animation: 1.2s ease-in move-up;
 	}
 
-
-	.edit-profile {
-		background-color: var(--color-secondary);
-		border-radius: 20px;
-		padding: 8px 15px;
-		text-decoration: none;
-		color: var(--color-primary);
-		font-weight: bold;
-		border: 1px solid var(--color-primary);
-
-		position: absolute;
-		bottom: 15px;
-		left: 50%;
-		translate: -50% 0;
-	}
-
-	/* Card create */
-	.card-create {
-		padding: 30px 20px;
-		display: flex;
-		flex-direction: column;
-		gap: 20px;
-		align-items: center;
-	}
-
-	.plus {
-		border: 1px solid white;
-		border-radius: 30px;
-		display: inline;
-		padding: 16px 26px;
-		color: lightgray;
-		background-color: white;
-		width: 80px;
-		font-size: 1.5rem;
-		font-weight: bold;
-	}
-
-	.create-profile-text {
-		opacity: 0.5;
-	}
-
-
 	/* Responsive */
 	:deep() {
-		@media (max-width: 576px) {
-			.container {
+		@media (min-width: 576px) {
+			.container:not(.form-frame) {
 				padding: 0 15px;
 				/* Adjust the container padding */
 			}
 
 			.card.pop-up-card {
-				.card-header {
-					flex-direction: column;
-					/* Stack the content vertically */
-					flex-wrap: nowrap;
-					align-items: center;
-					/* Center align elements */
-
-					.img-doctor {
-						padding: 0;
-					}
-				}
-
-				.card-header-title-section {
-					text-align: center;
-					/* Center the title and text */
-				}
-
-				.img-doctor img {
+				.photo-wrapper img {
 					width: 100%;
-					min-width: 250px;
-				}
-
-				.card-body {
-					flex-direction: column;
-					/* Stack content vertically */
-					padding-top: 20px;
-				}
-
-				.left-content,
-				.right-content {
-					width: 100%;
-					/* Full width for each section */
-					padding: 15px 0;
+					// min-width: 250px;
 				}
 
 				.form-frame {
 					padding: 10px;
 				}
 
-				.votes input {
-					width: 20px;
-					/* Smaller radio buttons */
-					height: 20px;
-				}
-
-				.votes label {
-					font-size: 14px;
-					/* Reduce font size */
-				}
-
-				.btn-submit {
-					width: 100%;
-					/* Full width button */
-				}
-
 				.specializations-list {
 					display: block;
-					margin-top: 10px;
-				}
-
-				.specializations-list-item {
-					margin-bottom: 5px;
 				}
 			}
 		}
 
-		@media (min-width: 768px) and (max-width: 991.98px) {
-			.container {
-				padding: 0 30px;
-			}
-
+		@media (min-width: 768px) {
 			.card-header {
-				flex-direction: row;
+				.photo-wrapper {
+					--img-size: 175px;
+				}
 			}
 
 			.card-body {
-				flex-direction: row;
-			}
-
-			.left-content,
-			.right-content {
-				width: 48%;
-				padding-right: 15px;
-			}
-
-			.form-frame form .form-control {
-				width: 100%;
-			}
-
-			.votes input {
-				margin-right: 5px;
+				.vote {
+					@include forms.vote-label-dimension(2.2rem, 1.1rem);
+				}
 			}
 		}
 
 		/* Desktop */
-		@media (min-width: 992px) and (max-width: 1200px) {
-			.container {
+		@media (min-width: 992px) {
+			.container:not(.form-frame) {
 				padding: 0 50px;
 			}
 
 			.card-header {
-				flex-direction: row;
+				.photo-wrapper {
+					--img-size: 250px;
+				}
 			}
 
 			.card-body {
-				flex-direction: row;
-			}
-
-			.left-content,
-			.right-content {
-				width: 48%;
-				padding-right: 15px;
-			}
-
-			.form-frame form .form-control {
-				width: 100%;
-			}
-
-			.votes input {
-				margin-right: 5px;
+				.vote {
+					@include forms.vote-label-dimension;
+				}
 			}
 		}
 
 		/* Large Desktop */
 		@media (min-width: 1200px) {
-			.container {
+			.container:not(.form-frame) {
 				padding: 0 100px;
-			}
-
-			.card-header {
-				flex-direction: row;
-			}
-
-			.card-body {
-				flex-direction: row;
-			}
-
-			.left-content,
-			.right-content {
-				width: 48%;
-				padding-right: 30px;
-			}
-
-			.form-frame form .form-control {
-				width: 100%;
 			}
 
 			.votes input {
