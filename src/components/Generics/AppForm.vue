@@ -159,7 +159,7 @@
 				return result;
 			},
 			handleSuccessfulSend() {
-				if (this.name === 'messaggio' || this.name === 'recensione') sent = undefined;
+				if (this.name === 'messaggio' || this.name === 'recensione') this.sent = undefined;
 				else if (this.name === 'nuovo profilo' || this.name === 'modifica di profilo') {
 					this.sent = undefined;
 					this.dashboardStore.currentProfileSectionComponentIndex = 0;
