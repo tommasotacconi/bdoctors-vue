@@ -40,5 +40,5 @@ gain experience on how to prove an app is stable enough.
 ## BDoctors frontend
 ### Tech Stack
 Built with
-<img src="https://vuejs.org/images/logo.png" alt="Vue.js Logo" width="45" height="45" />
-<img src="https://sass-lang.com/assets/img/styleguide/color.png" alt="Sass Logo" width="45" height="45" />
+<img src="https://vuejs.org/images/logo.png" alt="Vue.js Logo" width="16" height="16" />
+<img src="https://sass-lang.com/assets/img/styleguide/color.png" alt="Sass Logo" width="16" height="16" />
