@@ -31,14 +31,15 @@ I have continued the development process, where first I fixed the login procedur
 continue mainly with a complete refactor (I am still working on it, while studying ohter
 topics, because is a great playground as I said).
 
-As of now I the part that needs polishing is reponsive. From manual testing, all other
-requisites are fulfilled, though I expect there are still problems, at least until I will
-gain experience on how to prove an app is stable enough.
+As of now the requisite that I have not reviewed yet is responsive design. From manual testing,
+all others are fulfilled, though I expect there are still problems, at least until I will
+learn how to prove an app is stable enough.
 
 ---
 
-## BDoctors frontend
-### Tech Stack
+# BDoctors frontend
+## Tech Stack
 Built with
-<img src="https://vuejs.org/images/logo.png" alt="Vue.js Logo" width="16" height="16" />
-<img src="https://sass-lang.com/assets/img/styleguide/color.png" alt="Sass Logo" width="16" height="16" />
+<img src="https://vuejs.org/images/logo.png" alt="Vue.js Logo" width="16" height="16" />,
+<img src="https://vuejs.org/images/logo.png" alt="Vue.js Logo" width="16" height="16" /> Router and
+<img src="https://sass-lang.com/assets/img/styleguide/color.png" alt="Sass Logo" width="16" height="16" />.
