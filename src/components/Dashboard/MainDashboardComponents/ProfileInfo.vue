@@ -104,9 +104,9 @@
 										dashboardStore.profileDataGeneral.user.last_name }}
 									</h4>
 									<div class="main-information-section">
-										<section class="email-section d-flex gap-1 align-items-center">
+										<section class="email-section d-flex gap-1 align-items-baseline">
 											<h5>Email:</h5>
-											<p>{{ dashboardStore.profileDataGeneral.user.email }}</p>
+											<p class="fs-5">{{ dashboardStore.profileDataGeneral.user.email }}</p>
 										</section>
 									</div>
 								</div>
