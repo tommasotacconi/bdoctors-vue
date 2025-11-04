@@ -76,8 +76,6 @@
 				}
 				// Run custom validation function if any
 				if (this.perfectValidation) this.perfectValidation(this);
-				// Check if there are data to send first if 'send' property is present inside formData
-				if (this.formData.send && !this.formData.send.length) return;
 				// Check form validity by errors' presence
 				let isValid = true;
 				for (const data of Object.keys(this.formData)) {
@@ -99,13 +97,13 @@
 					if (!['vote', 'photo', 'curriculum', 'specializationsId'].includes(key)) this.formData[key] = '';
 					else if (key === 'specializationsId') {
 						this.formData[key] = [];
-						// Reset Multiselect
-						this.$refs.multi[0].reset();
+						// Reset Multiselect if present on page (that is when sent === undefined)
+						if (this.sent === undefined) this.$refs.multi[0].reset();
 					}
 					else this.formData[key] = null;
-
-					this.validated = false;
 				}
+				
+				this.validated = false;
 			},
 			resetErrors() {
 				for (const key in this.formData) {
@@ -115,9 +113,10 @@
 			sendForm() {
 				this.sent = null;
 				let dataToSend = {};
-				const areSendable = this.formData.send;
-				if (areSendable) {
-					for (const field of areSendable) {
+
+				// Use computed 'send' to determine if there are only some data to send
+				if (this.send) {
+					for (const field of this.send) {
 						dataToSend[field] = this.formData[field];
 					}
 
@@ -140,11 +139,12 @@
 					withCredentials: true
 				})
 					.then(response => {
-						// console.log('message sent.', response.data);
-						this.sent = true;
+						// console.log('message sent', response.data);
 						this.resetForm();
+						this.sent = true;
 					})
 					.catch(err => {
+						// console.log('catched error', err);
 						// console.log(err.response.data);
 						this.sent = false;
 					})
@@ -232,6 +232,9 @@
 				return method;
 			},
 			send() {
+				// Set to undefined outside ProfileEdit
+				if (this.nameArtConc[0] !== 'modifica di profilo') return undefined;
+
 				let send = [];
 				let isChanged = false;
 
