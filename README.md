@@ -1,5 +1,45 @@
-# Vue 3 + Vite
+# BDoctors
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+BDoctors is a web app to help patients find a suitable doctor for their current needs.
+It is a small project I started developing with my classmates during my 6 months course
+in web development. Has become my code playground in the last months. This is BDoctors
+frontend repository.
 
-Learn more about IDE Support for Vue in the [Vue Docs Scaling up Guide](https://vuejs.org/guide/scaling-up/tooling.html#ide-support).
+## Main requisites
+We were given two lists of requisites. 
+
+Technical goals:
+- Client-side validation
+- Payment system
+- Responsive site
+- Doctors research is without refresh (happens on client-side). 
+	
+Functional goals:
+- Make doctors capable of registiring to the Web app 
+- Make doctors capable of creating a personal profile
+- Make visitors capable of looking up a medical doctor
+- Make visitors capable of seeing doctor's details
+- Make doctors capable of seeing received messages
+- Make doctors capable of seeing received reviews
+- Make doctors capable of sponsorize their profile
+- Make doctors capable of seeing their statistics  	
+
+Despite being a group of five people, having less than three weeks, at the end of the
+development period, the app was pretty unusable, lacking a real private login procedure.
+So after our final presentation, that was anyway good enough to show a complete demo app,
+I have continued the development process, where first I fixed the login procedure to then
+continue mainly with a complete refactor (I am still working on it, while studying ohter
+topics, because is a great playground as I said).
+
+As of now the requisite that I have not reviewed yet is responsive design. From manual testing,
+all others are fulfilled, though I expect there are still problems, at least until I will
+learn how to prove an app is stable enough.
+
+---
+
+# BDoctors frontend
+## Tech Stack
+Built with
+<img src="https://vuejs.org/images/logo.png" alt="Vue.js Logo" width="16" height="16" />,
+<img src="https://vuejs.org/images/logo.png" alt="Vue.js Logo" width="16" height="16" /> Router and
+<img src="https://sass-lang.com/assets/img/styleguide/color.png" alt="Sass Logo" width="16" height="16" />.

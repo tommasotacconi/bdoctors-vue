@@ -107,7 +107,7 @@
 				})
 					.then(response => {
 						// console.log(response);
-						const { data: { profile: { active_sponsorships: activeSponsorships } } } = response;
+						const { data: { profile: { active_sponsorship: activeSponsorships } } } = response;
 						this.profileSponsorships = activeSponsorships;
 
 						// Set sponsorization status
