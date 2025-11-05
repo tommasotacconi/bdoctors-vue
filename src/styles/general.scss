@@ -39,6 +39,11 @@ body {
 }
 
 // Utility
+.bg {
+	/* background-image: url(../../public/tile_background.png); */
+	background-image: url(../assets/medical-icons-background.svg);
+	background-repeat: repeat;
+}
 
 
 // Animations

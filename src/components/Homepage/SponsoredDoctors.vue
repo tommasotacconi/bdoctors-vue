@@ -64,7 +64,7 @@
 <template>
 	<div class="container component-container">
 		<h3>Dottori in evidenza</h3>
-		<div class="sponsored-card-container">
+		<div class="sponsored-card-container bg-transparent">
 			<div class="card card-sponsored d-flex" style="width: 18rem;" v-for="(sponsored, index) in sponsoredProfiles"
 				@click="goToShowPage(sponsored, index)">
 				<img :src="getProfilePhotoPath(this.store.placeholderImg, sponsored.photo, this.store.apiUri.slice(0, -4))"

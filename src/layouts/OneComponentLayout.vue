@@ -26,8 +26,4 @@
 	.app-header~.page-content {
 		padding-top: calc(var(--header-h) - var(--header-border-r));
 	}
-
-	.bg {
-		background-image: url(../../public/tile_background.png);
-	}
 </style>
