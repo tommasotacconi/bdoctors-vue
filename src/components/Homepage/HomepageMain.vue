@@ -24,7 +24,7 @@
 	<main id="home-main" v-show="loaded">
 		<div class="introduction-position">
 			<div class="container-introduction">
-				<div class="introduction">
+				<div class="introduction flex-wrap flex-lg-nowrap">
 					<div class="container container-text-introduction">
 						<div>
 							<h2>BDOCTORS: Trova lo specialista che fa al caso tuo!</h2>
@@ -35,9 +35,9 @@
 							</p>
 						</div>
 						<div>
-							<button class="sponsored-doctor-button"><a href="#sponsored-doctors">Scopri i nostri dottori
-									in
-									evidenza!</a></button>
+							<a class="btn" href="#sponsored-doctors">Scopri i nostri dottori
+								in
+								evidenza!</a>
 						</div>
 					</div>
 					<img class="img-doctors"
@@ -71,7 +71,7 @@
 	}
 
 	.introduction {
-		height: 450px;
+		min-height: 450px;
 		display: flex;
 		align-items: center;
 		background: rgb(101, 176, 255);
@@ -81,9 +81,15 @@
 		gap: 20px;
 	}
 
-	.introduction p {
-		font-weight: 500;
-		font-style: italic;
+	.introduction {
+		p {
+			font-weight: 500;
+			font-style: italic;
+		}
+
+		img.img-doctors {
+			width: 250px;
+		}
 	}
 
 	/* #sponsored-doctors {
@@ -92,17 +98,12 @@
 		left: 0;
 	} */
 
-	.sponsored-doctor-button {
-		background-color: var(--color-secondary);
-		border-radius: 20px;
-		padding: 8px 15px;
-		text-decoration: none;
-		color: var(--color-primary);
-		font-weight: bold;
-		border: 1px solid var(--color-primary);
+	a.btn {
+		color: #fff;
 	}
 
 	.container-text-introduction {
+		padding-top: calc(var(--header-border-r) + 50px);
 		display: flex;
 		flex-direction: column;
 		gap: 30px;
@@ -134,13 +135,17 @@
 
 
 	/* Media queries */
-	@media screen and (max-width: 1230px) {
-		.img-doctors {
-			display: none;
-		}
-
+	@media screen and (min-width: 992px) {
 		.introduction {
 			justify-content: center;
+
+			.container-text-introduction {
+				padding-top: 0;
+			}
+
+			img.img-doctors {
+				width: auto;
+			}
 		}
 	}
 </style>
