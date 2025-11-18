@@ -1,5 +1,5 @@
 <script>
-	import axios from 'axios';
+	import axios from '../../../js/axios';
 	import { store } from '../../../js/store';
 	import { emitter } from '../../../js/eventBus';
 
@@ -21,8 +21,6 @@
 				axios.post(this.store.apiUri + 'login', {
 					email: this.inputEmail,
 					password: this.inputPassword
-				}, {
-					withCredentials: true,
 				})
 					.then(response => {
 						this.store.isAuthenticated = true;
@@ -47,16 +45,6 @@
 				return !this.isRequestPending ? this.loginButtonText + this.positiveAuthenticationSymbol : null;
 			}
 		},
-		created: function () {
-			axios.get(this.store.apiUri + 'login/check', {
-				withCredentials: true,
-			})
-				.then(({ data: { authentication: { userId } } }) => {
-					this.store.isAuthenticated = true;
-					if (userId) this.$router.push({ name: 'dashboard' })
-				})
-				.catch(err => { });
-		}
 	}
 </script>
 
