@@ -12,6 +12,7 @@ dist
 dist-ssr
 *.local
 useful_script
+certs
 
 # Editor directories and files
 .vscode/*
@@ -23,3 +24,4 @@ useful_script
 *.njsproj
 *.sln
 *.sw?
+
