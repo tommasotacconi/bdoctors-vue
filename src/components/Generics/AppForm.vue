@@ -126,10 +126,12 @@
 					dataToSend = this.camelToSnake(dataToSend);
 				} else {
 					// Convert to snake_case data omitting pwConf
-					const { pwConf, ...toSend } = this.camelToSnake(this.formData);
+					const { pw_conf, ...toSend } = this.camelToSnake(this.formData);
 					dataToSend = toSend;
 				}
-				axios[this.method](this.store.apiUri + this.route, {
+
+				const baseUri = this.useApiRoute ? this.store.apiUri : this.store.apiUri.slice(0, -4);
+				axios[this.method](baseUri + this.route, {
 					doctor_details: this.doctorInfo,
 					...dataToSend,
 				}, {
@@ -142,6 +144,7 @@
 						// console.log('message sent', response.data);
 						this.resetForm();
 						this.sent = true;
+						if (this.$route.name === 'register') this.store.isAuthenticated = true;
 					})
 					.catch(err => {
 						// console.log('catched error', err);
@@ -230,6 +233,11 @@
 				const { method } = this.apiRouteAndMethod;
 
 				return method;
+			},
+			useApiRoute() {
+				const { useApiRoute = true } = this.apiRouteAndMethod;
+
+				return useApiRoute;
 			},
 			send() {
 				// Set to undefined outside ProfileEdit

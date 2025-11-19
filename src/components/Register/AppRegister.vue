@@ -64,7 +64,7 @@
 <template>
 	<!-- Register form -->
 	<main>
-		<AppForm class="user-data-form alone-dimensions" :doctorInfo="null" :apiRoute="'register'" :elements="formElements"
+		<AppForm class="user-data-form alone-dimensions" :doctorInfo="null" :apiRouteAndMethod="{ route: 'register', method: 'post', useApiRoute: false }" :elements="formElements"
 			:nameArtConc="['registrazione', 'la', 'a']" :wrapperInnerDiv="['row']" :perfectValidation="customValidation" />
 	</main>
 </template>

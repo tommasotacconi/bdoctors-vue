@@ -65,7 +65,7 @@
 				this.selectedSpecialization = this.specializationParam || '';
 			},
 			logout() {
-				axios.post(store.apiUri + 'logout', '',
+				axios.post(store.apiUri.slice(0, -4) + 'logout',
 					{
 						withCredentials: true
 					})

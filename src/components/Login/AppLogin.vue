@@ -18,7 +18,7 @@
 		methods: {
 			sendLoginData() {
 				this.isRequestPending = true;
-				axios.post(this.store.apiUri + 'login', {
+				axios.post(this.store.apiUri.slice(0, -4) + 'login', {
 					email: this.inputEmail,
 					password: this.inputPassword
 				})
