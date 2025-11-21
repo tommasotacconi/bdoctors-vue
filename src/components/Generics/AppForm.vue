@@ -144,7 +144,6 @@
 						// console.log('message sent', response.data);
 						this.resetForm();
 						this.sent = true;
-						if (this.$route.name === 'register') this.store.isAuthenticated = true;
 					})
 					.catch(err => {
 						// console.log('catched error', err);

@@ -4,12 +4,12 @@
 	import axios from 'axios';
 	import AppUserIcon from '../Generics/AppUserIcon.vue';
 	import { useShowButtonsAnimation } from '../../../js/composables/useShowButtonsAnimation.js';
+import { useAuthFunctions } from '../../../js/composables/useAuthFunctions.js';
 
 	export default {
 		data() {
 			return {
 				// isLogoutShown: false,
-				checkingLogin: false,
 				isUserIconReady: false,
 				store,
 				dashboardStore
@@ -29,44 +29,37 @@
 			// 		}, 5000)
 			// 	}
 			// },
-			logout() {
-				axios.post(this.store.apiUri + 'logout', '',
-					{
-						withCredentials: true
-					})
-					.then(response => {
-						this.checkingLogin = false;
-						this.store.isAuthenticated = false;
-						this.dashboardStore.profileDataGeneral = {};
-						this.$router.push({ name: 'homepage' });
-					})
-					.catch(err => {
-						this.checkingLogin = false;
-						// console.log(err);p
-					});
-				this.checkingLogin = true;
-			}
 		},
 		components: {
 			AppUserIcon
 		},
 		computed: {
 			showLoader() {
-				if (this.checkingLogin) {
-					return true;
-				}
-				else {
-					if (this.store.isAuthenticated) {
-						return !this.isUserIconReady;
-					}
-					return false;
-				}
+				if (this.isLoggingOut) return true;
+				else if (this.store.isAuthenticated) return !this.isUserIconReady;
+				else return false;
 			}
 		},
 		setup() {
-			const { buttonsStyle: profileButtonsStyle, areButtonsShown: areProfileButtonsShown, showButtonsTimeout: showProfileButtonsTimeout, showButtons: showProfileButtons, removeButtonsFromFlow: removeProfileButtonsFromFlow } = useShowButtonsAnimation();
+			const {
+				buttonsStyle: profileButtonsStyle,
+				areButtonsShown: areProfileButtonsShown,
+				showButtonsTimeout: showProfileButtonsTimeout,
+				showButtons: showProfileButtons,
+				removeButtonsFromFlow: removeProfileButtonsFromFlow
+			} = useShowButtonsAnimation();
 
-			return { profileButtonsStyle, areProfileButtonsShown, showProfileButtonsTimeout, showProfileButtons, removeProfileButtonsFromFlow };
+			const { isLoggingOut, logout } = useAuthFunctions();
+
+			return {
+				profileButtonsStyle,
+				areProfileButtonsShown,
+				showProfileButtonsTimeout,
+				showProfileButtons,
+				removeProfileButtonsFromFlow,
+				isLoggingOut,
+				logout
+			};
 		},
 	}
 </script>
@@ -78,8 +71,15 @@
 		</div>
 		<div class="right-header user" v-show="!showLoader">
 			<!-- Logout button -->
-			<button :style="profileButtonsStyle" v-show="areProfileButtonsShown" class="button logout-btn" @click="logout"
-				@transitionend="removeProfileButtonsFromFlow">
+			<button :style="profileButtonsStyle" v-show="areProfileButtonsShown" class="button logout-btn"
+				@click="logout({
+					inThenOperations: () => this.$router.push({ name: 'homepage' }),
+					additionalOperations: () => {
+						// Handle style for buttons' transition since the transitionend event never occur due to the 'display: none' set on
+						// 	the containing block after call to logout()
+						this.areProfileButtonsShown = false;
+					}
+				})" @transitionend="removeProfileButtonsFromFlow">
 				<!-- <router-link style="text-decoration: none; color: inherit;" to="/" @click="logout()"> -->
 				<span class="btn-text">Esci</span>
 				<!-- </router-link> -->
