@@ -16,28 +16,23 @@
 		methods: {
 			getProfileData() {
 				axios.get(this.store.apiUri + 'profiles/authenticated', {
+					validateStatus: () => true,
 					withCredentials: true,
 				})
-					.then(({ data: { profile } }) => {
+					.then(({ status, data }) => {
 						// console.log('Profile: ', profile);
 						this.loaded = true;
-						this.store.isAuthenticated = true;
 
 						// Data to share inside other components
-						this.dashboardStore.profileDataGeneral = profile;
+						if (status !== 404) this.dashboardStore.profileDataGeneral = data.profile;
+						else this.dashboardStore.tmp = data.user;
 						// localStorage.setItem('user_id', response.data.data.doctor.id)
 						// localStorage.setItem('profile_id', response.data.data.id)
-					})
-					.catch(err => {
-						if (err.response.status !== 401) this.store.isAuthenticated = true;
-						const { user } = err.response.data;
-						this.dashboardStore.tmp = { ...user }
 					})
 					.finally(() => {
 						this.loaded = true;
 						this.dashboardStore.isProfileRequestPending = false;
 					});
-
 				this.dashboardStore.isProfileRequestPending = true;
 			},
 			// getFilePath: function (filePath) {

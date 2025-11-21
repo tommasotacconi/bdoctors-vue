@@ -6,13 +6,13 @@
 	import AppUserIcon from '../Generics/AppUserIcon.vue';
 	import { useShowButtonsAnimation } from '../../../js/composables/useShowButtonsAnimation';
 	import { homepageStore } from '../../../js/homepageStore.js';
+import { useAuthFunctions } from '../../../js/composables/useAuthFunctions.js';
 
 	export default {
 		data() {
 			return {
 				specializations: [],
 				selectedSpecialization: '',
-				checkingLogin: true,
 				// isProfileManagementShown: false,
 				isUserIconReady: false,
 				// logoutBtnTimeout: undefined,
@@ -64,25 +64,6 @@
 				// console.log('-- Updating select by means of param');
 				this.selectedSpecialization = this.specializationParam || '';
 			},
-			logout() {
-				axios.post(store.apiUri.slice(0, -4) + 'logout',
-					{
-						withCredentials: true
-					})
-					.then(response => {
-						this.checkingLogin = false;
-						this.store.isAuthenticated = false;
-						this.dashboardStore.profileDataGeneral = {};
-					})
-					.catch(err => {
-						this.checkingLogin = false;
-						// console.log(err);
-					});
-
-				this.checkingLogin = true;
-				// Handle style for buttons' transition since the transitionend event never occur due to the 'display: none' set on the containing block after call to logout()
-				this.areProfileButtonsShown = false;
-			}
 		},
 		computed: {
 			specializationParam() {
@@ -111,41 +92,36 @@
 				};
 			},
 			showLoader() {
-				if (this.checkingLogin) {
-					return true;
-				}
-				else {
-					if (this.store.isAuthenticated) {
-						return !this.isUserIconReady;
-					}
-					return false;
-				}
+				if (this.isLoggingOut) return true;
+				else if (this.store.isAuthenticated) return !this.isUserIconReady;
+				return false;
 			}
 		},
 		components: {
 			AppUserIcon
 		},
 		setup() {
-			const { buttonsStyle: profileButtonsStyle, areButtonsShown: areProfileButtonsShown, showButtonsTimeout: showProfileButtonsTimeout, showButtons: showProfileButtons, removeButtonsFromFlow: removeProfileButtonsFromFlow } = useShowButtonsAnimation();
+			const {
+				buttonsStyle: profileButtonsStyle,
+				areButtonsShown: areProfileButtonsShown,
+				showButtonsTimeout: showProfileButtonsTimeout,
+				showButtons: showProfileButtons,
+				removeButtonsFromFlow: removeProfileButtonsFromFlow
+			} = useShowButtonsAnimation();
 
-			return { profileButtonsStyle, areProfileButtonsShown, showProfileButtonsTimeout, showProfileButtons, removeProfileButtonsFromFlow };
+			const { isLoggingOut, logout } = useAuthFunctions();
+
+			return {
+				profileButtonsStyle,
+				areProfileButtonsShown,
+				showProfileButtonsTimeout,
+				showProfileButtons,
+				removeProfileButtonsFromFlow,
+				isLoggingOut,
+				logout
+			};
 		},
 		created() {
-			if (this.store.isAuthenticated === null) {
-				axios.get(this.store.apiUri + 'login/check', {
-					withCredentials: true,
-				})
-					.then(response => {
-						this.store.isAuthenticated = true;
-						this.checkingLogin = false;
-						// this.store.userId = userId;
-					})
-					.catch(err => {
-						this.checkingLogin = false;
-					});
-			}
-			else this.checkingLogin = false;
-
 			this.getSpecializations();
 		},
 		deactivated() {
@@ -203,7 +179,13 @@
 							<!-- <span class="btn-personal-area-link">Area Personale</span> -->
 							<i class="fa-solid fa-user-doctor"></i>
 						</router-link>
-						<button class="logout" @click="logout()">
+						<button class="logout" @click="logout({ 
+							additionalOperations: () => {
+								// Handle style for buttons' transition since the transitionend event never occur due to the 'display: none' set on
+								// 	the containing block after call to logout()
+								areProfileButtonsShown = false;
+							}
+						})">
 							<span class="logout-text">Esci</span>
 						</button>
 					</div>

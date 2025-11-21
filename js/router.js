@@ -8,6 +8,15 @@ import AdvancedSearchPage from '../src/pages/AdvancedSearchPage.vue';
 import SearchedSpecializationDoctors from '../src/components/Search/SearchedSpecializationDoctors.vue';
 import DoctorShow from '../src/components/Search/DoctorShow.vue';
 import DashboardPage from '../src/pages/DashboardPage.vue';
+import axios from 'axios';
+import { store } from './store';
+
+function getAuthStatus() {
+	const authStatus = store.isAuthenticated ?? axios.get(store.apiUri.slice(0, -4) + 'user/status')
+		.then(({ data: { authenticated } }) => authenticated);
+
+	return authStatus;
+}
 
 const routes = [
 	{ 
@@ -18,10 +27,18 @@ const routes = [
 				path: 'inizia-ricerca',
 				name: 'homepage',
 				component: HomepagePage,
+				beforeEnter: async () => {
+					store.isAuthenticated = await getAuthStatus();
+				}
 			},
 			{ path: 'utente/accesso',
 				name: 'login',
 				component: LoginPage,
+				beforeEnter: async () => {
+					store.isAuthenticated = await getAuthStatus();
+					
+					if (store.isAuthenticated) return { name: 'dashboard' };
+				}
 			},
 			{ path: 'utente/registrazione',
 				name: 'register',
@@ -57,9 +74,15 @@ const routes = [
 		path: '/utente',
 		component: OneComponentLayout,
 		children: [
-			{ path: 'profilo',
+			{ 
+				path: 'profilo',
 				name: 'dashboard',
 				component: DashboardPage,
+				beforeEnter: async () => {
+					store.isAuthenticated = await getAuthStatus();
+					
+					if (!store.isAuthenticated) return { name: 'login' };
+				}
 			},
 		]
 	}
