@@ -39,10 +39,9 @@
 				// Update next requested page
 				this.requestedPage += 1;
 			},
-			goToShowPage(doctorProfile, index) {
-				store.doctorProfile = doctorProfile;
-				let completeName = doctorProfile.user.first_name + '-' + doctorProfile.user.last_name;
-				if (doctorProfile.user.homonymous_id !== null) completeName += '-' + doctorProfile.user.homonymous_id;
+			goToShowPage(doctorUser, index) {
+				let completeName = doctorUser.first_name + '-' + doctorUser.last_name;
+				if (doctorUser.homonymous_id !== null) completeName += '-' + doctorUser.homonymous_id;
 				this.$router.push({ name: 'search', params: { name: completeName } })
 				// console.log('doctor position inside homepage ', index);
 				// console.log(store.searchedSpecialization)
@@ -65,16 +64,17 @@
 	<div class="container component-container">
 		<h3>Dottori in evidenza</h3>
 		<div class="sponsored-card-container bg-transparent">
-			<div class="card card-sponsored d-flex" style="width: 18rem;" v-for="(sponsored, index) in sponsoredProfiles"
-				@click="goToShowPage(sponsored, index)">
-				<img :src="getProfilePhotoPath(this.store.placeholderImg, sponsored.photo, this.store.apiUri.slice(0, -4))"
-					:alt="'foto profilo di' + sponsored.user.first_name + sponsored.user.last_name">
+			<div class="card card-sponsored d-flex" style="width: 18rem;" v-for="({ photo, user }, index) in sponsoredProfiles"
+				@click="goToShowPage(user, index)">
+				<img :src="getProfilePhotoPath(this.store.placeholderImg(user.first_name, user.last_name),
+					photo, this.store.apiUri.slice(0, -4))"
+					:alt="'foto profilo di' + user.first_name + user.last_name">
 				<div class="card-body">
-					<h5 class="card-title">{{ sponsored.user.first_name }} {{ sponsored.user.last_name }}</h5>
+					<h5 class="card-title">{{ user.first_name }} {{ user.last_name }}</h5>
 					<div class="card-text">
 						<h6>Specializzazioni:</h6>
 						<ul class="list-unstyled">
-							<li v-for="doctorSpecialization in sponsored.user.specializations">
+							<li v-for="doctorSpecialization in user.specializations">
 								{{ doctorSpecialization.name }}
 							</li>
 						</ul>

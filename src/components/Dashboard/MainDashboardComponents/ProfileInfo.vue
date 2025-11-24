@@ -47,8 +47,8 @@
 			}, */
 			profilePhotoPath() {
 				// Calculate profile photo :src attribute depending on the presence of the 'photos' string in the db data photo profiles table
-				const photoPath = this.dashboardStore.profileDataGeneral.photo;
-				return this.getProfilePhotoPath(this.store.placeholderImg, photoPath, this.store.apiUri.slice(0, -4));
+				const { user, photo } = this.dashboardStore.profileDataGeneral;
+				return this.getProfilePhotoPath(this.store.placeholderImg(user.first_name, user.last_name), photo, this.store.apiUri.slice(0, -4));
 				// return photoPath.includes('photos') ? this.getFilePath(`storage/${this.dashboardStore.profileDataGeneral.photo}`) : photoPath ?? new URL(this.placeholderImg).href;
 			},
 			curriculumFileName() {

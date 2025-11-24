@@ -29,10 +29,10 @@
 			AppPopUpCard
 		},
 		methods: {
-			goToShowPage(doctorProfile, index) {
-				let completeName = doctorProfile.user.first_name + '-' + doctorProfile.user.last_name;
-				if (doctorProfile.user.homonymous_id !== null) completeName += '-' + doctorProfile.user.homonymous_id;
-				this.searchedDoctor = doctorProfile;
+			goToShowPage(doctorUser, index) {
+				let completeName = doctorUser.first_name + '-' + doctorUser.last_name;
+				if (doctorUser.homonymous_id !== null) completeName += '-' + doctorUser.homonymous_id;
+				this.searchedDoctor = doctorUser;
 				this.$router.push({
 					name: 'specializationDoctors.show', params: { name: completeName }
 				});
@@ -130,8 +130,7 @@
 							// Compare user complete name, homonymous_id included, with in URL name
 							const homonymousIdPart = user.homonymous_id ? `-${user.homonymous_id}` : null;
 							const fullNamePart = `${user.first_name}-${user.last_name}`;
-							let completeName = '';
-							completeName = homonymousIdPart ? fullNamePart + homonymousIdPart : fullNamePart;
+							let completeName = homonymousIdPart ? fullNamePart + homonymousIdPart : fullNamePart;
 							result = completeName === urlName;
 
 							return result;
@@ -209,23 +208,23 @@
 
 			<!-- Doctors in selected specialization and eventually filtered -->
 			<div class="doctors-list" v-if="isFiltering ? filteredDoctors.length : doctors.length">
-				<div class="doctor-card" v-for="(doctorProfile, index) in (isFiltering ? filteredDoctors : doctors)"
-					@click="goToShowPage(doctorProfile, index)" :key="index">
+				<div class="doctor-card" v-for="({ office_address, avg_vote, total_reviews, photo, user, ...profile }, index) in (isFiltering ? filteredDoctors : doctors)"
+					@click="goToShowPage({ office_address, photo, ...profile, user }, index)" :key="index">
 					<img class="doctor-photo"
-						:src="getProfilePhotoPath(this.store.placeholderImg, doctorProfile.photo, store.apiUri.slice(0, -4))"
+						:src="getProfilePhotoPath(this.store.placeholderImg(user.first_name, user.last_name), photo, store.apiUri.slice(0, -4))"
 						alt="doctor photo">
 					<section class="doctor-information">
 						<h5 class="doctor-name">
-							{{ doctorProfile.user.first_name }} {{ doctorProfile.user.last_name }}
+							{{ user.first_name }} {{ user.last_name }}
 						</h5>
 						<div class="doctor-address">
-							<strong>Ufficio:</strong> {{ doctorProfile.office_address }}
+							<strong>Ufficio:</strong> {{ office_address }}
 						</div>
 						<div class="doctor-average">
-							<strong>Media voti:</strong> {{ doctorProfile.avg_vote ? doctorProfile.avg_vote : "-" }}
+							<strong>Media voti:</strong> {{ avg_vote ? avg_vote : "-" }}
 						</div>
 						<div class="doctor-reviews">
-							<strong>Recensioni ricevute:</strong> {{ doctorProfile.total_reviews ? doctorProfile.total_reviews :
+							<strong>Recensioni ricevute:</strong> {{ total_reviews ? total_reviews :
 								"-"
 							}}
 						</div>

@@ -42,7 +42,7 @@
 					this.$emit('userIconReady');
 				}
 				else {
-					this.profilePhotoPath = this.getProfilePhotoPath(this.store.placeholderImg, photoPath, this.store.apiUri.slice(0, -4));
+					this.profilePhotoPath = this.getProfilePhotoPath('', photoPath, this.store.apiUri.slice(0, -4));
 					this.$emit('userIconReady');
 				}
 			}
