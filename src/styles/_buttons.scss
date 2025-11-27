@@ -1,23 +1,37 @@
 @use 'variables' as vars;
 
-.btn {
+%btn-style {
 	border-radius: vars.$btn-br-radius;
 	padding: 10px 16px;
 	border: 0;
 	font-style: italic;
-	color: white;
 	font-weight: bold;
+}
+
+%hover-effect {
+	color: #fff;
+	background-color: var(--color-secondary);
+}
+
+.btn:not(.btn-close),
+.btn:first-child:not(.btn-close) {
+	@extend %btn-style;
+	background-color: var(--color-tertiary);
+	color: white;
 	
 	&.pos-static {
 		position: static;
 		translate: none;
 	}
-	background-color: var(--color-tertiary);
 
 	&:hover,
 	&:disabled {
-		color: #fff;
-		background-color: var(--color-secondary);
+		@extend %hover-effect;
+	}
+	
+	&:active:focus {
+		@extend %hover-effect;
+		outline: solid 4px var(--color-secondary-transparent);
 	}
 }
 
@@ -31,13 +45,22 @@
 	}
 }
 
-.btn.back-arrow {
-	width: 60px;
-	padding: 10px 0;
+.btn-close {
+	@extend %btn-style;
+}
+
+%back-btn-hover-effect {
 	background-color: var(--color-primary);
+}
+
+.btn.back-arrow,
+.btn.back-arrow:first-child {
+	@extend %back-btn-hover-effect;
+	width: 60px;
 	transition: 0.4s;
 
-	&:hover {
+	&:hover, &:active:focus {
+		@extend %back-btn-hover-effect;
 		color: var(--color-secondary);
 	}
 }
