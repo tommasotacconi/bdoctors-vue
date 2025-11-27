@@ -321,120 +321,121 @@ import { useAuthFunctions } from '../../../js/composables/useAuthFunctions.js';
 		margin-right: 10px;
 	}
 
-	.right-header .btn {
-		border-radius: 25px;
-		padding: 10px 16px;
-		border: 0;
-		font-style: italic;
-		color: white;
-		font-weight: bold;
-
-		span {
-			margin-right: 5px;
-			display: none;
-		}
-	}
-
-	.right-header .btn.btn-logup {
-		background-color: var(--color-secondary);
-
-		&::after {
-			content: 'Registrati'
-		}
-	}
-
-	.right-header .btn.btn-with-icon {
-		flex-shrink: 0;
-		/* Padding calc for with icon buttons to match height of only text buttons
-		(((line-height-factor * font-size) + 2 * y-pd) - icon-height) / 2 */
-		padding: calc((((1.5 * 16px) + 2 * 10px) - 33.33px) / 2) 16px;
-		background-color: var(--color-complementary);
-	}
-
-	.btn.btn-login {
-		&::after {
-			content: 'Accedi';
-		}
-	}
-
-	.right-header .btn.btn-personal-area {
-		background-color: var(--color-complementary);
-
-		&::after {
-			content: 'Area personale'
-		}
-	}
-
-	.right-header.not-logged-user {
-		.user {
-			display: none;
-		}
-	}
-
-	.right-header.logged-user {
-		&>:not(.user) {
-			display: none;
-		}
-	}
-
 	.right-header {
+		.btn {
+		   border-radius: 25px;
+		   padding: 10px 16px;
+		   border: 0;
+		   font-style: italic;
+		   color: white;
+		   font-weight: bold;
+   
+		   span {
+			   margin-right: 5px;
+			   display: none;
+		   }
+	   }
 
-		/*	Transition credits: Vue official site (https://vuejs.org/guide/built-ins/transition)	*/
-		.v-enter-active {
-			transition: all 0.3s ease-out;
-		}
+	   .btn.btn-logup {
+		   background-color: var(--color-secondary);
+   
+		   &::after {
+			   content: 'Registrati'
+		   }
+	   }
+	   
+	   .btn.btn-with-icon,
+	   .btn.btn-with-icon:focus:active {
+		   flex-shrink: 0;
+		   /* Padding calc for with icon buttons to match height of only text buttons
+		   (((line-height-factor * font-size) + 2 * y-pd) - icon-height) / 2 */
+		   padding: calc((((1.5 * 16px) + 2 * 10px) - 33.33px) / 2) 16px;
+		   background-color: var(--color-complementary);
+	   }
 
-		.v-leave-active {
-			transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
-		}
+	   .btn.btn-login {
+		   &::after {
+			   content: 'Accedi';
+		   }
+	   }
+   
+	   .btn.btn-personal-area {
+		   background-color: var(--color-complementary);
+   
+		   &::after {
+			   content: 'Area personale'
+		   }
+	   }
+	   
+	   &.not-logged-user {
+		   .user {
+			   display: none;
+		   }
+	   }
+   
+	   &.logged-user {
+		   &>:not(.user) {
+			   display: none;
+		   }
+	   }
+	   
+	   /*	Transition credits: Vue official site (https://vuejs.org/guide/built-ins/transition)	*/
+	   .v-enter-active {
+		   transition: all 0.3s ease-out;
+	   }
+   
+	   .v-leave-active {
+		   transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
+	   }
+   
+	   .v-enter-from,
+	   .v-leave-to {
+		   transform: translateX(20px);
+		   opacity: 0;
+	   }
+	   
+	   /* Loader sizing */
+	   .loader {
+		   width: 34px;
+		   position: static;
+	   }
+	   
+	   .fa-user-doctor {
+		   height: 100%;
+		   padding: 8px;
+		   border-radius: 50%;
+		   border: 1px solid white;
+		   background-color: white;
+		   color: var(--color-complementary);
+		   /* color: #65B0FF; */
+		   margin-right: 7px;
+	   }
+   
+   
+	   /* User logout */
+	   .user {
+		   display: flex;
+		   align-items: center;
+	   }
+   
+	   .logout {
+		   margin-left: 10px;
+		   margin-right: 15px;
+	   }
+   
+	   .logout-text {
+		   /* font-style: italic; */
+		   text-decoration: none;
+		   color: white;
+		   font-weight: bold;
+	   }
 
-		.v-enter-from,
-		.v-leave-to {
-			transform: translateX(20px);
-			opacity: 0;
-		}
+	   #loader {
+		   margin-right: calc(34px / 2);
+		   translate: 50% 0;
+	   }
 	}
 
-	/* Loader sizing */
-	.right-header .loader {
-		width: 34px;
-		position: static;
-	}
-
-	.fa-user-doctor {
-		height: 100%;
-		padding: 8px;
-		border-radius: 50%;
-		border: 1px solid white;
-		background-color: white;
-		color: var(--color-complementary);
-		/* color: #65B0FF; */
-		margin-right: 7px;
-	}
-
-
-	/* User logout */
-	.user {
-		display: flex;
-		align-items: center;
-	}
-
-	.logout {
-		margin-left: 10px;
-		margin-right: 15px;
-	}
-
-	.logout-text {
-		/* font-style: italic; */
-		text-decoration: none;
-		color: white;
-		font-weight: bold;
-	}
-
-	#loader {
-		margin-right: calc(34px / 2);
-		translate: 50% 0;
-	}
 
 	/* Responsive */
 	@media screen and (max-width: 1230px) {
@@ -448,14 +449,16 @@ import { useAuthFunctions } from '../../../js/composables/useAuthFunctions.js';
 	}
 
 	@media screen and (max-width: 992px) {
-		.right-header .btn.btn-with-icon {
-			&::after {
-				content: '';
+		.right-header {
+			.btn.btn-with-icon {
+				&::after {
+					content: '';
+				}
 			}
-		}
-
-		.fa-user-doctor {
-			margin-right: 0px;
+	
+			.fa-user-doctor {
+				margin-right: 0px;
+			}
 		}
 	}
 
