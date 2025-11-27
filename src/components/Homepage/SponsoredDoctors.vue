@@ -9,10 +9,13 @@
 		data() {
 			return {
 				store,
-				sponsoredProfiles: [],
+				chunkedSponsoredProfiles: [],
 				requestedPage: 1,
 				elementsPerPage: 20,
 				totalSponsoredProfiles: null,
+				requestedProfiles: 0,
+				loadedImgsPerChunk: [],
+				imgsPerChunk: [],
 				// profilesId: [],
 				// filteredProfile: [],
 			}
@@ -25,10 +28,12 @@
 						per_page: perPage
 					}
 				})
-					.then(response => {
-						const sponsored = response.data.paginated_profiles.data;
-						this.sponsoredProfiles.push(...sponsored);
-						this.totalSponsoredProfiles = response.data.paginated_profiles.total;
+					.then(({ data: { paginated_profiles, paginated_profiles: { from, to } } }) => {
+						const sponsored = paginated_profiles.data;
+						this.chunkedSponsoredProfiles.push(sponsored);
+						this.totalSponsoredProfiles = paginated_profiles.total;
+						// Compute chunk
+						this.imgsPerChunk.push(to - from + 1);
 
 						this.$emit('loadedSponsoredProfiles');
 					})
@@ -38,6 +43,8 @@
 
 				// Update next requested page
 				this.requestedPage += 1;
+				// Manage request profiles until now
+				this.requestedProfiles += perPage; 
 			},
 			goToShowPage(doctorUser, index) {
 				let completeName = doctorUser.first_name + '-' + doctorUser.last_name;
@@ -46,6 +53,12 @@
 				// console.log('doctor position inside homepage ', index);
 				// console.log(store.searchedSpecialization)
 			},
+			updateLoadedImgsPerChunk(chunkInd) {
+				this.loadedImgsPerChunk[chunkInd] ? this.loadedImgsPerChunk[chunkInd] += 1 : this.loadedImgsPerChunk[chunkInd] = 1;
+			},
+			checkOwnChunkIsLoaded(chunkInd) {
+				return this.areLoadedImgsPerChunk[chunkInd];
+			}
 		},
 		setup() {
 			const { getFilePath, getProfilePhotoPath } = useGetPathFunctions();
@@ -56,6 +69,21 @@
 			this.getSponsoredProfiles();
 		},
 		computed: {
+			areLoadedImgsPerChunk() {
+				let result = [];
+				for (let i = 0; i < this.imgsPerChunk.length; i++) {
+					const isLoadedChunk =  this.loadedImgsPerChunk[i] === this.imgsPerChunk[i];
+					result.push(isLoadedChunk);
+				}
+
+				return result;
+			},
+			isLoadingChunk() {
+				return this.areLoadedImgsPerChunk.some(isLoadedChunk => !isLoadedChunk);
+			},
+			chunkedSpProfLength() {
+				return this.chunkedSponsoredProfiles.reduce((acc, currValue) => (acc instanceof Array ? acc.length : acc) + currValue.length, 0)
+			}
 		},
 	}
 </script>
@@ -63,37 +91,64 @@
 <template>
 	<div class="container component-container">
 		<h3>Dottori in evidenza</h3>
-		<div class="sponsored-card-container bg-transparent">
-			<div class="card card-sponsored d-flex" style="width: 18rem;" v-for="({ photo, user }, index) in sponsoredProfiles"
-				@click="goToShowPage(user, index)">
-				<img :src="getProfilePhotoPath(this.store.placeholderImg(user.first_name, user.last_name),
-					photo, this.store.apiUri.slice(0, -4))"
-					:alt="'foto profilo di' + user.first_name + user.last_name">
-				<div class="card-body">
-					<h5 class="card-title">{{ user.first_name }} {{ user.last_name }}</h5>
-					<div class="card-text">
-						<h6>Specializzazioni:</h6>
-						<ul class="list-unstyled">
-							<li v-for="doctorSpecialization in user.specializations">
-								{{ doctorSpecialization.name }}
-							</li>
-						</ul>
+		<div class="sponsored-card-container bg-transparent" :class="{ 'show-simulated': isLoadingChunk }">
+			<template v-for="(isLoadedChunk, chunkInd) in areLoadedImgsPerChunk">
+				<template v-if="!isLoadedChunk">
+					<div class="card card-sponsored simulated-card-sponsored d-flex" style="width: 18rem;" v-for="profiles in imgsPerChunk[chunkInd]">
+						<img :src="null" alt="loading img" style="aspect-ratio: 1;">
+						<div class="card-body">
+							<h5 class="card-title simulated-lines-content">
+								<div></div>
+							</h5>
+							<div class="card-text">
+								<h6>Specializzazioni:</h6>
+								<ul class="list-unstyled">
+									<li class="simulated-lines-content" v-for="specialization in [0, 1]">
+										<div></div>
+										<div></div>
+									</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</template>
+				<div :key="index" class="card card-sponsored" :class="{ 'in-loaded-chunk': checkOwnChunkIsLoaded(chunkInd) }"
+					style="width: 18rem;" v-for="({ photo, user }, index) in chunkedSponsoredProfiles[chunkInd]" @click="goToShowPage(user, index)">
+					<img :src="getProfilePhotoPath(this.store.placeholderImg(user.first_name, user.last_name),
+						photo, this.store.apiUri.slice(0, -4))" :alt="'foto profilo di' + user.first_name + user.last_name"
+						@load="updateLoadedImgsPerChunk(chunkInd)">
+					<div class="card-body">
+						<h5 class="card-title">{{ user.first_name }} {{ user.last_name }}</h5>
+						<div class="card-text">
+							<h6>Specializzazioni:</h6>
+							<ul class="list-unstyled">
+								<li v-for="doctorSpecialization in user.specializations">
+									{{ doctorSpecialization.name }}
+								</li>
+							</ul>
+						</div>
 					</div>
 				</div>
-			</div>
+			</template>
 			<p class="info-box">
-				Visualizzati {{ sponsoredProfiles.length }} profili di {{ totalSponsoredProfiles }}
+				Visualizzati {{ chunkedSpProfLength }} profili di {{ totalSponsoredProfiles }}
 			</p>
 		</div>
 		<div class="buttons-wrapper mx-auto">
-			<button v-if="!(sponsoredProfiles.length === totalSponsoredProfiles)" class="btn mt-4 mb-2"
+			<button v-if="!(requestedProfiles >= totalSponsoredProfiles)" class="btn mt-4 mb-2"
 				@click="requestedPage === 2 ? getSponsoredProfiles(elementsPerPage = 5, requestedPage = 5) : getSponsoredProfiles()"><i
 					class="fa-regular fa-circle-down fa-2xl"></i></button>
 		</div>
 	</div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
+	@use '../../styles/variables' as var;
+	
+	main {
+		background-image: url(../../public/tile_background.png);
+	}
+
 	h3 {
 		text-align: center;
 		margin-bottom: 20px;
@@ -101,6 +156,7 @@
 	}
 
 	ul {
+		width: 100%;
 		text-align: start;
 		padding-left: 0;
 	}
@@ -112,9 +168,6 @@
 		border-radius: 20px
 	}
 
-	main {
-		background-image: url(../../public/tile_background.png);
-	}
 
 	/* Sponsored Doctor */
 	.component-container h2 {
@@ -149,6 +202,10 @@
 		flex-basis: 230px;
 		border: 2px solid #FFCC00;
 		transition: 0.8s;
+
+		.card-body {
+			align-self: normal;
+		}
 	}
 
 	.card-sponsored:hover {
@@ -170,6 +227,7 @@
 		margin-top: 10px;
 	}
 
+	
 	.card-text {
 		text-align: start;
 	}
@@ -179,22 +237,82 @@
 		flex: 1 0 100%;
 		text-align: right;
 	}
-
+	
 	.buttons-wrapper {
 		width: fit-content;
 
 		.fa-circle-down {
-			color: var(--color-secondary);
+			color: #fff;
 
 			transition: color 0.6s ease-out;
-			;
+			// ;
+			
+			// &:hover {
+			// 	color: var(--color-primary);
+			// }
+		}
+	}
+	
+	/* Simulated elements style */
+	$line: 1rem;
+	$line-h: var.to-px(1.5 * $line);
 
-			&:hover {
-				color: var(--color-primary);
+	%simulated-element-bg {
+		background: #eee;
+		background: linear-gradient(110deg, #ececec 5%, #f5f5f5 13%, #ececec 21%);
+		background-size: 200% 1000%;
+		animation: 1.5s shine linear infinite;
+	}
+
+	.show-simulated > *:not(.simulated-card-sponsored, .in-loaded-chunk, .info-box) {
+		display: none;
+	}
+	
+	.simulated-card-sponsored img {
+		color: #ececec;
+		@extend %simulated-element-bg;
+	}
+
+	.simulated-lines-content {
+		$text-my: 8px;
+		$interline: 4px;
+		// height: 2 * $text-my + 2 * $line-h + $interline + 4px;
+		padding: 0;
+		
+		div:first-child,
+		div:nth-child(2) {
+			margin: {
+				top: $text-my;
+				inline: 10px;
+			}
+			border-radius: 0.5em;
+			height: $line-h;
+			border-radius: 5px;
+			@extend %simulated-element-bg;
+
+		}
+
+		div:nth-child(2) {
+			width: 75%;
+			margin: {
+				top: $interline;
+				bottom: $text-my;
 			}
 		}
 	}
 
+	h5.simulated-lines-content div:first-child {
+		height: 1.3 * $line-h;
+	}
+
+	/* Loading animation */
+	@keyframes shine {
+		to {
+			background-position-x: -200%;
+		}
+	}
+
+	
 
 	/* Loader progressive */
 	.loader {
