@@ -13,8 +13,8 @@
 	background-color: var(--color-secondary);
 }
 
-.btn:not(.btn-close),
-.btn:first-child:not(.btn-close) {
+.btn,
+.btn:first-child {
 	@extend %btn-style;
 	background-color: var(--color-tertiary);
 	color: white;
