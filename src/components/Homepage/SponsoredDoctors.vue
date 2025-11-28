@@ -4,7 +4,6 @@
 	import { store } from '../../../js/store.js';
 	import { useGetPathFunctions } from '../../../js/composables/useGetPathFunctions.js';
 
-
 	export default {
 		data() {
 			return {
@@ -15,6 +14,7 @@
 				totalSponsoredProfiles: null,
 				requestedProfiles: 0,
 				loadedImgsPerChunk: [],
+				notLoadedImgsPerChunk: [],
 				imgsPerChunk: [],
 				// profilesId: [],
 				// filteredProfile: [],
@@ -54,7 +54,14 @@
 				// console.log(store.searchedSpecialization)
 			},
 			updateLoadedImgsPerChunk(chunkInd) {
-				this.loadedImgsPerChunk[chunkInd] ? this.loadedImgsPerChunk[chunkInd] += 1 : this.loadedImgsPerChunk[chunkInd] = 1;
+				const imgsArr = this.loadedImgsPerChunk;
+				
+				return imgsArr[chunkInd] ? imgsArr[chunkInd] += 1 : imgsArr[chunkInd] = 1;
+			},
+			updateNotLoadedImgsPerChunk(chunkInd, imgInd) {
+				const imgsArr = this.notLoadedImgsPerChunk;
+
+				return imgsArr[chunkInd] ? imgsArr[chunkInd].push(imgInd) : imgsArr[chunkInd] = [imgInd];
 			},
 			checkOwnChunkIsLoaded(chunkInd) {
 				return this.areLoadedImgsPerChunk[chunkInd];
@@ -72,7 +79,7 @@
 			areLoadedImgsPerChunk() {
 				let result = [];
 				for (let i = 0; i < this.imgsPerChunk.length; i++) {
-					const isLoadedChunk =  this.loadedImgsPerChunk[i] === this.imgsPerChunk[i];
+					const isLoadedChunk =  (this.loadedImgsPerChunk[i] ?? 0) + (this.notLoadedImgsPerChunk[i]?.length ?? 0) === this.imgsPerChunk[i];
 					result.push(isLoadedChunk);
 				}
 
@@ -112,11 +119,11 @@
 						</div>
 					</div>
 				</template>
-				<div :key="index" class="card card-sponsored" :class="{ 'in-loaded-chunk': checkOwnChunkIsLoaded(chunkInd) }"
+				<div :key="index" class="card card-sponsored" :class="{ 'in-loaded-chunk': checkOwnChunkIsLoaded(chunkInd), 'no-profile-img': notLoadedImgsPerChunk[chunkInd]?.includes(index) }"
 					style="width: 18rem;" v-for="({ photo, user }, index) in chunkedSponsoredProfiles[chunkInd]" @click="goToShowPage(user, index)">
 					<img :src="getProfilePhotoPath(this.store.placeholderImg(user.first_name, user.last_name),
 						photo, this.store.apiUri.slice(0, -4))" :alt="'foto profilo di' + user.first_name + user.last_name"
-						@load="updateLoadedImgsPerChunk(chunkInd)">
+						@load="updateLoadedImgsPerChunk(chunkInd)" @error="updateNotLoadedImgsPerChunk(chunkInd, index)">
 					<div class="card-body">
 						<h5 class="card-title">{{ user.first_name }} {{ user.last_name }}</h5>
 						<div class="card-text">
@@ -220,12 +227,21 @@
 		border: 2px solid #0033FF;
 	}
 
-	.card img {
-		border-radius: 50%;
-		width: 70%;
-		border: 2px solid var(--color-primary);
-		margin-top: 10px;
+	.card {
+		img {
+			border-radius: 50%;
+			width: 70%;
+			border: 2px solid var(--color-primary);
+			margin-top: 10px;
+		}
+
+		&.no-profile-img {
+			img {
+				display: none;
+			}
+		}
 	}
+	
 
 	
 	.card-text {
