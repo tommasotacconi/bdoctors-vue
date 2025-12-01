@@ -213,7 +213,7 @@
 				<template #card-header>
 					<div class="photo-wrapper">
 						<img
-							:src="getProfilePhotoPath(this.store.placeholderImg(retrievedProfile.first_name, retrievedProfile.last_name), retrievedProfile.photo, this.store.apiUri.slice(0, -4))"
+							:src="getProfilePhotoPath(this.store.placeholderImg(retrievedProfile.user.first_name, retrievedProfile.user.last_name), retrievedProfile.photo, this.store.apiUri.slice(0, -4))"
 							class="doctor-photo" alt="doctor photo">
 					</div>
 					<div class="card-header-title-section">

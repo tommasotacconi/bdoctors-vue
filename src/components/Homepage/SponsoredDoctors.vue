@@ -47,9 +47,9 @@ export default {
 			// Manage request profiles until now
 			this.requestedProfiles += perPage; 
 		},
-		goToShowPage(doctorUser, index) {
-			let completeName = doctorUser.first_name + '-' + doctorUser.last_name;
-			if (doctorUser.homonymous_id !== null) completeName += '-' + doctorUser.homonymous_id;
+		goToShowPage(fName, lName, homId) {
+			let completeName = fName + '-' + lName;
+			if (homId !== null) completeName += '-' + homId;
 			this.$router.push({ name: 'search', params: { name: completeName } })
 			// console.log('doctor position inside homepage ', index);
 			// console.log(store.searchedSpecialization)
@@ -105,10 +105,11 @@ export default {
 		<div class="sponsored-card-container bg-transparent">
 			<template v-for="(isLoadedChunk, chunkInd) in areLoadedImgsPerChunk">
 				<SponsoredCard v-if="!isLoadedChunk" v-for="profiles in imgsPerChunk[chunkInd]" :simulatedSpecs="[0, 1]"/>
-				<SponsoredCard v-for="({ photo, user }, index) in chunkedSponsoredProfiles[chunkInd]" :key="user.first_name + user.last_name + user.homonymous_id"
-					v-show="checkOwnChunkIsLoaded(chunkInd)" :class="{ 'no-profile-img': notLoadedImgsPerChunk[chunkInd]?.includes(index) }"
+				<SponsoredCard v-for="({ photo, user, user: { first_name: fName, last_name: lName, homonymous_id: homId } }, index) in chunkedSponsoredProfiles[chunkInd]" 
+					:key="fName + lName + homId" v-show="checkOwnChunkIsLoaded(chunkInd)"
+					:class="{ 'no-profile-img': notLoadedImgsPerChunk[chunkInd]?.includes(index) }" @click="goToShowPage(fName, lName, homId)"
 					:user :cardIndexes="[chunkInd, index]" :img="{
-						src: getProfilePhotoPath(this.store.placeholderImg(user.first_name, user.last_name), photo, this.store.apiUri.slice(0, -4)),
+						src: getProfilePhotoPath(this.store.placeholderImg(fName, lName), photo, this.store.apiUri.slice(0, -4)),
 						atLoad: updateLoadedImgsPerChunk,
 						atError: updateNotLoadedImgsPerChunk
 					}" />
