@@ -15,7 +15,7 @@ Technical goals:
 - Doctors research is without refresh (happens on client-side). 
 	
 Functional goals:
-- Make doctors capable of registiring to the Web app 
+- Make doctors capable of registering to the Web app 
 - Make doctors capable of creating a personal profile
 - Make visitors capable of looking up a medical doctor
 - Make visitors capable of seeing doctor's details
@@ -24,11 +24,12 @@ Functional goals:
 - Make doctors capable of sponsorize their profile
 - Make doctors capable of seeing their statistics  	
 
-Despite being a group of five people, having less than three weeks, at the end of the
-development period, the app was pretty unusable, lacking a real private login procedure.
+Despite being a group of five people, having less than three weeks we arrived to the end of
+the development period with a rough app, with a main defect given from lacking a real private
+login procedure.
 So after our final presentation, that was anyway good enough to show a complete demo app,
-I have continued the development process, where first I fixed the login procedure to then
-continue mainly with a complete refactor (I am still working on it, while studying ohter
+I have continued the development process, where I fixed first the login procedure to then
+continue mainly with a complete fix and refactor (I am still working on it, while studying other
 topics, because is a great playground as I said).
 
 As of now the requisite that I have not reviewed yet is responsive design. From manual testing,
