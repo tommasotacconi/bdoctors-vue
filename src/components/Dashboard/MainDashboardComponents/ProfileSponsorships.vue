@@ -11,7 +11,7 @@
 				price: null,
 				sponsorshipTypes: [],
 				sponsorshipName: '',
-				profileSponsorships: null,
+				profileActiveSpon: null,
 				cardType: null,
 				dropinInstance: null,
 				error: null,
@@ -105,15 +105,14 @@
 				axios.get(this.store.apiUri + 'profiles/authenticated', {
 					withCredentials: true
 				})
-					.then(response => {
+					.then(({ data: { profile: { active_sponsorship: active } } }) => {
 						// console.log(response);
-						const { data: { profile: { active_sponsorship: activeSponsorships } } } = response;
-						this.profileSponsorships = activeSponsorships;
+						this.profileActiveSpon = active;
 
 						// Set sponsorization status
-						if (activeSponsorships.length) {
+						if (active) {
 							this.isSponsorized = true;
-							this.cardType = this.profileSponsorships[0].name.toLowerCase();
+							this.cardType = this.profileActiveSpon.name.toLowerCase();
 						}
 
 						this.isSponsorshipLoaded = true;
@@ -200,7 +199,7 @@
 			</div>
 			<!-- Sponsorized user case -->
 			<div class="is-sponsored" v-else>
-				<div class="sponsor-card card-bronze" :class="['card-' + this.profileSponsorships[0].name.toLowerCase()]">
+				<div class="sponsor-card card-bronze" :class="['card-' + this.profileActiveSpon.name.toLowerCase()]">
 					<div class="card-description">
 						<p class="hour-sponsorship">Il tuo profilo è sponsorizzato</p>
 					</div>
