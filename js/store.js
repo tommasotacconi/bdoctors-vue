@@ -10,7 +10,7 @@ export const store = reactive({
 		/* Credits: Avatar Placeholder */
 		// return `https://avatar.iran.liara.run/username?username=${firstName}+${lastName}`;
 		/* Credits: DiceBear */
-		return `https://api.dicebear.com/9.x/initials/svg?seed=${firstName[0]}+${lastName[0]}`;
+		return `https://api.dicebear.com/9.x/initials/svg?seed=${firstName[0]}+${lastName[0]}&fontSize=40`;
 	} ,
 
 	// Authorization status
