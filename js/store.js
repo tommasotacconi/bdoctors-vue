@@ -7,7 +7,10 @@ export const store = reactive({
 	apiUri: import.meta.env.VITE_API_URL,
 	// Placeholder Uri
 	placeholderImg(firstName, lastName) {
-		return `https://avatar.iran.liara.run/username?username=${firstName}+${lastName}`;
+		/* Credits: Avatar Placeholder */
+		// return `https://avatar.iran.liara.run/username?username=${firstName}+${lastName}`;
+		/* Credits: DiceBear */
+		return `https://api.dicebear.com/9.x/initials/svg?seed=${firstName[0]}+${lastName[0]}`;
 	} ,
 
 	// Authorization status
