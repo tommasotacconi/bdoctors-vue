@@ -11,38 +11,39 @@ import DashboardPage from '../src/pages/DashboardPage.vue';
 import axios from 'axios';
 import { store } from './store';
 
-function getAuthStatus() {
-	const authStatus = store.isAuthenticated ?? axios.get(store.apiUri.slice(0, -4) + 'user/status')
-		.then(({ data: { authenticated } }) => authenticated);
-
-	return authStatus;
+async function getAuthStatus() {
+	return store.isAuthenticated ?? (store.isAuthenticated = (await axios.get(store.apiUri.slice(0, -4) + 'user/status')).data.authenticated);
 }
+
+async function checkAuthorization({ name: toName, meta: { requiredAuthValue } }, from) {
+	if (requiredAuthValue !== undefined) {
+		if (requiredAuthValue && !(await getAuthStatus())) return toName !== 'dashboard' ?  false : { name: 'login' };
+		else if (!requiredAuthValue && await getAuthStatus()) return toName === 'login' ? { name: 'dashboard' } : from.name ? false : { name: 'homepage' };
+	}
+ };
 
 const routes = [
 	{ 
 		path: '/',
 		component: WithHeaderLayout,
+		beforeEnter: async () => {await getAuthStatus()},
 		children: [
 			{
 				path: 'inizia-ricerca',
 				name: 'homepage',
 				component: HomepagePage,
-				beforeEnter: async () => {
-					store.isAuthenticated = await getAuthStatus();
-				}
 			},
 			{ path: 'utente/accesso',
 				name: 'login',
 				component: LoginPage,
-				beforeEnter: async () => {
-					store.isAuthenticated = await getAuthStatus();
-					
-					if (store.isAuthenticated) return { name: 'dashboard' };
-				}
+				meta: { requiredAuthValue: false },
+				beforeEnter: checkAuthorization
 			},
 			{ path: 'utente/registrazione',
 				name: 'register',
 				component: RegisterPage,
+				meta: { requiredAuthValue: false },
+				beforeEnter: checkAuthorization
 			},
 			// Path to all doctors with selected specialization id and satisfing filter parameters
 			// 'rating' and 'reviewsNumber'  
@@ -78,11 +79,8 @@ const routes = [
 				path: 'profilo',
 				name: 'dashboard',
 				component: DashboardPage,
-				beforeEnter: async () => {
-					store.isAuthenticated = await getAuthStatus();
-					
-					if (!store.isAuthenticated) return { name: 'login' };
-				}
+				meta: { requiredAuthValue: true },
+				beforeEnter: checkAuthorization
 			},
 		]
 	}
