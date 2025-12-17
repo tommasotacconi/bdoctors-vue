@@ -95,9 +95,6 @@
 			}
 		},
 		computed: {
-			orderedDoctors() {
-				return this.orderBySponsorship(this.doctors);
-			},
 			specializationName() {
 				return this.$route.params.specialization.replace(/-/g, ' ').replace(/_/g, '-');
 			},
@@ -112,6 +109,27 @@
 				}
 
 				return labels;
+			},
+			showSponsoredFirst() {
+				const docs = [...this.isFiltering ? this.filteredDoctors : this.doctors];
+				let firstDocRemoved = undefined;
+
+				for (let i = docs.length - 1; i >= 0; i--) {
+					const doc = docs[i];
+					if (!!doc.active_sponsorship) {
+						// Check if the removed item has already been removed to end execution
+						if (firstDocRemoved === doc) break;
+
+						const removed = docs.splice(i, 1)[0];
+						docs.unshift(removed);
+						if (!firstDocRemoved) firstDocRemoved = removed;
+						
+						// Needed to not jump one element
+						i++;
+					}
+				}
+
+				return docs;
 			},
 		},
 		watch: {
@@ -208,7 +226,7 @@
 
 			<!-- Doctors in selected specialization and eventually filtered -->
 			<div class="doctors-list" v-if="isFiltering ? filteredDoctors.length : doctors.length">
-				<div class="doctor-card" v-for="({ office_address, avg_vote, total_reviews, photo, user, ...profile }, index) in (isFiltering ? filteredDoctors : doctors)"
+				<div class="doctor-card" v-for="({ office_address, avg_vote, total_reviews, photo, user, ...profile }, index) in showSponsoredFirst"
 					@click="goToShowPage({ office_address, photo, ...profile, user }, index)" :key="index">
 					<img class="doctor-photo"
 						:src="getProfilePhotoPath(this.store.placeholderImg(user.first_name, user.last_name), photo, store.apiUri.slice(0, -4))"
