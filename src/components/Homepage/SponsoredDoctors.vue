@@ -23,7 +23,7 @@ export default {
 	},
 	methods: {
 		getSponsoredProfiles(perPage = this.elementsPerPage, page = this.requestedPage) {
-			axios.get(this.store.apiUri + 'sponsorships/sponsored', {
+			axios.get(this.store.apiUri + 'profiles/sponsored', {
 				params: {
 					page,
 					per_page: perPage
