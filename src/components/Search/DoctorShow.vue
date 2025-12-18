@@ -385,6 +385,7 @@
 			justify-content: center;
 
 			img.doctor-photo {
+				height: 100%;
 				max-width: 100%;
 				margin: 15px;
 				border-radius: 50%;
