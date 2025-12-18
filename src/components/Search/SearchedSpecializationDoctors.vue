@@ -29,10 +29,10 @@
 			AppPopUpCard
 		},
 		methods: {
-			goToShowPage(doctorUser, index) {
-				let completeName = doctorUser.first_name + '-' + doctorUser.last_name;
-				if (doctorUser.homonymous_id !== null) completeName += '-' + doctorUser.homonymous_id;
-				this.searchedDoctor = doctorUser;
+			goToShowPage(doctor, fName, lName, homId) {
+				let completeName = fName + '-' + lName;
+				if (homId !== null) completeName += '-' + homId;
+				this.searchedDoctor = doctor;
 				this.$router.push({
 					name: 'specializationDoctors.show', params: { name: completeName }
 				});
@@ -226,14 +226,14 @@
 
 			<!-- Doctors in selected specialization and eventually filtered -->
 			<div class="doctors-list" v-if="isFiltering ? filteredDoctors.length : doctors.length">
-				<div class="doctor-card" v-for="({ office_address, avg_vote, total_reviews, photo, user, ...profile }, index) in showSponsoredFirst"
-					@click="goToShowPage({ office_address, photo, ...profile, user }, index)" :key="index">
+				<div class="doctor-card" v-for="({ office_address, avg_vote, total_reviews, photo, user: { first_name, last_name, homonymous_id: hom_id } }, index) in showSponsoredFirst"
+					@click="goToShowPage(showSponsoredFirst[index], first_name, last_name, hom_id)" :key="index">
 					<img class="doctor-photo"
-						:src="getProfilePhotoPath(this.store.placeholderImg(user.first_name, user.last_name), photo, store.apiUri.slice(0, -4))"
+						:src="getProfilePhotoPath(this.store.placeholderImg(first_name, last_name), photo, store.apiUri.slice(0, -4))"
 						alt="doctor photo">
 					<section class="doctor-information">
 						<h5 class="doctor-name">
-							{{ user.first_name }} {{ user.last_name }}
+							{{ first_name }} {{ last_name }}
 						</h5>
 						<div class="doctor-address">
 							<strong>Ufficio:</strong> {{ office_address }}
