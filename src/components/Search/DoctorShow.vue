@@ -464,6 +464,7 @@
 		}
 	}
 
+	$btn-dist-from-corner: vars.$card-br-radius - vars.$btn-close-br-radius - 2.7px;
 	.btn {
 		background-color: var(--color-tertiary);
 
@@ -471,8 +472,8 @@
 		translate: -50% 0;
 
 		&.btn-close {
-			// 2.7px is approximately the computed card-br-width that needs to be subtracted since it's from its inner side that is displaced hte button external border 
-			$btn-dist-from-corner: vars.$card-br-radius - vars.$btn-close-br-radius - 2.7px;
+			// 2.7px is approximately the computed card-br-width, that needs to be subtracted
+			// since it's from its inner side that the button external border is displaced 
 			translate: 0;
 			right: $btn-dist-from-corner;
 			top: $btn-dist-from-corner;
@@ -489,6 +490,14 @@
 	}
 
 	:deep() {
+		// Adapt AppPopUpCard.vue's styles
+		.pop-up-card.not-found {
+			.card-header {
+				min-height: vars.to-px(vars.$btn-font-size) + 2 * vars.$btn-pd-top-bot + 2 * $btn-dist-from-corner;
+			} 
+		}
+
+		// Adapt AppForm.vue's style 
 		.btn.btn-submit {
 			width: 100%;
 		}
