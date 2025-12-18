@@ -377,17 +377,14 @@
 
 	.pop-up-card .card-header {
 		.photo-wrapper {
-			--img-size: 150px;
+			--img-size: 120px;
 			max-width: var(--img-size);
 			flex-basis: var(--img-size);
-			display: flex;
-			align-items: center;
-			justify-content: center;
+			margin-top: 15px;
 
 			img.doctor-photo {
 				height: 100%;
 				max-width: 100%;
-				margin: 15px;
 				border-radius: 50%;
 				aspect-ratio: 1;
 				object-fit: cover;
@@ -407,9 +404,10 @@
 			display: flex;
 			justify-content: center;
 			flex-direction: column;
-			flex-basis: 60%;
+			flex-basis: 65%;
 			align-items: start;
 			padding: 20px;
+			padding-right: 5px;
 
 			& .address {
 				font-size: 1.1em;
@@ -547,17 +545,20 @@
 		}
 
 		@media (min-width: 768px) {
-			.card-header {
-				.photo-wrapper {
-					--img-size: 175px;
+			.pop-up-card {
+				.card-header {
+					.photo-wrapper {
+						--img-size: 140px;
+					}
+				}
+	
+				.card-body {
+					.vote {
+						@include forms.vote-label-dimension(2.2rem, 1.1rem);
+					}
 				}
 			}
 
-			.card-body {
-				.vote {
-					@include forms.vote-label-dimension(2.2rem, 1.1rem);
-				}
-			}
 		}
 
 		/* Desktop */
