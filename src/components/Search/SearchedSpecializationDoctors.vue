@@ -6,6 +6,8 @@
 	import { useGetPathFunctions } from '../../../js/composables/useGetPathFunctions.js';
 	import { nextTick } from 'vue';
 	import AppPopUpCard from '../Generics/AppPopUpCard.vue';
+	import AppForm from '../Generics/AppForm.vue';
+	import FormField from '../../../js/utils/FormField.js';
 
 	export default {
 		data() {
@@ -15,18 +17,22 @@
 				searchedDoctor: null,
 				filteredDoctors: [],
 				doctors: [],
-				rating: null,
-				reviewsNumber: null,
 				isFiltering: false,
 				loaded: false,
 				loadingPopUp: !!this.$route.params.name,
 				containerHeight: 0,
-				specializationNotFound: false
+				specializationNotFound: false,
+				formElements: {
+					vote: new FormField('vote', 'radio', 'Voto'),
+					revsNum: new FormField('revsNum', 'number', 'Numero recensioni'),
+				},
+
 			}
 		},
 		components: {
 			DoctorShow,
-			AppPopUpCard
+			AppPopUpCard,
+			AppForm
 		},
 		methods: {
 			goToShowPage(doctor, fName, lName, homId) {
@@ -54,33 +60,34 @@
 
 				this.loaded = false
 			},
-			filterDoctors(options) {
-				this.isFiltering = true;
-				const { byVotes, byReviewsNumber } = options;
+			filterDoctors(filterInputs) {
+				const { vote, revsNum } = filterInputs 
+				if (vote || revsNum) this.isFiltering = true;
+				else return;
+				
+				this.filteredDoctors.length = 0;
 
-				if (byVotes && this.rating) {
+				if (vote) {
 					const param = 'avg_vote';
-					this.filteredDoctors = this.filterFunction(param, this.rating);
+					this.filteredDoctors = this.filterFunction(param, vote, this.doctors);
 				}
-
-				if (byReviewsNumber && this.reviewsNumber) {
+				if (revsNum) {
 					const param = 'total_reviews';
-					this.filteredDoctors = this.filterFunction(param, this.reviewsNumber);
+					const target = this.filteredDoctors.length ? this.filteredDoctors : this.doctors;
+					this.filteredDoctors = this.filterFunction(param, revsNum, target);
 				}
 			},
-			filterFunction(filteringParam, comparisonValue) {
+			filterFunction(filteringParam, comparisonValue, target) {
 				// Filter out doctors with a filter value not valid, i.e. equal to null for avg_vote or 0 for reviews
-				const nonFilterableDoctors = this.doctors.filter(({ [filteringParam]: param }) => param === null || param === 0);
-				const result = this.doctors.filter(({ [filteringParam]: param, user: { email } }) => {
-					if (nonFilterableDoctors.find(({ user: { email: comparisonEmail } }) => email === comparisonEmail)) return true;
+				console.log(target);
+				const result = target.filter(({ [filteringParam]: param }) => {
+					if (!param) return true;
 					return param >= comparisonValue
 				});
 
 				return result;
 			},
-			resetInputs() {
-				this.rating = null;
-				this.reviewsNumber = null;
+			stopFiltering() {
 				this.isFiltering = false;
 				this.filteredDoctors.length = 0;
 			},
@@ -192,36 +199,25 @@
 			</div>
 
 			<div class="advanced-filter">
-				<!-- Average Vote Filter Input -->
-				<div class="average-votes">
-					<div class="votes d-flex align-items-center">
-						<p class="me-2">Filtra per media voti: </p>
-						<div class="rating">
-							<form id="filter-votes-form" class="form-control rating"
-								@submit.prevent="filterDoctors({ byVotes: true })">
-								<button type="submit" class="btn btn-sm btn-secondary ms-2"
-									:class="{ 'disabled': rating === null }">Filtra</button>
-								<div class="input-group" v-for="label in voteLabels">
-									<input type="radio" :id="label.name" name="rating" :value="label.inputValue" v-model="rating">
-									<label :for="label.name"><i class="fa-solid fa-stethoscope"></i></label>
-								</div>
-							</form>
+				<AppForm :elements="formElements" :apiRouteAndMethod="null" :formAction="filterDoctors"
+					:nameArtConc="['Filtro per recensioni', 'Il', 'o']" :doctorInfo="null" >
+					<template #title>
+						Filtra medici
+					</template>
+					<template #subtitle>
+						Seleziona il voto medio e/o un numero di recensioni ricevute per trovare il medico che preferesci all'interno
+						della specializzazione selezionata.
+					</template>
+					<template #buttons="{ formData: { vote, revsNum }, resetForm }">
+						<div class="col">
+							<button type="submit" class="btn btn-sm btn-secondary"
+							:disabled="vote === null && revsNum === null">Filtra</button>
+							<button type="reset" class="btn btn-sm btn-primary"
+								:disabled="vote === null && revsNum === null" @click="() => {resetForm(); stopFiltering()}">Cancella Filtri
+							</button>
 						</div>
-					</div>
-				</div>
-				<!-- Reviews Number Filter Input-->
-				<div class="reviews-number">
-					<p>Filtra per numero di recensioni:</p>
-					<form method="GET" class="form-control d-flex" @submit.prevent="filterDoctors({ byReviewsNumber: true })">
-						<input type="number" class="form-control" id="reviews" name="reviews" min="0" v-model="reviewsNumber">
-						<button type="submit" :class="{ 'disabled': reviewsNumber === null }"
-							class="btn btn-sm btn-secondary ms-2">Filtra</button>
-					</form>
-				</div>
-				<!-- Reset Input Fields Button -->
-				<button type="reset" class="btn btn-sm btn-primary"
-					:class="{ 'disabled': rating === null && reviewsNumber === null }" @click="resetInputs">Cancella
-					Filtri</button>
+					</template>
+				</AppForm>
 			</div>
 
 			<!-- Doctors in selected specialization and eventually filtered -->
@@ -268,7 +264,10 @@
 	</main>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
+	@use "../../styles/forms" as f;
+	@use "../../styles/variables" as v;
+
 	main {
 		height: 100%;
 		padding-bottom: 60px;
@@ -278,20 +277,29 @@
 		position: relative;
 	}
 
-	.container {
-		background-color: white;
-	}
-
+	
 	h5 {
 		margin-bottom: 15px;
 		text-align: center;
 	}
+	
+	img {
+		border-radius: 50%;
+		border: 3px solid #65B0FF;
+		/* height: 200px; */
+	}
 
+	/* Utilities */
+	.container {
+		background-color: white;
+	}
+	
 	.title {
 		text-align: center;
 		margin: 30px 0 20px 0;
 
 		h2 {
+			font-size: 1.2rem;
 			font-weight: 300;
 		}
 	}
@@ -315,50 +323,65 @@
 		display: flex;
 		align-items: center;
 		gap: 20px;
-	}
 
-	/*Rating */
-	.rating {
-		display: flex;
-		flex-direction: row-reverse;
-		justify-content: flex-end;
-
-		& input {
-			display: none;
-		}
-
-		& label {
-			font-size: 24px;
-			cursor: pointer;
-		}
-
-		label:hover,
-		.input-group:has(label:hover)~.input-group label {
-			color: var(--color-complementary)
-		}
-
-		input:checked+label,
-		.input-group:has(input:checked+label)~.input-group label {
-			color: var(--color-complementary)
+		.row {
+			button.btn {
+				width: 100%;
+				
+				&:nth-of-type(2) {
+					margin: {
+						left: 0;
+						top: 10px;
+					} 
+				}
+			}
 		}
 	}
 
-	.reviews-number {
-		display: flex;
-		flex-wrap: nowrap;
-		align-items: center;
+	/* Filter form */
+	$height: 2rem;
+	:deep() {
+		.advanced-filter {
+			.form-frame {
+				padding-bottom: 0;
+				min-height: auto;
+	
+				form {
+					@include f.set-fields-color(var(--color-secondary));
+					.vote {
+						margin-bottom: 0;
+					}
+
+					.vote label {
+						height: $height * 0.85;
+						line-height: $height * 0.7;
+			
+						.fa-stethoscope {
+							font-size: v.$font-size-sm;
+						}
+					}
+
+					#revsNum {
+						margin-bottom: 30px;
+					}
+				}
+			}
+		}
 	}
 
 	/* Doctor list */
 	.doctors-list {
-		--col-gap: 50px;
-	}
-
-	.doctors-list {
+		--col-gap: 15px;
 		display: flex;
 		gap: 50px var(--col-gap);
 		flex-wrap: wrap;
 		margin-top: 30px;
+
+		& > :hover {
+			cursor: pointer;
+			outline: thin solid var(--color-complementary);
+			outline-offset: 5px;
+		}
 	}
 
 	.doctor-photo {
@@ -369,14 +392,6 @@
 		object-position: center;
 	}
 
-	.doctors-list> :hover {
-		scale: 1.2;
-		cursor: pointer;
-		outline: thin solid var(--color-complementary);
-		outline-offset: 5px;
-	}
-
-
 	.total-specialization-doctor {
 		font-style: oblique;
 		font-weight: normal;
@@ -384,8 +399,8 @@
 	}
 
 	.doctor-card {
-		min-height: 450px;
-		flex: 0 calc(100% / 3 - 2 / 3 * var(--col-gap));
+		min-height: 300px;
+		flex-basis: 100%;
 		background-color: #D8F9FF;
 		padding: 25px 30px;
 		display: flex;
@@ -393,15 +408,22 @@
 		gap: 15px;
 		align-items: center;
 		border-radius: 30px;
-
 		transition: scale 0.2s;
+
+		img {
+			height: 120px;
+			width: 120px;
+		}
 	}
 
-	img {
-		border-radius: 50%;
-		border: 3px solid #65B0FF;
-		/* height: 200px; */
+	.doctor-name {
+		font-size: 0.9rem;
+	}
 
+	.doctor-address,
+	.doctor-average,
+	.doctor-reviews {
+		font-size: 0.8rem;
 	}
 
 	.button-profile-show {
@@ -451,31 +473,43 @@
 	}
 
 	/* Media Queries */
-	/* Desktop (under 1024px) */
-	@media (max-width: 1024px) {
-		.doctors-list {
-			--col-gap: 30px;
-		}
-	}
-
-	/* Mobile */
 	/* Large mobile */
-	@media (max-width: 768px) {
-		.advanced-filter {
-			flex-direction: column;
-			align-items: flex-start;
+	@media (min-width: 480px) {
+		:deep() {
+			.advanced-filter {
+				.row {
+					& > div {
+						width: 50%;
+					}
+
+					button.btn {
+						width: max-content;
+
+						&:nth-of-type(2) {
+							margin: {
+								top: 0;
+								left: 15px;
+							}
+						}
+					}
+				}
+		
+				.form-frame form .vote label {
+					height: $height * 0.9;
+					line-height: $height * 0.75;
+					margin-top: 3px;
+		
+					.fa-stethoscope {
+						font-size: v.$font-size-base;
+					}
+				}
+			}
 		}
 
-		.average-votes,
-		.reviews-number {
-			width: 100%;
-			margin-bottom: 15px;
-		}
-
-		.advanced-filter button {
-			width: 100%;
-			margin-top: 15px;
-		}
+		// .advanced-filter {
+		// 	flex-direction: column;
+		// 	align-items: flex-start;
+		// }
 
 		.doctors-list {
 			--col-gap: 20px;
@@ -484,15 +518,15 @@
 
 		.doctor-card {
 			flex: 0 calc(100% / 2 - 1 / 2 * var(--col-gap));
+
+			img {
+				height: 150px;
+				width: 150px;
+			}
 		}
 
 		.title h2 {
 			font-size: 1.4rem;
-		}
-
-		.doctor-card img {
-			height: 150px;
-			width: 150px;
 		}
 
 		.doctor-name h5 {
@@ -502,67 +536,55 @@
 		.doctor-information {
 			text-align: start;
 		}
+	}
+	
+	/* Desktop (above 768px) */
+	@media (min-width: 768px) {
+		.doctors-list {
+			--col-gap: 30px;
+		}
 
-		.average-votes {
-			width: 100%;
+	.doctor-name {
+		font-size: v.$h5-font-size;
+	}
+
+	.doctor-address,
+	.doctor-average,
+	.doctor-reviews {
+		font-size: v.$font-size-base;
+	}
+
+
+		:deep() {
+			.advanced-filter {
+				.form-frame form .vote label {
+					height: $height;
+					line-height: $height * 0.9;
+					margin-top: 0;
+				}
+			}
 		}
 	}
 
-	/* Small Mobile Screens */
-	@media (max-width: 480px) {
+	/* Big desktop (above 1024px) */
+	@media (min-width: 1024px) {
 		.doctors-list {
-			--col-gap: 15px;
+			--col-gap: 50px;
 
-			&> :hover {
-				scale: none;
+			& > :hover {
+				scale: 1.2;
 			}
 		}
-
+		
 		.doctor-card {
-			/* Ensure 1 card per row on very small screens */
-			flex: auto;
-			min-height: 300px;
-		}
-
-		.doctor-name {
-			font-size: 0.9rem;
-		}
-
-		.doctor-address,
-		.doctor-average,
-		.doctor-reviews {
-			font-size: 0.8rem;
-		}
-
-		.rating {
-			font-size: 20px;
-			flex-grow: 1;
-			align-items: center;
-			flex-wrap: no-wrap;
-			gap: 5px;
-		}
-
-		.votes {
-			flex-wrap: wrap;
-		}
-
-		.average-votes,
-		.reviews-number {
-			flex-direction: column;
-			align-items: flex-start;
-		}
-
-		button {
-			width: 100%;
+		/* Ensure 1 card per row on very small screens */
+		flex: 0 calc(100% / 3 - 2 / 3 * var(--col-gap));
+		min-height: 450px;
 		}
 
 		.title h2 {
-			font-size: 1.2rem;
-		}
-
-		.doctor-card img {
-			height: 120px;
-			width: 120px;
+			font-size: v.$h2-font-size;
 		}
 	}
+
 </style>

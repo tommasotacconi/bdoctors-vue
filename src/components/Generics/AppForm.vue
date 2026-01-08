@@ -38,7 +38,7 @@
 				for (const key in this.elements) {
 					const eventualValue = this.elements[key].value ?? '';
 					if (key === 'specializationsId') this.$data.formData[key] = eventualValue ? eventualValue : [];
-					else if (['vote', 'photo', 'curriculum'].includes(key)) this.$data.formData[key] = null;
+					else if (['vote', 'photo', 'curriculum', 'revsNum'].includes(key)) this.$data.formData[key] = null;
 					else this.$data.formData[key] = eventualValue;
 					this.$data.errors[key] = '';
 				}
@@ -94,7 +94,7 @@
 					// Check if field enabled
 					if (this.elements[key].disabled) continue;
 
-					if (!['vote', 'photo', 'curriculum', 'specializationsId'].includes(key)) this.formData[key] = '';
+					if (!['vote', 'photo', 'curriculum', 'specializationsId', 'revsNum'].includes(key)) this.formData[key] = '';
 					else if (key === 'specializationsId') {
 						this.formData[key] = [];
 						// Reset Multiselect if present on page (that is when sent === undefined)
@@ -169,17 +169,13 @@
 			}
 		},
 		props: {
-			doctorInfo: {
-				type: [Object, null],
-				required: true
-			},
 			apiRouteAndMethod: {
-				type: Object,
 				required: true,
 				validator(value) {
-					const { route, method } = value;
-
-					return route && method;
+					if (value === undefined) return false;
+					if (value === null) return true;
+					const { route, method } = value
+					return !!(route && method);
 				}
 			},
 			elements: {
@@ -196,6 +192,14 @@
 			},
 			perfectValidation: {
 				type: Function,
+			},
+			formAction: {
+				type: Function,
+				require: false
+			},
+			doctorInfo: {
+				type: [Object, null],
+				required: true
 			},
 			formFrameClass: {
 				type: Object
@@ -286,8 +290,10 @@
 	<!-- /* Form section */ -->
 	<div class="form-frame container" :class="formFrameClass">
 		<!-- Generic form element -->
-		<form v-if="sent === undefined" @submit.prevent="validateForm" novalidate :class="formClass">
+		<form v-if="sent === undefined" @submit.prevent="formAction(formData) || validateForm" novalidate :class="formClass">
 			<div class="row" :class="wrapperInnerDiv">
+				<h1><slot name="title" /></h1>
+				<p><slot name="subtitle" /></p>
 				<!-- Form field's template -->
 				<div class="mb-2" :class="el.wrapperStyle" v-for="(el, key) in elements">
 					<!-- If vote field -->
@@ -322,7 +328,7 @@
 					<template v-else>
 						<label :for="el.id" class="badge rounded-pill" :class="{ 'd-none': el.type === 'hidden' }">{{ el.label
 						}}</label>
-						<input v-if="el.type !== 'textarea'" :id="el.id" v-model.trim="formData[key]" :type="el.type"
+						<input v-if="['text', 'radio', 'number'].includes(el.type)" :id="el.id" v-model.trim="formData[key]" :type="el.type"
 							:placeholder="el.placeholder" class="form-control" :class="{ 'invalid-input': errors[key] }"
 							:rows="key === 'content' ? 3 : null" :disabled="el.disabled">
 						<textarea v-else :id="el.id" v-model.trim="formData[key]" :placeholder="el.placeholder" class="form-control"
@@ -362,6 +368,8 @@
 						@click.prevent="resetForm()">Pulisci
 					</button>
 				</div>
+				<!-- Arbitrary buttons slot -->
+				<slot name="buttons" :formData :resetForm />
 			</div>
 		</form>
 
