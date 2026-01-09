@@ -292,8 +292,8 @@
 		<!-- Generic form element -->
 		<form v-if="sent === undefined" @submit.prevent="formAction(formData) || validateForm" novalidate :class="formClass">
 			<div class="row" :class="wrapperInnerDiv">
-				<h1><slot name="title" /></h1>
-				<p><slot name="subtitle" /></p>
+				<h1 v-if="$slots.title"><slot name="title" /></h1>
+				<p v-if="$slots.subtitle"><slot name="subtitle" /></p>
 				<!-- Form field's template -->
 				<div class="mb-2" :class="el.wrapperStyle" v-for="(el, key) in elements">
 					<!-- If vote field -->
@@ -328,7 +328,7 @@
 					<template v-else>
 						<label :for="el.id" class="badge rounded-pill" :class="{ 'd-none': el.type === 'hidden' }">{{ el.label
 						}}</label>
-						<input v-if="['text', 'radio', 'number'].includes(el.type)" :id="el.id" v-model.trim="formData[key]" :type="el.type"
+						<input v-if="['text', 'radio', 'number', 'password', 'pwConf', 'email'].includes(el.type)" :id="el.id" v-model.trim="formData[key]" :type="el.type"
 							:placeholder="el.placeholder" class="form-control" :class="{ 'invalid-input': errors[key] }"
 							:rows="key === 'content' ? 3 : null" :disabled="el.disabled">
 						<textarea v-else :id="el.id" v-model.trim="formData[key]" :placeholder="el.placeholder" class="form-control"

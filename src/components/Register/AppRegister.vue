@@ -87,6 +87,21 @@
 		}
 
 		/* Utilities */
+		.specializations-multiselect {
+			height: 75%;
+
+			.multiselect {
+				height: 100%;
+				
+				.multiselect__tags {
+					padding-top: 20px;
+					border-bottom-width: 0;
+					height: 100%;
+					overflow: auto;
+				}
+			}
+		}
+
 		#result-alert {
 			padding-left: 10px;
 			padding-right: 10px;

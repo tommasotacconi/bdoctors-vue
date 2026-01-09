@@ -9,6 +9,7 @@
 			return {
 				value: this.specializations,
 				options: [],
+				maxHeight: 150,
 				store
 			}
 		},
@@ -53,16 +54,30 @@
 <template>
 	<!--- @update:modelValue: on every change inside specializations array, this will update the parent's array through custom events -->
 	<div>
-		<VueMultiselect v-model="value" :options="options" :multiple="true" :close-on-select="false"
+		<VueMultiselect v-model="value" :options :multiple="true" :close-on-select="false" :max-height
 			:clear-on-select="false" track-by="name" placeholder="Seleziona una o più specializzazioni" :show-labels="true"
 			@update:modelValue="sendValues" :custom-label="getName">
 		</VueMultiselect>
 	</div>
 </template>
 <style lang="scss">
+	@use "../../styles/variables" as v;
 	@import 'vue-multiselect/dist/vue-multiselect.min.css';
+
+	.multiselect__placeholder {
+		font-size: v.$font-size-base;
+		padding: {
+			top: 0;
+			left: 5px;
+		};
+		line-height: 1;
+	}
 
 	.multiselect__tag {
 		background-color: var(--color-secondary);
+	}
+
+	.multiselect--active {
+		z-index: auto;
 	}
 </style>
