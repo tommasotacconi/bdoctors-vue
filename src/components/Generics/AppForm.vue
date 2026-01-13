@@ -24,7 +24,38 @@
 			}
 		},
 		methods: {
-			updateSpecs(specializations, reactiveObj, key) {
+			getElementEvents(elType, key) {
+				const elEvents = {
+					multiselect: {
+						'send-values': specializations => this.updateSpecs(specializations, this.formData, key) 
+					},
+					fileUpload: {
+						'uploaded-new-file': file => this.updateFile(file, this.formData, this.errors, key)
+					},
+					input: {
+						'input': event => this.formData[key] = event.target.value.trim() 
+					}
+				}
+
+				return elEvents[elType];
+			},
+			getElementProps(el, key) {
+				const { options, ...rest } = el;
+				const flattenedEl = { ...rest, ...options };
+				const isMultiselect = el.elementType === 'multiselect';
+
+				return {
+					...flattenedEl,
+					ref: isMultiselect ? 'multi' : null,
+					class: [el.wrapperStyle, { 'invalid-input': this.errors[key], 'specializations-multiselect': isMultiselect, 'form-control': !isMultiselect }],
+					specializations: isMultiselect ? this.formData[key] : null,
+					size: el.size ? el.size * 1024 : null,
+					nameAndConc: [el.label.toLowerCase(), el.fieldGenre = 'm' ? 'o' : 'a'],
+					value: this.formData[key],
+					rows: key === 'content' ? 3 : null
+				}
+			},
+			updateSpecs(specializations, formData, key) {
 				// Prepare a constant array result to insert ids value
 				const result = [];
 				// Insert ids taken from specializations parameter in reactive variable specializations, property of errors 
@@ -32,7 +63,13 @@
 					result.push(specializations[i]);
 				}
 
-				reactiveObj[key] = result;
+				formData[key] = result;
+			},
+			updateFile(file, formData, errors, field) {
+				errors[field] = '';
+				if (file /* && !isObjectEmpty(file) */) formData[field] = file;
+				else if (file === false) errors[field] = `Inserire un file di dimensioni non superiori a 2048KB e del tipo indicato nel selettore di file`;
+				else formData[field] = null;
 			},
 			createFormData() {
 				for (const key in this.elements) {
@@ -215,6 +252,19 @@
 			},
 		},
 		computed: {
+			elementEvents() {
+				return elEvents = {
+					multiselect: {
+						'send-values': specializations => this.updateSpecs(specializations, this.formData, this.elements) 
+					},
+					fileUpload: {
+						'uploaded-new-file': file => this.updateFile(file, this.formData, this.errors, key)
+					},
+					input: {
+						'input': event => this.formData[key] = event.target.value.trim() 
+					}
+				}
+			},
 			name() {
 				return this.nameArtConc[0];
 			},
@@ -309,32 +359,39 @@
 						</div>
 					</template>
 					<!-- If specializations' multiselect field -->
-					<template v-else-if="key === 'specializationsId'">
+<!-- 					<template v-else-if="key === 'specializationsId'">
 						<label :for="el.id" class="badge rounded-pill">{{ el.label }}</label>
 						<Multiselect ref="multi" :id="el.id" class="specializations-multiselect"
 							:class="{ 'invalid-input': errors[key] }" :specializations="formData[key]"
 							@send-values="(specializations) => { updateSpecs(specializations, formData, key); }" />
 					</template>
-					<!-- if type=file input field -->
-					<template v-else-if="key === 'photo' || key === 'curriculum'">
+ -->					<!-- if type=file input field -->
+<!-- 					<template v-else-if="key === 'photo' || key === 'curriculum'">
 						<label :for="el.id" class="badge rounded-pill">{{ el.label }}</label>
-						<FileUpload :id="el.id" class="form-control" :class="{ 'invalid-input': errors[key] }" :accept="el.accept"
-							:size="el.size * 1024" :value="el.value"
-							:nameAndConc="[el.label.toLowerCase(), el.fieldGenre = 'm' ? 'o' : 'a']"
+						<FileUpload :id="el.id" class="form-control" :class="{ 'invalid-input': errors[key] }"
+							:accept="el.accept" :size="el.size * 1024" :value="el.value" :nameAndConc="[el.label.toLowerCase(), el.fieldGenre = 'm' ? 'o' : 'a']"
 							@uploaded-new-file="(value) => { optionalPropsObject.handleUploadedNewFile(value, formData, errors, key) }"
 							:showPrev="el.showPreviousFile" />
 					</template>
-					<!-- If other fields of type text input and textarea -->
-					<template v-else>
+ -->					<!-- If other fields of type text input and textarea -->
+<!-- 					<template v-else>
 						<label :for="el.id" class="badge rounded-pill" :class="{ 'd-none': el.type === 'hidden' }">{{ el.label
 						}}</label>
-						<input v-if="['text', 'radio', 'number', 'password', 'pwConf', 'email'].includes(el.type)" :id="el.id" v-model.trim="formData[key]" :type="el.type"
-							:placeholder="el.placeholder" class="form-control" :class="{ 'invalid-input': errors[key] }"
-							:rows="key === 'content' ? 3 : null" :disabled="el.disabled">
-						<textarea v-else :id="el.id" v-model.trim="formData[key]" :placeholder="el.placeholder" class="form-control"
-							:class="{ 'invalid-input': errors[key] }" :rows="key === 'content' ? 3 : null"></textarea>
-					</template>
-					<!-- Box for single input's error message -->
+						<component :is="el.elementType" :id="el.id" v-bind:value.trim="formData[key]" @input="event => formData[key] = event.target.value" :type="el.type"
+							:placeholder="el.placeholder" :hidden="el.hidden" :disabled="el.disabled" class="form-control" :class="{ 'invalid-input': errors[key] }"
+							:rows="key === 'content' ? 3 : null" />
+						</template>
+						-->					<!-- Multiselect, FileUpload, input and textarea elements -->
+					<label :for="el.id" class="badge rounded-pill" :class="{ 'd-none': el.type === 'hidden' }">{{ el.label
+					}}</label>
+					<component :is="el.elementType" v-bind="getElementProps(el, key)" v-on="getElementEvents(el.elementType, key)" />
+<!-- 					<component :is="el.elementType" :ref="key === 'specializationsId' ? 'multi' : null"
+					 	:id="el.id" class="form-control" :class="{ 'invalid-input': errors[key], 'specializations-multiselect': key === 'specializationsId'/* Check form control */ }"
+						:specializations="key === 'specializationsId' ? formData[key] : null" :placeholder="el.placeholder" :hidden="el.hidden" :disabled="el.disabled"
+						:accept="el.accept" :size="el.size * 1024" :value="el.value" :nameAndConc="[el.label.toLowerCase(), el.fieldGenre = 'm' ? 'o' : 'a']"
+						:value.trim="formData[key]" v-on="getElementEvents(el.type)" :type="el.type"
+						:rows="key === 'content' ? 3 : null" />
+ -->					<!-- Box for single input's error message -->
 					<div class="invalid" v-if="errors[key]">
 						<p>{{ errors[key] }}</p>
 					</div>
