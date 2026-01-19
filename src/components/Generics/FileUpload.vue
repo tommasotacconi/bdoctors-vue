@@ -5,12 +5,14 @@
 
 	export default {
 		data() {
-			return {};
+			return {
+				prevValue: ''
+			};
 		},
 		methods: {
 			handleFileChange(event) {
 				const fileChecked = event.target.files[0];
-				if (!fileChecked) return this.$emit('uploadedNewFile', null);
+				if (!fileChecked) return this.$emit('uploadedFile', null);
 
 				const allowedTypes = this.accept.split(',').map(t => t.trim());
 				const isTypeAllowed =
@@ -21,8 +23,8 @@
 					);
 				const isSizeAllowed = fileChecked.size < this.size;
 
-				if (isTypeAllowed && isSizeAllowed) this.$emit('uploadedNewFile', fileChecked);
-				else this.$emit('uploadedNewFile', false);
+				if (isTypeAllowed && isSizeAllowed) this.$emit('uploadedFile', fileChecked);
+				else this.$emit('uploadedFile', false);
 			},
 			constructPlaceholder
 		},
@@ -44,16 +46,19 @@
 			value: {
 				type: String,
 			},
-			showPrev: {
+			showPrevValue: {
 				type: Boolean,
 			}
 		},
-		emits: ['uploadedNewFile'],
+		emits: ['uploadedFile'],
+		created() {
+			this.prevValue = this.value;
+		}
 	}
 </script>
 
 <template>
 	<input v-bind="$attrs" type="file" :accept @change="handleFileChange">
-	<input v-bind="$attrs" :value="value ? value : constructPlaceholder(nameAndConc[0], nameAndConc[1])" type="text"
-		disabled :hidden="!showPrev">
+	<input v-bind="$attrs" :value="prevValue ? prevValue : constructPlaceholder(nameAndConc[0], nameAndConc[1])"
+		type="text" disabled :hidden="!showPrevValue">
 </template>

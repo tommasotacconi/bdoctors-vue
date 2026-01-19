@@ -12,49 +12,11 @@
 				errors: {},
 				validated: undefined,
 				sent: undefined,
-				/* elements: {
-						name: {
-							id: '',
-							type: ''
-							placeholder: '',
-						}
-					 } */
 				store,
 				dashboardStore
 			}
 		},
 		methods: {
-			getElementEvents(elType, key) {
-				const elEvents = {
-					multiselect: {
-						'send-values': specializations => this.updateSpecs(specializations, this.formData, key) 
-					},
-					fileUpload: {
-						'uploaded-new-file': file => this.updateFile(file, this.formData, this.errors, key)
-					},
-					input: {
-						'input': event => this.formData[key] = event.target.value.trim() 
-					}
-				}
-
-				return elEvents[elType];
-			},
-			getElementProps(el, key) {
-				const { options, ...rest } = el;
-				const flattenedEl = { ...rest, ...options };
-				const isMultiselect = el.elementType === 'multiselect';
-
-				return {
-					...flattenedEl,
-					ref: isMultiselect ? 'multi' : null,
-					class: [el.wrapperStyle, { 'invalid-input': this.errors[key], 'specializations-multiselect': isMultiselect, 'form-control': !isMultiselect }],
-					specializations: isMultiselect ? this.formData[key] : null,
-					size: el.size ? el.size * 1024 : null,
-					nameAndConc: [el.label.toLowerCase(), el.fieldGenre = 'm' ? 'o' : 'a'],
-					value: this.formData[key],
-					rows: key === 'content' ? 3 : null
-				}
-			},
 			updateSpecs(specializations, formData, key) {
 				// Prepare a constant array result to insert ids value
 				const result = [];
@@ -75,7 +37,7 @@
 				for (const key in this.elements) {
 					const eventualValue = this.elements[key].value ?? '';
 					if (key === 'specializationsId') this.$data.formData[key] = eventualValue ? eventualValue : [];
-					else if (['vote', 'photo', 'curriculum', 'revsNum'].includes(key)) this.$data.formData[key] = null;
+					else if (['vote', 'revsNum'].includes(key)) this.$data.formData[key] = null;
 					else this.$data.formData[key] = eventualValue;
 					this.$data.errors[key] = '';
 				}
@@ -112,7 +74,7 @@
 					else if (data === 'email' && !this.validateEmail(value)) this.errors[data] = 'L\'email inserita non è valida';
 				}
 				// Run custom validation function if any
-				if (this.perfectValidation) this.perfectValidation(this);
+				if (this.perfectValidation) this.perfectValidation(this.formData, this.elements, this.errors, this.fieldsToSend);
 				// Check form validity by errors' presence
 				let isValid = true;
 				for (const data of Object.keys(this.formData)) {
@@ -131,7 +93,7 @@
 					// Check if field enabled
 					if (this.elements[key].disabled) continue;
 
-					if (!['vote', 'photo', 'curriculum', 'specializationsId', 'revsNum'].includes(key)) this.formData[key] = '';
+					if (!['vote', 'photo', 'curriculum', 'revsNum'].includes(key)) this.formData[key] = '';
 					else if (key === 'specializationsId') {
 						this.formData[key] = [];
 						// Reset Multiselect if present on page (that is when sent === undefined)
@@ -139,7 +101,7 @@
 					}
 					else this.formData[key] = null;
 				}
-				
+
 				this.validated = false;
 			},
 			resetErrors() {
@@ -152,8 +114,8 @@
 				let dataToSend = {};
 
 				// Use computed 'send' to determine if there are only some data to send
-				if (this.send) {
-					for (const field of this.send) {
+				if (this.fieldsToSend) {
+					for (const field of this.fieldsToSend) {
 						dataToSend[field] = this.formData[field];
 					}
 
@@ -183,8 +145,7 @@
 						this.sent = true;
 					})
 					.catch(err => {
-						// console.log('catched error', err);
-						// console.log(err.response.data);
+						// console.log('catched error', err.response.data);
 						this.sent = false;
 					})
 			},
@@ -252,17 +213,42 @@
 			},
 		},
 		computed: {
-			elementEvents() {
-				return elEvents = {
-					multiselect: {
-						'send-values': specializations => this.updateSpecs(specializations, this.formData, this.elements) 
-					},
-					fileUpload: {
-						'uploaded-new-file': file => this.updateFile(file, this.formData, this.errors, key)
-					},
-					input: {
-						'input': event => this.formData[key] = event.target.value.trim() 
+			elementProps() {
+				const computedEls = {};
+				for (const [key, el] of Object.entries(this.elements)) {
+					const { options, ...rest } = el;
+					const flattenedEl = { ...rest, ...options };
+					const isMultiselect = el.elementType === 'multiselect';
+
+					computedEls[key] = {
+						...flattenedEl,
+						ref: isMultiselect ? 'multi' : null,
+						class: [el.wrapperStyle, { 'invalid-input': this.errors[key], 'specializations-multiselect': isMultiselect, 'form-control': !isMultiselect }],
+						initValue: isMultiselect ? this.formData[key] : null,
+						size: el.size ? el.size * 1024 : null,
+						nameAndConc: [el.label.toLowerCase(), el.fieldGenre = 'm' ? 'o' : 'a'],
+						value: el.elementType === 'fileUpload' ? el.value : this.formData[key],
+						rows: key === 'content' ? 3 : null
 					}
+				}
+
+				return computedEls;
+			},
+			elementEvents() {
+				const fData = this.formData;
+				function inputTextareaSharedEvent(key) {
+					return { input: event => fData[key] = event.target.value.trim() }
+				}
+
+				return {
+					multiselect: key => ({
+						sendValues: specializations => this.updateSpecs(specializations, this.formData, key)
+					}),
+					fileUpload: key => ({
+						uploadedFile: file => this.updateFile(file, this.formData, this.errors, key)
+					}),
+					input: key => ({ ...inputTextareaSharedEvent(key) }),
+					textarea: key => ({ ...inputTextareaSharedEvent(key) })
 				}
 			},
 			name() {
@@ -292,7 +278,7 @@
 
 				return useApiRoute;
 			},
-			send() {
+			fieldsToSend() {
 				// Set to undefined outside ProfileEdit
 				if (this.nameArtConc[0] !== 'modifica di profilo') return undefined;
 
@@ -306,19 +292,16 @@
 					const value = this.formData[field];
 					const previousValue = this.elements[field].value;
 
-					if (['photo', 'curriculum'].includes(field)) isChanged = !!value;
-					else if (field === 'specializationsId') {
+					if (field === 'specializationsId') {
 						let allPreviousArePresent = true;
 						let sameNumberOfSpecs = true;
 
-						for (const el in value) {
-							if (!value.every(({ id }) => previousValue.some(({ id: prevId }) => prevId === id))) allPreviousArePresent = false;
-						}
+						if (!value.every(({ name: spec }) => previousValue.some(({ name: prevSpec }) => spec === prevSpec))) allPreviousArePresent = false;
 						if (!(value.length === previousValue.length)) sameNumberOfSpecs = false;
 
 						if (!allPreviousArePresent || !sameNumberOfSpecs) isChanged = true;
 					}
-					else isChanged = value !== previousValue;
+					else isChanged = value && value !== previousValue;
 
 					if (isChanged) send.push(field);
 				}
@@ -337,16 +320,21 @@
 </script>
 
 <template>
-	<!-- /* Form section */ -->
 	<div class="form-frame container" :class="formFrameClass">
 		<!-- Generic form element -->
-		<form v-if="sent === undefined" @submit.prevent="formAction(formData) || validateForm" novalidate :class="formClass">
+		<form v-if="sent === undefined" @submit.prevent="formAction?.(formData) || validateForm()" novalidate
+			:class="formClass">
 			<div class="row" :class="wrapperInnerDiv">
-				<h1 v-if="$slots.title"><slot name="title" /></h1>
-				<p v-if="$slots.subtitle"><slot name="subtitle" /></p>
-				<!-- Form field's template -->
-				<div class="mb-2" :class="el.wrapperStyle" v-for="(el, key) in elements">
-					<!-- If vote field -->
+				<h1 v-if="$slots.title">
+					<slot name="title" />
+				</h1>
+				<p v-if="$slots.subtitle">
+					<slot name="subtitle" />
+				</p>
+
+				<!-- /* Form fields */ -->
+				<div class="mb-2" :class="el.wrapperStyle" v-for="(el, key) in elementProps">
+					<!-- Vote field -->
 					<template v-if="key === 'vote'">
 						<label class="badge rounded-pill">{{ el.label }}</label>
 						<div class="form-control text-center vote">
@@ -358,46 +346,19 @@
 							</template>
 						</div>
 					</template>
-					<!-- If specializations' multiselect field -->
-<!-- 					<template v-else-if="key === 'specializationsId'">
-						<label :for="el.id" class="badge rounded-pill">{{ el.label }}</label>
-						<Multiselect ref="multi" :id="el.id" class="specializations-multiselect"
-							:class="{ 'invalid-input': errors[key] }" :specializations="formData[key]"
-							@send-values="(specializations) => { updateSpecs(specializations, formData, key); }" />
-					</template>
- -->					<!-- if type=file input field -->
-<!-- 					<template v-else-if="key === 'photo' || key === 'curriculum'">
-						<label :for="el.id" class="badge rounded-pill">{{ el.label }}</label>
-						<FileUpload :id="el.id" class="form-control" :class="{ 'invalid-input': errors[key] }"
-							:accept="el.accept" :size="el.size * 1024" :value="el.value" :nameAndConc="[el.label.toLowerCase(), el.fieldGenre = 'm' ? 'o' : 'a']"
-							@uploaded-new-file="(value) => { optionalPropsObject.handleUploadedNewFile(value, formData, errors, key) }"
-							:showPrev="el.showPreviousFile" />
-					</template>
- -->					<!-- If other fields of type text input and textarea -->
-<!-- 					<template v-else>
+					<!-- Multiselect, FileUpload, input and textarea fields -->
+					<template v-else>
 						<label :for="el.id" class="badge rounded-pill" :class="{ 'd-none': el.type === 'hidden' }">{{ el.label
 						}}</label>
-						<component :is="el.elementType" :id="el.id" v-bind:value.trim="formData[key]" @input="event => formData[key] = event.target.value" :type="el.type"
-							:placeholder="el.placeholder" :hidden="el.hidden" :disabled="el.disabled" class="form-control" :class="{ 'invalid-input': errors[key] }"
-							:rows="key === 'content' ? 3 : null" />
-						</template>
-						-->					<!-- Multiselect, FileUpload, input and textarea elements -->
-					<label :for="el.id" class="badge rounded-pill" :class="{ 'd-none': el.type === 'hidden' }">{{ el.label
-					}}</label>
-					<component :is="el.elementType" v-bind="getElementProps(el, key)" v-on="getElementEvents(el.elementType, key)" />
-<!-- 					<component :is="el.elementType" :ref="key === 'specializationsId' ? 'multi' : null"
-					 	:id="el.id" class="form-control" :class="{ 'invalid-input': errors[key], 'specializations-multiselect': key === 'specializationsId'/* Check form control */ }"
-						:specializations="key === 'specializationsId' ? formData[key] : null" :placeholder="el.placeholder" :hidden="el.hidden" :disabled="el.disabled"
-						:accept="el.accept" :size="el.size * 1024" :value="el.value" :nameAndConc="[el.label.toLowerCase(), el.fieldGenre = 'm' ? 'o' : 'a']"
-						:value.trim="formData[key]" v-on="getElementEvents(el.type)" :type="el.type"
-						:rows="key === 'content' ? 3 : null" />
- -->					<!-- Box for single input's error message -->
+						<component :is="el.elementType" v-bind="el" v-on="elementEvents[el.elementType](key)" />
+					</template>
+					<!-- Box for single input's error message -->
 					<div class="invalid" v-if="errors[key]">
 						<p>{{ errors[key] }}</p>
 					</div>
 				</div>
 
-				<!-- /* Buttons section */ -->
+				<!-- /* Buttons */ -->
 				<!-- Submit content for review or message form-->
 				<div v-if="name === 'messaggio' || name === 'recensione'" class="buttons-wrapper text-center">
 					<button type="submit" class="btn btn-primary btn-submit mx-auto mt-4" :class="{ 'disabled': validated }">Invia
@@ -416,7 +377,7 @@
 				<!-- Submit, reset buttons for profile creation and edit -->
 				<div v-if="name === 'nuovo profilo' || name === 'modifica di profilo'" class="buttons-wrapper mt-3">
 					<button type="submit" id="create-profile-button" class="btn btn-submit mx-auto"
-						:class="{ 'disabled': validated }" :disabled="checkPrevValues && !send.length">
+						:class="{ 'disabled': validated }" :disabled="checkPrevValues && !fieldsToSend.length">
 						<span v-if="name === 'nuovo profilo'">Crea</span>
 						<span v-else>Modifica</span>
 						profilo
@@ -432,6 +393,7 @@
 
 		<Loader v-else-if="sent === null" />
 
+		<!-- /* NOTIFICATIONS */ -->
 		<!-- Notification message for successfull sending -->
 		<div v-else-if="sent" class="msg-wrapper">
 			<p class="my-2">

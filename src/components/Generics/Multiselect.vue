@@ -7,14 +7,14 @@
 
 		data() {
 			return {
-				value: this.specializations,
+				value: null,
 				options: [],
 				maxHeight: 150,
 				store
 			}
 		},
 		props: {
-			specializations: {
+			initValue: {
 				type: Array,
 				required: false,
 			},
@@ -23,7 +23,7 @@
 		methods: {
 			// Get Specializations through API call
 			getSpecializations() {
-				axios.get(this.store.apiUri + 'specializations')
+				return axios.get(this.store.apiUri + 'specializations')
 					.then(response => {
 						this.options = response.data.specializations;
 					})
@@ -31,21 +31,24 @@
 						// console.log('multiselect\'s error GET /api/specialization: ', err);
 					});
 			},
+			addIdTo(value) {
+				const noIdSpecializations = value.filter(({ id }) => !id);
 
-			//send specializations to AppProfileEdit specializations's Array 
-			sendValues() {
-				this.$emit('send-values', this.value)
-			},
-			// method to show only the specialization name as options (multiselect)
-			getName({ name }) {
-				return `${name}`
+				return noIdSpecializations.map(el => this.options.find(({ name: scannedName }) => scannedName === el.name))
 			},
 			reset() {
 				this.value = [];
 			}
 		},
-		mounted() {
-			this.getSpecializations();
+		emits: ['sendValues'],
+		watch: {
+			value(newValue) {
+				this.$emit('sendValues', newValue)
+			}
+		},
+		async created() {
+			await this.getSpecializations();
+			this.value = this.addIdTo(this.initValue)
 		},
 	}
 
@@ -55,8 +58,8 @@
 	<!--- @update:modelValue: on every change inside specializations array, this will update the parent's array through custom events -->
 	<div>
 		<VueMultiselect v-model="value" :options :multiple="true" :close-on-select="false" :max-height
-			:clear-on-select="false" track-by="name" placeholder="Seleziona una o più specializzazioni" :show-labels="true"
-			@update:modelValue="sendValues" :custom-label="getName">
+			:clear-on-select="false" track-by="name" label="name" placeholder="Seleziona una o più specializzazioni"
+			:show-labels="true">
 		</VueMultiselect>
 	</div>
 </template>
@@ -66,10 +69,13 @@
 
 	.multiselect__placeholder {
 		font-size: v.$font-size-base;
+
 		padding: {
 			top: 0;
 			left: 5px;
-		};
+		}
+
+		;
 		line-height: 1;
 	}
 

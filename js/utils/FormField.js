@@ -31,10 +31,10 @@ export default class FormField {
 			d: disabled = false,
 			a: accept = undefined,
 			s: size = undefined,
-			sP: showPreviousFile = false,
+			sP: showPrevValue = false,
 			wS: wrapperStyle = undefined
 		}  = {}
 	) {
-		Object.assign(this, { id, elementType, label, value, type, placeholder, fieldGenre, disabled, accept, size, showPreviousFile, wrapperStyle });
+		Object.assign(this, { id, elementType, label, value, type, placeholder, fieldGenre, disabled, accept, size, showPrevValue, wrapperStyle });
 	}
 }
