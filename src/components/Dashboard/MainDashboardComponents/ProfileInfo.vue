@@ -88,57 +88,52 @@
 			<section class="card-general" v-if="loaded && store.isAuthenticated">
 				<!-- Card with info -->
 				<div class="card mb-3" v-if="Object.keys(dashboardStore.profileDataGeneral).length">
-					<div class="card-flex">
-						<div class="img-doctor">
-							<img :src="profilePhotoPath" alt="doctor photo">
+					<div class="img-doctor">
+						<img :src="profilePhotoPath" alt="doctor photo">
+					</div>
+					<div class="card-body">
+						<div class="card-title-section">
+							<h4 class="card-title">{{ dashboardStore.profileDataGeneral.user.first_name }} {{
+								dashboardStore.profileDataGeneral.user.last_name }}
+							</h4>
 						</div>
-						<div class="card-body-general">
-							<div class="card-body">
-								<div class="card-title-section">
-									<h4 class="card-title">{{ dashboardStore.profileDataGeneral.user.first_name }} {{
-										dashboardStore.profileDataGeneral.user.last_name }}
-									</h4>
-									<div class="main-information-section">
-										<section class="email-section d-flex gap-1 align-items-baseline">
-											<h5>Email:</h5>
-											<p class="fs-5">{{ dashboardStore.profileDataGeneral.user.email }}</p>
-										</section>
-									</div>
-								</div>
-								<div class="card-text">
-									<ul>
-										<li>
-											<strong>Curriculum: </strong>
-											<a :href="getFilePath(`storage/${dashboardStore.profileDataGeneral.curriculum}`, this.store.apiUri.slice(0, -4))"
-												target="_blank">{{
-													curriculumFileName
-												}}</a>
-										</li>
-										<li>
-											<strong>Specializzazione:</strong>
-											<ul>
-												<li v-for="specialization in dashboardStore.profileDataGeneral.user.specializations">{{
-													specialization.name }}</li>
-											</ul>
-										</li>
-										<li>
-											<strong>Indirizzo di casa:</strong> {{ dashboardStore.profileDataGeneral.user.home_address }}
-										</li>
-										<li>
-											<strong>Indirizzo di ufficio:</strong> {{ dashboardStore.profileDataGeneral.office_address }}
-										</li>
-										<li>
-											<strong>Telefono:</strong> {{ dashboardStore.profileDataGeneral.phone }}
-										</li>
-										<li>
-											<strong>Prestazioni:</strong> {{ dashboardStore.profileDataGeneral.services }}
-										</li>
-									</ul>
-								</div>
-								<button href="#" class="btn edit-profile"
-									@click="dashboardStore.currentProfileSectionComponentIndex = 2">Modifica il tuo profilo</button>
+						<div class="card-text">
+							<div class="main-information-section">
+								<section class="email-section d-flex justify-content-center gap-1 align-items-baseline">
+									<p class="fs-5">{{ dashboardStore.profileDataGeneral.user.email }}</p>
+								</section>
 							</div>
+							<ul>
+								<li>
+									<strong>Curriculum: </strong>
+									<a :href="getFilePath(`storage/${dashboardStore.profileDataGeneral.curriculum}`, this.store.apiUri.slice(0, -4))"
+										target="_blank">{{
+											curriculumFileName
+										}}</a>
+								</li>
+								<li>
+									<strong>Specializzazione:</strong>
+									<ul>
+										<li v-for="specialization in dashboardStore.profileDataGeneral.user.specializations">{{
+											specialization.name }}</li>
+									</ul>
+								</li>
+								<li>
+									<strong>Indirizzo di casa:</strong> {{ dashboardStore.profileDataGeneral.user.home_address }}
+								</li>
+								<li>
+									<strong>Indirizzo di ufficio:</strong> {{ dashboardStore.profileDataGeneral.office_address }}
+								</li>
+								<li>
+									<strong>Telefono:</strong> {{ dashboardStore.profileDataGeneral.phone }}
+								</li>
+								<li>
+									<strong>Prestazioni:</strong> {{ dashboardStore.profileDataGeneral.services }}
+								</li>
+							</ul>
 						</div>
+						<button href="#" class="btn edit-profile"
+							@click="dashboardStore.currentProfileSectionComponentIndex = 2">Modifica il tuo profilo</button>
 					</div>
 				</div>
 				<!-- Placeholder card when a profile needs to be created -->
@@ -200,30 +195,24 @@
 	}
 
 	.card {
+		width: 400px;
 		border-radius: 40px;
 		background-color: #D8F9FF;
 		border: 0;
 		text-align: center;
-		width: 80%;
-	}
-
-	.card-flex {
-		display: flex;
+		justify-content: center;
+		align-items: center;
 	}
 
 	.img-doctor {
-		flex-basis: 40%;
+		width: 70%;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 	}
 
-	.card-body-general {
-		flex-basis: 60%;
-	}
-
 	.card img {
-		width: 90%;
+		width: 60%;
 		aspect-ratio: 1;
 		border-radius: 50%;
 		border: 3px solid #65B0FF;
@@ -231,8 +220,13 @@
 		object-fit: cover;
 	}
 
+	.card-title {
+		margin-bottom: 15px;
+	}
+
 	.card-body {
 		height: 100%;
+		flex-basis: 60%;
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
@@ -241,32 +235,15 @@
 
 	.card-text {
 		border-top: 2px solid var(--color-complementary);
-		padding-top: 16px;
 	}
 
-	.main-information-section {
-		padding: 15px 0;
-	}
-
-	.email-section,
-	.password-section {
+	.email-section {
 		padding: 5px 0;
 	}
 
 	ul {
 		text-align: start;
 	}
-
-	/* .edit-profile {
-		background-color: var(--color-secondary);
-		border-radius: 20px;
-		padding: 8px 15px;
-		text-decoration: none;
-		color: var(--color-primary);
-		font-weight: bold;
-		border: 1px solid var(--color-primary);
-	} */
-
 
 	/* Card create */
 	.card-create {
@@ -314,17 +291,28 @@
 	}
 */
 
-	/* Responsive */
-	@media only screen and (max-width: 1300px) {
-		.card-flex {
+	/* Responsive*/
+	/* Medium large screen */
+	@media only screen and (min-width: 576px) {
+		.img-doctor img {
+			width: 70%;
+		}
+	}
+
+	/* Extra large screen */
+	@media only screen and (min-width: 1200px) {
+		.card {
+			width: 750px;
 			display: flex;
-			flex-direction: column;
-			justify-content: center;
-			align-items: center;
+			flex-direction: row;
 		}
 
 		.img-doctor {
-			width: 70%;
+			flex-basis: 40%;
+
+			img {
+				width: 90%;
+			}
 		}
 	}
 </style>
