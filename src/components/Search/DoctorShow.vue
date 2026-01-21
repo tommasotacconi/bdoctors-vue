@@ -35,11 +35,11 @@
 				},
 				// List of all form all elements to select from the singular form  
 				formElements: {
-					firstName: new FormField('first-name', 'text', 'Nome', { p: 'Inserisci il tuo nome' }),
-					lastName: new FormField('last-name', 'text', 'Cognome', { p: 'Inserisci il tuo cognome' }),
-					email: new FormField('email', 'email', 'Email', { p: 'Inserisci il tuo indirizzo email' }),
+					firstName: new FormField('first-name', 'input', 'Nome', { t: 'text', p: 'Inserisci il tuo nome' }),
+					lastName: new FormField('last-name', 'input', 'Cognome', { t: 'text', p: 'Inserisci il tuo cognome' }),
+					email: new FormField('email', 'input', 'Email', { t: 'email', p: 'Inserisci il tuo indirizzo email' }),
 					content: new FormField(undefined, 'textarea', undefined, { p: 'Scrivi qui' }),
-					vote: new FormField('vote', 'radio', 'Voto')
+					vote: new FormField('vote', 'input', 'Voto', { t: 'radio', rGO: [1, 2, 3, 4, 5] })
 				},
 				messageApiRoute: 'messages',
 				reviewApiRoute: 'reviews',
@@ -465,6 +465,7 @@
 	}
 
 	$btn-dist-from-corner: vars.$card-br-radius - vars.$btn-close-br-radius - 2.7px;
+
 	.btn {
 		background-color: var(--color-tertiary);
 
@@ -490,11 +491,12 @@
 	}
 
 	:deep() {
+
 		// Adapt AppPopUpCard.vue's styles
 		.pop-up-card.not-found {
 			.card-header {
 				min-height: vars.to-px(vars.$btn-font-size) + 2 * vars.$btn-pd-top-bot + 2 * $btn-dist-from-corner;
-			} 
+			}
 		}
 
 		// Adapt AppForm.vue's style 
@@ -560,7 +562,7 @@
 						--img-size: 140px;
 					}
 				}
-	
+
 				.card-body {
 					.vote {
 						@include forms.vote-label-dimension(2.2rem, 1.1rem);

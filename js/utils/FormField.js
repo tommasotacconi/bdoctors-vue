@@ -11,6 +11,7 @@ export default class FormField {
 	 * @param {object} [options={}]
 	 * @param {string} [options.v=undefined] - Field value
 	 * @param {string} [options.t=undefined] - Input type
+	 * @param {string} [options.rGO=undefined] - Radio group options
 	 * @param {string} [options.p=undefined] - Placeholder text
 	 * @param {string} [options.fG='m'] - Field genre 
 	 * @param {boolean} [options.d=false] - Disabled option
@@ -26,6 +27,7 @@ export default class FormField {
 		{
 			v: value = undefined,
 			t: type = undefined,
+			rGO: radioGroupOptions = [],
 			p: placeholder = undefined,
 			fG: fieldGenre = 'm',
 			d: disabled = false,
@@ -35,6 +37,6 @@ export default class FormField {
 			wS: wrapperStyle = undefined
 		}  = {}
 	) {
-		Object.assign(this, { id, elementType, label, value, type, placeholder, fieldGenre, disabled, accept, size, showPrevValue, wrapperStyle });
+		Object.assign(this, { id, elementType, label, value, type, radioGroupOptions, placeholder, fieldGenre, disabled, accept, size, showPrevValue, wrapperStyle });
 	}
 }

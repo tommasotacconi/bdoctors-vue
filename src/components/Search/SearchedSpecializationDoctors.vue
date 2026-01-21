@@ -23,8 +23,8 @@
 				containerHeight: 0,
 				specializationNotFound: false,
 				formElements: {
-					vote: new FormField('vote', 'radio', 'Voto'),
-					revsNum: new FormField('revsNum', 'number', 'Numero recensioni'),
+					vote: new FormField('vote-filter', 'div', 'Voto', { t: 'radio', rGO: [1, 2, 3, 4, 5] }),
+					revsNum: new FormField('revs-num-filter', 'input', 'Numero recensioni', { t: 'number' }),
 				},
 
 			}
@@ -61,10 +61,10 @@
 				this.loaded = false
 			},
 			filterDoctors(filterInputs) {
-				const { vote, revsNum } = filterInputs 
+				const { vote, revsNum } = filterInputs
 				if (vote || revsNum) this.isFiltering = true;
 				else return;
-				
+
 				this.filteredDoctors.length = 0;
 
 				if (vote) {
@@ -76,6 +76,8 @@
 					const target = this.filteredDoctors.length ? this.filteredDoctors : this.doctors;
 					this.filteredDoctors = this.filterFunction(param, revsNum, target);
 				}
+
+				return { noValidation: true };
 			},
 			filterFunction(filteringParam, comparisonValue, target) {
 				// Filter out doctors with a filter value not valid, i.e. equal to null for avg_vote or 0 for reviews
@@ -130,7 +132,7 @@
 						const removed = docs.splice(i, 1)[0];
 						docs.unshift(removed);
 						if (!firstDocRemoved) firstDocRemoved = removed;
-						
+
 						// Needed to not jump one element
 						i++;
 					}
@@ -200,20 +202,22 @@
 
 			<div class="advanced-filter">
 				<AppForm :elements="formElements" :apiRouteAndMethod="null" :formAction="filterDoctors"
-					:nameArtConc="['Filtro per recensioni', 'Il', 'o']" :doctorInfo="null" >
+					:nameArtConc="['Filtro per recensioni', 'Il', 'o']" :doctorInfo="null"
+					:formFrameStyle="{ maxWidth: '800px' }">
 					<template #title>
 						Filtra medici
 					</template>
 					<template #subtitle>
-						Seleziona il voto medio e/o un numero di recensioni ricevute per trovare il medico che preferesci all'interno
+						Seleziona il voto medio e/o un numero di recensioni ricevute per trovare il medico che preferesci
+						all'interno
 						della specializzazione selezionata.
 					</template>
 					<template #buttons="{ formData: { vote, revsNum }, resetForm }">
 						<div class="col">
 							<button type="submit" class="btn btn-sm btn-secondary"
-							:disabled="vote === null && revsNum === null">Filtra</button>
-							<button type="reset" class="btn btn-sm btn-primary"
-								:disabled="vote === null && revsNum === null" @click="() => {resetForm(); stopFiltering()}">Cancella Filtri
+								:disabled="vote === null && revsNum === null">Filtra</button>
+							<button type="reset" class="btn btn-sm btn-primary" :disabled="vote === null && revsNum === null"
+								@click="() => { resetForm(); stopFiltering() }">Cancella Filtri
 							</button>
 						</div>
 					</template>
@@ -222,7 +226,8 @@
 
 			<!-- Doctors in selected specialization and eventually filtered -->
 			<div class="doctors-list" v-if="isFiltering ? filteredDoctors.length : doctors.length">
-				<div class="doctor-card" v-for="({ office_address, avg_vote, total_reviews, photo, user: { first_name, last_name, homonymous_id: hom_id } }, index) in showSponsoredFirst"
+				<div class="doctor-card"
+					v-for="({ office_address, avg_vote, total_reviews, photo, user: { first_name, last_name, homonymous_id: hom_id } }, index) in showSponsoredFirst"
 					@click="goToShowPage(showSponsoredFirst[index], first_name, last_name, hom_id)" :key="index">
 					<img class="doctor-photo"
 						:src="getProfilePhotoPath(this.store.placeholderImg(first_name, last_name), photo, store.apiUri.slice(0, -4))"
@@ -277,12 +282,12 @@
 		position: relative;
 	}
 
-	
+
 	h5 {
 		margin-bottom: 15px;
 		text-align: center;
 	}
-	
+
 	img {
 		border-radius: 50%;
 		border: 3px solid #65B0FF;
@@ -293,7 +298,7 @@
 	.container {
 		background-color: white;
 	}
-	
+
 	.title {
 		text-align: center;
 		margin: 30px 0 20px 0;
@@ -327,12 +332,12 @@
 		.row {
 			button.btn {
 				width: 100%;
-				
+
 				&:nth-of-type(2) {
 					margin: {
 						left: 0;
 						top: 10px;
-					} 
+					}
 				}
 			}
 		}
@@ -340,14 +345,20 @@
 
 	/* Filter form */
 	$height: 2rem;
+
 	:deep() {
 		.advanced-filter {
 			.form-frame {
 				padding-bottom: 0;
 				min-height: auto;
-	
+
 				form {
 					@include f.set-fields-color(var(--color-secondary));
+
+					.form-control {
+						height: 3.2rem;
+					}
+
 					.vote {
 						margin-bottom: 0;
 					}
@@ -355,7 +366,7 @@
 					.vote label {
 						height: $height * 0.85;
 						line-height: $height * 0.7;
-			
+
 						.fa-stethoscope {
 							font-size: v.$font-size-sm;
 						}
@@ -377,7 +388,7 @@
 		flex-wrap: wrap;
 		margin-top: 30px;
 
-		& > :hover {
+		&> :hover {
 			cursor: pointer;
 			outline: thin solid var(--color-complementary);
 			outline-offset: 5px;
@@ -478,7 +489,7 @@
 		:deep() {
 			.advanced-filter {
 				.row {
-					& > div {
+					&>div {
 						width: 50%;
 					}
 
@@ -493,14 +504,20 @@
 						}
 					}
 				}
-		
-				.form-frame form .vote label {
-					height: $height * 0.9;
-					line-height: $height * 0.75;
-					margin-top: 3px;
-		
-					.fa-stethoscope {
-						font-size: v.$font-size-base;
+
+				.form-frame form {
+					.form-control {
+						height: 3.5rem;
+					}
+
+					.vote label {
+						height: $height * 0.9;
+						line-height: $height * 0.75;
+						margin-top: 3px;
+
+						.fa-stethoscope {
+							font-size: v.$font-size-base;
+						}
 					}
 				}
 			}
@@ -537,22 +554,22 @@
 			text-align: start;
 		}
 	}
-	
+
 	/* Desktop (above 768px) */
 	@media (min-width: 768px) {
 		.doctors-list {
 			--col-gap: 30px;
 		}
 
-	.doctor-name {
-		font-size: v.$h5-font-size;
-	}
+		.doctor-name {
+			font-size: v.$h5-font-size;
+		}
 
-	.doctor-address,
-	.doctor-average,
-	.doctor-reviews {
-		font-size: v.$font-size-base;
-	}
+		.doctor-address,
+		.doctor-average,
+		.doctor-reviews {
+			font-size: v.$font-size-base;
+		}
 
 
 		:deep() {
@@ -571,15 +588,15 @@
 		.doctors-list {
 			--col-gap: 50px;
 
-			& > :hover {
+			&> :hover {
 				scale: 1.2;
 			}
 		}
-		
+
 		.doctor-card {
-		/* Ensure 1 card per row on very small screens */
-		flex: 0 calc(100% / 3 - 2 / 3 * var(--col-gap));
-		min-height: 450px;
+			/* Ensure 1 card per row on very small screens */
+			flex: 0 calc(100% / 3 - 2 / 3 * var(--col-gap));
+			min-height: 450px;
 		}
 
 		.title h2 {

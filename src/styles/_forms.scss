@@ -52,10 +52,6 @@
 		input[type].form-control,
 		textarea.form-control,
 		div.form-control {
-			&:not(textarea) {
-				height: variables.$input-h;
-			}
-
 			&::file-selector-button {
 				height: variables.$input-h;
 			}
@@ -64,10 +60,19 @@
 				opacity: 0.6;
 			}
 		}
+		
+		input[type].form-control {
+			height: variables.$input-h;
+		}
+
+		div.form-control {
+			height: variables.$input-h + 0.6rem;
+		}
 
 		textarea.form-control {
 			padding-top: 15px;
 		}
+
 
 		div:has(> .specializations-multiselect) {
 			height: 10rem;
@@ -112,7 +117,7 @@
 
 		/*vote*/
 		.vote {
-			padding: 10px 0 0;
+			padding: 15px 0 0;
 			margin-bottom: 20px;
 
 			display: flex;

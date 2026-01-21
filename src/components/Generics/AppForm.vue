@@ -199,7 +199,7 @@
 				type: [Object, null],
 				required: true
 			},
-			formFrameClass: {
+			formFrameStyle: {
 				type: Object
 			},
 			formClass: {
@@ -320,9 +320,9 @@
 </script>
 
 <template>
-	<div class="form-frame container" :class="formFrameClass">
+	<div class="form-frame container" :style="formFrameStyle">
 		<!-- Generic form element -->
-		<form v-if="sent === undefined" @submit.prevent="formAction?.(formData) || validateForm()" novalidate
+		<form v-if="sent === undefined" @submit.prevent="formAction?.(formData)?.noValidation || validateForm()" novalidate
 			:class="formClass">
 			<div class="row" :class="wrapperInnerDiv">
 				<h1 v-if="$slots.title">
@@ -338,11 +338,10 @@
 					<template v-if="key === 'vote'">
 						<label class="badge rounded-pill">{{ el.label }}</label>
 						<div class="form-control text-center vote">
-							<template v-for="vote in [5, 4, 3, 2, 1]">
-								<input :id="el.id + vote" class="form-control" :class="{ 'invalid-input': errors[key] }" :value="vote"
+							<template v-for="opt in el.radioGroupOptions.toReversed()">
+								<input :id="el.id + opt" class="form-control" :class="{ 'invalid-input': errors[key] }" :value="opt"
 									v-model.trim="formData[key]" :type="el.type">
-								<label :for="el.id + vote" class="form-label stethoscope"><i
-										class="fa-solid fa-stethoscope"></i></label>
+								<label :for="el.id + opt" class="form-label stethoscope"><i class="fa-solid fa-stethoscope"></i></label>
 							</template>
 						</div>
 					</template>

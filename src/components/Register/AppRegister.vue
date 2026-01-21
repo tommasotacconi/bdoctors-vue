@@ -10,13 +10,13 @@
 			return {
 				/* List of all form elements */
 				formElements: {
-					firstName: new FormField('first-name-input', 'text', 'Nome', { wS: 'col-md-6' }),
-					lastName: new FormField('last-name-input', 'text', 'Cognome', { wS: 'col-md-6' }),
-					homeAddress: new FormField('home-address-input', 'text', 'Indirizzo di residenza'),
+					firstName: new FormField('first-name-input', 'input', 'Nome', { t: 'text', wS: 'col-md-6' }),
+					lastName: new FormField('last-name-input', 'input', 'Cognome', { t: 'text', wS: 'col-md-6' }),
+					homeAddress: new FormField('home-address-input', 'input', 'Indirizzo di residenza', { t: 'text' }),
 					specializationsId: new FormField('specializations-input', 'multiselect', 'Specializzazioni', { p: 'Seleziona una o più specializzazioni' }),
-					email: new FormField('email-input', 'email', 'Email'),
-					password: new FormField('password-input', 'password', 'Password'),
-					pwConf: new FormField('password-conf-input', 'password', 'Conferma password')
+					email: new FormField('email-input', 'input', 'Email', { t: 'email' }),
+					password: new FormField('password-input', 'input', 'Password', { t: 'password' }),
+					pwConf: new FormField('password-conf-input', 'input', 'Conferma password', { t: 'password' })
 				}
 			}
 		},
@@ -64,7 +64,8 @@
 <template>
 	<!-- Register form -->
 	<main>
-		<AppForm class="user-data-form alone-dimensions" :doctorInfo="null" :apiRouteAndMethod="{ route: 'register', method: 'post', useApiRoute: false }" :elements="formElements"
+		<AppForm class="user-data-form alone-dimensions" :doctorInfo="null"
+			:apiRouteAndMethod="{ route: 'register', method: 'post', useApiRoute: false }" :elements="formElements"
 			:nameArtConc="['registrazione', 'la', 'a']" :wrapperInnerDiv="['row']" :perfectValidation="customValidation" />
 	</main>
 </template>
@@ -92,7 +93,7 @@
 
 			.multiselect {
 				height: 100%;
-				
+
 				.multiselect__tags {
 					padding-top: 20px;
 					border-bottom-width: 0;
