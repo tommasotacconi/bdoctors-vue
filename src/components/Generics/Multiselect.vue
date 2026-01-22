@@ -4,7 +4,6 @@
 	import { store } from '../../../js/store';
 
 	export default {
-
 		data() {
 			return {
 				value: null,
@@ -13,6 +12,7 @@
 				store
 			}
 		},
+		inheritAttrs: false,
 		props: {
 			initValue: {
 				type: Array,
@@ -40,6 +40,13 @@
 				this.value = [];
 			}
 		},
+		computed: {
+			inputAttrs() {
+				const { label, ...rest } = this.$attrs;
+
+				return rest;
+			}
+		},
 		emits: ['sendValues'],
 		watch: {
 			value(newValue) {
@@ -55,13 +62,10 @@
 </script>
 
 <template>
-	<!--- @update:modelValue: on every change inside specializations array, this will update the parent's array through custom events -->
-	<div>
-		<VueMultiselect v-model="value" :options :multiple="true" :close-on-select="false" :max-height
-			:clear-on-select="false" track-by="name" label="name" placeholder="Seleziona una o più specializzazioni"
-			:show-labels="true">
-		</VueMultiselect>
-	</div>
+	<VueMultiselect v-bind="inputAttrs" v-model="value" :options :multiple="true" :close-on-select="false" :max-height
+		:clear-on-select="false" track-by="name" label="name" placeholder="Seleziona una o più specializzazioni"
+		:show-labels="true">
+	</VueMultiselect>
 </template>
 <style lang="scss">
 	@use "../../styles/variables" as v;
@@ -77,6 +81,10 @@
 
 		;
 		line-height: 1;
+	}
+
+	.multiselect__tags {
+		padding-top: 20px;
 	}
 
 	.multiselect__tag {

@@ -337,22 +337,22 @@
 					<!-- Vote field -->
 					<template v-if="key === 'vote'">
 						<label class="badge rounded-pill">{{ el.label }}</label>
-						<div class="form-control text-center vote">
+						<div class="form-control text-center vote" :class="{ 'invalid-input': errors[key] }">
 							<template v-for="opt in el.radioGroupOptions.toReversed()">
-								<input :id="el.id + opt" class="form-control" :class="{ 'invalid-input': errors[key] }" :value="opt"
-									v-model.trim="formData[key]" :type="el.type">
+								<input :id="el.id + opt" :value="opt" v-model.trim="formData[key]" :type="el.type">
 								<label :for="el.id + opt" class="form-label stethoscope"><i class="fa-solid fa-stethoscope"></i></label>
 							</template>
 						</div>
 					</template>
 					<!-- Multiselect, FileUpload, input and textarea fields -->
 					<template v-else>
-						<label :for="el.id" class="badge rounded-pill" :class="{ 'd-none': el.type === 'hidden' }">{{ el.label
-						}}</label>
+						<label :for="el.id" class="badge rounded-pill"
+							:class="{ 'd-none': el.type === 'hidden', 'move-top': el.disabled }">{{ el.label
+							}}</label>
 						<component :is="el.elementType" v-bind="el" v-on="elementEvents[el.elementType](key)" />
 					</template>
 					<!-- Box for single input's error message -->
-					<div class="invalid" v-if="errors[key]">
+					<div class="error-msg" v-if="errors[key]">
 						<p>{{ errors[key] }}</p>
 					</div>
 				</div>
