@@ -8,24 +8,23 @@
 	import AppForm from "../../../Generics/AppForm.vue";
 	import FormField from "../../../../../js/utils/FormField.js";
 	import { useHandler } from "../../../../../js/composables/useHandler.js";
+import { useDefaultValidation } from "../../../../../js/composables/useDefaultValidation.js";
 
 	export default {
 		data() {
 			return {
-				isResponseStatusSuccess: false,
-				store,
-				dashboardStore,
-				profileData: {},
 				// List of all form all elements to select from the singular form  
 				formElements: {
-					firstName: new FormField('first-name-input', 'text', 'Nome', { v: dashboardStore.tmp.first_name, d: true, wS: 'col-md-6' }),
-					lastName: new FormField('last-name-input', 'text', 'Cognome', { v: dashboardStore.tmp.last_name, d: true, wS: 'col-md-6' }),
-					phone: new FormField('phone-input', 'tel', 'Telefono d\'ufficio', { p: '+39 333.../333...', wS: 'col-md-6' }),
-					officeAddress: new FormField('office-address-input', 'text', 'Indirizzo d\'ufficio', { p: 'Piazza/Via...', wS: 'col-md-6' }),
+					firstName: new FormField('first-name-input', 'input', 'Nome', { t: 'text', v: dashboardStore.tmp.first_name, d: true, wS: 'col-md-6' }),
+					lastName: new FormField('last-name-input', 'input', 'Cognome', { t: 'text', v: dashboardStore.tmp.last_name, d: true, wS: 'col-md-6' }),
+					phone: new FormField('phone-input', 'input', 'Telefono d\'ufficio', { t: 'phone', p: '+39 333.../333...', wS: 'col-md-6' }),
+					officeAddress: new FormField('office-address-input', 'input', 'Indirizzo d\'ufficio', { t: 'text', p: 'Piazza/Via...', wS: 'col-md-6' }),
 					services: new FormField('services-input', 'textarea', 'Prestazioni erogate', { p: 'Indicare le prestazioni prefissandole con un asterisco', wS: 'col-md-12' }),
-					photo: new FormField('photo-input', 'file', 'Foto profilo', { a: 'image/jpeg,image/png,imgage/jpg,application/pdf', s: 2048, wS: 'col-md-6' }),
-					curriculum: new FormField('curriculum-input', 'file', 'Curriculum', { a: 'application/pdf,text/plain', s: 2048, wS: 'col-md-6' }),
+					photo: new FormField('photo-input', 'fileUpload', 'Foto profilo', { a: 'image/jpeg,image/png,imgage/jpg,application/pdf', s: 2048, wS: 'col-md-6' }),
+					curriculum: new FormField('curriculum-input', 'fileUpload', 'Curriculum', { a: 'application/pdf,text/plain', s: 2048, wS: 'col-md-6' }),
 				},
+				store,
+				dashboardStore,
 			}
 		},
 		components: {
@@ -34,27 +33,19 @@
 			AppAlert,
 		},
 		methods: {
-			customValidation(formInstance) {
-				const data = formInstance.formData;
-				const elements = formInstance.elements;
-				const errors = formInstance.errors;
+			customValidation(formData, formElements, formErrors) {
+				const data = formData;
+				const els = formElements;
+				const errs = formErrors;
 
 				for (const field in data) {
+					// Prevent logic for 'type=hidden' and 'disabled' element
+					if (els[field].disabled || els[field].type === 'hidden') continue;
+
 					const value = data[field];
-					const label = elements[field].label;
-
-					if (field === 'phone' && value) {
-						// Use regex further check on phone validity
-						const reResult = /^\+?\d[\d\s]*$/.test(value);
-
-						if (value.length > 20) errors[field] = `Il ${label.toLowerCase()} non può essere più lungo di 20 caratteri prefisso incluso`
-						else if (!reResult) errors[field] = `Il ${label.toLowerCase()} può essere composto da numeri separati da spazi ed eventualmente iniziare con un prefisso '+##'`;
-					}
-					else if (field === 'officeAddress') {
-						if (!value) errors[field] = errors[field].replace('Il', 'L\'');
-						else if (value.length > 50) errors[field] = `L\'${label.toLowerCase()} non può essere più lungo di 50 caratteri`;
-					}
-					else if (field === 'services' && !value) errors[field] = `Le ${label.toLowerCase()} sono obbligatorie`;
+					const label = els[field].label;
+					const result = this['validate' + field[0].toUpperCase() + field.slice(1)](value, label);
+					if (result) errs[field] = result;
 				}
 			},
 			//commento per commit 2
@@ -81,6 +72,10 @@
 						// always executed
 					});
 			},
+			handleSuccessfulRequest(response) {
+				this.profileData = response.data.profile;
+				emitter.emit('reset-dashboard-header');
+			}
 		},
 		computed: {
 			firstName() {
@@ -92,8 +87,9 @@
 		},
 		setup() {
 			const { handleUploadedNewFile } = useHandler();
+			const { ...validations } = useDefaultValidation();
 
-			return { handleUploadedNewFile };
+			return { handleUploadedNewFile, ...validations };
 		},
 
 	}
@@ -109,24 +105,11 @@
 			<h1 class=" col-8 text-center">Crea il tuo profilo</h1>
 		</header>
 
-		<!-- Alert
-		<div class="col-6" v-if="isResponseStatusSuccess">
-			<AppAlert class="alert-success d-flex">
-				<div class="col alert-body">
-					I tuoi dati sono stati aggiornati.
-				</div>
-				<div class="alert-footer">
-					<button type="button" class="btn btn-primary" @click="dashboardStore.currentProfileSectionComponentIndex = 0">
-						Torna al profilo
-					</button>
-				</div>
-			</AppAlert>
-		</div> -->
-
 		<!-- Form -->
 		<AppForm class="user-data-form" id="" :doctorInfo="null" :apiRouteAndMethod="{ route: 'profiles', method: 'post' }"
 			:elements="formElements" :nameArtConc="['nuovo profilo', 'il', 'o']" :wrapperInnerDiv="['row']"
-			:perfectValidation="customValidation" :optionalPropsObject="{ handleUploadedNewFile }" />
+			:perfectValidation="customValidation" :optionalPropsObject="{ handleUploadedNewFile }"
+			@completed-successful-request="handleSuccessfulRequest" />
 	</div>
 
 </template>
