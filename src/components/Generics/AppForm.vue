@@ -113,7 +113,7 @@
 				this.sent = null;
 				let dataToSend = {};
 
-				// Use computed 'send' to determine if there are only some data to send
+				// Use computed 'fieldsToSend' to determine if there are only some data to send
 				if (this.fieldsToSend) {
 					for (const field of this.fieldsToSend) {
 						dataToSend[field] = this.formData[field];
@@ -143,10 +143,12 @@
 						// console.log('message sent', response.data);
 						this.resetForm();
 						this.sent = true;
+						this.$emit('completedSuccessfulRequest', response);
 					})
 					.catch(err => {
-						// console.log('catched error', err.response.data);
+						console.log('catched error', err);
 						this.sent = false;
+						this.$emit('completedUnsuccessfulRequest', err);
 					})
 			},
 			camelToSnake(obj) {
@@ -212,6 +214,7 @@
 				type: Object
 			},
 		},
+		emits: ['completedSuccessfulRequest', 'completedUnsuccessfulRequest'],
 		computed: {
 			elementProps() {
 				const computedEls = {};
