@@ -40,11 +40,9 @@
 			// },
 		},
 		computed: {
-			/* showLoader() {
-				setTimeout(() => {
-					this.loaded = true
-				}, 2000)
-			}, */
+			profileData() {
+				return this.dashboardStore.profileDataGeneral;
+			},
 			profilePhotoPath() {
 				// Calculate profile photo :src attribute depending on the presence of the 'photos' string in the db data photo profiles table
 				const { user, photo } = this.dashboardStore.profileDataGeneral;
@@ -53,13 +51,10 @@
 			},
 			curriculumFileName() {
 				// Truncate curriculum lenght to 30 string characters
-				// 1. Retrieve data to be computed
 				const curriculumFilePath = this.dashboardStore.profileDataGeneral.curriculum;
-				// 2. If it is too long, truncate it
-				if (curriculumFilePath.length >= 30) curriculumFilePath.slice(0, 30);
-				// 3. If is included the parent directories 'curricula/', remove it
+				if (!curriculumFilePath) return
+				if (curriculumFilePath.length >= 30) curriculumFilePath = curriculumFilePath.slice(0, 30);
 				if (curriculumFilePath.includes('curricula/')) return curriculumFilePath.slice(10);
-
 			}
 		},
 		setup() {
@@ -87,48 +82,55 @@
 			<!-- Section with doctor info -->
 			<section class="card-general" v-if="loaded && store.isAuthenticated">
 				<!-- Card with info -->
-				<div class="card mb-3" v-if="Object.keys(dashboardStore.profileDataGeneral).length">
+				<div class="card mb-3" v-if="Object.keys(profileData).length">
 					<div class="img-doctor">
 						<img :src="profilePhotoPath" alt="doctor photo">
 					</div>
 					<div class="card-body">
 						<div class="card-title-section">
-							<h4 class="card-title">{{ dashboardStore.profileDataGeneral.user.first_name }} {{
-								dashboardStore.profileDataGeneral.user.last_name }}
+							<h4 class="card-title">{{ profileData.user.first_name }} {{
+								profileData.user.last_name }}
 							</h4>
 						</div>
 						<div class="card-text">
 							<div class="main-information-section">
 								<section class="email-section d-flex justify-content-center gap-1 align-items-baseline">
-									<p class="fs-5">{{ dashboardStore.profileDataGeneral.user.email }}</p>
+									<p class="fs-5">{{ profileData.user.email }}</p>
 								</section>
 							</div>
 							<ul>
 								<li>
-									<strong>Curriculum: </strong>
-									<a :href="getFilePath(`storage/${dashboardStore.profileDataGeneral.curriculum}`, this.store.apiUri.slice(0, -4))"
-										target="_blank">{{
+									<strong>Curriculum:</strong>
+									<a v-if="curriculumFileName"
+										:href="getFilePath(`storage/${profileData.curriculum}`, this.store.apiUri.slice(0, -4))"
+										target="_blank">&nbsp;{{
 											curriculumFileName
 										}}</a>
+									<span class="badge rounded-pill text-bg-warning ms-2" v-else>non inserito</span>
 								</li>
 								<li>
 									<strong>Specializzazione:</strong>
 									<ul>
-										<li v-for="specialization in dashboardStore.profileDataGeneral.user.specializations">{{
+										<li v-for="specialization in profileData.user.specializations">{{
 											specialization.name }}</li>
 									</ul>
 								</li>
 								<li>
-									<strong>Indirizzo di casa:</strong> {{ dashboardStore.profileDataGeneral.user.home_address }}
+									<strong>Indirizzo di casa:</strong>
+									<span v-if="profileData.user.home_address">&nbsp;{{ profileData.user.home_address }}</span>
+									<span class="badge rounded-pill text-bg-warning ms-2" v-else>non inserito</span>
 								</li>
 								<li>
-									<strong>Indirizzo di ufficio:</strong> {{ dashboardStore.profileDataGeneral.office_address }}
+									<strong>Indirizzo di ufficio:</strong> {{ profileData.office_address }}
 								</li>
 								<li>
-									<strong>Telefono:</strong> {{ dashboardStore.profileDataGeneral.phone }}
+									<strong>Telefono:</strong>
+									<span v-if="profileData.phone">&nbsp;{{ profileData.phone
+									}}</span>
+									<span class="badge rounded-pill text-bg-warning ms-2" v-else>non inserito</span>
 								</li>
 								<li>
-									<strong>Prestazioni:</strong> {{ dashboardStore.profileDataGeneral.services }}
+									<strong>Prestazioni:</strong> {{ profileData.services }}
 								</li>
 							</ul>
 						</div>
