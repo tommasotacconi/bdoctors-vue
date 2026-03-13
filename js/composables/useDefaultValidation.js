@@ -1,4 +1,10 @@
 export function useDefaultValidation() {
+  function validateEmail(email) {
+    const re = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+
+    if (!re.test(email)) return "L'indirizzo email non è valido";
+  }
+
   function validateAddress(address) {
     if (address.length < 4 || address.length > 100) return "L'indirizzo di residenza può essere composto da 4 a 100 caratteri";
   }
@@ -16,8 +22,7 @@ export function useDefaultValidation() {
   }
 
   function validateServices(services, label) {
-    if (!services) return `Le ${label.toLowerCase()} sono obbligatorie`;
-    else if (services.length > 400) return `Le ${label.toLowerCase()} possono essere indicate in massimo 400 caratteri`;
+    if (services.length > 400) return `Le ${label.toLowerCase()} possono essere indicate in massimo 400 caratteri`;
   }
 
   function validateFile(file, label) {
@@ -25,6 +30,7 @@ export function useDefaultValidation() {
   }
 
   return {
+    validateEmail,
     validatePhone,
     validateHomeAddress: validateAddress,
     validateOfficeAddress: validateAddress,
