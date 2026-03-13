@@ -7,7 +7,6 @@
 	export default {
 		data() {
 			return {
-				loaded: false,
 				placeholderImg: 'https://st4.depositphotos.com/4329009/19956/v/450/depositphotos_199564354-stock-illustration-creative-vector-illustration-default-avatar.jpg',
 				store,
 				dashboardStore
@@ -21,11 +20,13 @@
 				})
 					.then(({ status, data }) => {
 						// console.log('Profile: ', profile);
-						this.loaded = true;
 
-						// Data to share inside other components
 						if (status !== 404) this.dashboardStore.profileDataGeneral = data.profile;
-						else this.dashboardStore.tmp = data.user;
+						else {
+							this.dashboardStore.tmp = data.user;
+							this.dashboardStore.profileDataGeneral = {};
+						}
+
 						// localStorage.setItem('user_id', response.data.data.doctor.id)
 						// localStorage.setItem('profile_id', response.data.data.id)
 					})
@@ -51,7 +52,7 @@
 			},
 			curriculumFileName() {
 				// Truncate curriculum lenght to 30 string characters
-				const curriculumFilePath = this.dashboardStore.profileDataGeneral.curriculum;
+				let curriculumFilePath = this.dashboardStore.profileDataGeneral.curriculum;
 				if (!curriculumFilePath) return
 				if (curriculumFilePath.length >= 30) curriculumFilePath = curriculumFilePath.slice(0, 30);
 				if (curriculumFilePath.includes('curricula/')) return curriculumFilePath.slice(10);
@@ -63,7 +64,7 @@
 			return { getFilePath, getProfilePhotoPath }
 		},
 		created() {
-			this.getProfileData();
+			if (!this.profileData) this.getProfileData();
 		},
 		mounted() {
 			// this.showLoader
@@ -77,10 +78,10 @@
 			<h2>Profilo</h2>
 
 			<!-- Loader -->
-			<Loader v-if="!loaded" />
+			<Loader v-if="!profileData" />
 
 			<!-- Section with doctor info -->
-			<section class="card-general" v-if="loaded && store.isAuthenticated">
+			<section class="card-general" v-else-if="store.isAuthenticated">
 				<!-- Card with info -->
 				<div class="card mb-3" v-if="Object.keys(profileData).length">
 					<div class="img-doctor">
@@ -100,12 +101,10 @@
 							</div>
 							<ul>
 								<li>
-									<strong>Curriculum:</strong>
+									<strong>Curriculum:</strong>&nbsp;
 									<a v-if="curriculumFileName"
 										:href="getFilePath(`storage/${profileData.curriculum}`, this.store.apiUri.slice(0, -4))"
-										target="_blank">&nbsp;{{
-											curriculumFileName
-										}}</a>
+										target="_blank">vedi</a>
 									<span class="badge rounded-pill text-bg-warning ms-2" v-else>non inserito</span>
 								</li>
 								<li>
@@ -152,7 +151,7 @@
 			</section>
 
 			<!-- Section unauthorized content -->
-			<section class="card-general" v-if="loaded && !store.isAuthenticated">
+			<section class="card-general" v-else>
 				<div class="card mb-3">
 					<div class="card-body">
 						Contenuto non autorizzato
