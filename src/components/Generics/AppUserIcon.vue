@@ -35,7 +35,7 @@
 				// console.log('Computing <profilePhotPath>', '--- Parent: ', this.parent);
 				// Calculate profile photo :src attribute depending on the presence of the 'photos'
 				// string in the profiles table's column photo
-				const photoPath = this.dashboardStore.profileDataGeneral.photo ?? this.profilePhotoPath;
+				const photoPath = this.dashboardStore.profileDataGeneral?.photo ?? this.profilePhotoPath;
 				// console.log('Photo path: ' + photoPath, '--- Parent: ' + this.parent);
 				if (photoPath === '') this.getProfilePhoto();
 				else if ((this.parent === 'AppHeader' || this.parent === 'HeaderDashboard') && photoPath === null) {
