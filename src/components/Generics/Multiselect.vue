@@ -14,6 +14,7 @@
 		},
 		inheritAttrs: false,
 		props: {
+			// Using 'initValue' to not mix with generally used component data 'value'
 			initValue: {
 				type: Array,
 				required: false,
@@ -55,7 +56,9 @@
 		},
 		async created() {
 			await this.getSpecializations();
-			this.value = this.addIdTo(this.initValue)
+			const addedId = this.addIdTo(this.initValue);
+			if (addedId.length) this.value = this.addIdTo(this.initValue);
+			else this.value = this.initValue
 		},
 	}
 
@@ -71,6 +74,10 @@
 	@use "../../styles/variables" as v;
 	@import 'vue-multiselect/dist/vue-multiselect.min.css';
 
+	.multiselect {
+		width: auto;
+	}
+
 	.multiselect__placeholder {
 		font-size: v.$font-size-base;
 
@@ -79,7 +86,6 @@
 			left: 5px;
 		}
 
-		;
 		line-height: 1;
 	}
 
