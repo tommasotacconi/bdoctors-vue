@@ -6,7 +6,7 @@
 	import AppUserIcon from '../Generics/AppUserIcon.vue';
 	import { useShowButtonsAnimation } from '../../../js/composables/useShowButtonsAnimation';
 	import { homepageStore } from '../../../js/homepageStore.js';
-import { useAuthFunctions } from '../../../js/composables/useAuthFunctions.js';
+	import { useAuthFunctions } from '../../../js/composables/useAuthFunctions.js';
 
 	export default {
 		data() {
@@ -179,7 +179,7 @@ import { useAuthFunctions } from '../../../js/composables/useAuthFunctions.js';
 							<!-- <span class="btn-personal-area-link">Area Personale</span> -->
 							<i class="fa-solid fa-user-doctor"></i>
 						</router-link>
-						<button class="logout" @click="logout({ 
+						<button class="logout" @click="logout({
 							additionalOperations: () => {
 								// Handle style for buttons' transition since the transitionend event never occur due to the 'display: none' set on
 								// 	the containing block after call to logout()
@@ -189,7 +189,7 @@ import { useAuthFunctions } from '../../../js/composables/useAuthFunctions.js';
 							<span class="logout-text">Esci</span>
 						</button>
 					</div>
-					<AppUserIcon :parent="'AppHeader'" @click="showProfileButtons" @user-icon-ready="isUserIconReady = true" />
+					<AppUserIcon parent="AppHeader" @click="showProfileButtons" @user-icon-ready="isUserIconReady = true" />
 				</div>
 			</div>
 			<div class=" loader-container right-header" v-show="showLoader">
@@ -323,117 +323,117 @@ import { useAuthFunctions } from '../../../js/composables/useAuthFunctions.js';
 
 	.right-header {
 		.btn {
-		   border-radius: 25px;
-		   padding: 10px 16px;
-		   border: 0;
-		   font-style: italic;
-		   color: white;
-		   font-weight: bold;
-   
-		   span {
-			   margin-right: 5px;
-			   display: none;
-		   }
-	   }
+			border-radius: 25px;
+			padding: 10px 16px;
+			border: 0;
+			font-style: italic;
+			color: white;
+			font-weight: bold;
 
-	   .btn.btn-logup {
-		   background-color: var(--color-secondary);
-   
-		   &::after {
-			   content: 'Registrati'
-		   }
-	   }
-	   
-	   .btn.btn-with-icon,
-	   .btn.btn-with-icon:focus:active {
-		   flex-shrink: 0;
-		   /* Padding calc for with icon buttons to match height of only text buttons
+			span {
+				margin-right: 5px;
+				display: none;
+			}
+		}
+
+		.btn.btn-logup {
+			background-color: var(--color-secondary);
+
+			&::after {
+				content: 'Registrati'
+			}
+		}
+
+		.btn.btn-with-icon,
+		.btn.btn-with-icon:focus:active {
+			flex-shrink: 0;
+			/* Padding calc for with icon buttons to match height of only text buttons
 		   (((line-height-factor * font-size) + 2 * y-pd) - icon-height) / 2 */
-		   padding: calc((((1.5 * 16px) + 2 * 10px) - 33.33px) / 2) 16px;
-		   background-color: var(--color-complementary);
-	   }
+			padding: calc((((1.5 * 16px) + 2 * 10px) - 33.33px) / 2) 16px;
+			background-color: var(--color-complementary);
+		}
 
-	   .btn.btn-login {
-		   &::after {
-			   content: 'Accedi';
-		   }
-	   }
-   
-	   .btn.btn-personal-area {
-		   background-color: var(--color-complementary);
-   
-		   &::after {
-			   content: 'Area personale'
-		   }
-	   }
-	   
-	   &.not-logged-user {
-		   .user {
-			   display: none;
-		   }
-	   }
-   
-	   &.logged-user {
-		   &>:not(.user) {
-			   display: none;
-		   }
-	   }
-	   
-	   /*	Transition credits: Vue official site (https://vuejs.org/guide/built-ins/transition)	*/
-	   .v-enter-active {
-		   transition: all 0.3s ease-out;
-	   }
-   
-	   .v-leave-active {
-		   transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
-	   }
-   
-	   .v-enter-from,
-	   .v-leave-to {
-		   transform: translateX(20px);
-		   opacity: 0;
-	   }
-	   
-	   /* Loader sizing */
-	   .loader {
-		   width: 34px;
-		   position: static;
-	   }
-	   
-	   .fa-user-doctor {
-		   height: 100%;
-		   padding: 8px;
-		   border-radius: 50%;
-		   border: 1px solid white;
-		   background-color: white;
-		   color: var(--color-complementary);
-		   /* color: #65B0FF; */
-		   margin-right: 7px;
-	   }
-   
-   
-	   /* User logout */
-	   .user {
-		   display: flex;
-		   align-items: center;
-	   }
-   
-	   .logout {
-		   margin-left: 10px;
-		   margin-right: 15px;
-	   }
-   
-	   .logout-text {
-		   /* font-style: italic; */
-		   text-decoration: none;
-		   color: white;
-		   font-weight: bold;
-	   }
+		.btn.btn-login {
+			&::after {
+				content: 'Accedi';
+			}
+		}
 
-	   #loader {
-		   margin-right: calc(34px / 2);
-		   translate: 50% 0;
-	   }
+		.btn.btn-personal-area {
+			background-color: var(--color-complementary);
+
+			&::after {
+				content: 'Area personale'
+			}
+		}
+
+		&.not-logged-user {
+			.user {
+				display: none;
+			}
+		}
+
+		&.logged-user {
+			&>:not(.user) {
+				display: none;
+			}
+		}
+
+		/*	Transition credits: Vue official site (https://vuejs.org/guide/built-ins/transition)	*/
+		.v-enter-active {
+			transition: all 0.3s ease-out;
+		}
+
+		.v-leave-active {
+			transition: all 0.8s cubic-bezier(1, 0.5, 0.8, 1);
+		}
+
+		.v-enter-from,
+		.v-leave-to {
+			transform: translateX(20px);
+			opacity: 0;
+		}
+
+		/* Loader sizing */
+		.loader {
+			width: 34px;
+			position: static;
+		}
+
+		.fa-user-doctor {
+			height: 100%;
+			padding: 8px;
+			border-radius: 50%;
+			border: 1px solid white;
+			background-color: white;
+			color: var(--color-complementary);
+			/* color: #65B0FF; */
+			margin-right: 7px;
+		}
+
+
+		/* User logout */
+		.user {
+			display: flex;
+			align-items: center;
+		}
+
+		.logout {
+			margin-left: 10px;
+			margin-right: 15px;
+		}
+
+		.logout-text {
+			/* font-style: italic; */
+			text-decoration: none;
+			color: white;
+			font-weight: bold;
+		}
+
+		#loader {
+			margin-right: calc(34px / 2);
+			translate: 50% 0;
+		}
 	}
 
 
@@ -455,7 +455,7 @@ import { useAuthFunctions } from '../../../js/composables/useAuthFunctions.js';
 					content: '';
 				}
 			}
-	
+
 			.fa-user-doctor {
 				margin-right: 0px;
 			}

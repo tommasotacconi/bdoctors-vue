@@ -4,7 +4,7 @@
 	import axios from 'axios';
 	import AppUserIcon from '../Generics/AppUserIcon.vue';
 	import { useShowButtonsAnimation } from '../../../js/composables/useShowButtonsAnimation.js';
-import { useAuthFunctions } from '../../../js/composables/useAuthFunctions.js';
+	import { useAuthFunctions } from '../../../js/composables/useAuthFunctions.js';
 
 	export default {
 		data() {
@@ -71,21 +71,20 @@ import { useAuthFunctions } from '../../../js/composables/useAuthFunctions.js';
 		</div>
 		<div class="right-header user" v-show="!showLoader">
 			<!-- Logout button -->
-			<button :style="profileButtonsStyle" v-show="areProfileButtonsShown" class="button logout-btn"
-				@click="logout({
-					inThenOperations: () => this.$router.push({ name: 'homepage' }),
-					additionalOperations: () => {
-						// Handle style for buttons' transition since the transitionend event never occur due to the 'display: none' set on
-						// 	the containing block after call to logout()
-						this.areProfileButtonsShown = false;
-					}
-				})" @transitionend="removeProfileButtonsFromFlow">
+			<button :style="profileButtonsStyle" v-show="areProfileButtonsShown" class="button logout-btn" @click="logout({
+				inThenOperations: () => this.$router.push({ name: 'homepage' }),
+				additionalOperations: () => {
+					// Handle style for buttons' transition since the transitionend event never occur due to the 'display: none' set on
+					// 	the containing block after call to logout()
+					this.areProfileButtonsShown = false;
+				}
+			})" @transitionend="removeProfileButtonsFromFlow">
 				<!-- <router-link style="text-decoration: none; color: inherit;" to="/" @click="logout()"> -->
 				<span class="btn-text">Esci</span>
 				<!-- </router-link> -->
 			</button>
 			<!-- User icon -->
-			<AppUserIcon :parent="'HeaderDashboard'" @user-icon-ready="isUserIconReady = true" @click="showProfileButtons" />
+			<AppUserIcon parent="HeaderDashboard" @user-icon-ready="isUserIconReady = true" @click="showProfileButtons" />
 		</div>
 		<div class=" loader-container right-header" v-show="showLoader">
 			<Loader id="loader" />
