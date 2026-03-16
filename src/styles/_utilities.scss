@@ -1,0 +1,9 @@
+@mixin edge-distance($edge, $distance) {
+	.#{$edge}-#{$distance} {
+		#{$edge}: #{$distance}px !important;
+	}
+}
+
+@for $i from 1 through 200 {
+	@include edge-distance('top', $i * 5);
+}
