@@ -5,15 +5,22 @@
 	import FileUpload from './FileUpload.vue';
 	import { dashboardStore } from '../../../js/dashboardStore';
 
+	function Result(status, payload) {
+		this.status = status;
+		this.payload = payload;
+	}
+
 	export default {
 		data() {
 			return {
 				formData: {},
 				errors: {},
-				validated: undefined,
+				validated: false,
 				sent: undefined,
+				requestStatus: null,
 				store,
-				dashboardStore
+				dashboardStore,
+				minHeight: 0,
 			}
 		},
 		methods: {
@@ -22,7 +29,7 @@
 				const result = [];
 				// Insert ids taken from specializations parameter in reactive variable specializations, property of errors 
 				for (let i = 0; i < specializations.length; i++) {
-					result.push(specializations[i]);
+					result.push(specializations[i].id);
 				}
 
 				formData[key] = result;
@@ -36,49 +43,67 @@
 			createFormData() {
 				for (const key in this.elements) {
 					const eventualValue = this.elements[key].value ?? '';
-					if (key === 'specializationsId') this.$data.formData[key] = eventualValue ? eventualValue : [];
+					if (key === 'specializations') this.$data.formData[key] = eventualValue ? eventualValue : [];
 					else if (['vote', 'revsNum'].includes(key)) this.$data.formData[key] = null;
 					else this.$data.formData[key] = eventualValue;
 					this.$data.errors[key] = '';
 				}
 			},
-			validateEmail(email) {
-				const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+			// validateEmail(email) {
+			// 	const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
-				return re.test(email)
+			// 	return re.test(email)
+			// },
+			evaluateArt(strings, genreNumber, label) {
+				const genNumObj = {
+					m: { s: ['il', 'lo', 'l\''], p: ['gli', 'i'] },
+					f: { s: ['la', 'l\''], p: 'le' }
+				};
+				const [gen, num] = genreNumber;
+				let art = genNumObj[gen][num];
+
+				let subCaseInd = 0;
+				if (gen === 'm') {
+					if (num === 's' && 'aeiou'.includes(label[0].toLowerCase())) {
+						subCaseInd = 2;
+					} else {
+						const consonants = [...'bcdfghlmnpqrstvz'];
+						// 'lo' 'i' cases depends on the initial letters of the word
+						const cases = ['z', ...consonants.map(con => 's' + con), 'gn', 'ps', 'pn', 'x', 'y'];
+						const isACase = cases.some(el => label.slice(0, el.length).includes(el));
+						if (isACase) subCaseInd = 1;
+					}
+				} else {
+					if (num === 's' && 'aeiou'.includes(label[0].toLowerCase())) subCaseInd = 1;
+				}
+				if (typeof art === 'object') art = art[subCaseInd];
+
+				return `${strings[0]} ${art}${subCaseInd === 2 ? '' : ' '}${label.toLowerCase()}`;
 			},
 			validateForm() {
 				this.resetErrors();
 				// Set errors if any
-				for (const data in this.formData) {
+				for (const field in this.formData) {
 					// Prevent validation on set up properties
-					if (['_method'].includes(data)) continue;
+					if (['_method'].includes(field)) continue;
 
-					const value = this.formData[data];
-					const label = this.elements[data].label;
+					const value = this.formData[field];
+					const el = this.elements[field];
 
-					// Check that field is enabled
-					if (this.elements[data].disabled) continue;
+					// Check that field is not required, enabled or hidden
+					if (!el.required || el.disabled || el.hidden || el.type === 'hidden') continue;
 
 					if (!value || value instanceof Array && !value.length) {
-						if (data === 'content') {
-							const msgAdaptedPart = label === 'Messaggio' ? '' : 'la';
-							this.errors[data] = `Inserisci il corpo del${msgAdaptedPart} ${label.toLowerCase()}`;
-						}
-						else if (data === 'vote') this.errors[data] = 'Inserisci un voto in stetoscopi da 1 a 5';
-						else if (data !== 'email' && data !== 'password' && data !== 'pwConf' && data !== 'photo') this.errors[data] = `Il ${label.toLowerCase()} è obbligatorio`;
-						else this.errors[data] = `La ${label.toLowerCase()} è obbligatoria`;
+						this.errors[field] = this.evaluateArt`Inserisci ${el.fieldGenreNumber} ${el.label}`;
+						console.log(this.errors[field])
 					}
-					else if ((data === 'first_name' || data === 'last_name') && value.length <= 2)
-						this.errors[data] = `Il ${label.toLowerCase()} deve contenere almeno 3 caratteri`;
-					else if (data === 'email' && !this.validateEmail(value)) this.errors[data] = 'L\'email inserita non è valida';
 				}
 				// Run custom validation function if any
-				if (this.perfectValidation) this.perfectValidation(this.formData, this.elements, this.errors, this.fieldsToSend);
+				if (this.perfectValidation) this.perfectValidation(this.formData, this.elements, this.errors, this.sendOnlyChanged);
 				// Check form validity by errors' presence
 				let isValid = true;
-				for (const data of Object.keys(this.formData)) {
-					if (this.errors[data]) isValid = false;
+				for (const field in this.formData) {
+					if (this.errors[field]) isValid = false;
 				}
 				if (isValid) {
 					this.validated = true;
@@ -94,7 +119,7 @@
 					if (this.elements[key].disabled) continue;
 
 					if (!['vote', 'photo', 'curriculum', 'revsNum'].includes(key)) this.formData[key] = '';
-					else if (key === 'specializationsId') {
+					else if (key === 'specializations') {
 						this.formData[key] = [];
 						// Reset Multiselect if present on page (that is when sent === undefined)
 						if (this.sent === undefined) this.$refs.multi[0].reset();
@@ -110,12 +135,11 @@
 				}
 			},
 			sendForm() {
-				this.sent = null;
 				let dataToSend = {};
 
-				// Use computed 'fieldsToSend' to determine if there are only some data to send
-				if (this.fieldsToSend) {
-					for (const field of this.fieldsToSend) {
+				// Use computed 'sendOnlyChanged' to determine if there are only some data to send
+				if (this.sendOnlyChanged) {
+					for (const field of this.sendOnlyChanged) {
 						dataToSend[field] = this.formData[field];
 					}
 
@@ -139,17 +163,15 @@
 					},
 					withCredentials: true
 				})
-					.then(response => {
-						// console.log('message sent', response.data);
-						this.resetForm();
+					.then(res => new Result(res.status, res))
+					.catch(err => new Result(err.status, err))
+					.then(({ status, payload }) => {
+						this.requestStatus = status;
 						this.sent = true;
-						this.$emit('completedSuccessfulRequest', response);
-					})
-					.catch(err => {
-						console.log('catched error', err);
-						this.sent = false;
-						this.$emit('completedUnsuccessfulRequest', err);
-					})
+						if (status < 400) this.resetForm();
+						this.$emit(this.requestStatus < 400 ? 'success' : 'error', payload);
+					});
+				this.sent = null;
 			},
 			camelToSnake(obj) {
 				const result = {};
@@ -160,13 +182,6 @@
 
 				return result;
 			},
-			handleSuccessfulSend() {
-				if (this.name === 'messaggio' || this.name === 'recensione') this.sent = undefined;
-				else if (this.name === 'nuovo profilo' || this.name === 'modifica di profilo') {
-					this.sent = undefined;
-					this.dashboardStore.currentProfileSectionComponentIndex = 0;
-				}
-			}
 		},
 		props: {
 			apiRouteAndMethod: {
@@ -195,11 +210,21 @@
 			},
 			formAction: {
 				type: Function,
-				require: false
+				required: false
+			},
+			submitBtnTxt: {
+				type: String,
 			},
 			doctorInfo: {
 				type: [Object, null],
 				required: true
+			},
+			// preventNotDisplayedBtns: {
+			// 	type: Boolean,
+			// 	required: false
+			// },
+			triggerPersistedForm: {
+				type: Number,
 			},
 			formFrameStyle: {
 				type: Object
@@ -214,9 +239,9 @@
 				type: Object
 			},
 		},
-		emits: ['completedSuccessfulRequest', 'completedUnsuccessfulRequest'],
+		emits: ['success', 'error'],
 		computed: {
-			elementProps() {
+			elementsProps() {
 				const computedEls = {};
 				for (const [key, el] of Object.entries(this.elements)) {
 					const { options, ...rest } = el;
@@ -226,13 +251,14 @@
 					computedEls[key] = {
 						...flattenedEl,
 						ref: isMultiselect ? 'multi' : null,
-						class: [el.wrapperStyle, { 'invalid-input': this.errors[key], 'specializations-multiselect': isMultiselect, 'form-control': !isMultiselect }],
+						class: [el.wrapperStyle, { 'invalid-input': this.errors[key], 'form-control': !isMultiselect }],
 						initValue: isMultiselect ? this.formData[key] : null,
 						size: el.size ? el.size * 1024 : null,
-						nameAndConc: [el.label.toLowerCase(), el.fieldGenre = 'm' ? 'o' : 'a'],
+						nameAndConc: [el.label.toLowerCase(), el.fieldGenre === 'm' ? 'o' : 'a'],
 						value: el.elementType === 'fileUpload' ? el.value : this.formData[key],
 						rows: key === 'content' ? 3 : null
 					}
+					// console.log(computedEls);
 				}
 
 				return computedEls;
@@ -281,10 +307,7 @@
 
 				return useApiRoute;
 			},
-			fieldsToSend() {
-				// Set to undefined outside ProfileEdit
-				if (this.nameArtConc[0] !== 'modifica di profilo') return undefined;
-
+			sendOnlyChanged() {
 				let send = [];
 				let isChanged = false;
 
@@ -292,41 +315,62 @@
 					// Prevent logic for '_method'
 					if (['_method', 'send'].includes(field)) continue;
 
+					const el = this.elements[field];
 					const value = this.formData[field];
 					const previousValue = this.elements[field].value;
 
-					if (field === 'specializationsId') {
-						let allPreviousArePresent = true;
-						let sameNumberOfSpecs = true;
+					if (this.checkPrevValues) {
+						if (field === 'specializations') {
+							let allPreviousArePresent = true;
+							let sameNumberOfSpecs = true;
 
-						if (!value.every(({ name: spec }) => previousValue.some(({ name: prevSpec }) => spec === prevSpec))) allPreviousArePresent = false;
-						if (!(value.length === previousValue.length)) sameNumberOfSpecs = false;
+							if (!value.every(id => previousValue.some(({ id: prevId }) => id === prevId))) allPreviousArePresent = false;
+							if (!(value.length === previousValue.length)) sameNumberOfSpecs = false;
 
-						if (!allPreviousArePresent || !sameNumberOfSpecs) isChanged = true;
-					}
-					else isChanged = value && value !== previousValue;
+							if (!allPreviousArePresent || !sameNumberOfSpecs) isChanged = true;
+						}
+						else isChanged = value && value !== previousValue;
+					} else isChanged = !el.disabled && !el.hidden && el.type !== 'hidden' && !!value
 
 					if (isChanged) send.push(field);
 				}
 
 				return send;
+			},
+			isAccOrRegForm() {
+				return ['registrazione', 'accesso'].includes(this.name);
+			},
+			isMesOrRevForm() {
+				return ['messaggio', 'recensione'].includes(this.name);
+			},
+			isCreateEditProfForm() {
+				return ['creazione di profilo', 'modifica di profilo'].includes(this.name);
 			}
 		},
 		components: {
 			Multiselect,
 			FileUpload
 		},
+		watch: {
+			triggerPersistedForm() {
+				this.sent = undefined;
+				this.validated = false;
+			}
+		},
 		created() {
 			this.createFormData();
 		},
+		mounted() {
+			this.minHeight = window.getComputedStyle(this.$refs['form-frame']).height;
+		}
 	}
 </script>
 
 <template>
-	<div class="form-frame container" :style="formFrameStyle">
+	<div ref="form-frame" class="form-frame container" :style="{ minHeight, ...formFrameStyle }">
 		<!-- Generic form element -->
-		<form v-if="sent === undefined" @submit.prevent="formAction?.(formData)?.noValidation || validateForm()" novalidate
-			:class="formClass">
+		<form v-if="sent !== true" @submit.prevent="formAction?.(formData)?.noValidation || validateForm()" novalidate
+			:class="{ 'd-none': sent === null, ...formClass }">
 			<div class="row" :class="wrapperInnerDiv">
 				<h1 v-if="$slots.title">
 					<slot name="title" />
@@ -336,7 +380,7 @@
 				</p>
 
 				<!-- /* Form fields */ -->
-				<div class="mb-2" :class="el.wrapperStyle" v-for="(el, key) in elementProps">
+				<div class="mb-2" :class="el.wrapperStyle" v-for="(el, key) in elementsProps">
 					<!-- Vote field -->
 					<template v-if="key === 'vote'">
 						<label class="badge rounded-pill">{{ el.label }}</label>
@@ -352,7 +396,7 @@
 						<label :for="el.id" class="badge rounded-pill"
 							:class="{ 'd-none': el.type === 'hidden', 'move-top': el.disabled }">{{ el.label
 							}}</label>
-						<component :is="el.elementType" v-bind="el" v-on="elementEvents[el.elementType](key)" />
+						<component :is="el.elementType" v-bind.trim="el" v-on="elementEvents[el.elementType](key)" />
 					</template>
 					<!-- Box for single input's error message -->
 					<div class="error-msg" v-if="errors[key]">
@@ -361,67 +405,26 @@
 				</div>
 
 				<!-- /* Buttons */ -->
-				<!-- Submit content for review or message form-->
-				<div v-if="name === 'messaggio' || name === 'recensione'" class="buttons-wrapper text-center">
-					<button type="submit" class="btn btn-primary btn-submit mx-auto mt-4" :class="{ 'disabled': validated }">Invia
-						{{ name.toLowerCase() }}
+				<div v-if="!$slots.buttons"
+					:class="['buttons-wrapper', { 'mt-3': !isMesOrRevForm, 'mt-4': isMesOrRevForm, 'text-center': isMesOrRevForm }]">
+					<button type="submit" class="btn btn-primary btn-submit"
+						:class="{ 'disabled': validated, 'mx-auto': isAccOrRegForm, 'mx-auto': isMesOrRevForm }"
+						:disabled="sendOnlyChanged && !sendOnlyChanged.length">
+						{{ submitBtnTxt ?? 'Invia' }}
+						<!-- <span v-if="isMesOrRevForm">Invia {{ name.toLowerCase() }}</span>
+						<span v-else-if="isAccOrRegForm">{{ name === 'registrazione' ? 'Registrati' : 'Accedi' }}</span>
+						<span v-else>{{ name.includes('creazione') ? 'Crea' : 'Modifica' }}profilo</span> -->
 					</button>
-				</div>
-				<!-- Submit, reset buttons for registration or login -->
-				<div v-if="name === 'registrazione'" class="buttons-wrapper mt-3">
-					<button type="submit" id="register-button" class="btn btn-primary btn-submit mx-auto"
-						:class="{ 'disabled': validated }">Registrati
-					</button>
-					<button type="button" id="reset-button" class="btn btn-warning ms-3" :class="{ 'disabled': validated }"
-						@click.prevent="resetForm()">Pulisci
-					</button>
-				</div>
-				<!-- Submit, reset buttons for profile creation and edit -->
-				<div v-if="name === 'nuovo profilo' || name === 'modifica di profilo'" class="buttons-wrapper mt-3">
-					<button type="submit" id="create-profile-button" class="btn btn-submit mx-auto"
-						:class="{ 'disabled': validated }" :disabled="checkPrevValues && !fieldsToSend.length">
-						<span v-if="name === 'nuovo profilo'">Crea</span>
-						<span v-else>Modifica</span>
-						profilo
-					</button>
-					<button type="button" id="reset-button" class="btn btn-warning ms-3" :class="{ 'disabled': validated }"
-						@click.prevent="resetForm()">Pulisci
-					</button>
+					<button v-if="isCreateEditProfForm" type="button" id="reset-button" class="btn btn-warning ms-3"
+						:class="{ 'disabled': validated }" @click.prevent="resetForm()">Pulisci</button>
 				</div>
 				<!-- Arbitrary buttons slot -->
 				<slot name="buttons" :formData :resetForm />
 			</div>
 		</form>
 
-		<Loader v-else-if="sent === null" />
-
-		<!-- /* NOTIFICATIONS */ -->
-		<!-- Notification message for successfull sending -->
-		<div v-else-if="sent" class="msg-wrapper">
-			<p class="my-2">
-				{{ stdPhraseWithName }} è stat{{ conc }} inviat{{ conc }}
-				correttamente.
-			</p>
-
-			<button type="button" @click="handleSuccessfulSend" class="btn btn-sm d-block mx-auto">
-				<span v-if="name !== 'nuovo profilo' && name !== 'modifica di profilo'">Invia nuov{{ conc }}</span>
-				<span v-else>Vai al profilo</span>
-			</button>
-		</div>
-
-		<!-- Notification message for impossible sending -->
-		<div v-else class="my-3">
-			<p class="my-2 px-2">
-				{{ stdPhraseWithName }} non può essere inviat{{ conc }} al
-				momento.
-				Controlla
-				la
-				connessione a internet o riprova più tardi.
-			</p>
-
-			<button type="button" @click="sent = undefined; validated = undefined"
-				class="btn btn-sm d-block mx-auto">Riprova</button>
-		</div>
+		<Loader v-show="sent === null" />
+		<i v-if="sent && requestStatus < 400" class="fa-solid fa-circle-check fa-2xl text-success"></i>
 	</div>
 </template>
 
