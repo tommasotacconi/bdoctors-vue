@@ -4,7 +4,7 @@
 	input[type].form-control,
 	textarea.form-control,
 	div.form-control,
-	.specializations-multiselect {
+	.multiselect {
 		border: 2px solid $color;
 	}
 
@@ -74,7 +74,7 @@
 		}
 
 
-		div:has(> .specializations-multiselect) {
+		div:has(> .multiselect) {
 			height: 10rem;
 			overflow: clip;
 			overflow-clip-margin: 190px;
@@ -84,9 +84,18 @@
 				z-index: 51;
 			}
 
-			.specializations-multiselect {
+			.multiselect {
+				height: 75%;
 				border-radius: 7px;
+
+				.multiselect__tags {
+					padding-top: 20px;
+					border-bottom-width: 0;
+					height: 100%;
+					overflow: hidden auto;
+				}
 			}
+
 		}
 
 		label.badge.rounded-pill {
@@ -113,7 +122,7 @@
 		}
 
 		input.form-control.invalid-input[type],
-		.specializations-multiselect.invalid-input,
+		.multiselect.invalid-input,
 		textarea.form-control.invalid-input,
 		div.form-control.invalid-input {
 			border-color: var(--color-error);
