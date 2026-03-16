@@ -5,11 +5,11 @@
 
 /* Root Color */
 :root {
-    --color-primary: #0E395D;
-    --color-secondary: #65B0FF;
+	--color-primary: #0E395D;
+	--color-secondary: #65B0FF;
 	--color-secondary-transparent: #65afff76;
-    --color-tertiary: #155489;
-    --color-complementary: #FFB465;
+	--color-tertiary: #155489;
+	--color-complementary: #FFB465;
 	--color-error: #B00020;
 }
 
@@ -31,6 +31,7 @@
 // Standard dimensions
 :root {
 	--header-h: 80px;
+	--dashboard-header-h: 120px;
 	--header-border-r: 30px;
 }
 
@@ -40,12 +41,15 @@ body {
 }
 
 // Utility
+#app {
+	position: relative;
+}
+
 .bg {
 	/* background-image: url(../../public/tile_background.png); */
 	background-image: url(../assets/medical-icons-background.svg);
 	background-repeat: repeat;
 }
-
 
 // Animations
 // Move (Credits: "Cool text" from Christine Banlawi, https://codepen.io/cbanlawi/pen/MWbemYP)

@@ -38,10 +38,12 @@
 .btn.btn-warning {
 	background-color: #fff;
 	color: #000;
-
+	outline: 0px solid #e4005b4b;
+	transition: color 1.5s, outline .8s;
+	
 	&:hover {
-		color: #fff;
-		background-color: #e4005b;
+		color: #e40008ec;
+		outline-width: 4px;
 	}
 }
 
