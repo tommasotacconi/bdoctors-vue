@@ -52,13 +52,14 @@
 				}
 			},
 		},
-		created: function () {
-		},
 		mounted() {
 			this.dashboardCycle++;
 			window.addEventListener('resize', this.updateWidth);
 			emitter.on('reset-dashboard', this.resetDashboard);
 			emitter.on('reset-dashboard-header', this.resetDashboardHeader);
+
+			const headerHeight = parseInt(getComputedStyle(this.$refs.header).height.slice(0, -2))
+			this.dashboardStore.headerHeight = headerHeight;
 		},
 		unmounted() {
 			emitter.off('reset-dashboard', this.resetDashboard);
@@ -75,7 +76,7 @@
 			</section>
 		</Transition>
 		<section class="header-main">
-			<div class="header">
+			<div ref="header" class="header">
 				<HeaderDashboard :key="headerDashboardKey" />
 			</div>
 			<div class="main">
@@ -129,7 +130,7 @@
 	}
 
 	.header {
-		flex: 0 0 var(--header-h);
+		flex: 0 0 var(--dashboard-header-h);
 	}
 
 	.main {

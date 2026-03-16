@@ -1,13 +1,11 @@
 <script>
 	import axios from "axios";
-	import Multiselect from "../../../Generics/Multiselect.vue";
-	import AppAlert from "../../../Generics/AppAlert.vue";
 	import { store } from "../../../../../js/store";
 	import { dashboardStore } from "../../../../../js/dashboardStore";
 	import { emitter } from "../../../../../js/eventBus";
 	import FormField from "../../../../../js/utils/FormField";
 	import AppForm from "../../../Generics/AppForm.vue";
-	import { useHandler } from "../../../../../js/composables/useHandler";
+	import { useDefaultValidation } from "../../../../../js/composables/useDefaultValidation";
 
 
 	export default {
@@ -17,110 +15,47 @@
 				formElements: {
 					firstName: new FormField('first-name-input', 'input', 'Nome', { t: 'text', wS: 'col-md-6' }),
 					lastName: new FormField('last-name-input', 'input', 'Cognome', { t: 'text', wS: 'col-md-6' }),
-					email: new FormField('email-input', 'input', 'Email', { t: 'text', d: true, wS: 'col-md-6' }),
+					email: new FormField('email-input', 'input', 'Email', { t: 'text', fGN: ['f', 's'], d: true, wS: 'col-md-6' }),
 					homeAddress: new FormField('home-address-input', 'input', 'Indirizzo di residenza', { t: 'text', p: 'Via/Piazza...', wS: 'col-md-6' }),
-					specializationsId: new FormField('specializations-input', 'multiselect', 'Specializzazioni', { p: 'Seleziona una o più specializzazioni', dR: false }),
+					specializations: new FormField('specializations-input', 'multiselect', 'Specializzazioni', { p: 'Seleziona una o più specializzazioni', dR: false }),
 					phone: new FormField('phone-input', 'input', 'Telefono d\'ufficio', { t: 'tel', p: 'Numero di telefono', wS: 'col-md-6' }),
 					officeAddress: new FormField('office-address-input', 'input', 'Indirizzo d\'ufficio', { t: 'text', p: 'Piazza/Via...', wS: 'col-md-6' }),
-					services: new FormField('services-input', 'textarea', 'Prestazioni erogate', { p: 'Indicare le prestazioni prefissandole con un asterisco', wS: 'col-md-12' }),
-					photo: new FormField('photo-input', 'fileUpload', 'Foto profilo', { a: 'image/jpeg,image/png,imgage/jpg,application/pdf', s: 2048, sP: true, wS: 'col-md-6' }),
+					services: new FormField('services-input', 'textarea', 'Prestazioni erogate', { p: 'Indicare le prestazioni prefissandole con un asterisco', fGN: ['f', 'p'], wS: 'col-md-12' }),
+					photo: new FormField('photo-input', 'fileUpload', 'Foto profilo', { fGN: ['f', 's'], a: 'image/jpeg,image/png,imgage/jpg,application/pdf', s: 2048, sP: true, wS: 'col-md-6' }),
 					curriculum: new FormField('curriculum-input', 'fileUpload', 'Curriculum', { a: 'application/pdf,text/plain', s: 2048, sP: true, wS: 'col-md-6' }),
 					_method: new FormField('form-method', 'input', 'method', { t: 'hidden', v: 'PATCH' }),
 				},
-				isResponseStatusSuccess: false,
+				showAlert: false,
+				isResponseSuccessful: null,
+				triggerPersistedForm: 0,
+				// isResponseStatusSuccess: false,
 				store,
 				dashboardStore,
 			}
 		},
 		components: {
-			Multiselect,
-			AppAlert,
 			AppForm
 		},
 		methods: {
+			// validateEmail(email) {
+			// 	const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+			// 	return re.test(email);
+			// },
+			flattenAndRenameData(profileGeneral) {
+				const { user, user: { specializations }, ...usableData } = profileGeneral;
+				const userData = { ...user, specializations, ...usableData };
 
-			handlePhoto(photo) {
-				this.formData.photo = photo;
-			},
-
-			handleCurriculum(curriculum) {
-				this.formData.curriculum = curriculum;
-			},
-
-			updateProfile() {
-				axios.post(this.store.apiUri + 'profiles', this.formData, {
-					headers: {
-						"Content-Type": "multipart/form-data",
-					},
-					withCredentials: true
-				})
-					.then(response => {
-						// console.log('Profile updated', response.data);
-						this.isResponseStatusSuccess = true;
-						emitter.emit('reset-dashboard-header');
-					})
-					.catch(function (error) {
-						// console.log('profile update error: ', error.response.data.errors);
-					})
-					.finally(function () {
-						// always executed
-					});
-			},
-			validateForm() {
-				this.isResponseStatusSuccess = false;
-				this.resetErrorsFields();
-				// if (!this.formData.first_name) {
-				//     this.errors.first_name = 'Il nome è obbligatorio.';
-				// } else if (this.formData.first_name.length <= 2) {
-				//     this.errors.first_name = 'Il nome deve contenere almeno 3 caratteri.';
-				// };
-				// if (!this.formData.last_name) {
-				//     this.errors.last_name = "Il cognome è obbligatorio."
-				// } else if (this.formData.last_name.length <= 2) {
-				//     this.errors.last_name = "Il cognome deve contenere almeno 3 caratteri."
-				// };
-				if (!this.formData.email) {
-					this.errors.email = "L'email è obbligatoria.";
-				} else if (!this.validEmail(this.formData.email)) {
-					this.errors.email = "L'email inserita non è valida.";
+				for (const key in this.formElements) {
+					if (key !== '_method') this.formElements[key].value = userData[key.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`)] ?? '';
+					// console.log(`value inserted in 'this.formElements['${key}'].value'-->`, this.formElements[key].value);
 				}
-				// if (!this.formData.password) { this.errors.password = "La password è obbligatoria." }
-				// else if (!this.validPassword(this.formData.password)) { this.errors.password = "La password deve contenere almeno una maiuscola, una minuscola ed un numero" };
-				if (!this.formData.phone) { this.errors.phone = "Il numero di telefono è obbligatorio." }
-				// else if (isNaN(this.formData.phone)) { this.errors.phone = "Il numero di telefono può contenere solo numeri" };
-				if (!this.formData.office_address) this.errors.office_address = "L'indirizzo è obbligatorio.";
-				if (!this.formData.specializations.length) this.errors.specializations = "Inserire almeno una specializzazione.";
-				if (!this.formData.services) this.errors.services = "Inserire almeno una prestazione.";
-				// if (!this.formData.photo) this.errors.photo = "La foto è obbligatoria";
-				// if (!this.formData.curriculum) this.errors.curriculum = "Il curriculum è obbligatorio.";
-
-				if (!this.errors.phone &&
-					!this.errors.office_address &&
-					!this.errors.specializations &&
-					!this.errors.services &&
-					!this.errors.photo &&
-					!this.errors.curriculum
-				) {
-					this.validated = true;
-					this.updateProfile();
-				}
-				// console.log(this.formData);
-				// console.log(this.errors);
-			},
-			validEmail(email) {
-				const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-				return re.test(email);
 			},
 			getProfileData() {
-				axios.get(this.store.apiUri + 'profiles/edit', { withCredentials: true })
-					.then(({ data: { data } }) => {
-						const { doctor, doctor: { specializations }, ...usableData } = data;
-						const userData = { ...doctor, specializations_id: specializations, ...usableData };
-
-						for (const key in this.formElements) {
-							if (key !== '_method') this.formElements[key].value = userData[key.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`)] ?? '';
-							// console.log(`value inserted in 'this.formElements['${key}'].value'-->`, this.formElements[key].value);
-						}
+				const data = this.dashboardStore.profileDataGeneral;
+				if (data) this.flattenAndRenameData(data);
+				else axios.get(this.store.apiUri + 'profiles/edit', { withCredentials: true })
+					.then(({ data: { profile } }) => {
+						this.flattenAndRenameData(profile);
 					})
 					.catch(function (err) {
 						// console.error(err)
@@ -129,47 +64,45 @@
 						// always executed
 					});
 			},
-			customValidation(formData, formElements, formErrors, fieldsToSend) {
-				const data = formData;
-				const els = formElements;
-				const errs = formErrors;
-
+			validate(data, els, errs) {
 				for (const field in data) {
-					// Prevent logic for '_method'
-					if (['_method', 'send'].includes(field)) continue;
+					// Prevent logic for 'type=hidden' and 'disabled' element
+					if (els[field].disabled || els[field].type === 'hidden' || errs[field]) continue;
 
 					const value = data[field];
 					const label = els[field].label;
-
-					if (fieldsToSend.length) {
-						if (field === 'homeAddress' && (value.length < 3 || value.length > 100))
-							errs[field] = "L'indirizzo di residenza può essere composto da 3 a 100 caratteri";
-						else if (field === 'specializationsId' && !value.length) errs[field] = "Selezionare almeno una specializzazione";
-						else if (field === 'phone' && value) {
-							// Use regex 
-							const reResult = /^\+?\d[\d\s]*$/.test(value);
-							if (!reResult) errs[field] = `Il ${label.toLowerCase()} può essere composto da numeri separati da spazi ed eventualmente iniziare con un prefisso '+##'`;
-						}
-						else if (field === 'officeAddress') {
-							if (!value) errs[field] = errs[field].replace('Il', 'L\'');
-							else if (value.length > 50) errs[field] = `L\'${label.toLowerCase()} non può essere più lungo di 50 caratteri`;
-						}
-						else if (field === 'services' && !value) errs[field] = `Le ${label.toLowerCase()} sono obbligatorie`;
-						else if (field === 'photo' || field === 'curriculum' && value === null) errs[field] = '';
-					}
-					// Remove errors cause in this case they are not relevant
-					else {
-						errs[field] = '';
-						// Register fields to send
-					}
+					const result = this['validate' + field[0].toUpperCase() + field.slice(1)](value, label);
+					if (result) errs[field] = result;
 				}
+			},
+			handleSuc(res) {
+				const action = () => this.dashboardStore.currentProfileSectionComponentIndex = 0;
+				this.triggerAlert(res.data.message, this.dashboardStore.headerHeight + 10, undefined, {
+					txt: 'Visualizza',
+					action
+				});
+				this.dashboardStore.profileDataGeneral = res.data.profile;
+				emitter.emit('reset-dashboard-header');
+			},
+			handleErr({ response: res }) {
+				this.triggerAlert(res.data.message, this.dashboardStore.headerHeight + 10, 'warning');
+				this.triggerPersistedForm++;
 			}
 		},
 		computed: {
+			nameArtConc() {
+				return ['modifica di profilo', 'la', 'a'];
+			},
+		},
+		setup() {
+			const { ...validations } = useDefaultValidation();
+
+			return { ...validations };
 		},
 		created: function () {
 			this.getProfileData();
 		},
+		inject: ['triggerAlert']
 	}
 </script>
 
@@ -185,30 +118,15 @@
 			<h1 class="col-8 text-center">Modifica le tue informazioni</h1>
 		</header>
 
-
-		<!-- Alert -->
-		<div class="col-6" v-if="isResponseStatusSuccess">
-			<AppAlert class="alert-success d-flex">
-				<div class="col alert-body">
-					I tuoi dati sono stati aggiornati.
-				</div>
-				<div class="alert-footer">
-					<button type="button" class="btn btn-primary" @click="dashboardStore.currentProfileSectionComponentIndex = 0">
-						Torna al profilo
-					</button>
-				</div>
-			</AppAlert>
-		</div>
-
 		<AppForm class="user-data-form" id="" :doctorInfo="null" :apiRouteAndMethod="{ route: 'profiles', method: 'post' }"
-			:elements="formElements" :nameArtConc="['modifica di profilo', 'la', 'a']" :checkPrevValues="true"
-			:wrapperInnerDiv="['row']" :perfectValidation="customValidation" />
+			:elements="formElements" :nameArtConc :checkPrevValues="true" :wrapperInnerDiv="['row']"
+			:perfectValidation="validate" :triggerPersistedForm submitBtnTxt="Modifica profilo" @success="handleSuc"
+			@error="handleErr">
+		</AppForm>
 	</div>
-
 </template>
 
 <style scoped lang="scss">
-
 	.file-input {
 		padding: 10px;
 		border: 1px solid #ccc;

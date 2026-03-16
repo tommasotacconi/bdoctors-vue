@@ -41,6 +41,7 @@
 					content: new FormField(undefined, 'textarea', undefined, { p: 'Scrivi qui' }),
 					vote: new FormField('vote', 'input', 'Voto', { t: 'radio', rGO: [1, 2, 3, 4, 5] })
 				},
+				triggerPersistedForm: 0,
 				messageApiRoute: 'messages',
 				reviewApiRoute: 'reviews',
 				currentFormType: null,
@@ -72,17 +73,11 @@
 					this.$emit('loaded-pop-up');
 				}
 				else {
-					const name = this.$route.params.name;
+					const name = decodeURIComponent(this.$route.params.name).split('-');
 					// Match fisrst name and last name
-					let re = /\w+/g;
-					let result = name.match(re);
-					const firstName = result[0];
-					const lastName = result[1];
-					this.doctorInfo.first_name = firstName;
-					this.doctorInfo.last_name = lastName;
+					let homId = '';
+					[this.doctorInfo.first_name, this.doctorInfo.last_name, homId] = name;
 					// Match homonymous id
-					re = /\d+/g;
-					const homId = name.match(re)?.[0];
 					if (homId) this.doctorInfo.homonymous_id = homId;
 
 					this.getProfileData();
@@ -111,6 +106,16 @@
 						this.currentFormType = formType;
 					}, 100);
 				});
+			},
+			handleErr({ status, response: res, response: { data } }) {
+				let errs = '';
+				if (data.errors) {
+					for (const err of Object.values(data.errors)) {
+						errs += '\u0020' + err.join('\u0020');
+					}
+				}
+				this.triggerAlert(errs ? errs : data.message, this.homepageStore.headerHeight + 10, 'warning', {});
+				this.triggerPersistedForm++;
 			},
 			onResize(e) {
 				this.winInnerWidth = window.innerWidth;
@@ -188,6 +193,7 @@
 				return this.isMessageFormButtonShown && this.isReviewFormButtonShown;
 			},
 		},
+		inject: ['triggerAlert'],
 		setup() {
 			const { getFilePath, getProfilePhotoPath } = useGetPathFunctions();
 
@@ -275,7 +281,7 @@
 							</template>
 						</ul>
 					</div>
-					<div class="right-content col-md-6 col-xl-6 mx-auto py-3">
+					<div class="right-content col-md-6 col-xl-6 mx-md-auto py-3">
 						<div class="buttons-wrapper mb-3">
 							<Transition name="slide-up">
 								<!-- Button to show message form -->
@@ -297,7 +303,8 @@
 								<KeepAlive>
 									<AppForm v-if="currentFormType" :key="currentFormType" class="mb-3" :doctorInfo
 										:apiRouteAndMethod="{ route: currentCreateResourceApiRoute, method: 'post' }"
-										:elements="currentFormElements" :nameArtConc="currentNameArtConc" />
+										:elements="currentFormElements" :nameArtConc="currentNameArtConc" :triggerPersistedForm
+										@error="handleErr" />
 								</KeepAlive>
 							</Transition>
 						</div>

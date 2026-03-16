@@ -2,158 +2,110 @@
 	import axios from '../../../js/axios';
 	import { store } from '../../../js/store';
 	import { emitter } from '../../../js/eventBus';
+	import AppForm from '../Generics/AppForm.vue';
+	import FormField from '../../../js/utils/FormField';
+	import AppAlert from '../Generics/AppAlert.vue';
 
 	export default {
 		data() {
 			return {
-				inputEmail: '',
-				inputPassword: '',
-				isRequestPending: false,
+				triggerPersistedForm: 0,
+				formElements: {
+					email: new FormField('email-input', 'input', 'Email', { t: 'email' }),
+					password: new FormField('password-input', 'input', 'Password', { t: 'password' }),
+				},
 				store,
-				isAnimationActive: false,
-				positiveAuthenticationSymbol: '',
-				loginButtonText: 'Login'
+				// isAnimationActive: false,
 			}
 		},
 		methods: {
-			sendLoginData() {
-				this.isRequestPending = true;
-				axios.post(this.store.apiUri.slice(0, -4) + 'login', {
-					email: this.inputEmail,
-					password: this.inputPassword
-				})
-					.then(response => {
-						this.store.isAuthenticated = true;
-						this.loginButtonText = '';
-						this.positiveAuthenticationSymbol = '✅';
-						this.isRequestPending = false;
-						emitter.emit('reset-dashboard');
-						setTimeout(() => {
-							this.$router.push({ name: 'dashboard', params: { id: response.data.user_id } })
-						}, 100);
-					})
-					.catch(err => {
-						this.isRequestPending = false;
-						this.isAnimationActive = true;
-						setTimeout(() => { this.isAnimationActive = false }, 250);
-						// console.log('error POST /api/login: ', err);
-					});
-			},
-		},
-		computed: {
-			loginButtonContent() {
-				return !this.isRequestPending ? this.loginButtonText + this.positiveAuthenticationSymbol : null;
+			handleRequest({ status, response: res }) {
+				if (status < 400) {
+					this.store.isAuthenticated = true;
+					emitter.emit('reset-dashboard');
+					setTimeout(() => {
+						this.$router.push({ name: 'dashboard' })
+					}, 100);
+				} else {
+					const headerHeightVal = getComputedStyle(document.documentElement).getPropertyValue("--header-h").trim();
+					this.triggerAlert(res?.data.message, parseInt(headerHeightVal.slice(0, -2)) + 10, 'warning');
+					this.triggerPersistedForm++;
+				}
 			}
 		},
+		components: {
+			AppForm,
+			AppAlert
+		},
+		inject: ['triggerAlert'],
 	}
 </script>
 
 <template>
-	<form class="" action="post" @submit.prevent="sendLoginData">
-		<div class="card login-card row" id="login-card">
-			<div class="col-12">
-				<!-- Email input -->
-				<label for="email-input" class="badge rounded-pill">Email</label>
-				<input type="text" id="email-input" class="form-control mb-3" v-model="inputEmail">
-			</div>
-			<div class="col-12">
-				<!-- Password input -->
-				<label for="password-input" class="badge rounded-pill">Password</label>
-				<input type="password" id="password-input" class="form-control mb-3" v-model="inputPassword">
-			</div>
-			<!-- Button wrappers -->
-			<div class="buttons-wrapper col-12 d-flex justify-content-center">
-				<button type="submit" id="login-button" class="btn btn-primary d-flex justify-content-center mt-4 mb-3"
-					:class="{ ['shaking-animation']: isAnimationActive }">
-					{{ loginButtonContent }}
-					<Loader class="repositioned-loader" v-if="isRequestPending" />
-				</button>
-			</div>
-		</div>
-	</form>
+	<main>
+		<AppForm class="user-data-form alone-dimensions" :doctorInfo="null"
+			:apiRouteAndMethod="{ route: 'login', method: 'post', useApiRoute: false }" :elements="formElements"
+			:nameArtConc="['accesso', 'l\'', 'o']" :wrapperInnerDiv="['row']" :triggerPersistedForm submitBtnTxt="Accedi"
+			@success="handleRequest" @error="handleRequest" />
+	</main>
 </template>
 
 <style lang="scss" scoped>
-	form {
-		height: calc(100vh - 80px);
-		display: flex;
-		align-items: center;
-	}
-
-	.card {
-		background-color: #FFB465;
-	}
-
-	.login-card {
-		margin: 0 auto;
+	.form-frame.alone-dimensions {
 		width: 350px;
+		min-height: 0;
+		margin-top: calc((100vh - var(--header-h)) / 2);
+		translate: 0 -50%;
 	}
 
-	label {
-		width: fit-content;
-		font-size: 0.9rem;
-		/* padding: 0 10px; */
-		background-color: #65B0FF;
-		color: white;
+	// .buttons-wrapper {
+	// 	padding: 0;
+	// }
 
-		position: relative;
-		left: 15px;
-		top: 12px;
-	}
+	// #login-button {
+	// 	width: calc(100% - 24px);
+	// 	position: relative;
+	// }
 
-	input {
-		height: 3.2rem;
-		border: 2px solid #65B0FF;
-	}
+	// #login-button.shaking-animation {
+	// 	color: #ff0000;
+	// 	background-color: currentColor;
+	// 	border-color: currentColor;
 
-	.buttons-wrapper {
-		padding: 0;
-	}
-
-	#login-button {
-		width: calc(100% - 24px);
-		position: relative;
-	}
-
-	#login-button.shaking-animation {
-		color: #ff0000;
-		background-color: currentColor;
-		border-color: currentColor;
-
-		animation-name: horizontal-shaking;
-		animation-duration: 0.5s;
-	}
+	// 	animation-name: horizontal-shaking;
+	// 	animation-duration: 0.5s;
+	// }
 
 	/* Shake animation (credits, https://unused-css.com/blog/css-shake-animation/) */
-	@keyframes horizontal-shaking {
-		0% {
-			transform: translateX(0)
-		}
+	// @keyframes horizontal-shaking {
+	// 	0% {
+	// 		transform: translateX(0)
+	// 	}
 
-		20% {
-			transform: translateX(4px)
-		}
+	// 	20% {
+	// 		transform: translateX(4px)
+	// 	}
 
-		40% {
-			transform: translateX(-4px)
-		}
+	// 	40% {
+	// 		transform: translateX(-4px)
+	// 	}
 
-		60% {
-			transform: translateX(4px)
-		}
+	// 	60% {
+	// 		transform: translateX(4px)
+	// 	}
 
-		80% {
-			transform: translateX(-4px)
-		}
+	// 	80% {
+	// 		transform: translateX(-4px)
+	// 	}
 
-		75% {
-			transform: translateX(4px)
-		}
+	// 	75% {
+	// 		transform: translateX(4px)
+	// 	}
 
-		100% {
-			transform: translateX(0)
-		}
-	}
+	// 	100% {
+	// 		transform: translateX(0)
+	// 	}
+	// }
 
 	button .repositioned-loader {
 		width: 24px;

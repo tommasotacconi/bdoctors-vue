@@ -1,14 +1,11 @@
 <script>
-	import axios from "axios";
 	import { store } from "../../../../../js/store.js";
-	import Multiselect from "../../../Generics/Multiselect.vue";
-	import AppAlert from "../../../Generics/AppAlert.vue";
 	import { dashboardStore } from "../../../../../js/dashboardStore.js";
 	import { emitter } from "../../../../../js/eventBus.js";
 	import AppForm from "../../../Generics/AppForm.vue";
 	import FormField from "../../../../../js/utils/FormField.js";
 	import { useHandler } from "../../../../../js/composables/useHandler.js";
-import { useDefaultValidation } from "../../../../../js/composables/useDefaultValidation.js";
+	import { useDefaultValidation } from "../../../../../js/composables/useDefaultValidation.js";
 
 	export default {
 		data() {
@@ -18,29 +15,30 @@ import { useDefaultValidation } from "../../../../../js/composables/useDefaultVa
 					firstName: new FormField('first-name-input', 'input', 'Nome', { t: 'text', v: dashboardStore.tmp.first_name, d: true, wS: 'col-md-6' }),
 					lastName: new FormField('last-name-input', 'input', 'Cognome', { t: 'text', v: dashboardStore.tmp.last_name, d: true, wS: 'col-md-6' }),
 					phone: new FormField('phone-input', 'input', 'Telefono d\'ufficio', { t: 'phone', p: '+39 333.../333...', wS: 'col-md-6' }),
-					officeAddress: new FormField('office-address-input', 'input', 'Indirizzo d\'ufficio', { t: 'text', p: 'Piazza/Via...', wS: 'col-md-6' }),
-					services: new FormField('services-input', 'textarea', 'Prestazioni erogate', { p: 'Indicare le prestazioni prefissandole con un asterisco', wS: 'col-md-12' }),
-					photo: new FormField('photo-input', 'fileUpload', 'Foto profilo', { a: 'image/jpeg,image/png,imgage/jpg,application/pdf', s: 2048, wS: 'col-md-6' }),
+					officeAddress: new FormField('office-address-input', 'input', 'Indirizzo d\'ufficio', { t: 'text', p: 'Piazza/Via...', r: true, wS: 'col-md-6' }),
+					services: new FormField('services-input', 'textarea', 'Prestazioni erogate', { p: 'Indicare le prestazioni prefissandole con un asterisco', fGN: ['f', 'p'], r: true, wS: 'col-md-12' }),
+					photo: new FormField('photo-input', 'fileUpload', 'Foto profilo', { a: 'image/jpeg,image/png,imgage/jpg,application/pdf', fGN: ['f', 's'], s: 2048, wS: 'col-md-6' }),
 					curriculum: new FormField('curriculum-input', 'fileUpload', 'Curriculum', { a: 'application/pdf,text/plain', s: 2048, wS: 'col-md-6' }),
 				},
+				triggerPersistedForm: 0,
 				store,
 				dashboardStore,
 			}
 		},
 		components: {
 			AppForm,
-			Multiselect,
-			AppAlert,
 		},
 		methods: {
-			customValidation(formData, formElements, formErrors) {
-				const data = formData;
-				const els = formElements;
-				const errs = formErrors;
-
+			/**
+			 * 
+			 * @param data Form data 
+			 * @param els Form elements 
+			 * @param errs Form errors
+			 */
+			validate(data, els, errs) {
 				for (const field in data) {
 					// Prevent logic for 'type=hidden' and 'disabled' element
-					if (els[field].disabled || els[field].type === 'hidden') continue;
+					if (els[field].disabled || els[field].type === 'hidden' || errs[field]) continue;
 
 					const value = data[field];
 					const label = els[field].label;
@@ -48,50 +46,33 @@ import { useDefaultValidation } from "../../../../../js/composables/useDefaultVa
 					if (result) errs[field] = result;
 				}
 			},
-			//commento per commit 2
-			createProfile() {
-				axios.post(this.store.apiUri + 'profiles', this.formData, {
-					headers: {
-						"Content-Type": "multipart/form-data",
-					},
-					withCredentials: true
-				})
-					.then(response => {
-						// console.log('created profiles', response.data);
-						this.profileData = response.data.profile;
-						this.isResponseStatusSuccess = true;
-						emitter.emit('reset-dashboard-header');
-						// Data da condividere all'interno degli altri componenti
-						//store.profileDataGeneral = response.data.data
-						//localStorage.setItem('user_id', response.data.data.doctor.id)
-					})
-					.catch(function (err) {
-						// console.error(err)
-					})
-					.finally(function () {
-						// always executed
-					});
-			},
-			handleSuccessfulRequest(response) {
-				this.profileData = response.data.profile;
+			handleSuc(res) {
+				const action = () => this.dashboardStore.currentProfileSectionComponentIndex = 0;
+				this.triggerAlert(res.data.message, this.dashboardStore.headerHeight + 10, undefined, {
+					txt: 'Visualizza',
+					action
+				});
+				this.dashboardStore.profileDataGeneral = res.data.profile;
 				emitter.emit('reset-dashboard-header');
+			},
+			handleErr({ status, response: res }) {
+				this.triggerAlert(res.data.message, this.dashboardStore.headerHeight + 10, 'warning');
+				this.triggerPersistedForm++;
+				// this.showAlert = true;
 			}
 		},
 		computed: {
-			firstName() {
-				return;
+			nameArtConc() {
+				return ['creazione di profilo', 'la', 'a'];
 			},
-			lastName() {
-				return this.dashboardStore.tmp.last_name;
-			}
 		},
+		inject: ['triggerAlert', /* 'triggerPersistedForm' */],
 		setup() {
 			const { handleUploadedNewFile } = useHandler();
-			const { ...validations } = useDefaultValidation();
+			const { validatePhone, validateOfficeAddress, validateServices, validatePhoto, validateCurriculum } = useDefaultValidation();
 
-			return { handleUploadedNewFile, ...validations };
+			return { validatePhone, validateOfficeAddress, validateServices, validatePhoto, validateCurriculum, handleUploadedNewFile };
 		},
-
 	}
 </script>
 
@@ -102,16 +83,15 @@ import { useDefaultValidation } from "../../../../../js/composables/useDefaultVa
 				<button class="btn back-arrow" @click="dashboardStore.currentProfileSectionComponentIndex = 0">
 					<i class="fa-solid fa-circle-arrow-left fa-xl"></i></button>
 			</div>
-			<h1 class=" col-8 text-center">Crea il tuo profilo</h1>
+			<h1 class="col-8 text-center">Crea il tuo profilo</h1>
 		</header>
 
 		<!-- Form -->
 		<AppForm class="user-data-form" id="" :doctorInfo="null" :apiRouteAndMethod="{ route: 'profiles', method: 'post' }"
-			:elements="formElements" :nameArtConc="['nuovo profilo', 'il', 'o']" :wrapperInnerDiv="['row']"
-			:perfectValidation="customValidation" :optionalPropsObject="{ handleUploadedNewFile }"
-			@completed-successful-request="handleSuccessfulRequest" />
+			:elements="formElements" :nameArtConc :wrapperInnerDiv="['row']" :perfectValidation="validate"
+			:triggerPersistedForm submitBtnTxt="Crea profilo" @success="handleSuc" @error="handleErr">
+		</AppForm>
 	</div>
-
 </template>
 
 <style scoped lang="scss">
