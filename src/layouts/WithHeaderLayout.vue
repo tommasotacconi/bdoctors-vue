@@ -1,31 +1,43 @@
 <script>
+	import { useAppAlert } from '../../js/composables/useAppAlert';
+	import { homepageStore } from '../../js/homepageStore';
+	import AppAlert from '../components/Generics/AppAlert.vue';
 	import AppHeader from '../components/Generics/AppHeader.vue';
 
 
 	export default {
 		data() {
 			return {
+				homepageStore
 			}
 		},
 		components: {
-			AppHeader
+			AppHeader,
+			AppAlert
+		},
+		mounted() {
+			const headerHeight = parseInt(getComputedStyle(this.$refs.header.$el).height.slice(0, -2))
+			this.homepageStore.headerHeight = headerHeight;
+
 		}
 	}
 </script>
 
 <template>
-	<AppHeader class="app-header" />
+	<AppHeader ref="header" class="header" />
 	<div class="page-content bg">
-		<RouterView v-slot="{ Component }">
-			<KeepAlive include="HomePage,RegisterPage,AdvancedSearchPage">
-				<component :is="Component"></component>
+		<RouterView v-slot="{ Component, route }">
+			<KeepAlive>
+				<component v-if="route.meta.keepAlive" :is="Component" />
 			</KeepAlive>
+
+			<component v-if="!route.meta.keepAlive" :is="Component" />
 		</RouterView>
 	</div>
 </template>
 
 <style scoped>
-	.app-header {
+	.header {
 		padding: 15px 5px;
 		position: fixed;
 		top: 0;
@@ -37,14 +49,14 @@
 
 	.page-content {
 		height: 100vh;
+		position: relative;
 
-		&> :not(.loader):nth-of-type(1) {
+		&> :not(.loader, .alert):nth-of-type(1) {
 			padding-top: var(--header-border-r);
 		}
 	}
 
-
-	.app-header~.page-content {
-		padding-top: calc(var(--header-h) - var(--header-border-r));
+	.header~.page-content {
+		margin-top: calc(var(--header-h) - var(--header-border-r));
 	}
 </style>
