@@ -1,4 +1,9 @@
 export function useDefaultValidation() {
+  function validateName(name, label) {
+    if (name.length < 2 || name.length > 50)
+      return `Il ${label.toLowerCase()} può essere composto da 2 a 50 caratteri`;
+  }
+
   function validateEmail(email) {
     const re = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
 
@@ -6,7 +11,8 @@ export function useDefaultValidation() {
   }
 
   function validateAddress(address) {
-    if (address.length < 4 || address.length > 100) return "L'indirizzo di residenza può essere composto da 4 a 100 caratteri";
+    if (address.length < 4 || address.length > 100)
+      return "L'indirizzo di residenza può essere composto da 4 a 100 caratteri";
   }
 
   function validatePhone(phone, label) {
@@ -18,18 +24,22 @@ export function useDefaultValidation() {
   }
 
   function validateSpecializations(specializations, label) {
-    if (!specializations.length) return "Selezionare almeno una specializzazione";
+    if (!specializations.length)
+      return 'Selezionare almeno una specializzazione';
   }
 
   function validateServices(services, label) {
-    if (services.length > 400) return `Le ${label.toLowerCase()} possono essere indicate in massimo 400 caratteri`;
+    if (services.length > 400)
+      return `Le ${label.toLowerCase()} possono essere indicate in massimo 400 caratteri`;
   }
 
   function validateFile(file, label) {
-    if (file === null) return "";
+    if (file === null) return '';
   }
 
   return {
+    validateFirstName: validateName,
+    validateLastName: validateName,
     validateEmail,
     validatePhone,
     validateHomeAddress: validateAddress,
