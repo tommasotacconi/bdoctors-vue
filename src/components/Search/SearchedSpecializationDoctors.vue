@@ -45,11 +45,17 @@
 
 				this.$refs.main.scrollTop = 0;
 			},
-			getFilteredReviewsData() {
-				axios.get(this.store.apiUri + `reviews/filter/${this.$route.params.specialization}/${this.rating ?? null}/${this.reviewsNumber ?? null}`)
-					.then(response => {
-						// handle success
-						this.doctors = response.data;
+			getFilteredReviewsData(rating, reviewsNum) {
+				let urlComponents = '/';
+				if (rating) {
+					if (reviewsNum) urlComponents += rating + '/' + reviewsNum;
+					else urlComponents = rating;
+				}
+				else if (reviewsNum) urlComponents += null + '/' + reviewsNum;
+
+				axios.get(this.store.apiUri + `reviews/filter/${this.$route.params.specialization}${urlComponents}`)
+					.then(({ data: { profiles, data } }) => {
+						this.doctors = data ?? profiles;
 					})
 					.catch(error => {
 						this.specializationNotFound = true;
