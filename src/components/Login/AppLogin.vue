@@ -45,8 +45,10 @@
 	<main>
 		<AppForm class="user-data-form alone-dimensions" :doctorInfo="null"
 			:apiRouteAndMethod="{ route: 'login', method: 'post', useApiRoute: false }" :elements="formElements"
-			:nameArtConc="['accesso', 'l\'', 'o']" :wrapperInnerDiv="['row']" :triggerPersistedForm submitBtnTxt="Accedi"
-			@success="handleRequest" @error="handleRequest" />
+			:nameArtConc="['accesso', 'l\'', 'o']" :wrapperInnerDiv="['row']" :triggerPersistedForm @success="handleRequest"
+			@error="handleRequest">
+			<template v-slot:submitBtnTxt>Accedi</template>
+		</AppForm>
 	</main>
 </template>
 

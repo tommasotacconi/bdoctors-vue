@@ -120,8 +120,8 @@
 
 		<AppForm class="user-data-form" id="" :doctorInfo="null" :apiRouteAndMethod="{ route: 'profiles', method: 'post' }"
 			:elements="formElements" :nameArtConc :checkPrevValues="true" :wrapperInnerDiv="['row']"
-			:perfectValidation="validate" :triggerPersistedForm submitBtnTxt="Modifica profilo" @success="handleSuc"
-			@error="handleErr">
+			:perfectValidation="validate" :triggerPersistedForm @success="handleSuc" @error="handleErr">
+			<template v-slot:submitBtnTxt>Modifica profilo</template>
 		</AppForm>
 	</div>
 </template>

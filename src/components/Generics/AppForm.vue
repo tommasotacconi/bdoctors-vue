@@ -410,10 +410,7 @@
 					<button type="submit" class="btn btn-primary btn-submit"
 						:class="{ 'disabled': validated, 'mx-auto': isAccOrRegForm, 'mx-auto': isMesOrRevForm }"
 						:disabled="sendOnlyChanged && !sendOnlyChanged.length">
-						{{ submitBtnTxt ?? 'Invia' }}
-						<!-- <span v-if="isMesOrRevForm">Invia {{ name.toLowerCase() }}</span>
-						<span v-else-if="isAccOrRegForm">{{ name === 'registrazione' ? 'Registrati' : 'Accedi' }}</span>
-						<span v-else>{{ name.includes('creazione') ? 'Crea' : 'Modifica' }}profilo</span> -->
+						<slot name="submitBtnTxt">{{ submitBtnTxt ?? (!$slots.submitBtnTxt && 'Invia') }}</slot>
 					</button>
 					<button v-if="isCreateEditProfForm" type="button" id="reset-button" class="btn btn-warning ms-3"
 						:class="{ 'disabled': validated }" @click.prevent="resetForm()">Pulisci</button>

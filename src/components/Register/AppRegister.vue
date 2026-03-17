@@ -91,7 +91,9 @@
 		<AppForm class="user-data-form alone-dimensions" :doctorInfo="null"
 			:apiRouteAndMethod="{ route: 'register', method: 'post', useApiRoute: false }" :elements="formElements"
 			:nameArtConc="['registrazione', 'la', 'a']" :wrapperInnerDiv="['row']" :perfectValidation="validate"
-			:triggerPersistedForm submitBtnTxt="Registrati" @success="handleSuc" @error="handleErr" />
+			:triggerPersistedForm @success="handleSuc" @error="handleErr">
+			<template v-slot:submitBtnTxt>Registrati</template>
+		</AppForm>
 	</main>
 </template>
 

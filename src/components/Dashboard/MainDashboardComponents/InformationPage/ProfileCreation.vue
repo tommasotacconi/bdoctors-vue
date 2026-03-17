@@ -89,7 +89,8 @@
 		<!-- Form -->
 		<AppForm class="user-data-form" id="" :doctorInfo="null" :apiRouteAndMethod="{ route: 'profiles', method: 'post' }"
 			:elements="formElements" :nameArtConc :wrapperInnerDiv="['row']" :perfectValidation="validate"
-			:triggerPersistedForm submitBtnTxt="Crea profilo" @success="handleSuc" @error="handleErr">
+			:triggerPersistedForm @success="handleSuc" @error="handleErr">
+			<template v-slot:submitBtnTxt>Crea profilo</template>
 		</AppForm>
 	</div>
 </template>
