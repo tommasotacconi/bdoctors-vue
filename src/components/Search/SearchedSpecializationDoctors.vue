@@ -46,7 +46,7 @@
 				this.$refs.main.scrollTop = 0;
 			},
 			getFilteredReviewsData() {
-				axios.get(this.store.apiUri + `reviews/filter/${this.$route.params.specialization}/${this.rating}/${this.reviewsNumber}`)
+				axios.get(this.store.apiUri + `reviews/filter/${this.$route.params.specialization}/${this.rating ?? null}/${this.reviewsNumber ?? null}`)
 					.then(response => {
 						// handle success
 						this.doctors = response.data;
