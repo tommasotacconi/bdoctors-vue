@@ -3,39 +3,38 @@
 	import { store } from '../../../../js/store.js';
 	import dropin from 'braintree-web-drop-in';
 	import { nextTick } from 'vue';
+	import { dashboardStore } from '../../../../js/dashboardStore.js';
 
 	export default {
 		data() {
 			return {
-				store,
 				price: null,
 				sponsorshipTypes: [],
-				sponsorshipName: '',
-				profileActiveSpon: null,
-				cardType: null,
+				selectedSpon: '',
+				activeSpon: null,
 				dropinInstance: null,
 				error: null,
 				isSponsorshipLoaded: false,
-				isSponsorized: false,
 				loadingDropin: false,
 				showPaymentForm: false,
 				loadingPayment: false,
 				isWaitingToken: false,
 				paymentSuccess: false,
+				store,
+				dashboardStore,
 			}
 		},
 		methods: {
 			getSponsorshipTypes() {
 				axios.get(this.store.apiUri + 'sponsorships')
 					.then(({ data: { sponsorships } }) => {
-						console.log(sponsorships);
 						this.sponsorshipTypes = sponsorships;
 					})
 					.catch(err => {
 					})
 			},
 			async setSponsorshipType({ name, price }) {
-				this.sponsorshipName = name;
+				this.selectedSpon = name;
 				this.price = price;
 				this.showPaymentForm = true;
 				await this.initializePayment();
@@ -49,7 +48,7 @@
 
 					await axios.post(this.store.apiUri + 'braintree/process-payment', {
 						payment_method_nonce: nonce,
-						sponsorshipName: this.sponsorshipName,
+						selectedSpon: this.selectedSpon,
 						amount: this.price,
 					}, {
 						withCredentials: true
@@ -106,27 +105,31 @@
 					withCredentials: true
 				})
 					.then(({ data: { profile: { active_sponsorship: active } } }) => {
-						// console.log(response);
-						this.profileActiveSpon = active;
+						this.activeSpon = active;
 
 						// Set sponsorization status
 						if (active) {
 							this.isSponsorized = true;
-							this.cardType = this.profileActiveSpon.name.toLowerCase();
 						}
 
-						this.isSponsorshipLoaded = true;
 					})
-					.catch(function (error) {
-						// console.log(error);
-					})
+					.catch(err => console.error(err))
+					.finally(() => this.isSponsorshipLoaded = true)
 			},
 		},
 		computed: {
+			isSponsorized() {
+				return !!this.activeSpon;
+			}
 		},
 		created() {
 			this.getSponsorshipTypes();
-			this.getApiProfile()
+			const { profileDataGeneral: profileData } = this.dashboardStore;
+			if (!profileData) this.getApiProfile()
+			else {
+				this.activeSpon = profileData.active_sponsorship;
+				this.isSponsorshipLoaded = true;
+			}
 		},
 	}
 </script>
@@ -199,7 +202,7 @@
 			</div>
 			<!-- Sponsorized user case -->
 			<div class="is-sponsored" v-else>
-				<div class="sponsor-card card-bronze" :class="['card-' + this.profileActiveSpon.name.toLowerCase()]">
+				<div class="sponsor-card card-bronze" :class="['card-' + this.activeSpon.toLowerCase()]">
 					<div class="card-description">
 						<p class="hour-sponsorship">Il tuo profilo è sponsorizzato</p>
 					</div>
