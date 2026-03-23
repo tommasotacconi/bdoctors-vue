@@ -150,6 +150,7 @@
 		watch: {
 			'$route.params.specialization': {
 				handler(newValue) {
+					if (newValue === undefined) return;
 					this.getFilteredReviewsData();
 				},
 				immediate: true
