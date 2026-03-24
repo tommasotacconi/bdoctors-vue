@@ -20,6 +20,7 @@
 				})
 					.then(({ status, data }) => {
 						// console.log('Profile: ', profile);
+						this.dashboardStore.isProfileRequestPending = false;
 
 						if (status !== 404) this.dashboardStore.profileDataGeneral = data.profile;
 						else {
@@ -32,7 +33,6 @@
 					})
 					.finally(() => {
 						this.loaded = true;
-						this.dashboardStore.isProfileRequestPending = false;
 					});
 				this.dashboardStore.isProfileRequestPending = true;
 			},
@@ -64,7 +64,7 @@
 			return { getFilePath, getProfilePhotoPath }
 		},
 		created() {
-			if (!this.profileData) this.getProfileData();
+			if (!this.profileData && !this.dashboardStore.isProfileRequestPending) this.getProfileData();
 		},
 		mounted() {
 			// this.showLoader
