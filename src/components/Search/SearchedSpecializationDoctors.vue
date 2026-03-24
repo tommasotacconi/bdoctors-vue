@@ -111,7 +111,7 @@
 		},
 		computed: {
 			specializationName() {
-				return this.$route.params.specialization.replace(/-/g, ' ').replace(/_/g, '-');
+				return this.$route.params.specialization?.replace(/-/g, ' ').replace(/_/g, '-');
 			},
 			voteLabels() {
 				// Construct an objects array to bring label name and input value
