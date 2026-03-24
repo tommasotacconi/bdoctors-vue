@@ -14,38 +14,35 @@
 		},
 		methods: {
 			getProfilePhoto() {
-				// console.log('calling api for profilePhoto');
 				axios.get(this.store.apiUri + 'profiles/authenticated', {
 					withCredentials: true,
 				})
-					.then(({ data: { profile: { photo } } }) => {
-						this.profilePhotoPath = photo;
-						this.setProfilePhotoPath();
+					.then(({ data: { profile } }) => {
+						this.dashboardStore.profileDataGeneral = profile;
+						this.profilePhotoPath = profile.photo;
+						this.dashboardStore.isProfileRequestPending = false;
 					})
 					.catch(err => {
 						this.$emit('userIconReady');
-					});
+					})
+				this.dashboardStore.isProfileRequestPending = true;
 			},
 			setProfilePhotoPath() {
-				// console.log('Evaluating whether to compute profilePhotoPath', '--- Parent:', this.parent);
 				if (!this.store.isAuthenticated || this.dashboardStore.isProfileRequestPending) {
 					this.profilePhotoPath = '';
 					return;
 				}
-				// console.log('Computing <profilePhotPath>', '--- Parent: ', this.parent);
 				// Calculate profile photo :src attribute depending on the presence of the 'photos'
 				// string in the profiles table's column photo
 				const photoPath = this.dashboardStore.profileDataGeneral?.photo ?? this.profilePhotoPath;
 				// console.log('Photo path: ' + photoPath, '--- Parent: ' + this.parent);
 				if (photoPath === '') this.getProfilePhoto();
-				else if ((this.parent === 'AppHeader' || this.parent === 'HeaderDashboard') && photoPath === null) {
-					this.$emit('userIconReady');
-				}
+				else if ((this.parent === 'AppHeader' || this.parent === 'HeaderDashboard') && photoPath === null) this.$emit('userIconReady');
 				else {
 					this.profilePhotoPath = this.getProfilePhotoPath('', photoPath, this.store.apiUri.slice(0, -4));
 					this.$emit('userIconReady');
 				}
-			}
+			},
 		},
 		props: {
 			parent: {
@@ -54,13 +51,9 @@
 			}
 		},
 		watch: {
-			'store.isAuthenticated'(newValue) {
-				if (newValue) this.setProfilePhotoPath();
-			},
-			'dashboardStore.isProfileRequestPending'(newValue) {
-				if (!newValue) {
-					const requestPhotoPath = this.dashboardStore.profileDataGeneral.photo;
-					if (requestPhotoPath) this.setProfilePhotoPath();
+			'dashboardStore.profileDataGeneral'(newValue) {
+				if (newValue) {
+					if (newValue.photo) this.setProfilePhotoPath();
 					else this.$emit('userIconReady');
 				}
 			}
@@ -72,7 +65,7 @@
 		},
 		mounted() {
 			// console.log('Mounted AppUserIcon');
-			this.setProfilePhotoPath();
+			if (!this.profilePhotoPath) this.setProfilePhotoPath();
 		}
 	}
 </script>
