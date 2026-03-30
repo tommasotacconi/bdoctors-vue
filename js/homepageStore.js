@@ -7,6 +7,7 @@ export const homepageStore = reactive({
   chunkedSponsoredProfiles: [],
   requestedPage: 1,
   elementsPerPage: 12,
+  firstReqTime: null,
   requestedProfiles: 0,
   totalSponsoredProfiles: null,
   loadedImgsPerChunk: [],

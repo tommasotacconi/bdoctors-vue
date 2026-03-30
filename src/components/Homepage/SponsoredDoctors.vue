@@ -10,15 +10,17 @@
 		data() {
 			return {
 				store,
-				homepageStore
+				homepageStore,
 			}
 		},
 		methods: {
 			getSponsoredProfiles(perPage = this.elementsPerPage, page = this.requestedPage) {
+				if (!this.homepageStore.firstReqTime) this.homepageStore.firstReqTime = new Date();
 				axios.get(this.store.apiUri + 'profiles/sponsored', {
 					params: {
 						page,
-						per_page: perPage
+						per_page: perPage,
+						firstReqTime: this.homepageStore.firstReqTime
 					}
 				})
 					.then(({ data: { paginated_profiles } }) => {
