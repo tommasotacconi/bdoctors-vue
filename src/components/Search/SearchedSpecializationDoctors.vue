@@ -152,6 +152,7 @@
 				handler(newValue) {
 					if (newValue === undefined) return;
 					this.getFilteredReviewsData();
+					if (this.isFiltering) this.isFiltering = false;
 				},
 				immediate: true
 			},
