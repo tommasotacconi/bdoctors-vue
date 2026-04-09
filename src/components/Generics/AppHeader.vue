@@ -11,7 +11,6 @@
 	export default {
 		data() {
 			return {
-				specializations: [],
 				selectedSpecialization: '',
 				// isProfileManagementShown: false,
 				isUserIconReady: false,
@@ -38,34 +37,35 @@
 			// },
 			getSpecializations() {
 				axios.get(this.store.apiUri + 'specializations')
-					.then(response => {
-						// handle success
-						this.specializations = response.data.specializations;
-						this.homepageStore.allSpecializations = response.data.specializations;
+					.then(({ data: { specializations: specs } }) => {
+						this.homepageStore.allSpecializations = specs;
 						if (this.$route.params.specialization) this.updateSelectByParam();
 					})
 					.catch(function (err) {
 						// console.log(err);
 					})
 			},
-			chooseSpecialization() {
-				store.searchedSpecialization = this.selectedSpecialization.id
-				store.selectedSpecializationName = this.selectedSpecialization.name
-				this.homepageStore.selectedSpecialization = this.selectedSpecialization.name
-
-				// Nuova pagina nella quale usiamo i nomi. Piccola concatenazione di metodi per togliere gli spazi e rendere tutto minuscolo
+			chooseSpecialization(e) {
+				this.selectedSpecialization = this.specializations.find(({ id }) => id == e.target.value);
+				// Generate a slug that can be converted back
 				this.$router.push({
 					name: 'specializationDoctors', params: {
-						specialization: this.homepageStore.selectedSpecialization.trim().replace(/-/g, '_').replace(/ /g, "-").toLowerCase(),
+						specialization: this.slugify(this.selectedSpecialization.name),
 					},
 				})
 			},
-			updateSelectByParam() {
-				// console.log('-- Updating select by means of param');
-				this.selectedSpecialization = this.specializationParam || '';
+			updateSelectByParam() { this.selectedSpecialization = this.specializationParam || ''; },
+			goToAdvancedSearch() {
+				if (this.$route.name !== 'specializationDoctors' && this.selectedSpecialization)
+					this.$router.push({
+						name: 'specializationDoctors', params:
+							{ specialization: this.slugify(this.selectedSpecialization.name) }
+					});
 			},
+			slugify(identifier) { return identifier.trim().replace(/-/g, '_').replace(/ /g, "-").toLowerCase(); }
 		},
 		computed: {
+			specializations() { return this.homepageStore.allSpecializations },
 			specializationParam() {
 				const targets = [/_/g, /-/g];
 				const replacements = ['-', ' '];
@@ -74,28 +74,17 @@
 					specializationInParamValue = specializationInParamValue.replace(targets[i], replacements[i]);
 				}
 				specializationInParamValue = specializationInParamValue[0].toUpperCase() + specializationInParamValue.slice(1);
-				for (let i = 0; i < this.specializations.length; i++) {
-					const specialization = this.specializations[i];
-					if (specializationInParamValue == specialization.name) {
-						// console.log(specialization);
-						return specialization;
-					}
-				}
+
+				return this.specializations.find(({ name }) => name === specializationInParamValue);
 			},
 			rightHeaderClass() {
-				return this.store.isAuthenticated ? {
-					'logged-user': true,
-					'not-logged-user': false,
-				} : {
-					'logged-user': false,
-					'not-logged-user': true,
-				};
+				return this.store.isAuthenticated ? ['logged-user',] : ['not-logged-user',];
 			},
 			showLoader() {
 				if (this.isLoggingOut) return true;
 				else if (this.store.isAuthenticated) return !this.isUserIconReady;
 				return false;
-			}
+			},
 		},
 		components: {
 			AppUserIcon
@@ -153,11 +142,12 @@
 				<!-- Searchbar section -->
 				<div class="search-bar">
 					<Transition>
-						<select @change="chooseSpecialization()" v-model="selectedSpecialization" v-if="specializations.toString()"
+						<select v-if="!['register', 'login'].includes($route.name) && specializations.toString()"
+							@input="chooseSpecialization" :value="selectedSpecialization.id" @click="goToAdvancedSearch"
 							class="form-select" aria-label="Specialization Search">
 							<option value="" disabled>Ricerca il medico per specializzazione!</option>
-							<option v-for="(specialization, index) in specializations" :key="index" :value=specialization>
-								{{ specialization.name }}
+							<option v-for="({ name, id }) in specializations" :key="id" :value="id">
+								{{ name }}
 							</option>
 						</select>
 					</Transition>
