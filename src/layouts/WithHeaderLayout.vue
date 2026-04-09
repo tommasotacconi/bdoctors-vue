@@ -26,12 +26,10 @@
 <template>
 	<AppHeader ref="header" class="header" />
 	<div class="page-content bg">
-		<RouterView v-slot="{ Component, route }">
-			<KeepAlive>
-				<component v-if="route.meta.keepAlive" :is="Component" />
+		<RouterView v-slot="{ Component }">
+			<KeepAlive include="AppRegister,AdvancedSearch">
+				<component :is="Component" />
 			</KeepAlive>
-
-			<component v-if="!route.meta.keepAlive" :is="Component" />
 		</RouterView>
 	</div>
 </template>

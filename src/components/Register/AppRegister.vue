@@ -10,6 +10,7 @@
 	import { dashboardStore } from '../../../js/dashboardStore';
 
 	export default {
+		name: 'AppRegister',
 		data() {
 			return {
 				/* List of all form elements */

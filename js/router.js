@@ -1,7 +1,6 @@
 import { createWebHistory, createRouter } from 'vue-router';
 import OneComponentLayout from '../src/layouts/OneComponentLayout.vue';
 import WithHeaderLayout from '../src/layouts/WithHeaderLayout.vue';
-import SearchedSpecializationDoctors from '../src/components/Search/SearchedSpecializationDoctors.vue';
 import DoctorShow from '../src/components/Search/DoctorShow.vue';
 import DashboardPage from '../src/pages/DashboardPage.vue';
 import axios from 'axios';
@@ -10,6 +9,7 @@ import AppRegister from '../src/components/Register/AppRegister.vue';
 import AppLogin from '../src/components/Login/AppLogin.vue';
 import AppAlertSystem from '../src/components/Generics/AppAlertSystem.vue';
 import HomepageMain from '../src/components/Homepage/HomepageMain.vue';
+import AdvancedSearch from '../src/components/Search/AdvancedSearch.vue';
 
 async function getAuthStatus() {
   return (
@@ -64,7 +64,7 @@ const routes = [
             path: 'utente/registrazione',
             name: 'register',
             component: AppRegister,
-            meta: { requiredAuthValue: false, keepAlive: true },
+            meta: { requiredAuthValue: false },
             beforeEnter: checkAuthorization,
           },
           // Path to all doctors with selected specialization id and satisfing filter parameters
@@ -72,8 +72,7 @@ const routes = [
           {
             path: ':specialization',
             name: 'specializationDoctors',
-            meta: { keepAlive: true },
-            component: SearchedSpecializationDoctors,
+            component: AdvancedSearch,
             children: [
               {
                 // Path to doctor, within specialization
