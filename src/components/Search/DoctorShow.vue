@@ -245,7 +245,7 @@
 						</p>
 					</div>
 					<button class="btn btn-close" v-if="$route.name !== 'search'" @click="$router.push({
-						name: 'specializationDoctors', params: { specialization: $route.params.specialization }
+						name: 'advancedSearch', params: { specialization: $route.params.specialization }
 					})"></button>
 				</template>
 
@@ -316,7 +316,7 @@
 			<AppPopUpCard class="not-found" v-else>
 				<template #card-header>
 					<button class="btn btn-close" v-if="$route.name !== 'search' && isSpecializationParamValid" @click="$router.push({
-						name: 'specializationDoctors', params: { specialization: $route.params.specialization }
+						name: 'advancedSearch', params: { specialization: $route.params.specialization }
 					})"></button>
 				</template>
 				<template #default>

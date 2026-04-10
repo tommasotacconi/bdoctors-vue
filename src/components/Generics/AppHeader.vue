@@ -49,16 +49,16 @@
 				this.selectedSpecialization = this.specializations.find(({ id }) => id == e.target.value);
 				// Generate a slug that can be converted back
 				this.$router.push({
-					name: 'specializationDoctors', params: {
+					name: 'advancedSearch', params: {
 						specialization: this.slugify(this.selectedSpecialization.name),
 					},
 				})
 			},
 			updateSelectByParam() { this.selectedSpecialization = this.specializationParam || ''; },
 			goToAdvancedSearch() {
-				if (this.$route.name !== 'specializationDoctors' && this.selectedSpecialization)
+				if (this.$route.name !== 'advancedSearch' && this.selectedSpecialization)
 					this.$router.push({
-						name: 'specializationDoctors', params:
+						name: 'advancedSearch', params:
 							{ specialization: this.slugify(this.selectedSpecialization.name) }
 					});
 			},

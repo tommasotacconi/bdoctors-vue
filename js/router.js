@@ -71,13 +71,13 @@ const routes = [
           // 'rating' and 'reviewsNumber'
           {
             path: ':specialization',
-            name: 'specializationDoctors',
+            name: 'advancedSearch',
             component: AdvancedSearch,
             children: [
               {
                 // Path to doctor, within specialization
                 path: ':name',
-                name: 'specializationDoctors.show',
+                name: 'advancedSearch.show',
                 component: DoctorShow,
               },
             ],

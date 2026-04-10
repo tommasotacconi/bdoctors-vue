@@ -41,7 +41,7 @@
 				if (homId !== null) completeName += '-' + homId;
 				this.searchedDoctor = doctor;
 				this.$router.push({
-					name: 'specializationDoctors.show', params: { name: completeName }
+					name: 'advancedSearch.show', params: { name: completeName }
 				});
 
 				this.$refs.main.scrollTop = 0;
