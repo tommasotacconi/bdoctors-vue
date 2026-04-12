@@ -58,29 +58,29 @@
 		},
 		methods: {
 			setDoctorInfo() {
+				// Case of for route advancedSearch.show 
 				if (this.$route.params.specialization) {
 					// Check specialization param's validity
-					this.isSpecializationParamValid = this.homepageStore.allSpecializations.some(element => element.name.toLowerCase() === this.searchedSpecialization);
+					this.isSpecializationParamValid = this.homepageStore.allSpecializations.some(
+						element => element.name.toLowerCase() === this.searchedSpecialization.toLowerCase()
+					);
 
 					if (this.isSpecializationParamValid && this.searchedDoctor) {
-						const user = this.searchedDoctor.user;
-						this.doctorInfo.first_name = user.first_name;
-						this.doctorInfo.last_name = user.last_name;
-						if (user.homonymous_id) this.doctorInfo.homonymous_id = user.homonymous_id;
+						const doc = this.doctorInfo;
+						for (const key in doc) { ({ [key]: doc[key] } = this.searchedDoctor.user); }
+						doc.homonymous_id ??= null;
 					}
 
 					this.loaded = true;
 					this.$emit('loaded-pop-up');
 				}
+				// Case for route search
 				else {
-					const name = decodeURIComponent(this.$route.params.name).split('-');
-					// Match fisrst name and last name
+					const nameComps = this.$route.params.name.split(' ');
+					const doc = this.doctorInfo;
 					let homId = '';
-					[this.doctorInfo.first_name, this.doctorInfo.last_name, homId] = name;
-					// Match homonymous id
-					if (homId) this.doctorInfo.homonymous_id = homId;
-
-					this.getProfileData();
+					[doc.first_name, doc.last_name, homId] = nameComps;
+					if (homId) doc.homonymous_id = homId;
 				}
 			},
 			getProfileData() {
@@ -89,12 +89,8 @@
 						// console.log(response);
 						this.profileData = response.data.profile;
 					})
-					.catch(() => {
-						this.doctorNotFound = true;
-					})
-					.finally(() => {
-						this.loaded = true;
-					});
+					.catch(() => this.doctorNotFound = true)
+					.finally(() => this.loaded = true);
 			},
 			setCurrentForm(formType) {
 				this.isCurrentFormShown = true;
@@ -143,7 +139,7 @@
 				if (!this.searchedSpecialization) return undefined;
 
 				const searchedSpecialization = this.searchedSpecialization[0].toUpperCase() + this.searchedSpecialization.slice(1);
-				const allDoctorSpecializations = this.searchedDoctor.user.specializations;
+				const allDoctorSpecializations = this.searchedDoctor?.user.specializations;
 
 				return allDoctorSpecializations?.filter(({ name }) => name !== searchedSpecialization);
 			},
@@ -192,6 +188,14 @@
 			areShowFormButtonsShown() {
 				return this.isMessageFormButtonShown && this.isReviewFormButtonShown;
 			},
+		},
+		watch: {
+			'searchedDoctor': {
+				handler(newValue) {
+					if (this.$route.name === 'search' && !newValue) this.getProfileData();
+				},
+				immediate: true
+			}
 		},
 		inject: ['triggerAlert'],
 		setup() {
@@ -324,9 +328,9 @@
 						isSpecializationParamValid ?
 							"Nessuno specialista con questa specializzazione, verfica le specializzazioni del tuo medico " +
 							"o che il nome inserito sia corretto." :
-							!doctorNotFound ?
-								"Specializzazione inserita non corretta, controlla la specializzazione inserita." :
-								"Dottore cercato non trovato, controlla il nome inserito e l'id finale, se presente."
+							doctorNotFound ?
+								"Dottore cercato non trovato, controlla il nome inserito e l'id finale, se presente." :
+								"Specializzazione inserita non corretta, controlla la specializzazione inserita."
 					}}
 				</template>
 			</AppPopUpCard>

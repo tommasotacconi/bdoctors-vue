@@ -37,11 +37,11 @@
 		},
 		methods: {
 			goToShowPage(doctor, fName, lName, homId) {
-				let completeName = fName + '-' + lName;
-				if (homId !== null) completeName += '-' + homId;
+				let completeName = [fName, lName];
+				if (homId !== null) completeName.push(homId);
 				this.searchedDoctor = doctor;
 				this.$router.push({
-					name: 'advancedSearch.show', params: { name: completeName }
+					name: 'advancedSearch.show', params: { name: completeName.join(' ') }
 				});
 
 				this.$refs.main.scrollTop = 0;
@@ -111,9 +111,7 @@
 			}
 		},
 		computed: {
-			specializationName() {
-				return this.$route.params.specialization?.replace(/-/g, ' ').replace(/_/g, '-');
-			},
+			specializationName() { return this.$route.params.specialization; },
 			voteLabels() {
 				// Construct an objects array to bring label name and input value
 				const labels = [];
@@ -159,17 +157,14 @@
 			},
 			'doctors': {
 				handler(newValue) {
-					const urlName = this.$route.params.name;
-					if (urlName) {
-						const doctorProfile = this.doctors.find(({ user }) => {
-							let result = false;
+					const nameParam = this.$route.params.name;
+					if (nameParam) {
+						const doctorProfile = this.doctors.find(({ user: { first_name: fN, last_name: lN, homonymous_id: hI } }) => {
 							// Compare user complete name, homonymous_id included, with in URL name
-							const homonymousIdPart = user.homonymous_id ? `-${user.homonymous_id}` : null;
-							const fullNamePart = `${user.first_name}-${user.last_name}`;
-							let completeName = homonymousIdPart ? fullNamePart + homonymousIdPart : fullNamePart;
-							result = completeName === urlName;
+							const docIdentifierComps = [fN, lN];
+							if (hI) docIdentifierComps.push(hI);
 
-							return result;
+							return docIdentifierComps.join(' ') === nameParam;
 						})
 
 						if (doctorProfile) this.searchedDoctor = doctorProfile;

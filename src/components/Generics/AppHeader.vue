@@ -50,32 +50,26 @@
 				// Generate a slug that can be converted back
 				this.$router.push({
 					name: 'advancedSearch', params: {
-						specialization: this.slugify(this.selectedSpecialization.name),
+						specialization: this.selectedSpecialization.name,
 					},
 				})
 			},
-			updateSelectByParam() { this.selectedSpecialization = this.specializationParam || ''; },
+			updateSelectByParam() { this.selectedSpecialization = this.specializationFromParam || ''; },
 			goToAdvancedSearch() {
 				if (this.$route.name !== 'advancedSearch' && this.selectedSpecialization)
 					this.$router.push({
 						name: 'advancedSearch', params:
-							{ specialization: this.slugify(this.selectedSpecialization.name) }
+							{ specialization: this.normalize(this.selectedSpecialization.name) }
 					});
 			},
-			slugify(identifier) { return identifier.trim().replace(/-/g, '_').replace(/ /g, "-").toLowerCase(); }
+			normalize(identifier) { return identifier.trim(); }
 		},
 		computed: {
 			specializations() { return this.homepageStore.allSpecializations },
-			specializationParam() {
-				const targets = [/_/g, /-/g];
-				const replacements = ['-', ' '];
-				let specializationInParamValue = this.$route.params.specialization;
-				for (let i = 0; i < targets.length; i++) {
-					specializationInParamValue = specializationInParamValue.replace(targets[i], replacements[i]);
-				}
-				specializationInParamValue = specializationInParamValue[0].toUpperCase() + specializationInParamValue.slice(1);
+			specializationFromParam() {
+				let specializationParam = this.$route.params.specialization.toLowerCase();
 
-				return this.specializations.find(({ name }) => name === specializationInParamValue);
+				return this.specializations.find(({ name }) => name.toLowerCase() === specializationParam);
 			},
 			rightHeaderClass() {
 				return this.store.isAuthenticated ? ['logged-user',] : ['not-logged-user',];
