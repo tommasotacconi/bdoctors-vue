@@ -2,7 +2,7 @@
 	import axios from 'axios';
 	import { store } from '../../../../js/store.js';
 	import { dashboardStore } from '../../../../js/dashboardStore.js';
-	import { useGetPathFunctions } from '../../../../js/composables/useGetPathFunctions.js';
+	import { getFilePath, getProfilePhotoPath } from '../../../../js/utils/routing.js';
 
 	export default {
 		data() {
@@ -36,9 +36,6 @@
 					});
 				this.dashboardStore.isProfileRequestPending = true;
 			},
-			// getFilePath: function (filePath) {
-			// 	return new URL(filePath, 'http://localhost:8000/').href;
-			// },
 		},
 		computed: {
 			profileData() {
@@ -47,8 +44,7 @@
 			profilePhotoPath() {
 				// Calculate profile photo :src attribute depending on the presence of the 'photos' string in the db data photo profiles table
 				const { user, photo } = this.dashboardStore.profileDataGeneral;
-				return this.getProfilePhotoPath(this.store.placeholderImg(user.first_name, user.last_name), photo, this.store.apiUri.slice(0, -4));
-				// return photoPath.includes('photos') ? this.getFilePath(`storage/${this.dashboardStore.profileDataGeneral.photo}`) : photoPath ?? new URL(this.placeholderImg).href;
+				return getProfilePhotoPath(this.store.placeholderImg(user.first_name, user.last_name), photo, this.store.apiUri.slice(0, -4));
 			},
 			curriculumFileName() {
 				// Truncate curriculum lenght to 30 string characters
@@ -59,8 +55,6 @@
 			}
 		},
 		setup() {
-			const { getFilePath, getProfilePhotoPath } = useGetPathFunctions();
-
 			return { getFilePath, getProfilePhotoPath }
 		},
 		created() {

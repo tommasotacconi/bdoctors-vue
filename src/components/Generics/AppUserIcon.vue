@@ -2,7 +2,8 @@
 	import axios from 'axios';
 	import { store } from '../../../js/store';
 	import { dashboardStore } from '../../../js/dashboardStore.js';
-	import { useGetPathFunctions } from '../../../js/composables/useGetPathFunctions.js';
+	import { getProfilePhotoPath } from '../../../js/utils/routing.js';
+
 
 	export default {
 		data() {
@@ -39,7 +40,7 @@
 				if (photoPath === '') this.getProfilePhoto();
 				else if ((this.parent === 'AppHeader' || this.parent === 'HeaderDashboard') && photoPath === null) this.$emit('userIconReady');
 				else {
-					this.profilePhotoPath = this.getProfilePhotoPath('', photoPath, this.store.apiUri.slice(0, -4));
+					this.profilePhotoPath = getProfilePhotoPath('', photoPath, this.store.apiUri.slice(0, -4));
 					this.$emit('userIconReady');
 				}
 			},
@@ -57,11 +58,6 @@
 					else this.$emit('userIconReady');
 				}
 			}
-		},
-		setup() {
-			const { getFilePath, getProfilePhotoPath } = useGetPathFunctions();
-
-			return { getFilePath, getProfilePhotoPath }
 		},
 		mounted() {
 			// console.log('Mounted AppUserIcon');

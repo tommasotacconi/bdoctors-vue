@@ -1,7 +1,7 @@
 <script>
 	import axios from 'axios';
 	import { store } from '../../../js/store.js';
-	import { useGetPathFunctions } from '../../../js/composables/useGetPathFunctions.js';
+	import { getFilePath, getProfilePhotoPath } from '../../../js/utils/routing.js';
 	import { homepageStore } from '../../../js/homepageStore.js';
 	import AppPopUpCard from '../Generics/AppPopUpCard.vue';
 	import AppForm from '../Generics/AppForm.vue';
@@ -199,8 +199,6 @@
 		},
 		inject: ['triggerAlert'],
 		setup() {
-			const { getFilePath, getProfilePhotoPath } = useGetPathFunctions();
-
 			return { getFilePath, getProfilePhotoPath }
 		},
 		created() {

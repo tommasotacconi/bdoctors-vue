@@ -3,7 +3,7 @@
 	import { store } from '../../../js/store';
 	import DoctorShow from './DoctorShow.vue';
 	import { finiteOrDefault } from 'chart.js/helpers';
-	import { useGetPathFunctions } from '../../../js/composables/useGetPathFunctions.js';
+	import { getProfilePhotoPath } from '../../../js/utils/routing.js';
 	import AppPopUpCard from '../Generics/AppPopUpCard.vue';
 	import AppForm from '../Generics/AppForm.vue';
 	import FormField from '../../../js/utils/FormField.js';
@@ -175,9 +175,7 @@
 			}
 		},
 		setup() {
-			const { getFilePath, getProfilePhotoPath } = useGetPathFunctions();
-
-			return { getFilePath, getProfilePhotoPath }
+			return { getProfilePhotoPath }
 		},
 	}
 </script>

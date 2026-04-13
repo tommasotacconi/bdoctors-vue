@@ -2,7 +2,7 @@
 	import axios from 'axios';
 	import { RouterLink } from 'vue-router';
 	import { store } from '../../../js/store.js';
-	import { useGetPathFunctions } from '../../../js/composables/useGetPathFunctions.js';
+	import { getProfilePhotoPath } from '../../../js/utils/routing.js';
 	import SponsoredCard from './SponsoredCard.vue';
 	import { homepageStore } from '../../../js/homepageStore.js';
 	import { getShowRoute } from '../../../js/utils/routing.js';
@@ -92,9 +92,7 @@
 			}
 		},
 		setup() {
-			const { getFilePath, getProfilePhotoPath } = useGetPathFunctions();
-
-			return { getFilePath, getProfilePhotoPath };
+			return { getProfilePhotoPath };
 		},
 		mounted() {
 			if (!this.totalSponsoredProfiles) this.getSponsoredProfiles();
