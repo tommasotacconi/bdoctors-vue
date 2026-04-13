@@ -4,10 +4,10 @@
 	import DoctorShow from './DoctorShow.vue';
 	import { finiteOrDefault } from 'chart.js/helpers';
 	import { useGetPathFunctions } from '../../../js/composables/useGetPathFunctions.js';
-	import { nextTick } from 'vue';
 	import AppPopUpCard from '../Generics/AppPopUpCard.vue';
 	import AppForm from '../Generics/AppForm.vue';
 	import FormField from '../../../js/utils/FormField.js';
+	import { getShowRoute } from '../../../js/utils/routing.js';
 
 	export default {
 		name: 'AdvancedSearch',
@@ -36,16 +36,6 @@
 			AppForm
 		},
 		methods: {
-			goToShowPage(doctor, fName, lName, homId) {
-				let completeName = [fName, lName];
-				if (homId !== null) completeName.push(homId);
-				this.searchedDoctor = doctor;
-				this.$router.push({
-					name: 'advancedSearch.show', params: { name: completeName.join(' ') }
-				});
-
-				this.$refs.main.scrollTop = 0;
-			},
 			getFilteredReviewsData(rating, reviewsNum) {
 				let urlComponents = '/';
 				if (rating) {
@@ -108,7 +98,12 @@
 				const marginTopStringProperty = getComputedStyle(firstChild)['margin-top'];
 				const marginTop = Number(marginTopStringProperty.slice(0, -2));
 				this.containerHeight = height + marginTop;
-			}
+			},
+			handleCardClick(profile, ...routeData) {
+				this.searchedDoctor = profile;
+				this.$router.push(getShowRoute(...routeData));
+				this.$refs.main.scrollTop = 0;
+			},
 		},
 		computed: {
 			specializationName() { return this.$route.params.specialization; },
@@ -231,14 +226,15 @@
 			<!-- Doctors in selected specialization and eventually filtered -->
 			<div class="doctors-list" v-if="isFiltering ? filteredDoctors.length : doctors.length">
 				<div class="doctor-card"
-					v-for="({ office_address, avg_vote, total_reviews, photo, user: { first_name, last_name, homonymous_id: hom_id } }, index) in showSponsoredFirst"
-					@click="goToShowPage(showSponsoredFirst[index], first_name, last_name, hom_id)" :key="index">
+					v-for="({ office_address, avg_vote, total_reviews, photo, user: { first_name: fName, last_name: lName, homonymous_id: homId } }, ind) in showSponsoredFirst"
+					@click="(e) => { handleCardClick(showSponsoredFirst[ind], 'advancedSearch.show', [fName, lName, homId]) }"
+					:key="ind">
 					<img class="doctor-photo"
-						:src="getProfilePhotoPath(this.store.placeholderImg(first_name, last_name), photo, store.apiUri.slice(0, -4))"
+						:src="getProfilePhotoPath(this.store.placeholderImg(fName, lName), photo, store.apiUri.slice(0, -4))"
 						alt="doctor photo">
 					<section class="doctor-information">
 						<h5 class="doctor-name">
-							{{ first_name }} {{ last_name }}
+							{{ fName }} {{ lName }}
 						</h5>
 						<div class="doctor-address">
 							<strong>Ufficio:</strong> {{ office_address }}

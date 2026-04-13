@@ -5,6 +5,7 @@
 	import { useGetPathFunctions } from '../../../js/composables/useGetPathFunctions.js';
 	import SponsoredCard from './SponsoredCard.vue';
 	import { homepageStore } from '../../../js/homepageStore.js';
+	import { getShowRoute } from '../../../js/utils/routing.js';
 
 	export default {
 		data() {
@@ -39,13 +40,6 @@
 				const [rP, tSP] = [this.homepageStore.requestedProfiles += perPage, this.homepageStore.totalSponsoredProfiles];
 				if (tSP && rP > tSP) this.homepageStore.requestedProfiles = tSP;
 			},
-			goToShowPage(fName, lName, homId) {
-				let completeName = fName + '-' + lName;
-				if (homId !== null) completeName += '-' + homId;
-				this.$router.push({ name: 'search', params: { name: completeName } })
-				// console.log('doctor position inside homepage ', index);
-				// console.log(store.searchedSpecialization)
-			},
 			updateLoadedImgsPerChunk(chunkInd) {
 				const imgsArr = this.homepageStore.loadedImgsPerChunk;
 
@@ -66,7 +60,8 @@
 				[this.homepageStore.elementsPerPage, this.homepageStore.requestedPage] = result;
 
 				return result;
-			}
+			},
+			handleCardClick() { this.$router.push(getShowRoute(...arguments)); }
 		},
 		components: {
 			SponsoredCard
@@ -123,7 +118,7 @@
 					v-for="({ photo, user, user: { first_name: fName, last_name: lName, homonymous_id: homId } }, index) in chunkedSponsoredProfiles[chunkInd]"
 					:key="fName + lName + homId" v-show="checkOwnChunkIsLoaded(chunkInd)"
 					:class="{ 'no-profile-img': notLoadedImgsPerChunk[chunkInd]?.includes(index) }"
-					@click="goToShowPage(fName, lName, homId)" :user :cardIndexes="[chunkInd, index]" :img="{
+					@click="(e) => handleCardClick('search', [fName, lName, homId])" :user :cardIndexes="[chunkInd, index]" :img="{
 						src: getProfilePhotoPath(this.store.placeholderImg(fName, lName), photo, this.store.apiUri.slice(0, -4)),
 						atLoad: updateLoadedImgsPerChunk,
 						atError: updateNotLoadedImgsPerChunk
