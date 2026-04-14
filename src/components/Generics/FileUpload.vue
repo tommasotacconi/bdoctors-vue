@@ -11,19 +11,19 @@
 		},
 		methods: {
 			handleFileChange(event) {
-				const fileChecked = event.target.files[0];
-				if (!fileChecked) return this.$emit('uploadedFile', null);
+				const fileToCheck = event.target.files[0];
+				if (!fileToCheck) return this.$emit('uploadedFile', null);
 
 				const allowedTypes = this.accept.split(',').map(t => t.trim());
 				const isTypeAllowed =
 					this.accept === '' ||
 					allowedTypes.some(type => type.endsWith('/*')
-						? fileChecked.type.startsWith(type.replace('/*', ''))
-						: fileChecked.type === type
+						? fileToCheck.type.startsWith(type.replace('/*', ''))
+						: fileToCheck.type === type
 					);
-				const isSizeAllowed = fileChecked.size < this.size;
+				const isSizeAllowed = fileToCheck.size < this.size;
 
-				if (isTypeAllowed && isSizeAllowed) this.$emit('uploadedFile', fileChecked);
+				if (isTypeAllowed && isSizeAllowed) this.$emit('uploadedFile', fileToCheck);
 				else this.$emit('uploadedFile', false);
 			},
 			constructPlaceholder
