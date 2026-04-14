@@ -4,7 +4,6 @@
 	import { emitter } from "../../../../../js/eventBus.js";
 	import AppForm from "../../../Generics/AppForm.vue";
 	import FormField from "../../../../../js/utils/FormField.js";
-	import { useHandler } from "../../../../../js/composables/useHandler.js";
 	import { useDefaultValidation } from "../../../../../js/composables/useDefaultValidation.js";
 
 	export default {
@@ -68,10 +67,9 @@
 		},
 		inject: ['triggerAlert', /* 'triggerPersistedForm' */],
 		setup() {
-			const { handleUploadedNewFile } = useHandler();
 			const { validatePhone, validateOfficeAddress, validateServices, validatePhoto, validateCurriculum } = useDefaultValidation();
 
-			return { validatePhone, validateOfficeAddress, validateServices, validatePhoto, validateCurriculum, handleUploadedNewFile };
+			return { validatePhone, validateOfficeAddress, validateServices, validatePhoto, validateCurriculum };
 		},
 	}
 </script>
