@@ -24,7 +24,7 @@
 			}
 		},
 		methods: {
-			updateSpecs(specializations, formData, key) {
+			handleChangedValue(specializations, formData, fieldName) {
 				// Prepare a constant array result to insert ids value
 				const result = [];
 				// Insert ids taken from specializations parameter in reactive variable specializations, property of errors 
@@ -32,21 +32,21 @@
 					result.push(specializations[i].id);
 				}
 
-				formData[key] = result;
+				formData[fieldName] = result;
 			},
-			updateFile(file, formData, errors, field) {
+			handleUploadedFile(file, formData, errors, field) {
 				errors[field] = '';
 				if (file /* && !isObjectEmpty(file) */) formData[field] = file;
 				else if (file === false) errors[field] = `Inserire un file di dimensioni non superiori a 2048KB e del tipo indicato nel selettore di file`;
 				else formData[field] = null;
 			},
 			createFormData() {
-				for (const key in this.elements) {
-					const eventualValue = this.elements[key].value ?? '';
-					if (key === 'specializations') this.$data.formData[key] = eventualValue ? eventualValue : [];
-					else if (['vote', 'revsNum'].includes(key)) this.$data.formData[key] = null;
-					else this.$data.formData[key] = eventualValue;
-					this.$data.errors[key] = '';
+				for (const fieldName in this.elements) {
+					const eventualValue = this.elements[fieldName].value ?? '';
+					if (fieldName === 'specializations') this.$data.formData[fieldName] = eventualValue ? eventualValue : [];
+					else if (['vote', 'revsNum'].includes(fieldName)) this.$data.formData[fieldName] = null;
+					else this.$data.formData[fieldName] = eventualValue;
+					this.$data.errors[fieldName] = '';
 				}
 			},
 			// validateEmail(email) {
@@ -114,24 +114,24 @@
 				// console.table({ 'Form\'s errors': this.errors });
 			},
 			resetForm() {
-				for (const key in this.formData) {
+				for (const fieldName in this.formData) {
 					// Check if field enabled
-					if (this.elements[key].disabled) continue;
+					if (this.elements[fieldName].disabled) continue;
 
-					if (!['vote', 'photo', 'curriculum', 'revsNum'].includes(key)) this.formData[key] = '';
-					else if (key === 'specializations') {
-						this.formData[key] = [];
+					if (!['vote', 'photo', 'curriculum', 'revsNum'].includes(fieldName)) this.formData[fieldName] = '';
+					else if (fieldName === 'specializations') {
+						this.formData[fieldName] = [];
 						// Reset Multiselect if present on page (that is when sent === undefined)
 						if (this.sent === undefined) this.$refs.multi[0].reset();
 					}
-					else this.formData[key] = null;
+					else this.formData[fieldName] = null;
 				}
 
 				this.validated = false;
 			},
 			resetErrors() {
-				for (const key in this.formData) {
-					this.errors[key] = '';
+				for (const fieldName in this.formData) {
+					this.errors[fieldName] = '';
 				}
 			},
 			sendForm() {
@@ -175,9 +175,9 @@
 			},
 			camelToSnake(obj) {
 				const result = {};
-				for (const [key, value] of Object.entries(obj)) {
-					const snakeKey = key.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
-					result[snakeKey] = value;
+				for (const [fieldName, value] of Object.entries(obj)) {
+					const snakefieldName = fieldName.replace(/[A-Z]/g, letter => `_${letter.toLowerCase()}`);
+					result[snakefieldName] = value;
 				}
 
 				return result;
@@ -243,20 +243,20 @@
 		computed: {
 			elementsProps() {
 				const computedEls = {};
-				for (const [key, el] of Object.entries(this.elements)) {
+				for (const [fieldName, el] of Object.entries(this.elements)) {
 					const { options, ...rest } = el;
 					const flattenedEl = { ...rest, ...options };
 					const isMultiselect = el.elementType === 'multiselect';
 
-					computedEls[key] = {
+					computedEls[fieldName] = {
 						...flattenedEl,
 						ref: isMultiselect ? 'multi' : null,
-						class: [el.wrapperStyle, { 'invalid-input': this.errors[key], 'form-control': !isMultiselect }],
-						initValue: isMultiselect ? this.formData[key] : null,
+						class: [el.wrapperStyle, { 'invalid-input': this.errors[fieldName], 'form-control': !isMultiselect }],
+						initValue: isMultiselect ? this.formData[fieldName] : null,
 						size: el.size ? el.size * 1024 : null,
 						nameAndConc: [el.label.toLowerCase(), el.fieldGenre === 'm' ? 'o' : 'a'],
-						value: el.elementType === 'fileUpload' ? el.value : this.formData[key],
-						rows: key === 'content' ? 3 : null
+						value: el.elementType === 'fileUpload' ? el.value : this.formData[fieldName],
+						rows: fieldName === 'content' ? 3 : null
 					}
 					// console.log(computedEls);
 				}
@@ -265,19 +265,19 @@
 			},
 			elementEvents() {
 				const fData = this.formData;
-				function inputTextareaSharedEvent(key) {
-					return { input: event => fData[key] = event.target.value.trim() }
+				function inputTextareaSharedEvent(fieldName) {
+					return { input: event => fData[fieldName] = event.target.value.trim() }
 				}
 
 				return {
-					multiselect: key => ({
-						sendValues: specializations => this.updateSpecs(specializations, this.formData, key)
+					multiselect: fieldName => ({
+						changedValue: specializations => this.handleChangedValue(specializations, this.formData, fieldName)
 					}),
-					fileUpload: key => ({
-						uploadedFile: file => this.updateFile(file, this.formData, this.errors, key)
+					fileUpload: fieldName => ({
+						uploadedFile: file => this.handleUploadedFile(file, this.formData, this.errors, fieldName)
 					}),
-					input: key => ({ ...inputTextareaSharedEvent(key) }),
-					textarea: key => ({ ...inputTextareaSharedEvent(key) })
+					input: fieldName => ({ ...inputTextareaSharedEvent(fieldName) }),
+					textarea: fieldName => ({ ...inputTextareaSharedEvent(fieldName) })
 				}
 			},
 			name() {
@@ -380,13 +380,13 @@
 				</p>
 
 				<!-- /* Form fields */ -->
-				<div class="mb-2" :class="el.wrapperStyle" v-for="(el, key) in elementsProps">
+				<div class="mb-2" :class="el.wrapperStyle" v-for="(el, fieldName) in elementsProps">
 					<!-- Vote field -->
-					<template v-if="key === 'vote'">
+					<template v-if="fieldName === 'vote'">
 						<label class="badge rounded-pill">{{ el.label }}</label>
-						<div class="form-control text-center vote" :class="{ 'invalid-input': errors[key] }">
+						<div class="form-control text-center vote" :class="{ 'invalid-input': errors[fieldName] }">
 							<template v-for="opt in el.radioGroupOptions.toReversed()">
-								<input :id="el.id + opt" :value="opt" v-model.trim="formData[key]" :type="el.type">
+								<input :id="el.id + opt" :value="opt" v-model.trim="formData[fieldName]" :type="el.type">
 								<label :for="el.id + opt" class="form-label stethoscope"><i class="fa-solid fa-stethoscope"></i></label>
 							</template>
 						</div>
@@ -396,11 +396,11 @@
 						<label :for="el.id" class="badge rounded-pill"
 							:class="{ 'd-none': el.type === 'hidden', 'move-top': el.disabled }">{{ el.label
 							}}</label>
-						<component :is="el.elementType" v-bind.trim="el" v-on="elementEvents[el.elementType](key)" />
+						<component :is="el.elementType" v-bind.trim="el" v-on="elementEvents[el.elementType](fieldName)" />
 					</template>
 					<!-- Box for single input's error message -->
-					<div class="error-msg" v-if="errors[key]">
-						<p>{{ errors[key] }}</p>
+					<div class="error-msg" v-if="errors[fieldName]">
+						<p>{{ errors[fieldName] }}</p>
 					</div>
 				</div>
 

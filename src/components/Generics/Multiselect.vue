@@ -48,10 +48,10 @@
 				return rest;
 			}
 		},
-		emits: ['sendValues'],
+		emits: ['changedValue'],
 		watch: {
 			value(newValue) {
-				this.$emit('sendValues', newValue)
+				this.$emit('changedValue', newValue)
 			}
 		},
 		async created() {
