@@ -4,7 +4,7 @@
 	import { emitter } from "../../../../../js/eventBus.js";
 	import AppForm from "../../../Generics/AppForm.vue";
 	import FormField from "../../../../../js/utils/FormField.js";
-	import { useDefaultValidation } from "../../../../../js/composables/useDefaultValidation.js";
+	import * as validators from "../../../../../js/utils/validation.js";
 
 	export default {
 		data() {
@@ -41,7 +41,7 @@
 
 					const value = data[field];
 					const label = els[field].label;
-					const result = this['validate' + field[0].toUpperCase() + field.slice(1)](value, label);
+					const result = validators['validate' + field[0].toUpperCase() + field.slice(1)](value, label);
 					if (result) errs[field] = result;
 				}
 			},
@@ -66,11 +66,6 @@
 			},
 		},
 		inject: ['triggerAlert', /* 'triggerPersistedForm' */],
-		setup() {
-			const { validatePhone, validateOfficeAddress, validateServices, validatePhoto, validateCurriculum } = useDefaultValidation();
-
-			return { validatePhone, validateOfficeAddress, validateServices, validatePhoto, validateCurriculum };
-		},
 	}
 </script>
 

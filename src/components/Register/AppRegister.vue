@@ -5,7 +5,7 @@
 	import AppForm from '../Generics/AppForm.vue';
 	import FormField from '../../../js/utils/FormField';
 	import { homepageStore } from '../../../js/homepageStore';
-	import { useDefaultValidation } from '../../../js/composables/useDefaultValidation';
+	import validators from '../../../js/utils/validation';
 	import { store } from '../../../js/store';
 	import { dashboardStore } from '../../../js/dashboardStore';
 
@@ -43,7 +43,6 @@
 
 					if (errs[field]) continue;
 
-					console.log(field);
 					switch (field) {
 						case 'password':
 							if (value.includes(' ')) errs[field] = "La password non può contenere spazi";
@@ -53,7 +52,7 @@
 							if (value && value !== data['password']) errs[field] = "Le password non coincidono";
 							break;
 						default:
-							const result = this['validate' + field[0].toUpperCase() + field.slice(1)](value, label);
+							const result = validators['validate' + field[0].toUpperCase() + field.slice(1)](value, label);
 							if (result) errs[field] = result;
 							break;
 					}
@@ -76,11 +75,6 @@
 		},
 		components: {
 			AppForm
-		},
-		setup() {
-			const { validateFirstName, validateLastName, validateHomeAddress, validateSpecializations, validateEmail } = useDefaultValidation();
-
-			return { validateFirstName, validateLastName, validateHomeAddress, validateSpecializations, validateEmail }
 		},
 		inject: ['triggerAlert']
 	}

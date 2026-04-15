@@ -5,7 +5,7 @@
 	import { emitter } from "../../../../../js/eventBus";
 	import FormField from "../../../../../js/utils/FormField";
 	import AppForm from "../../../Generics/AppForm.vue";
-	import { useDefaultValidation } from "../../../../../js/composables/useDefaultValidation";
+	import validators from "../../../../../js/utils/validation";
 
 
 	export default {
@@ -71,7 +71,7 @@
 
 					const value = data[field];
 					const label = els[field].label;
-					const result = this['validate' + field[0].toUpperCase() + field.slice(1)](value, label);
+					const result = validators['validate' + field[0].toUpperCase() + field.slice(1)](value, label);
 					if (result) errs[field] = result;
 				}
 			},
@@ -93,11 +93,6 @@
 			nameArtConc() {
 				return ['modifica di profilo', 'la', 'a'];
 			},
-		},
-		setup() {
-			const { ...validations } = useDefaultValidation();
-
-			return { ...validations };
 		},
 		created: function () {
 			this.getProfileData();
